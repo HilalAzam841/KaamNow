@@ -1,0 +1,4558 @@
+openapi: 3.0.3
+info:
+  title: KaamNow API
+  version: 1.0.0
+  description: |-
+    On-demand local services marketplace (Lahore, Pakistan). Customers post service requests, nearby verified workers bid, both sides negotiate, and the customer books.
+
+    All responses use the envelope `{success, data, message}` on success and `{success: false, error: {code, message, details}}` on failure.
+paths:
+  /api/v1/admin/audit-logs/:
+    get:
+      operationId: admin_audit_logs_list
+      parameters:
+      - in: query
+        name: action
+        schema:
+          type: string
+          enum:
+          - category_changed
+          - commission_changed
+          - document_viewed
+          - user_reactivated
+          - user_suspended
+          - worker_rejected
+          - worker_verified
+        description: |-
+          * `worker_verified` - Worker verified
+          * `worker_rejected` - Worker rejected
+          * `document_viewed` - Worker document viewed
+          * `user_suspended` - User suspended
+          * `user_reactivated` - User reactivated
+          * `commission_changed` - Commission rate changed
+          * `category_changed` - Service category changed
+      - in: query
+        name: actor
+        schema:
+          type: integer
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: target_type
+        schema:
+          type: string
+      tags:
+      - admin
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAuditLogList'
+          description: ''
+  /api/v1/admin/bookings/:
+    get:
+      operationId: admin_bookings_list
+      parameters:
+      - in: query
+        name: date_from
+        schema:
+          type: string
+      - in: query
+        name: date_to
+        schema:
+          type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - arrived
+          - cancelled
+          - completed
+          - confirmed
+          - in_progress
+          - on_the_way
+        description: |-
+          * `confirmed` - Confirmed
+          * `on_the_way` - On the way
+          * `arrived` - Arrived
+          * `in_progress` - Work started
+          * `completed` - Completed
+          * `cancelled` - Cancelled
+      - in: query
+        name: worker
+        schema:
+          type: integer
+      tags:
+      - admin
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedBookingList'
+          description: ''
+  /api/v1/admin/commissions/:
+    get:
+      operationId: admin_commissions_list
+      parameters:
+      - in: query
+        name: date_from
+        schema:
+          type: string
+      - in: query
+        name: date_to
+        schema:
+          type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - collected
+          - pending
+          - waived
+        description: |-
+          * `pending` - Pending collection
+          * `collected` - Collected
+          * `waived` - Waived
+      - in: query
+        name: worker
+        schema:
+          type: integer
+      tags:
+      - admin
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedCommissionList'
+          description: ''
+  /api/v1/admin/dashboard/:
+    get:
+      operationId: admin_dashboard_retrieve
+      tags:
+      - admin
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/v1/admin/documents/{id}/file/:
+    get:
+      operationId: admin_documents_file_retrieve
+      description: Streams a private CNIC/verification document to an admin. Every
+        view is audited.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - admin
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+          description: ''
+  /api/v1/admin/reports/:
+    get:
+      operationId: admin_reports_retrieve
+      parameters:
+      - in: query
+        name: date_from
+        schema:
+          type: string
+      - in: query
+        name: date_to
+        schema:
+          type: string
+      tags:
+      - admin
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/v1/admin/requests/:
+    get:
+      operationId: admin_requests_list
+      parameters:
+      - in: query
+        name: category
+        schema:
+          type: integer
+      - in: query
+        name: date_from
+        schema:
+          type: string
+      - in: query
+        name: date_to
+        schema:
+          type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - booked
+          - cancelled
+          - expired
+          - open
+        description: |-
+          * `open` - Open for offers
+          * `booked` - Booked
+          * `cancelled` - Cancelled
+          * `expired` - Expired
+      tags:
+      - admin
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedServiceRequestList'
+          description: ''
+  /api/v1/admin/revenue/:
+    get:
+      operationId: admin_revenue_retrieve
+      parameters:
+      - in: query
+        name: date_from
+        schema:
+          type: string
+      - in: query
+        name: date_to
+        schema:
+          type: string
+      tags:
+      - admin
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/v1/admin/settings/commission/:
+    get:
+      operationId: admin_settings_commission_retrieve
+      tags:
+      - admin
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformSettings'
+          description: ''
+    patch:
+      operationId: admin_settings_commission_partial_update
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedPlatformSettingsRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedPlatformSettingsRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedPlatformSettingsRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformSettings'
+          description: ''
+  /api/v1/admin/users/:
+    get:
+      operationId: admin_users_list
+      parameters:
+      - in: query
+        name: is_active
+        schema:
+          type: boolean
+      - in: query
+        name: is_suspended
+        schema:
+          type: boolean
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: role
+        schema:
+          type: string
+          enum:
+          - admin
+          - customer
+          - worker
+        description: |-
+          * `customer` - Customer
+          * `worker` - Service provider
+          * `admin` - Administrator
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - admin
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAdminUserList'
+          description: ''
+  /api/v1/admin/users/{id}/reactivate/:
+    post:
+      operationId: admin_users_reactivate_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - admin
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminUser'
+          description: ''
+  /api/v1/admin/users/{id}/suspend/:
+    post:
+      operationId: admin_users_suspend_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SuspendUserRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SuspendUserRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SuspendUserRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminUser'
+          description: ''
+  /api/v1/admin/workers/{id}/:
+    get:
+      operationId: admin_workers_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - admin
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminWorker'
+          description: ''
+  /api/v1/admin/workers/{id}/reject/:
+    post:
+      operationId: admin_workers_reject_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RejectWorkerRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RejectWorkerRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RejectWorkerRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminWorker'
+          description: ''
+  /api/v1/admin/workers/{id}/verify/:
+    post:
+      operationId: admin_workers_verify_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - admin
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminWorker'
+          description: ''
+  /api/v1/admin/workers/pending/:
+    get:
+      operationId: admin_workers_pending_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - admin
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAdminWorkerList'
+          description: ''
+  /api/v1/auth/login/:
+    post:
+      operationId: auth_login_create
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+          description: ''
+  /api/v1/auth/logout/:
+    post:
+      operationId: auth_logout_create
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LogoutRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/LogoutRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/LogoutRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/auth/me/:
+    get:
+      operationId: auth_me_retrieve
+      tags:
+      - auth
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+    patch:
+      operationId: auth_me_partial_update
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUserRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUserRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUserRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+  /api/v1/auth/password-change/:
+    post:
+      operationId: auth_password_change_create
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordChangeRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PasswordChangeRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PasswordChangeRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/auth/password-reset/:
+    post:
+      operationId: auth_password_reset_create
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordResetRequestRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PasswordResetRequestRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PasswordResetRequestRequest'
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/auth/password-reset/confirm/:
+    post:
+      operationId: auth_password_reset_confirm_create
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordResetConfirmRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PasswordResetConfirmRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PasswordResetConfirmRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/auth/register/:
+    post:
+      operationId: auth_register_create
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+          description: ''
+  /api/v1/auth/token/refresh/:
+    post:
+      operationId: auth_token_refresh_create
+      description: |-
+        Takes a refresh type JSON web token and returns an access type JSON web
+        token if the refresh token is valid.
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenRefresh'
+          description: ''
+  /api/v1/bookings/:
+    get:
+      operationId: bookings_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+      tags:
+      - bookings
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedBookingList'
+          description: ''
+  /api/v1/bookings/{id}/:
+    get:
+      operationId: bookings_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this booking.
+        required: true
+      tags:
+      - bookings
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+          description: ''
+  /api/v1/bookings/{id}/cancel/:
+    post:
+      operationId: bookings_cancel_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this booking.
+        required: true
+      tags:
+      - bookings
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookingCancelRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BookingCancelRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BookingCancelRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+          description: ''
+  /api/v1/bookings/{id}/complete/:
+    post:
+      operationId: bookings_complete_create
+      summary: 'Worker: complete with the customer''s OTP. Customer: confirm completion
+        in-app.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this booking.
+        required: true
+      tags:
+      - bookings
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookingCompleteRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BookingCompleteRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BookingCompleteRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+          description: ''
+  /api/v1/bookings/{id}/completion-otp/:
+    post:
+      operationId: bookings_completion_otp_create
+      summary: 'Customer: generate the private completion code to share with the worker'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this booking.
+        required: true
+      tags:
+      - bookings
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompletionOTP'
+          description: ''
+  /api/v1/bookings/{id}/status/:
+    post:
+      operationId: bookings_status_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this booking.
+        required: true
+      tags:
+      - bookings
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookingStatusRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BookingStatusRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BookingStatusRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+          description: ''
+  /api/v1/health/:
+    get:
+      operationId: health_retrieve
+      tags:
+      - health
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/v1/notifications/:
+    get:
+      operationId: notifications_list
+      parameters:
+      - in: query
+        name: is_read
+        schema:
+          type: boolean
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: type
+        schema:
+          type: string
+          enum:
+          - booking_cancelled
+          - booking_completed
+          - booking_status
+          - negotiation
+          - new_offer
+          - new_request
+          - offer_accepted
+          - offer_closed
+          - offer_rejected
+          - payment
+          - request_cancelled
+          - review
+          - system
+          - verification
+        description: |-
+          * `new_request` - New nearby request
+          * `new_offer` - New offer
+          * `negotiation` - Negotiation update
+          * `offer_accepted` - Offer accepted
+          * `offer_rejected` - Offer rejected
+          * `offer_closed` - Offer closed
+          * `booking_status` - Booking status
+          * `booking_cancelled` - Booking cancelled
+          * `booking_completed` - Booking completed
+          * `request_cancelled` - Request cancelled
+          * `payment` - Payment
+          * `review` - Review
+          * `verification` - Account verification
+          * `system` - System
+      tags:
+      - notifications
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedNotificationList'
+          description: ''
+  /api/v1/notifications/{id}/read/:
+    post:
+      operationId: notifications_read_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this notification.
+        required: true
+      tags:
+      - notifications
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notification'
+          description: ''
+  /api/v1/notifications/read-all/:
+    post:
+      operationId: notifications_read_all_create
+      tags:
+      - notifications
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/notifications/unread-count/:
+    get:
+      operationId: notifications_unread_count_retrieve
+      tags:
+      - notifications
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/offers/{id}/:
+    get:
+      operationId: offers_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - offers
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkerOffer'
+          description: ''
+    patch:
+      operationId: offers_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - offers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedOfferUpdateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedOfferUpdateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedOfferUpdateRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkerOffer'
+          description: ''
+  /api/v1/offers/{id}/accept/:
+    post:
+      operationId: offers_accept_create
+      summary: Customer accepts the offer at its current price; creates the booking
+        atomically.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - offers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OfferAcceptRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OfferAcceptRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OfferAcceptRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+          description: ''
+  /api/v1/offers/{id}/negotiate/:
+    post:
+      operationId: offers_negotiate_create
+      summary: Counter-propose a price, or agree to the other party's latest price.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - offers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NegotiateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/NegotiateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/NegotiateRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NegotiateResponse'
+          description: ''
+  /api/v1/offers/{id}/negotiations/:
+    get:
+      operationId: offers_negotiations_list
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - offers
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Negotiation'
+          description: ''
+  /api/v1/offers/{id}/reject/:
+    post:
+      operationId: offers_reject_create
+      summary: Customer rejects an offer, or the worker withdraws it.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - offers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OfferRejectRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OfferRejectRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OfferRejectRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkerOffer'
+          description: ''
+  /api/v1/payments/:
+    get:
+      operationId: payments_list
+      parameters:
+      - in: query
+        name: booking
+        schema:
+          type: integer
+      - in: query
+        name: method
+        schema:
+          type: string
+          enum:
+          - cash
+          - easypaisa
+          - jazzcash
+        description: |-
+          * `cash` - Cash
+          * `jazzcash` - JazzCash
+          * `easypaisa` - Easypaisa
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - completed
+          - disputed
+          - failed
+          - pending
+        description: |-
+          * `pending` - Awaiting confirmation
+          * `completed` - Completed
+          * `failed` - Failed
+          * `disputed` - Disputed
+      tags:
+      - payments
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedPaymentList'
+          description: ''
+    post:
+      operationId: payments_create
+      summary: Customer records payment for a completed booking (cash only in Stage
+        1). Amount is taken from the booking's locked price.
+      tags:
+      - payments
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentCreateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PaymentCreateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PaymentCreateRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+          description: ''
+  /api/v1/payments/{id}/:
+    get:
+      operationId: payments_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this payment.
+        required: true
+      tags:
+      - payments
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+          description: ''
+  /api/v1/payments/{id}/confirm/:
+    post:
+      operationId: payments_confirm_create
+      summary: Worker confirms they received the cash.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this payment.
+        required: true
+      tags:
+      - payments
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+          description: ''
+  /api/v1/payments/earnings/:
+    get:
+      operationId: payments_earnings_retrieve
+      summary: 'Worker: earnings and commission summary'
+      tags:
+      - payments
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EarningsSummary'
+          description: ''
+  /api/v1/requests/:
+    get:
+      operationId: requests_list
+      summary: 'Customers: your requests. Workers: open nearby requests you can bid
+        on (scope=feed) or requests you have bid on (scope=offered). Admins: all requests.'
+      parameters:
+      - in: query
+        name: category
+        schema:
+          type: integer
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: scope
+        schema:
+          type: string
+          enum:
+          - feed
+          - offered
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+      tags:
+      - requests
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedServiceRequestList'
+          description: ''
+    post:
+      operationId: requests_create
+      tags:
+      - requests
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServiceRequestCreateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ServiceRequestCreateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ServiceRequestCreateRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceRequest'
+          description: ''
+  /api/v1/requests/{id}/:
+    get:
+      operationId: requests_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this service request.
+        required: true
+      tags:
+      - requests
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceRequest'
+          description: ''
+    patch:
+      operationId: requests_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this service request.
+        required: true
+      tags:
+      - requests
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedServiceRequestUpdateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedServiceRequestUpdateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedServiceRequestUpdateRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceRequest'
+          description: ''
+  /api/v1/requests/{id}/cancel/:
+    post:
+      operationId: requests_cancel_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this service request.
+        required: true
+      tags:
+      - requests
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CancelRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CancelRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CancelRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceRequest'
+          description: ''
+  /api/v1/requests/{id}/nearby-workers/:
+    get:
+      operationId: requests_nearby_workers_list
+      parameters:
+      - in: query
+        name: category
+        schema:
+          type: integer
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this service request.
+        required: true
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - booked
+          - cancelled
+          - expired
+          - open
+        description: |-
+          * `open` - Open for offers
+          * `booked` - Booked
+          * `cancelled` - Cancelled
+          * `expired` - Expired
+      tags:
+      - requests
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedNearbyWorkerList'
+          description: ''
+  /api/v1/requests/{request_id}/offers/:
+    get:
+      operationId: requests_offers_list
+      description: 'GET: compare offers on a request. POST: worker submits an offer.'
+      summary: 'Customer: compare all offers (price, rating, jobs, distance, experience,
+        verification). Worker: see your own offer.'
+      parameters:
+      - in: query
+        name: ordering
+        schema:
+          type: string
+          enum:
+          - -price
+          - completed_jobs
+          - distance
+          - eta
+          - experience
+          - price
+          - rating
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: path
+        name: request_id
+        schema:
+          type: integer
+        required: true
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+      tags:
+      - offers
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedWorkerOfferList'
+          description: ''
+    post:
+      operationId: requests_offers_create
+      description: 'GET: compare offers on a request. POST: worker submits an offer.'
+      parameters:
+      - in: path
+        name: request_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - offers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OfferCreateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OfferCreateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OfferCreateRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkerOffer'
+          description: ''
+  /api/v1/reviews/:
+    post:
+      operationId: reviews_create
+      tags:
+      - reviews
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReviewCreateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ReviewCreateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ReviewCreateRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'
+          description: ''
+  /api/v1/services/categories/:
+    get:
+      operationId: services_categories_list
+      description: Anyone can browse active categories; admins can create, update,
+        activate and deactivate them.
+      summary: List service categories
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - services
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ServiceCategory'
+          description: ''
+    post:
+      operationId: services_categories_create
+      description: Anyone can browse active categories; admins can create, update,
+        activate and deactivate them.
+      summary: 'Admin: create category'
+      tags:
+      - services
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServiceCategoryRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ServiceCategoryRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ServiceCategoryRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceCategory'
+          description: ''
+  /api/v1/services/categories/{id}/:
+    get:
+      operationId: services_categories_retrieve
+      description: Anyone can browse active categories; admins can create, update,
+        activate and deactivate them.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this service category.
+        required: true
+      tags:
+      - services
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceCategory'
+          description: ''
+    patch:
+      operationId: services_categories_partial_update
+      description: Anyone can browse active categories; admins can create, update,
+        activate and deactivate them.
+      summary: 'Admin: update / activate / deactivate category'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this service category.
+        required: true
+      tags:
+      - services
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedServiceCategoryRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedServiceCategoryRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedServiceCategoryRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceCategory'
+          description: ''
+  /api/v1/services/workers/:
+    get:
+      operationId: services_workers_list
+      summary: Browse worker service listings (verified workers only). Use ?mine=true
+        as a worker for your own.
+      parameters:
+      - in: query
+        name: category
+        schema:
+          type: number
+      - in: query
+        name: min_rating
+        schema:
+          type: number
+      - in: query
+        name: mine
+        schema:
+          type: boolean
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - services
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedWorkerServiceList'
+          description: ''
+    post:
+      operationId: services_workers_create
+      summary: 'Worker: add a service category you offer'
+      tags:
+      - services
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkerServiceRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/WorkerServiceRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/WorkerServiceRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkerService'
+          description: ''
+  /api/v1/services/workers/{id}/:
+    get:
+      operationId: services_workers_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this worker service.
+        required: true
+      tags:
+      - services
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkerService'
+          description: ''
+    patch:
+      operationId: services_workers_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this worker service.
+        required: true
+      tags:
+      - services
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedWorkerServiceRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedWorkerServiceRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedWorkerServiceRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkerService'
+          description: ''
+    delete:
+      operationId: services_workers_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this worker service.
+        required: true
+      tags:
+      - services
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/workers/{id}/:
+    get:
+      operationId: workers_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - workers
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicWorker'
+          description: ''
+  /api/v1/workers/{id}/reviews/:
+    get:
+      operationId: workers_reviews_list
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - reviews
+      - workers
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedReviewList'
+          description: ''
+  /api/v1/workers/availability/:
+    post:
+      operationId: workers_availability_create
+      tags:
+      - workers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AvailabilityRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AvailabilityRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AvailabilityRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkerProfile'
+          description: ''
+  /api/v1/workers/documents/:
+    get:
+      operationId: workers_documents_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - workers
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/WorkerDocument'
+          description: ''
+    post:
+      operationId: workers_documents_create
+      tags:
+      - workers
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/WorkerDocumentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/WorkerDocumentRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkerDocument'
+          description: ''
+  /api/v1/workers/me/:
+    get:
+      operationId: workers_me_retrieve
+      tags:
+      - workers
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkerProfile'
+          description: ''
+    patch:
+      operationId: workers_me_partial_update
+      tags:
+      - workers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedWorkerProfileRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedWorkerProfileRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedWorkerProfileRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkerProfile'
+          description: ''
+  /api/v1/workers/nearby/:
+    get:
+      operationId: workers_nearby_list
+      description: Verified, online workers in a category whose service radius covers
+        the point.
+      parameters:
+      - in: query
+        name: category
+        schema:
+          type: integer
+        required: true
+      - in: query
+        name: latitude
+        schema:
+          type: number
+          format: double
+        required: true
+      - in: query
+        name: longitude
+        schema:
+          type: number
+          format: double
+        required: true
+      tags:
+      - workers
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NearbyWorker'
+          description: ''
+components:
+  schemas:
+    AdminUser:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        phone:
+          type: string
+          readOnly: true
+        email:
+          type: string
+          format: email
+          readOnly: true
+          nullable: true
+        full_name:
+          type: string
+          readOnly: true
+        role:
+          allOf:
+          - $ref: '#/components/schemas/UserRoleEnum'
+          readOnly: true
+        is_active:
+          type: boolean
+          readOnly: true
+        is_suspended:
+          type: boolean
+          readOnly: true
+        suspended_reason:
+          type: string
+          readOnly: true
+        date_joined:
+          type: string
+          format: date-time
+          readOnly: true
+        last_login:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+      required:
+      - date_joined
+      - email
+      - full_name
+      - id
+      - is_active
+      - is_suspended
+      - last_login
+      - phone
+      - role
+      - suspended_reason
+    AdminWorker:
+      type: object
+      description: The worker's own profile (private view).
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        full_name:
+          type: string
+          readOnly: true
+        phone:
+          type: string
+          readOnly: true
+        cnic_number:
+          type: string
+          readOnly: true
+        bio:
+          type: string
+          readOnly: true
+        experience_years:
+          type: integer
+          readOnly: true
+        profile_picture:
+          type: string
+          format: uri
+          nullable: true
+          readOnly: true
+        base_latitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+          readOnly: true
+          nullable: true
+        base_longitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+          readOnly: true
+          nullable: true
+        service_area:
+          type: string
+          readOnly: true
+          description: e.g. Gulberg, Lahore
+        service_radius_km:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,2})?$
+          readOnly: true
+        is_available:
+          type: boolean
+          readOnly: true
+        verification_status:
+          allOf:
+          - $ref: '#/components/schemas/VerificationStatusEnum'
+          readOnly: true
+        rejection_reason:
+          type: string
+          readOnly: true
+        verified_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        average_rating:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,1}(?:\.\d{0,2})?$
+          readOnly: true
+        rating_count:
+          type: integer
+          readOnly: true
+        completed_jobs_count:
+          type: integer
+          readOnly: true
+        services:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkerServiceInline'
+          readOnly: true
+        documents_uploaded:
+          type: array
+          items:
+            type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        email:
+          type: string
+          readOnly: true
+        documents:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkerDocument'
+          readOnly: true
+        user_id:
+          type: integer
+          readOnly: true
+      required:
+      - average_rating
+      - base_latitude
+      - base_longitude
+      - bio
+      - cnic_number
+      - completed_jobs_count
+      - created_at
+      - documents
+      - documents_uploaded
+      - email
+      - experience_years
+      - full_name
+      - id
+      - is_available
+      - phone
+      - profile_picture
+      - rating_count
+      - rejection_reason
+      - service_area
+      - service_radius_km
+      - services
+      - user_id
+      - verification_status
+      - verified_at
+    AuditLog:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        actor:
+          type: integer
+          readOnly: true
+          nullable: true
+        actor_name:
+          type: string
+          readOnly: true
+        action:
+          allOf:
+          - $ref: '#/components/schemas/AuditLogActionEnum'
+          readOnly: true
+        target_type:
+          type: string
+          readOnly: true
+        target_id:
+          type: string
+          readOnly: true
+        metadata:
+          readOnly: true
+        ip_address:
+          type: string
+          readOnly: true
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - action
+      - actor
+      - actor_name
+      - created_at
+      - id
+      - ip_address
+      - metadata
+      - target_id
+      - target_type
+    AuditLogActionEnum:
+      enum:
+      - worker_verified
+      - worker_rejected
+      - document_viewed
+      - user_suspended
+      - user_reactivated
+      - commission_changed
+      - category_changed
+      type: string
+      description: |-
+        * `worker_verified` - Worker verified
+        * `worker_rejected` - Worker rejected
+        * `document_viewed` - Worker document viewed
+        * `user_suspended` - User suspended
+        * `user_reactivated` - User reactivated
+        * `commission_changed` - Commission rate changed
+        * `category_changed` - Service category changed
+    AuthResponse:
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/User'
+        tokens:
+          type: object
+          additionalProperties:
+            type: string
+      required:
+      - tokens
+      - user
+    AvailabilityRequest:
+      type: object
+      properties:
+        is_available:
+          type: boolean
+      required:
+      - is_available
+    Booking:
+      type: object
+      description: |-
+        Booking view for its customer, its worker and admins.
+
+        Contact details (phone, exact address) are only included for the other
+        party while the booking is active. OTP fields are never serialised.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        request_id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          readOnly: true
+        category_name:
+          type: string
+          readOnly: true
+        preferred_time:
+          type: string
+          format: date-time
+          readOnly: true
+        agreed_price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          readOnly: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/BookingStatusEnum'
+          readOnly: true
+        worker:
+          allOf:
+          - $ref: '#/components/schemas/PublicWorker'
+          readOnly: true
+        customer_name:
+          type: string
+          readOnly: true
+        contact:
+          type: object
+          additionalProperties: {}
+          nullable: true
+          readOnly: true
+        on_the_way_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        arrived_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        started_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        completed_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        cancelled_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        cancel_reason:
+          type: string
+          readOnly: true
+        completed_via:
+          type: string
+          readOnly: true
+        status_history:
+          type: array
+          items:
+            $ref: '#/components/schemas/BookingStatusLog'
+          readOnly: true
+        commission:
+          type: object
+          additionalProperties: {}
+          nullable: true
+          readOnly: true
+        has_review:
+          type: boolean
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - agreed_price
+      - arrived_at
+      - cancel_reason
+      - cancelled_at
+      - category_name
+      - commission
+      - completed_at
+      - completed_via
+      - contact
+      - created_at
+      - customer_name
+      - has_review
+      - id
+      - on_the_way_at
+      - preferred_time
+      - request_id
+      - started_at
+      - status
+      - status_history
+      - title
+      - updated_at
+      - worker
+    BookingCancelRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 255
+      required:
+      - reason
+    BookingCompleteRequest:
+      type: object
+      properties:
+        otp:
+          type: string
+          minLength: 1
+          description: Required when the worker completes.
+          pattern: ^\d{4,8}$
+        confirm:
+          type: boolean
+          default: false
+          description: Customer in-app confirmation.
+    BookingStatusEnum:
+      enum:
+      - confirmed
+      - on_the_way
+      - arrived
+      - in_progress
+      - completed
+      - cancelled
+      type: string
+      description: |-
+        * `confirmed` - Confirmed
+        * `on_the_way` - On the way
+        * `arrived` - Arrived
+        * `in_progress` - Work started
+        * `completed` - Completed
+        * `cancelled` - Cancelled
+    BookingStatusLog:
+      type: object
+      properties:
+        from_status:
+          type: string
+          maxLength: 12
+        to_status:
+          type: string
+          maxLength: 12
+        note:
+          type: string
+          maxLength: 255
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - to_status
+    BookingStatusRequest:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/BookingStatusStatusEnum'
+        note:
+          type: string
+          default: ''
+          maxLength: 255
+      required:
+      - status
+    BookingStatusStatusEnum:
+      enum:
+      - on_the_way
+      - arrived
+      - in_progress
+      type: string
+      description: |-
+        * `on_the_way` - on_the_way
+        * `arrived` - arrived
+        * `in_progress` - in_progress
+    CancelRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          default: ''
+          maxLength: 255
+    Commission:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        booking:
+          type: integer
+          readOnly: true
+        worker:
+          type: integer
+          readOnly: true
+        worker_name:
+          type: string
+          readOnly: true
+        gross_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          readOnly: true
+        rate_percent:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,2})?$
+          readOnly: true
+        commission_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          readOnly: true
+        worker_earning:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          readOnly: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/CommissionStatusEnum'
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - booking
+      - commission_amount
+      - created_at
+      - gross_amount
+      - id
+      - rate_percent
+      - status
+      - worker
+      - worker_earning
+      - worker_name
+    CommissionStatusEnum:
+      enum:
+      - pending
+      - collected
+      - waived
+      type: string
+      description: |-
+        * `pending` - Pending collection
+        * `collected` - Collected
+        * `waived` - Waived
+    CompletionOTP:
+      type: object
+      properties:
+        otp:
+          type: string
+          readOnly: true
+        expires_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - expires_at
+      - otp
+    DocumentTypeEnum:
+      enum:
+      - cnic_front
+      - cnic_back
+      - certificate
+      - other
+      type: string
+      description: |-
+        * `cnic_front` - CNIC front
+        * `cnic_back` - CNIC back
+        * `certificate` - Skill certificate
+        * `other` - Other
+    EarningsSummary:
+      type: object
+      properties:
+        completed_jobs:
+          type: integer
+        gross_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,2})?$
+        commission_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,2})?$
+        net_earnings:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,2})?$
+        commission_pending:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,2})?$
+        recent:
+          type: array
+          items:
+            $ref: '#/components/schemas/Commission'
+      required:
+      - commission_amount
+      - commission_pending
+      - completed_jobs
+      - gross_amount
+      - net_earnings
+      - recent
+    LoginRequest:
+      type: object
+      properties:
+        phone:
+          type: string
+          minLength: 1
+        password:
+          type: string
+          writeOnly: true
+          minLength: 1
+      required:
+      - password
+      - phone
+    LogoutRequest:
+      type: object
+      properties:
+        refresh:
+          type: string
+          minLength: 1
+      required:
+      - refresh
+    MethodEnum:
+      enum:
+      - cash
+      - jazzcash
+      - easypaisa
+      type: string
+      description: |-
+        * `cash` - Cash
+        * `jazzcash` - JazzCash
+        * `easypaisa` - Easypaisa
+    NearbyWorker:
+      type: object
+      description: 'Public worker card: no phone, CNIC, documents or exact home location.'
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        full_name:
+          type: string
+          readOnly: true
+        profile_picture:
+          type: string
+          format: uri
+          nullable: true
+          readOnly: true
+        bio:
+          type: string
+          readOnly: true
+        experience_years:
+          type: integer
+          readOnly: true
+        service_area:
+          type: string
+          readOnly: true
+          description: e.g. Gulberg, Lahore
+        is_verified:
+          type: boolean
+          readOnly: true
+        average_rating:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,1}(?:\.\d{0,2})?$
+          readOnly: true
+        rating_count:
+          type: integer
+          readOnly: true
+        completed_jobs_count:
+          type: integer
+          readOnly: true
+        services:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkerServiceInline'
+          readOnly: true
+        distance_km:
+          type: number
+          format: double
+          readOnly: true
+        is_available:
+          type: boolean
+          readOnly: true
+      required:
+      - average_rating
+      - bio
+      - completed_jobs_count
+      - distance_km
+      - experience_years
+      - full_name
+      - id
+      - is_available
+      - is_verified
+      - profile_picture
+      - rating_count
+      - service_area
+      - services
+    NegotiateActionEnum:
+      enum:
+      - counter
+      - agree
+      type: string
+      description: |-
+        * `counter` - counter
+        * `agree` - agree
+    NegotiateRequest:
+      type: object
+      properties:
+        action:
+          allOf:
+          - $ref: '#/components/schemas/NegotiateActionEnum'
+          default: counter
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        message:
+          type: string
+          default: ''
+          maxLength: 500
+    NegotiateResponse:
+      type: object
+      properties:
+        offer:
+          $ref: '#/components/schemas/WorkerOffer'
+        booking:
+          allOf:
+          - $ref: '#/components/schemas/Booking'
+          nullable: true
+      required:
+      - booking
+      - offer
+    Negotiation:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        party:
+          allOf:
+          - $ref: '#/components/schemas/PartyEnum'
+          readOnly: true
+        action:
+          allOf:
+          - $ref: '#/components/schemas/NegotiationActionEnum'
+          readOnly: true
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          readOnly: true
+          nullable: true
+        message:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - action
+      - amount
+      - created_at
+      - id
+      - message
+      - party
+    NegotiationActionEnum:
+      enum:
+      - offer
+      - revise
+      - counter
+      - agree
+      - accept
+      - reject
+      - withdraw
+      type: string
+      description: |-
+        * `offer` - Initial offer
+        * `revise` - Worker revised offer
+        * `counter` - Counter proposal
+        * `agree` - Agreed to price
+        * `accept` - Customer accepted (booking created)
+        * `reject` - Rejected
+        * `withdraw` - Withdrawn
+    Notification:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        type:
+          allOf:
+          - $ref: '#/components/schemas/TypeEnum'
+          readOnly: true
+        title:
+          type: string
+          readOnly: true
+        body:
+          type: string
+          readOnly: true
+        data:
+          readOnly: true
+        is_read:
+          type: boolean
+          readOnly: true
+        read_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - body
+      - created_at
+      - data
+      - id
+      - is_read
+      - read_at
+      - title
+      - type
+    OfferAcceptRequest:
+      type: object
+      properties:
+        message:
+          type: string
+          default: ''
+          maxLength: 500
+    OfferCreateRequest:
+      type: object
+      properties:
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        estimated_arrival_minutes:
+          type: integer
+          maximum: 1440
+          minimum: 5
+        message:
+          type: string
+          default: ''
+          maxLength: 500
+        additional_info:
+          type: string
+          default: ''
+          maxLength: 1000
+      required:
+      - estimated_arrival_minutes
+      - price
+    OfferRejectRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          default: ''
+          maxLength: 500
+    PaginatedAdminUserList:
+      type: object
+      properties:
+        count:
+          type: integer
+        page:
+          type: integer
+        total_pages:
+          type: integer
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdminUser'
+    PaginatedAdminWorkerList:
+      type: object
+      properties:
+        count:
+          type: integer
+        page:
+          type: integer
+        total_pages:
+          type: integer
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdminWorker'
+    PaginatedAuditLogList:
+      type: object
+      properties:
+        count:
+          type: integer
+        page:
+          type: integer
+        total_pages:
+          type: integer
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuditLog'
+    PaginatedBookingList:
+      type: object
+      properties:
+        count:
+          type: integer
+        page:
+          type: integer
+        total_pages:
+          type: integer
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Booking'
+    PaginatedCommissionList:
+      type: object
+      properties:
+        count:
+          type: integer
+        page:
+          type: integer
+        total_pages:
+          type: integer
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Commission'
+    PaginatedNearbyWorkerList:
+      type: object
+      properties:
+        count:
+          type: integer
+        page:
+          type: integer
+        total_pages:
+          type: integer
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/NearbyWorker'
+    PaginatedNotificationList:
+      type: object
+      properties:
+        count:
+          type: integer
+        page:
+          type: integer
+        total_pages:
+          type: integer
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Notification'
+    PaginatedPaymentList:
+      type: object
+      properties:
+        count:
+          type: integer
+        page:
+          type: integer
+        total_pages:
+          type: integer
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Payment'
+    PaginatedReviewList:
+      type: object
+      properties:
+        count:
+          type: integer
+        page:
+          type: integer
+        total_pages:
+          type: integer
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Review'
+    PaginatedServiceRequestList:
+      type: object
+      properties:
+        count:
+          type: integer
+        page:
+          type: integer
+        total_pages:
+          type: integer
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ServiceRequest'
+    PaginatedWorkerOfferList:
+      type: object
+      properties:
+        count:
+          type: integer
+        page:
+          type: integer
+        total_pages:
+          type: integer
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkerOffer'
+    PaginatedWorkerServiceList:
+      type: object
+      properties:
+        count:
+          type: integer
+        page:
+          type: integer
+        total_pages:
+          type: integer
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkerService'
+    PartyEnum:
+      enum:
+      - customer
+      - worker
+      type: string
+      description: |-
+        * `customer` - Customer
+        * `worker` - Worker
+    PasswordChangeRequest:
+      type: object
+      properties:
+        current_password:
+          type: string
+          writeOnly: true
+          minLength: 1
+        new_password:
+          type: string
+          writeOnly: true
+          minLength: 8
+      required:
+      - current_password
+      - new_password
+    PasswordResetConfirmRequest:
+      type: object
+      properties:
+        uid:
+          type: string
+          minLength: 1
+        token:
+          type: string
+          minLength: 1
+        new_password:
+          type: string
+          writeOnly: true
+          minLength: 8
+      required:
+      - new_password
+      - token
+      - uid
+    PasswordResetRequestRequest:
+      type: object
+      properties:
+        phone:
+          type: string
+          minLength: 1
+        email:
+          type: string
+          format: email
+          minLength: 1
+    PatchedOfferUpdateRequest:
+      type: object
+      properties:
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        estimated_arrival_minutes:
+          type: integer
+          maximum: 1440
+          minimum: 5
+        message:
+          type: string
+          maxLength: 500
+        additional_info:
+          type: string
+          maxLength: 1000
+    PatchedPlatformSettingsRequest:
+      type: object
+      properties:
+        commission_percent:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,2})?$
+    PatchedServiceCategoryRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        slug:
+          type: string
+          minLength: 1
+          maxLength: 110
+          pattern: ^[-a-zA-Z0-9_]+$
+        description:
+          type: string
+        icon:
+          type: string
+          description: Icon key used by the mobile app.
+          maxLength: 100
+        is_active:
+          type: boolean
+        sort_order:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+    PatchedServiceRequestUpdateRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 150
+        description:
+          type: string
+          minLength: 1
+          maxLength: 3000
+        address:
+          type: string
+          minLength: 1
+          maxLength: 255
+        area:
+          type: string
+          description: Public area name, e.g. 'DHA Phase 5'.
+          maxLength: 100
+        preferred_time:
+          type: string
+          format: date-time
+        budget:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          nullable: true
+    PatchedUserRequest:
+      type: object
+      description: The authenticated user's own account (includes private fields).
+      properties:
+        email:
+          nullable: true
+          oneOf:
+          - type: string
+            format: email
+            maxLength: 254
+          - type: string
+            maxLength: 0
+        full_name:
+          type: string
+          minLength: 1
+          maxLength: 150
+        avatar:
+          type: string
+          format: binary
+          nullable: true
+        default_address:
+          type: string
+          maxLength: 255
+    PatchedWorkerProfileRequest:
+      type: object
+      description: The worker's own profile (private view).
+      properties:
+        cnic_number:
+          type: string
+          minLength: 1
+          maxLength: 13
+        bio:
+          type: string
+          maxLength: 2000
+        experience_years:
+          type: integer
+          maximum: 60
+          minimum: 0
+        profile_picture:
+          type: string
+          format: binary
+          nullable: true
+        base_latitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+          nullable: true
+        base_longitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+          nullable: true
+        service_area:
+          type: string
+          description: e.g. Gulberg, Lahore
+          maxLength: 255
+        service_radius_km:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,2})?$
+    PatchedWorkerServiceRequest:
+      type: object
+      properties:
+        category:
+          type: integer
+        description:
+          type: string
+          maxLength: 1000
+        starting_price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          nullable: true
+        is_active:
+          type: boolean
+    Payment:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        booking:
+          type: integer
+          readOnly: true
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          readOnly: true
+        method:
+          allOf:
+          - $ref: '#/components/schemas/MethodEnum'
+          readOnly: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/PaymentStatusEnum'
+          readOnly: true
+          default: pending
+        reference:
+          type: string
+          readOnly: true
+        confirmed_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - amount
+      - booking
+      - confirmed_at
+      - created_at
+      - id
+      - method
+      - reference
+      - status
+      - updated_at
+    PaymentCreateRequest:
+      type: object
+      properties:
+        booking:
+          type: integer
+        method:
+          allOf:
+          - $ref: '#/components/schemas/MethodEnum'
+          default: cash
+      required:
+      - booking
+    PaymentStatusEnum:
+      enum:
+      - pending
+      - completed
+      - failed
+      - disputed
+      type: string
+      description: |-
+        * `pending` - Awaiting confirmation
+        * `completed` - Completed
+        * `failed` - Failed
+        * `disputed` - Disputed
+    PlatformSettings:
+      type: object
+      properties:
+        commission_percent:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,2})?$
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - updated_at
+    PublicWorker:
+      type: object
+      description: 'Public worker card: no phone, CNIC, documents or exact home location.'
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        full_name:
+          type: string
+          readOnly: true
+        profile_picture:
+          type: string
+          format: uri
+          nullable: true
+          readOnly: true
+        bio:
+          type: string
+          readOnly: true
+        experience_years:
+          type: integer
+          readOnly: true
+        service_area:
+          type: string
+          readOnly: true
+          description: e.g. Gulberg, Lahore
+        is_verified:
+          type: boolean
+          readOnly: true
+        average_rating:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,1}(?:\.\d{0,2})?$
+          readOnly: true
+        rating_count:
+          type: integer
+          readOnly: true
+        completed_jobs_count:
+          type: integer
+          readOnly: true
+        services:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkerServiceInline'
+          readOnly: true
+      required:
+      - average_rating
+      - bio
+      - completed_jobs_count
+      - experience_years
+      - full_name
+      - id
+      - is_verified
+      - profile_picture
+      - rating_count
+      - service_area
+      - services
+    RegisterRequest:
+      type: object
+      properties:
+        phone:
+          type: string
+          minLength: 1
+          maxLength: 20
+        password:
+          type: string
+          writeOnly: true
+          minLength: 8
+        full_name:
+          type: string
+          minLength: 1
+          maxLength: 150
+        email:
+          nullable: true
+          oneOf:
+          - type: string
+            format: email
+          - type: string
+            maxLength: 0
+        role:
+          allOf:
+          - $ref: '#/components/schemas/RegisterRoleEnum'
+          default: customer
+        cnic_number:
+          type: string
+          maxLength: 15
+      required:
+      - full_name
+      - password
+      - phone
+    RegisterRoleEnum:
+      enum:
+      - customer
+      - worker
+      type: string
+      description: |-
+        * `customer` - customer
+        * `worker` - worker
+    RejectWorkerRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 500
+      required:
+      - reason
+    Review:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        booking:
+          type: integer
+          readOnly: true
+        worker:
+          type: integer
+          readOnly: true
+        rating:
+          type: integer
+          readOnly: true
+        comment:
+          type: string
+          readOnly: true
+        customer_name:
+          type: string
+          readOnly: true
+        category_name:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - booking
+      - category_name
+      - comment
+      - created_at
+      - customer_name
+      - id
+      - rating
+      - worker
+    ReviewCreateRequest:
+      type: object
+      properties:
+        booking:
+          type: integer
+        rating:
+          type: integer
+          maximum: 5
+          minimum: 1
+        comment:
+          type: string
+          default: ''
+          maxLength: 1000
+      required:
+      - booking
+      - rating
+    ServiceCategory:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 100
+        slug:
+          type: string
+          maxLength: 110
+          pattern: ^[-a-zA-Z0-9_]+$
+        description:
+          type: string
+        icon:
+          type: string
+          description: Icon key used by the mobile app.
+          maxLength: 100
+        is_active:
+          type: boolean
+        sort_order:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - name
+      - updated_at
+    ServiceCategoryRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        slug:
+          type: string
+          minLength: 1
+          maxLength: 110
+          pattern: ^[-a-zA-Z0-9_]+$
+        description:
+          type: string
+        icon:
+          type: string
+          description: Icon key used by the mobile app.
+          maxLength: 100
+        is_active:
+          type: boolean
+        sort_order:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+      required:
+      - name
+    ServiceRequest:
+      type: object
+      description: Full view for the request owner and admins.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        category:
+          type: integer
+          readOnly: true
+        category_name:
+          type: string
+          readOnly: true
+        title:
+          type: string
+          readOnly: true
+        description:
+          type: string
+          readOnly: true
+        latitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+          readOnly: true
+        longitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+          readOnly: true
+        address:
+          type: string
+          readOnly: true
+        area:
+          type: string
+          readOnly: true
+          description: Public area name, e.g. 'DHA Phase 5'.
+        preferred_time:
+          type: string
+          format: date-time
+          readOnly: true
+        budget:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          readOnly: true
+          nullable: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/ServiceStatusEnum'
+          readOnly: true
+        images:
+          type: array
+          items:
+            $ref: '#/components/schemas/ServiceRequestImage'
+          readOnly: true
+        offers_count:
+          type: integer
+          readOnly: true
+        booking_id:
+          type: integer
+          nullable: true
+          readOnly: true
+        matched_workers_count:
+          type: integer
+          nullable: true
+          readOnly: true
+        cancel_reason:
+          type: string
+          readOnly: true
+        cancelled_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - address
+      - area
+      - booking_id
+      - budget
+      - cancel_reason
+      - cancelled_at
+      - category
+      - category_name
+      - created_at
+      - description
+      - id
+      - images
+      - latitude
+      - longitude
+      - matched_workers_count
+      - offers_count
+      - preferred_time
+      - status
+      - title
+      - updated_at
+    ServiceRequestCreateRequest:
+      type: object
+      properties:
+        category:
+          type: integer
+        title:
+          type: string
+          minLength: 1
+          maxLength: 150
+        description:
+          type: string
+          minLength: 1
+          maxLength: 3000
+        latitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+        longitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+        address:
+          type: string
+          minLength: 1
+          maxLength: 255
+        area:
+          type: string
+          description: Public area name, e.g. 'DHA Phase 5'.
+          maxLength: 100
+        preferred_time:
+          type: string
+          format: date-time
+        budget:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          nullable: true
+        images:
+          type: array
+          items:
+            type: string
+            format: binary
+          writeOnly: true
+          maxItems: 5
+      required:
+      - address
+      - category
+      - description
+      - latitude
+      - longitude
+      - preferred_time
+      - title
+    ServiceRequestImage:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        image:
+          type: string
+          format: uri
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - image
+    ServiceStatusEnum:
+      enum:
+      - open
+      - booked
+      - cancelled
+      - expired
+      type: string
+      description: |-
+        * `open` - Open for offers
+        * `booked` - Booked
+        * `cancelled` - Cancelled
+        * `expired` - Expired
+    SuspendUserRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 255
+      required:
+      - reason
+    TokenRefresh:
+      type: object
+      properties:
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+      required:
+      - access
+      - refresh
+    TokenRefreshRequest:
+      type: object
+      properties:
+        refresh:
+          type: string
+          minLength: 1
+      required:
+      - refresh
+    TypeEnum:
+      enum:
+      - new_request
+      - new_offer
+      - negotiation
+      - offer_accepted
+      - offer_rejected
+      - offer_closed
+      - booking_status
+      - booking_cancelled
+      - booking_completed
+      - request_cancelled
+      - payment
+      - review
+      - verification
+      - system
+      type: string
+      description: |-
+        * `new_request` - New nearby request
+        * `new_offer` - New offer
+        * `negotiation` - Negotiation update
+        * `offer_accepted` - Offer accepted
+        * `offer_rejected` - Offer rejected
+        * `offer_closed` - Offer closed
+        * `booking_status` - Booking status
+        * `booking_cancelled` - Booking cancelled
+        * `booking_completed` - Booking completed
+        * `request_cancelled` - Request cancelled
+        * `payment` - Payment
+        * `review` - Review
+        * `verification` - Account verification
+        * `system` - System
+    User:
+      type: object
+      description: The authenticated user's own account (includes private fields).
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        phone:
+          type: string
+          readOnly: true
+        email:
+          nullable: true
+          oneOf:
+          - type: string
+            format: email
+            maxLength: 254
+          - type: string
+            maxLength: 0
+        full_name:
+          type: string
+          maxLength: 150
+        role:
+          allOf:
+          - $ref: '#/components/schemas/UserRoleEnum'
+          readOnly: true
+        avatar:
+          type: string
+          format: uri
+          nullable: true
+        default_address:
+          type: string
+          maxLength: 255
+        worker_profile_id:
+          type: integer
+          nullable: true
+          readOnly: true
+        date_joined:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - date_joined
+      - full_name
+      - id
+      - phone
+      - role
+      - worker_profile_id
+    UserRoleEnum:
+      enum:
+      - customer
+      - worker
+      - admin
+      type: string
+      description: |-
+        * `customer` - Customer
+        * `worker` - Service provider
+        * `admin` - Administrator
+    VerificationStatusEnum:
+      enum:
+      - pending
+      - verified
+      - rejected
+      type: string
+      description: |-
+        * `pending` - Pending review
+        * `verified` - Verified
+        * `rejected` - Rejected
+    WorkerDocument:
+      type: object
+      description: Metadata only. The file itself is private and never returned as
+        a URL.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        document_type:
+          $ref: '#/components/schemas/DocumentTypeEnum'
+        original_filename:
+          type: string
+          readOnly: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/WorkerDocumentStatusEnum'
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - document_type
+      - id
+      - original_filename
+      - status
+    WorkerDocumentRequest:
+      type: object
+      description: Metadata only. The file itself is private and never returned as
+        a URL.
+      properties:
+        document_type:
+          $ref: '#/components/schemas/DocumentTypeEnum'
+        file:
+          type: string
+          format: binary
+          writeOnly: true
+      required:
+      - document_type
+      - file
+    WorkerDocumentStatusEnum:
+      enum:
+      - pending
+      - approved
+      - rejected
+      type: string
+      description: |-
+        * `pending` - Pending
+        * `approved` - Approved
+        * `rejected` - Rejected
+    WorkerOffer:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        request:
+          type: integer
+          readOnly: true
+        worker:
+          allOf:
+          - $ref: '#/components/schemas/PublicWorker'
+          readOnly: true
+        initial_price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          readOnly: true
+        current_price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          readOnly: true
+          description: Latest price on the table in the negotiation.
+        awaiting:
+          allOf:
+          - $ref: '#/components/schemas/PartyEnum'
+          readOnly: true
+          description: |-
+            Which party must respond next.
+
+            * `customer` - Customer
+            * `worker` - Worker
+        estimated_arrival_minutes:
+          type: integer
+          readOnly: true
+        message:
+          type: string
+          readOnly: true
+        additional_info:
+          type: string
+          readOnly: true
+        distance_km:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,2})?$
+          readOnly: true
+          nullable: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/WorkerOfferStatusEnum'
+          readOnly: true
+        negotiations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Negotiation'
+          readOnly: true
+        booking_id:
+          type: integer
+          nullable: true
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - additional_info
+      - awaiting
+      - booking_id
+      - created_at
+      - current_price
+      - distance_km
+      - estimated_arrival_minutes
+      - id
+      - initial_price
+      - message
+      - negotiations
+      - request
+      - status
+      - updated_at
+      - worker
+    WorkerOfferStatusEnum:
+      enum:
+      - pending
+      - accepted
+      - rejected
+      - withdrawn
+      - closed
+      type: string
+      description: |-
+        * `pending` - Pending
+        * `accepted` - Accepted
+        * `rejected` - Rejected by customer
+        * `withdrawn` - Withdrawn by worker
+        * `closed` - Closed
+    WorkerProfile:
+      type: object
+      description: The worker's own profile (private view).
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        full_name:
+          type: string
+          readOnly: true
+        phone:
+          type: string
+          readOnly: true
+        cnic_number:
+          type: string
+          maxLength: 13
+        bio:
+          type: string
+          maxLength: 2000
+        experience_years:
+          type: integer
+          maximum: 60
+          minimum: 0
+        profile_picture:
+          type: string
+          format: uri
+          nullable: true
+        base_latitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+          nullable: true
+        base_longitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+          nullable: true
+        service_area:
+          type: string
+          description: e.g. Gulberg, Lahore
+          maxLength: 255
+        service_radius_km:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,2})?$
+        is_available:
+          type: boolean
+          readOnly: true
+        verification_status:
+          allOf:
+          - $ref: '#/components/schemas/VerificationStatusEnum'
+          readOnly: true
+        rejection_reason:
+          type: string
+          readOnly: true
+        verified_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        average_rating:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,1}(?:\.\d{0,2})?$
+          readOnly: true
+        rating_count:
+          type: integer
+          readOnly: true
+        completed_jobs_count:
+          type: integer
+          readOnly: true
+        services:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkerServiceInline'
+          readOnly: true
+        documents_uploaded:
+          type: array
+          items:
+            type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - average_rating
+      - cnic_number
+      - completed_jobs_count
+      - created_at
+      - documents_uploaded
+      - full_name
+      - id
+      - is_available
+      - phone
+      - rating_count
+      - rejection_reason
+      - services
+      - verification_status
+      - verified_at
+    WorkerService:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        category:
+          type: integer
+        category_name:
+          type: string
+          readOnly: true
+        description:
+          type: string
+          maxLength: 1000
+        starting_price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          nullable: true
+        is_active:
+          type: boolean
+        worker_id:
+          type: integer
+          readOnly: true
+        worker_name:
+          type: string
+          readOnly: true
+        worker_rating:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,1}(?:\.\d{0,2})?$
+          readOnly: true
+        worker_completed_jobs:
+          type: integer
+          readOnly: true
+        worker_experience_years:
+          type: integer
+          readOnly: true
+        worker_is_verified:
+          type: boolean
+          readOnly: true
+        worker_service_area:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - category
+      - category_name
+      - created_at
+      - id
+      - worker_completed_jobs
+      - worker_experience_years
+      - worker_id
+      - worker_is_verified
+      - worker_name
+      - worker_rating
+      - worker_service_area
+    WorkerServiceInline:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        category:
+          type: integer
+        category_name:
+          type: string
+          readOnly: true
+        description:
+          type: string
+          maxLength: 1000
+        starting_price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          nullable: true
+        is_active:
+          type: boolean
+      required:
+      - category
+      - category_name
+      - id
+    WorkerServiceInlineRequest:
+      type: object
+      properties:
+        category:
+          type: integer
+        description:
+          type: string
+          maxLength: 1000
+        starting_price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          nullable: true
+        is_active:
+          type: boolean
+      required:
+      - category
+    WorkerServiceRequest:
+      type: object
+      properties:
+        category:
+          type: integer
+        description:
+          type: string
+          maxLength: 1000
+        starting_price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          nullable: true
+        is_active:
+          type: boolean
+      required:
+      - category
+  securitySchemes:
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

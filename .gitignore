@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Django
+.env
+*.sqlite3
+media/
+private_media/
+staticfiles/
+
+# Editors / OS
+.idea/
+.vscode/
+.DS_Store
