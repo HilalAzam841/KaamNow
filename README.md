@@ -85,7 +85,7 @@ It uses the admin API from Stages 1 and 2, so the backend is unchanged in this s
 
 | Feature | Where |
 |---|---|
-| Whole customer and worker app in Urdu, right to left, in the Noto Nastaliq Urdu font; switch on the login, sign-up and account screens; remembered on the device | `app/lib/l10n/`, `app/lib/core/locale_controller.dart` |
+| Whole customer and worker app in Urdu, right to left, in the Noto Nastaliq Urdu font; English by default (the browser language is ignored); a language menu in the top bar of every screen switches to Urdu, remembered on the device | `app/lib/l10n/`, `app/lib/core/locale_controller.dart` |
 | Admin dashboard stays in English for admin accounts | `app/lib/app.dart` |
 | The app sends `Accept-Language`; server error messages come back in Urdu (`LocaleMiddleware`, gettext) | `config/settings.py`, `locale/ur/` |
 | Each user's language is saved on the account (`language`: `en` or `ur`, `PATCH /auth/me/`) and alerts are written in the recipient's language, whoever triggered them | `apps/accounts/models.py`, `apps/notifications/services.py`, `apps/common/i18n.py` |

@@ -6,6 +6,7 @@ import '../../core/format.dart';
 import '../../core/session.dart';
 import '../../models/models.dart';
 import '../widgets/common.dart';
+import '../widgets/language_button.dart';
 import '../../l10n/l10n.dart';
 
 IconData categoryIcon(String name) {
@@ -33,7 +34,7 @@ class CustomerHomeScreen extends StatelessWidget {
     final session = context.watch<Session>();
     final theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text(context.t.salam(session.user?.firstName ?? ''))),
+      appBar: AppBar(title: Text(context.t.salam(session.user?.firstName ?? '')), actions: const [LanguageButton()]),
       floatingActionButton: FloatingActionButton.extended(
         key: const Key('new-request'),
         onPressed: () => context.push('/requests/new'),

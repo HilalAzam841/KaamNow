@@ -5,6 +5,7 @@ import '../../core/format.dart';
 import '../../core/session.dart';
 import '../../models/models.dart';
 import '../widgets/common.dart';
+import '../widgets/language_button.dart';
 import '../widgets/offer_widgets.dart';
 import '../../l10n/l10n.dart';
 
@@ -16,7 +17,7 @@ class WorkerPublicScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final api = context.read<Session>().api;
     return Scaffold(
-      appBar: AppBar(title: Text(context.t.workerProfile)),
+      appBar: AppBar(title: Text(context.t.workerProfile), actions: const [LanguageButton()]),
       body: Loader<(PublicWorker, Paged<Review>)>(
         load: () async => (await api.worker(id), await api.workerReviews(id)),
         builder: (context, data, reload) {

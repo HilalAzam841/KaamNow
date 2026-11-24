@@ -13,6 +13,7 @@ import '../../core/location.dart';
 import '../../core/session.dart';
 import '../../models/models.dart';
 import '../widgets/common.dart';
+import '../widgets/language_button.dart';
 import '../widgets/map_view.dart';
 import '../widgets/offer_widgets.dart';
 import '../../l10n/l10n.dart';
@@ -239,6 +240,7 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
             icon: const Icon(Icons.chat_bubble_outline),
             onPressed: () => context.push('/bookings/${b.id}/chat'),
           ),
+        const LanguageButton(),
         if (b != null)
           PopupMenuButton<String>(
             onSelected: (v) {

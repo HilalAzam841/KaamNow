@@ -8,6 +8,7 @@ import '../../core/format.dart';
 import '../../core/session.dart';
 import '../../models/models.dart';
 import '../widgets/common.dart';
+import '../widgets/language_button.dart';
 import '../../l10n/l10n.dart';
 
 /// Booking chat. Live over WebSocket, with REST for history and as a fallback for sending.
@@ -115,6 +116,7 @@ class _ChatScreenState extends State<ChatScreen> {
             child: Icon(Icons.circle, size: 10, color: socket.connected ? Colors.green : Colors.grey),
           ),
         ),
+        const LanguageButton(),
       ]),
       body: PageBody(
         child: Column(children: [

@@ -77,7 +77,7 @@ class AccountScreen extends StatelessWidget {
     final u = session.user;
     if (u == null) return const SizedBox();
     return Scaffold(
-      appBar: AppBar(title: Text(context.t.tabAccount)),
+      appBar: AppBar(title: Text(context.t.tabAccount), actions: const [LanguageButton()]),
       body: PageBody(
         child: ListView(children: [
           ListTile(
@@ -98,11 +98,6 @@ class AccountScreen extends StatelessWidget {
             ListTile(leading: const Icon(Icons.workspace_premium), title: Text(context.t.plans), onTap: () => context.push('/worker/plans')),
           ],
           ListTile(leading: const Icon(Icons.support_agent), title: Text(context.t.helpAndComplaints), onTap: () => context.push('/complaints')),
-          ListTile(
-            leading: const Icon(Icons.translate),
-            title: Text(context.t.language),
-            trailing: const LanguageButton(),
-          ),
           ListTile(leading: const Icon(Icons.lock), title: Text(context.t.changePassword), onTap: () => _changePassword(context)),
           ListTile(
             key: const Key('logout'),

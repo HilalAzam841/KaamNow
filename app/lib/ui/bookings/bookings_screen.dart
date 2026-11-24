@@ -6,6 +6,7 @@ import '../../core/format.dart';
 import '../../core/session.dart';
 import '../../models/models.dart';
 import '../widgets/common.dart';
+import '../widgets/language_button.dart';
 import '../../l10n/l10n.dart';
 
 class BookingsScreen extends StatefulWidget {
@@ -22,7 +23,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
     final session = context.read<Session>();
     final isWorker = session.user?.isWorker == true;
     return Scaffold(
-      appBar: AppBar(title: Text(context.t.tabBookings)),
+      appBar: AppBar(title: Text(context.t.tabBookings), actions: const [LanguageButton()]),
       body: Column(children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),

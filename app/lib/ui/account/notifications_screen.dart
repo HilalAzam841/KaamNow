@@ -6,6 +6,7 @@ import '../../core/format.dart';
 import '../../core/session.dart';
 import '../../models/models.dart';
 import '../widgets/common.dart';
+import '../widgets/language_button.dart';
 import '../../l10n/l10n.dart';
 
 /// Where a notification should take the user, or null.
@@ -38,6 +39,7 @@ class NotificationsScreen extends StatelessWidget {
           },
           child: Text(context.t.markAllRead),
         ),
+        const LanguageButton(),
       ]),
       body: Loader<Paged<AppNotification>>(
         key: key,

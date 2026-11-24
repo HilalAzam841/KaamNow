@@ -6,6 +6,7 @@ import '../../core/format.dart';
 import '../../core/session.dart';
 import '../../models/models.dart';
 import '../widgets/common.dart';
+import '../widgets/language_button.dart';
 import '../../l10n/l10n.dart';
 
 class MyOffersScreen extends StatefulWidget {
@@ -21,7 +22,7 @@ class _MyOffersScreenState extends State<MyOffersScreen> {
   Widget build(BuildContext context) {
     final api = context.read<Session>().api;
     return Scaffold(
-      appBar: AppBar(title: Text(context.t.tabMyOffers)),
+      appBar: AppBar(title: Text(context.t.tabMyOffers), actions: const [LanguageButton()]),
       body: Column(children: [
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,

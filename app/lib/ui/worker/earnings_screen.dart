@@ -5,6 +5,7 @@ import '../../core/format.dart';
 import '../../core/session.dart';
 import '../../models/models.dart';
 import '../widgets/common.dart';
+import '../widgets/language_button.dart';
 import '../../l10n/l10n.dart';
 
 class EarningsScreen extends StatelessWidget {
@@ -27,7 +28,7 @@ class EarningsScreen extends StatelessWidget {
           ),
         );
     return Scaffold(
-      appBar: AppBar(title: Text(context.t.earnings)),
+      appBar: AppBar(title: Text(context.t.earnings), actions: const [LanguageButton()]),
       body: Loader<EarningsSummary>(
         load: api.earnings,
         builder: (context, e, reload) => RefreshIndicator(

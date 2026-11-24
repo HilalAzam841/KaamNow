@@ -6,6 +6,7 @@ import '../../core/format.dart';
 import '../../core/session.dart';
 import '../../models/models.dart';
 import '../widgets/common.dart';
+import '../widgets/language_button.dart';
 import '../../l10n/l10n.dart';
 
 Map<String, String> complaintCategories(AppLocalizations t) => {
@@ -27,7 +28,7 @@ class ComplaintsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final api = context.read<Session>().api;
     return Scaffold(
-      appBar: AppBar(title: Text(context.t.helpAndComplaints)),
+      appBar: AppBar(title: Text(context.t.helpAndComplaints), actions: const [LanguageButton()]),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => context.push('/complaints/new'),
         icon: const Icon(Icons.add),
@@ -96,7 +97,7 @@ class _NewComplaintScreenState extends State<NewComplaintScreen> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(title: Text(widget.bookingId == null ? context.t.reportProblem : context.t.reportBooking(widget.bookingId!))),
+        appBar: AppBar(title: Text(widget.bookingId == null ? context.t.reportProblem : context.t.reportBooking(widget.bookingId!)), actions: const [LanguageButton()]),
         body: PageBody(
           child: Form(
             key: _form,

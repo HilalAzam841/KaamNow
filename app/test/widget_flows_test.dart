@@ -10,6 +10,8 @@ import 'package:kaamnow/ui/worker/job_detail_screen.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
+import 'package:kaamnow/core/locale_controller.dart';
+
 import 'helpers.dart';
 
 /// Hosts one screen with a router so pushes / replacements can be asserted.
@@ -17,7 +19,13 @@ Widget host(Session session, String initial, Map<String, Widget Function(GoRoute
   final router = GoRouter(initialLocation: initial, routes: [
     for (final e in routes.entries) GoRoute(path: e.key, builder: (_, s) => e.value(s)),
   ]);
-  return ChangeNotifierProvider.value(value: session, child: MaterialApp.router(localizationsDelegates: AppLocalizations.localizationsDelegates, routerConfig: router));
+  return MultiProvider(
+    providers: [
+      ChangeNotifierProvider.value(value: session),
+      ChangeNotifierProvider(create: (_) => LocaleController()),
+    ],
+    child: MaterialApp.router(localizationsDelegates: AppLocalizations.localizationsDelegates, routerConfig: router),
+  );
 }
 
 void main() {
