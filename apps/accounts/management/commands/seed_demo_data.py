@@ -10,6 +10,7 @@ from decimal import Decimal
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
+from django.utils import timezone
 
 from apps.accounts.models import User, WorkerProfile
 from apps.catalog.models import ServiceCategory, WorkerService
@@ -51,11 +52,17 @@ class Command(BaseCommand):
             customer.set_password(DEMO_PASSWORD)
             customer.save()
 
+        # Demo numbers are not real phones, so they count as already confirmed.
+        User.objects.filter(phone__in=["+923000000001", "+923000000002"], phone_verified_at__isnull=True).update(
+            phone_verified_at=timezone.now()
+        )
+
         for name, phone, cnic, lat, lng, area, slugs, exp in WORKERS:
             user, created = User.objects.get_or_create(phone=phone, defaults={"full_name": name, "role": User.Role.WORKER})
             if created:
                 user.set_password(DEMO_PASSWORD)
                 user.save()
+            User.objects.filter(pk=user.pk, phone_verified_at__isnull=True).update(phone_verified_at=timezone.now())
             profile, _ = WorkerProfile.objects.update_or_create(
                 user=user,
                 defaults={

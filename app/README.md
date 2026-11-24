@@ -95,7 +95,7 @@ On the backend, add the app's origin to `CORS_ALLOWED_ORIGINS` (for example
 
 ```bash
 flutter analyze
-flutter test          # 62 unit and widget tests (API client, models, routing, key screens, admin dashboard, Urdu, install, notifications)
+flutter test          # 68 unit and widget tests (API client, models, routing, key screens, admin dashboard, Urdu, install, notifications, phone confirmation)
 ```
 
 `e2e/` drives the real web build against a running backend in Chromium, through the whole job

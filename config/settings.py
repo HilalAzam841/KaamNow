@@ -188,6 +188,7 @@ REST_FRAMEWORK = {
         "user": env("THROTTLE_USER", "600/min"),
         "auth": env("THROTTLE_AUTH", "10/min"),
         "password_reset": env("THROTTLE_PASSWORD_RESET", "5/hour"),
+        "phone_code": env("THROTTLE_PHONE_CODE", "10/hour"),
         "otp": env("THROTTLE_OTP", "10/min"),
         "offers": env("THROTTLE_OFFERS", "60/min"),
         "chat": env("THROTTLE_CHAT", "60/min"),
@@ -257,6 +258,7 @@ CELERY_BEAT_SCHEDULE = {
     "expire-stale-online-payments": {"task": "apps.billing.tasks.expire_stale_online_payments", "schedule": 10 * 60},
     "expire-subscriptions-and-featured": {"task": "apps.billing.tasks.expire_subscriptions_and_featured", "schedule": 30 * 60},
     "purge-old-locations": {"task": "apps.tracking.tasks.purge_old_locations", "schedule": 24 * 60 * 60},
+    "purge-old-phone-codes": {"task": "apps.accounts.tasks.purge_old_phone_codes", "schedule": 6 * 60 * 60},
 }
 
 # --- Firebase Cloud Messaging -----------------------------------------------
@@ -343,7 +345,24 @@ KAAMNOW = {
     "MAX_FEATURED_PER_CATEGORY": int(env("MAX_FEATURED_PER_CATEGORY", "5")),
     # Geographic backend: "haversine" today, "postgis" planned.
     "GEO_BACKEND": env("GEO_BACKEND", "haversine"),
+    # SMS codes for confirming phone numbers and resetting passwords.
+    "PHONE_CODE_LENGTH": 6,
+    "PHONE_CODE_TTL_MINUTES": int(env("PHONE_CODE_TTL_MINUTES", "10")),
+    "PHONE_CODE_MAX_ATTEMPTS": int(env("PHONE_CODE_MAX_ATTEMPTS", "5")),
+    "PHONE_CODE_RESEND_SECONDS": int(env("PHONE_CODE_RESEND_SECONDS", "60")),
+    "PHONE_CODE_DAILY_LIMIT": int(env("PHONE_CODE_DAILY_LIMIT", "5")),
 }
+
+# --- SMS (phone verification and password reset codes) -----------------------
+# "console" writes messages to the log (development). "twilio" sends real SMS through Twilio.
+SMS_BACKEND = env("SMS_BACKEND", "console")
+TWILIO_ACCOUNT_SID = env("TWILIO_ACCOUNT_SID", "")
+TWILIO_AUTH_TOKEN = env("TWILIO_AUTH_TOKEN", "")
+# A Twilio phone number in +E.164 form, or an approved alphanumeric sender ID such as "KaamNow".
+TWILIO_FROM = env("TWILIO_FROM", "")
+# Customers and workers must confirm their number before posting jobs or sending offers. On by
+# default once a real SMS service is set up; off with the console backend so local setups work.
+PHONE_VERIFICATION_REQUIRED = env_bool("PHONE_VERIFICATION_REQUIRED", SMS_BACKEND != "console")
 
 # --- Email (password reset) -------------------------------------------------
 EMAIL_BACKEND = env("EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend")

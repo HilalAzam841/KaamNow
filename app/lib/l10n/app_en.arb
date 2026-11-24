@@ -57,6 +57,7 @@
   "atLeast5": "At least 5 characters",
   "atLeast8": "At least 8 characters",
   "back": "Back",
+  "backToLogin": "Back to log in",
   "baseLocation": "Base location",
   "baseLocationHint": "Jobs are matched by distance from here. Customers never see it.",
   "book": "Book",
@@ -145,6 +146,14 @@
   "close": "Close",
   "cnicNumber": "CNIC number",
   "cnicPrivate": "CNIC images are private. Only KaamNow staff can see them.",
+  "codeSentTo": "Enter the code we sent to {phone}.",
+  "@codeSentTo": {
+    "placeholders": {
+      "phone": {
+        "type": "String"
+      }
+    }
+  },
   "comingSoon": "{method} (coming soon)",
   "@comingSoon": {
     "placeholders": {
@@ -196,6 +205,7 @@
   "completionCode": "Completion code",
   "completionCodeHint": "Give this code to the worker only when the job is done to your satisfaction.",
   "confirm": "Confirm",
+  "confirmAction": "Confirm",
   "confirmCashAmount": "Confirm you received {amount} in cash.",
   "@confirmCashAmount": {
     "placeholders": {
@@ -203,7 +213,16 @@
     }
   },
   "confirmJobDone": "Confirm job is done",
+  "confirmNumberHint": "We will send a 6-digit code by SMS to {phone}. This keeps KaamNow safe for customers and workers.",
+  "@confirmNumberHint": {
+    "placeholders": {
+      "phone": {
+        "type": "String"
+      }
+    }
+  },
   "confirmOncePaid": "Confirm once the customer has paid you.",
+  "confirmYourNumber": "Confirm your phone number",
   "contact": "Contact",
   "continueAction": "Continue",
   "couldNotGetLocation": "Could not get your location.",
@@ -292,6 +311,7 @@
   "enterPassword": "Enter your password",
   "enterPhone": "Enter your phone number",
   "enterPrice": "Enter a price",
+  "enterTheCode": "Enter the code from the SMS.",
   "enterValidPhone": "Enter a valid phone number",
   "etaMinutes": "~{n} min",
   "@etaMinutes": {
@@ -301,7 +321,18 @@
   },
   "filterActive": "Active",
   "finishPayingNewTab": "Finish paying in the new tab. Your plan activates once it is confirmed.",
+  "forgotCodeHint": "If {phone} has a KaamNow account, we have sent it a code by SMS.",
+  "@forgotCodeHint": {
+    "placeholders": {
+      "phone": {
+        "type": "String"
+      }
+    }
+  },
+  "forgotEmailOnly": "If this number has an account with an email address, we have emailed a link to reset the password.",
+  "forgotHint": "Enter your phone number. We will send you a code by SMS to choose a new password.",
   "forgotPassword": "Forgot password?",
+  "forgotTitle": "Forgot your password?",
   "free": "Free",
   "fromPrice": "from {price}",
   "@fromPrice": {
@@ -493,6 +524,7 @@
   "noServicesYet": "No services yet",
   "notNow": "Not now",
   "noteOptional": "Note (optional)",
+  "numberConfirmed": "Phone number confirmed.",
   "off": "Off",
   "offerSent": "Offer sent. The customer will be notified.",
   "offerServices": "Offer services",
@@ -548,6 +580,7 @@
   },
   "payment": "Payment",
   "paymentConfirmed": "Payment confirmed.",
+  "paymentPageFailed": "The payment page could not be opened. Check your connection and try again.",
   "paymentPending": "{method} payment of {amount} pending",
   "@paymentPending": {
     "placeholders": {
@@ -555,10 +588,12 @@
       "amount": {}
     }
   },
+  "paymentWindowClosed": "This page updates once the gateway confirms the payment.",
   "phoneNumber": "Phone number",
   "photoUpdated": "Photo updated.",
   "photosOptional": "Photos (optional)",
   "pinPlaced": "Pin placed. Tap the map to move it.",
+  "planPaymentWindowClosed": "Your plan activates once the payment is confirmed.",
   "plans": "Plans",
   "postAJob": "Post a job",
   "postJobGetOffers": "Post job and get offers",
@@ -627,6 +662,14 @@
   "request": "Request",
   "requestCancelled": "Request cancelled.",
   "requestFailed": "Request failed.",
+  "resendIn": "Send a new code in {seconds}s",
+  "@resendIn": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
   "resetLinkIncomplete": "This reset link is incomplete",
   "resetLinkIncompleteHint": "Open the link from the email again, or ask for a new one from the login screen.",
   "resetLinkSent": "If that number has an account with an email, a reset link is on its way.",
@@ -656,7 +699,10 @@
   "saveNewPassword": "Save new password",
   "saveProfile": "Save profile",
   "saving": "Saving…",
+  "securePayment": "Secure payment",
   "send": "Send",
+  "sendCode": "Send code",
+  "sendNewCode": "Send a new code",
   "sendOffer": "Send offer",
   "sendReport": "Send report",
   "sendResetLink": "Send reset link",
@@ -676,6 +722,7 @@
   "shareLiveLocation": "Share my live location with the customer",
   "shortBio": "Short bio",
   "sixDigitCode": "6-digit code from the customer",
+  "smsCode": "6-digit code",
   "somethingWentWrong": "Something went wrong.",
   "somethingWrong": "Something went wrong.",
   "sortFastest": "Fastest arrival",
@@ -814,6 +861,7 @@
       "area": {}
     }
   },
+  "wrongNumberLogOut": "Not your number? Log out",
   "yearsExp": "{n} yrs exp",
   "@yearsExp": {
     "placeholders": {

@@ -34,6 +34,8 @@ def _isolated_settings(settings, tmp_path, monkeypatch):
     settings.MEDIA_ROOT = tmp_path / "media"
     settings.PRIVATE_MEDIA_ROOT = tmp_path / "private"
     settings.PASSWORD_HASHERS = ["django.contrib.auth.hashers.MD5PasswordHasher"]
+    settings.SMS_BACKEND = "console"
+    settings.PHONE_VERIFICATION_REQUIRED = False
     rates = dict(settings.REST_FRAMEWORK["DEFAULT_THROTTLE_RATES"])
     rates.update({k: "10000/min" for k in rates})
     settings.REST_FRAMEWORK = {**settings.REST_FRAMEWORK, "DEFAULT_THROTTLE_RATES": rates}

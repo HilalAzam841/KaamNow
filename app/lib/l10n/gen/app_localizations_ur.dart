@@ -104,6 +104,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String get back => 'واپس';
 
   @override
+  String get backToLogin => 'لاگ ان پر واپس جائیں';
+
+  @override
   String get baseLocation => 'بنیادی لوکیشن';
 
   @override
@@ -247,6 +250,11 @@ class AppLocalizationsUr extends AppLocalizations {
       'شناختی کارڈ کی تصاویر نجی ہیں۔ انہیں صرف کام ناؤ کا عملہ دیکھ سکتا ہے۔';
 
   @override
+  String codeSentTo(String phone) {
+    return '$phone پر بھیجا گیا کوڈ درج کریں۔';
+  }
+
+  @override
   String comingSoon(Object method) {
     return '$method (جلد آ رہا ہے)';
   }
@@ -313,6 +321,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String get confirm => 'تصدیق کریں';
 
   @override
+  String get confirmAction => 'کنفرم کریں';
+
+  @override
   String confirmCashAmount(Object amount) {
     return 'تصدیق کریں کہ آپ کو $amount نقد مل گئے۔';
   }
@@ -321,7 +332,15 @@ class AppLocalizationsUr extends AppLocalizations {
   String get confirmJobDone => 'کام مکمل ہونے کی تصدیق کریں';
 
   @override
+  String confirmNumberHint(String phone) {
+    return 'ہم $phone پر SMS کے ذریعے 6 ہندسوں کا کوڈ بھیجیں گے۔ اس سے کام ناؤ گاہکوں اور کاریگروں کے لیے محفوظ رہتا ہے۔';
+  }
+
+  @override
   String get confirmOncePaid => 'گاہک کی ادائیگی ملنے پر تصدیق کریں۔';
+
+  @override
+  String get confirmYourNumber => 'اپنا فون نمبر کنفرم کریں';
 
   @override
   String get contact => 'رابطہ';
@@ -485,6 +504,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String get enterPrice => 'قیمت درج کریں';
 
   @override
+  String get enterTheCode => 'SMS میں آیا کوڈ درج کریں۔';
+
+  @override
   String get enterValidPhone => 'درست فون نمبر درج کریں';
 
   @override
@@ -500,7 +522,23 @@ class AppLocalizationsUr extends AppLocalizations {
       'نئے ٹیب میں ادائیگی مکمل کریں۔ تصدیق ہوتے ہی آپ کا پلان فعال ہو جائے گا۔';
 
   @override
+  String forgotCodeHint(String phone) {
+    return 'اگر $phone کا کام ناؤ اکاؤنٹ ہے تو ہم نے اس پر SMS سے کوڈ بھیج دیا ہے۔';
+  }
+
+  @override
+  String get forgotEmailOnly =>
+      'اگر اس نمبر کے اکاؤنٹ میں ای میل موجود ہے تو ہم نے پاس ورڈ ری سیٹ کرنے کا لنک ای میل کر دیا ہے۔';
+
+  @override
+  String get forgotHint =>
+      'اپنا فون نمبر درج کریں۔ نیا پاس ورڈ بنانے کے لیے ہم آپ کو SMS سے کوڈ بھیجیں گے۔';
+
+  @override
   String get forgotPassword => 'پاس ورڈ بھول گئے؟';
+
+  @override
+  String get forgotTitle => 'پاس ورڈ بھول گئے؟';
 
   @override
   String get free => 'مفت';
@@ -832,6 +870,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String get noteOptional => 'نوٹ (اختیاری)';
 
   @override
+  String get numberConfirmed => 'فون نمبر کنفرم ہو گیا۔';
+
+  @override
   String get off => 'بند';
 
   @override
@@ -923,9 +964,17 @@ class AppLocalizationsUr extends AppLocalizations {
   String get paymentConfirmed => 'ادائیگی کی تصدیق ہو گئی۔';
 
   @override
+  String get paymentPageFailed =>
+      'ادائیگی کا صفحہ نہیں کھل سکا۔ کنکشن چیک کر کے دوبارہ کوشش کریں۔';
+
+  @override
   String paymentPending(Object method, Object amount) {
     return '$amount کی $method ادائیگی زیرِ التوا';
   }
+
+  @override
+  String get paymentWindowClosed =>
+      'گیٹ وے کی تصدیق کے بعد یہ صفحہ اپ ڈیٹ ہو جائے گا۔';
 
   @override
   String get phoneNumber => 'فون نمبر';
@@ -938,6 +987,10 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get pinPlaced => 'پن لگ گیا۔ جگہ بدلنے کے لیے نقشے پر ٹیپ کریں۔';
+
+  @override
+  String get planPaymentWindowClosed =>
+      'ادائیگی کی تصدیق ہوتے ہی آپ کا پلان فعال ہو جائے گا۔';
 
   @override
   String get plans => 'پلان';
@@ -1068,6 +1121,11 @@ class AppLocalizationsUr extends AppLocalizations {
   String get requestFailed => 'درخواست ناکام رہی۔';
 
   @override
+  String resendIn(int seconds) {
+    return '$seconds سیکنڈ بعد نیا کوڈ بھیجیں';
+  }
+
+  @override
   String get resetLinkIncomplete => 'یہ ری سیٹ لنک نامکمل ہے';
 
   @override
@@ -1118,7 +1176,16 @@ class AppLocalizationsUr extends AppLocalizations {
   String get saving => 'محفوظ ہو رہا ہے…';
 
   @override
+  String get securePayment => 'محفوظ ادائیگی';
+
+  @override
   String get send => 'بھیجیں';
+
+  @override
+  String get sendCode => 'کوڈ بھیجیں';
+
+  @override
+  String get sendNewCode => 'نیا کوڈ بھیجیں';
 
   @override
   String get sendOffer => 'پیشکش بھیجیں';
@@ -1166,6 +1233,9 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get sixDigitCode => 'گاہک سے ملا 6 ہندسوں کا کوڈ';
+
+  @override
+  String get smsCode => '6 ہندسوں کا کوڈ';
 
   @override
   String get somethingWentWrong => 'کچھ غلط ہو گیا۔';
@@ -1464,6 +1534,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String worksIn(Object area) {
     return 'کام کا علاقہ: $area';
   }
+
+  @override
+  String get wrongNumberLogOut => 'یہ آپ کا نمبر نہیں؟ لاگ آؤٹ کریں';
 
   @override
   String yearsExp(Object n) {

@@ -23,7 +23,9 @@ import 'ui/account/complaints_screen.dart';
 import 'ui/account/notifications_screen.dart';
 import 'ui/auth/login_screen.dart';
 import 'ui/auth/register_screen.dart';
+import 'ui/auth/forgot_password_screen.dart';
 import 'ui/auth/reset_password_screen.dart';
+import 'ui/auth/verify_phone_screen.dart';
 import 'ui/bookings/booking_detail_screen.dart';
 import 'ui/bookings/bookings_screen.dart';
 import 'ui/bookings/chat_screen.dart';
@@ -40,7 +42,7 @@ import 'ui/worker/my_offers_screen.dart';
 import 'ui/worker/plans_screen.dart';
 import 'ui/worker/worker_profile_screen.dart';
 
-const _authRoutes = {'/login', '/register'};
+const _authRoutes = {'/login', '/register', '/forgot-password'};
 
 /// Opened from the password-reset email; works signed in or out.
 const _publicRoutes = {'/reset-password'};
@@ -54,6 +56,8 @@ GoRouter buildRouter(Session session) {
       GoRoute(path: '/splash', builder: (_, _) => const Scaffold(body: Center(child: CircularProgressIndicator()))),
       GoRoute(path: '/login', builder: (_, _) => const LoginScreen()),
       GoRoute(path: '/register', builder: (_, _) => const RegisterScreen()),
+      GoRoute(path: '/forgot-password', builder: (_, _) => const ForgotPasswordScreen()),
+      GoRoute(path: '/verify-phone', builder: (_, _) => const VerifyPhoneScreen()),
       GoRoute(
         path: '/reset-password',
         builder: (_, s) => ResetPasswordScreen(
@@ -133,6 +137,8 @@ String? redirectFor(Session session, String location) {
     case SessionStatus.signedIn:
       final user = session.user!;
       final home = user.isWorker ? '/jobs' : (user.isCustomer ? '/' : '/admin');
+      if (session.needsPhoneVerification) return path == '/verify-phone' ? null : '/verify-phone';
+      if (path == '/verify-phone') return home;
       if (isAuthRoute || path == '/splash') {
         final target = from != null && from.startsWith('/') && !from.startsWith('//') ? from : null;
         if (target != null && redirectFor(session, target) == null) return target;

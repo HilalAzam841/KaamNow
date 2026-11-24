@@ -9,6 +9,26 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+#: apps/accounts/phone.py
+msgid "Confirm your phone number first. We will send you a code by SMS."
+msgstr "پہلے اپنا فون نمبر کنفرم کریں۔ ہم آپ کو SMS سے کوڈ بھیجیں گے۔"
+
+#: apps/accounts/phone.py
+msgid "Please wait %(seconds)s seconds before asking for a new code."
+msgstr "نیا کوڈ مانگنے سے پہلے %(seconds)s سیکنڈ انتظار کریں۔"
+
+#: apps/accounts/phone.py
+msgid "Too many codes requested for this number today. Please try again tomorrow."
+msgstr "آج اس نمبر کے لیے بہت زیادہ کوڈ مانگے جا چکے ہیں۔ کل دوبارہ کوشش کریں۔"
+
+#: apps/accounts/phone.py
+msgid "Your KaamNow code is %(code)s. It expires in %(minutes)s minutes. Never share it with anyone."
+msgstr "آپ کا کام ناؤ کوڈ %(code)s ہے۔ یہ %(minutes)s منٹ میں ختم ہو جائے گا۔ یہ کوڈ کسی کو نہ بتائیں۔"
+
+#: apps/accounts/phone.py
+msgid "We could not send the SMS. Please try again in a few minutes."
+msgstr "SMS نہیں بھیجا جا سکا۔ چند منٹ بعد دوبارہ کوشش کریں۔"
+
 #: apps/accounts/serializers.py
 msgid "This email is already in use."
 msgstr "یہ ای میل پہلے سے استعمال میں ہے۔"
@@ -97,6 +117,30 @@ msgstr "آن لائن ہونے سے پہلے کم از کم ایک سروس شا
 #: apps/accounts/services.py
 msgid "You cannot suspend your own account."
 msgstr "آپ اپنا اکاؤنٹ معطل نہیں کر سکتے۔"
+
+#: apps/accounts/views.py
+msgid "If an account matches, password reset instructions have been sent."
+msgstr "اگر اکاؤنٹ موجود ہے تو پاس ورڈ ری سیٹ کرنے کی ہدایات بھیج دی گئی ہیں۔"
+
+#: apps/accounts/views.py
+msgid "Wrong or expired code."
+msgstr "کوڈ غلط ہے یا اس کی مدت ختم ہو چکی ہے۔"
+
+#: apps/accounts/views.py
+msgid "Password has been reset. Please log in."
+msgstr "پاس ورڈ ری سیٹ ہو گیا۔ براہ کرم لاگ ان کریں۔"
+
+#: apps/accounts/views.py
+msgid "Your phone number is already confirmed."
+msgstr "آپ کا فون نمبر پہلے ہی کنفرم ہے۔"
+
+#: apps/accounts/views.py
+msgid "SMS is not set up on this server."
+msgstr "اس سرور پر SMS ابھی سیٹ اپ نہیں ہوا۔"
+
+#: apps/accounts/views.py
+msgid "Code sent."
+msgstr "کوڈ بھیج دیا گیا۔"
 
 #: apps/accounts/views.py
 msgid "Current password is incorrect."
