@@ -8,6 +8,7 @@ import 'ui/account/complaints_screen.dart';
 import 'ui/account/notifications_screen.dart';
 import 'ui/auth/login_screen.dart';
 import 'ui/auth/register_screen.dart';
+import 'ui/auth/reset_password_screen.dart';
 import 'ui/bookings/booking_detail_screen.dart';
 import 'ui/bookings/bookings_screen.dart';
 import 'ui/bookings/chat_screen.dart';
@@ -26,6 +27,9 @@ import 'ui/worker/worker_profile_screen.dart';
 
 const _authRoutes = {'/login', '/register'};
 
+/// Opened from the password-reset email; works signed in or out.
+const _publicRoutes = {'/reset-password'};
+
 GoRouter buildRouter(Session session) {
   return GoRouter(
     initialLocation: '/',
@@ -35,6 +39,11 @@ GoRouter buildRouter(Session session) {
       GoRoute(path: '/splash', builder: (_, _) => const Scaffold(body: Center(child: CircularProgressIndicator()))),
       GoRoute(path: '/login', builder: (_, _) => const LoginScreen()),
       GoRoute(path: '/register', builder: (_, _) => const RegisterScreen()),
+      GoRoute(
+        path: '/reset-password',
+        builder: (_, s) => ResetPasswordScreen(
+            uid: s.uri.queryParameters['uid'] ?? '', token: s.uri.queryParameters['token'] ?? ''),
+      ),
       GoRoute(path: '/admin', builder: (_, _) => const AdminNoticeScreen()),
       ShellRoute(
         builder: (context, state, child) => HomeShell(location: state.matchedLocation, child: child),
@@ -77,6 +86,7 @@ String? redirectFor(Session session, String location) {
   final uri = Uri.parse(location);
   final path = uri.path.isEmpty ? '/' : uri.path;
   final isAuthRoute = _authRoutes.contains(path);
+  if (_publicRoutes.contains(path)) return null;
   final from = uri.queryParameters['from'];
   String withFrom(String target) =>
       path == '/' || path == '/splash' || isAuthRoute ? target : Uri(path: target, queryParameters: {'from': location}).toString();

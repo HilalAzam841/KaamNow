@@ -1,0 +1,156 @@
+# KaamNow production stack: one server, one command. See deploy/README.md.
+#
+#   ./new-env.sh kaamnow.pk you@example.com      # writes .env with fresh secrets
+#   docker compose up -d --build                 # build the images on the server, or
+#   docker compose pull && docker compose up -d  # use images built by GitHub Actions
+#
+# Services: Caddy (HTTPS + web app), Django API (HTTP + WebSockets), Celery worker and beat,
+# PostgreSQL, Redis, a one-shot migration job and a daily backup job. Only Caddy is reachable
+# from the internet (ports 80 and 443).
+name: kaamnow
+
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "5"
+
+x-app: &app
+  image: ${IMAGE_PREFIX:-kaamnow}-api:${TAG:-latest}
+  build:
+    context: ..
+    dockerfile: Dockerfile
+  restart: unless-stopped
+  env_file: .env
+  environment:
+    DJANGO_DEBUG: "false"
+    DJANGO_ALLOWED_HOSTS: ${DOMAIN:?Set DOMAIN in deploy/.env},localhost
+    CSRF_TRUSTED_ORIGINS: https://${DOMAIN}
+    POSTGRES_HOST: db
+    REDIS_URL: redis://redis:6379/0
+    MEDIA_ROOT: /var/lib/kaamnow/media
+    PRIVATE_MEDIA_ROOT: /var/lib/kaamnow/private_media
+    PASSWORD_RESET_URL: https://${DOMAIN}/#/reset-password?uid={uid}&token={token}
+    JAZZCASH_RETURN_URL: ${JAZZCASH_RETURN_URL:-https://${DOMAIN}/api/v1/payments/callbacks/jazzcash/}
+    EASYPAISA_POSTBACK_URL: ${EASYPAISA_POSTBACK_URL:-https://${DOMAIN}/api/v1/payments/callbacks/easypaisa/}
+  volumes:
+    - media:/var/lib/kaamnow/media
+    - private_media:/var/lib/kaamnow/private_media
+    # Firebase service-account key, once you add push notifications:
+    # - ./secrets/firebase.json:/run/secrets/firebase.json:ro
+  depends_on:
+    db:
+      condition: service_healthy
+    redis:
+      condition: service_healthy
+    migrate:
+      condition: service_completed_successfully
+  logging: *logging
+
+services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-kaamnow}
+      POSTGRES_USER: ${POSTGRES_USER:-kaamnow}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in deploy/.env}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      retries: 20
+    logging: *logging
+
+  redis:
+    image: redis:7
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      retries: 20
+    logging: *logging
+
+  migrate:
+    <<: *app
+    restart: "no"
+    command: ["python", "manage.py", "migrate", "--noinput"]
+    depends_on:
+      db:
+        condition: service_healthy
+
+  api:
+    <<: *app
+    # --proxy-headers: take the client IP from Caddy's X-Forwarded-For (audit log, rate limits).
+    command: ["daphne", "-b", "0.0.0.0", "-p", "8000", "--proxy-headers", "config.asgi:application"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/v1/health/', timeout=5)"]
+      interval: 15s
+      timeout: 10s
+      start_period: 20s
+      retries: 5
+
+  worker:
+    <<: *app
+    command: ["celery", "-A", "config", "worker", "-l", "info", "--concurrency", "2"]
+
+  beat:
+    <<: *app
+    # Run exactly one beat process.
+    command: ["celery", "-A", "config", "beat", "-l", "info", "-s", "/tmp/celerybeat-schedule"]
+
+  web:
+    image: ${IMAGE_PREFIX:-kaamnow}-web:${TAG:-latest}
+    build:
+      context: ../app
+    restart: unless-stopped
+    environment:
+      SITE_ADDRESS: ${SITE_ADDRESS:-${DOMAIN}}
+      ACME_EMAIL: ${ACME_EMAIL:?Set ACME_EMAIL in deploy/.env}
+    ports:
+      - "${HTTP_PORT:-80}:80"
+      - "${HTTPS_PORT:-443}:443"
+      - "${HTTPS_PORT:-443}:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - media:/srv/media:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      api:
+        condition: service_healthy
+    logging: *logging
+
+  backup:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      PGHOST: db
+      PGUSER: ${POSTGRES_USER:-kaamnow}
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      PGDATABASE: ${POSTGRES_DB:-kaamnow}
+      BACKUP_KEEP_DAYS: ${BACKUP_KEEP_DAYS:-14}
+    volumes:
+      - ./backup.sh:/usr/local/bin/kaamnow-backup:ro
+      - ./backups:/backups
+      - private_media:/private_media:ro
+      - media:/media:ro
+    entrypoint: ["sh", "-c", "while true; do sh /usr/local/bin/kaamnow-backup || echo 'backup failed'; sleep 86400; done"]
+    depends_on:
+      db:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    logging: *logging
+
+volumes:
+  pgdata:
+  redisdata:
+  media:
+  private_media:
+  caddy_data:
+  caddy_config:

@@ -5,6 +5,8 @@ const L = require('./lib');
 const fs = require('fs');
 const path = require('path');
 const BACKEND = process.env.BACKEND_DIR || path.resolve(__dirname, '../..');
+// How to run manage.py; for the Docker stack: MANAGE='docker compose -f ../../deploy/docker-compose.yml exec -T api python manage.py'
+const MANAGE = process.env.MANAGE || `cd ${BACKEND} && python manage.py`;
 if (!fs.existsSync('cnic.jpg')) execSync(`python3 -c "from PIL import Image; Image.new('RGB', (400, 250), (200, 210, 220)).save('cnic.jpg')"`);
 (async () => {
   const state = JSON.parse(fs.readFileSync('state.json'));
@@ -49,7 +51,7 @@ if (!fs.existsSync('cnic.jpg')) execSync(`python3 -c "from PIL import Image; Ima
     await L.shot(page, '06-worker-profile');
 
     // Admin verifies the worker (stands in for the admin dashboard).
-    execSync(`cd ${BACKEND} && python manage.py shell -c "
+    execSync(`${MANAGE} shell -c "
 from apps.accounts.models import WorkerProfile
 from apps.accounts import services as s
 w = WorkerProfile.objects.get(user__phone__endswith='${phone.slice(1)}')
