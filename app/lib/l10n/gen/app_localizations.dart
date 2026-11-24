@@ -260,6 +260,12 @@ abstract class AppLocalizations {
   /// **'Back'**
   String get back;
 
+  /// No description provided for @backToLogin.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to log in'**
+  String get backToLogin;
+
   /// No description provided for @baseLocation.
   ///
   /// In en, this message translates to:
@@ -506,6 +512,12 @@ abstract class AppLocalizations {
   /// **'CNIC images are private. Only KaamNow staff can see them.'**
   String get cnicPrivate;
 
+  /// No description provided for @codeSentTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the code we sent to {phone}.'**
+  String codeSentTo(String phone);
+
   /// No description provided for @comingSoon.
   ///
   /// In en, this message translates to:
@@ -608,6 +620,12 @@ abstract class AppLocalizations {
   /// **'Confirm'**
   String get confirm;
 
+  /// No description provided for @confirmAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get confirmAction;
+
   /// No description provided for @confirmCashAmount.
   ///
   /// In en, this message translates to:
@@ -620,11 +638,23 @@ abstract class AppLocalizations {
   /// **'Confirm job is done'**
   String get confirmJobDone;
 
+  /// No description provided for @confirmNumberHint.
+  ///
+  /// In en, this message translates to:
+  /// **'We will send a 6-digit code by SMS to {phone}. This keeps KaamNow safe for customers and workers.'**
+  String confirmNumberHint(String phone);
+
   /// No description provided for @confirmOncePaid.
   ///
   /// In en, this message translates to:
   /// **'Confirm once the customer has paid you.'**
   String get confirmOncePaid;
+
+  /// No description provided for @confirmYourNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm your phone number'**
+  String get confirmYourNumber;
 
   /// No description provided for @contact.
   ///
@@ -914,6 +944,12 @@ abstract class AppLocalizations {
   /// **'Enter a price'**
   String get enterPrice;
 
+  /// No description provided for @enterTheCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the code from the SMS.'**
+  String get enterTheCode;
+
   /// No description provided for @enterValidPhone.
   ///
   /// In en, this message translates to:
@@ -938,11 +974,35 @@ abstract class AppLocalizations {
   /// **'Finish paying in the new tab. Your plan activates once it is confirmed.'**
   String get finishPayingNewTab;
 
+  /// No description provided for @forgotCodeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'If {phone} has a KaamNow account, we have sent it a code by SMS.'**
+  String forgotCodeHint(String phone);
+
+  /// No description provided for @forgotEmailOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'If this number has an account with an email address, we have emailed a link to reset the password.'**
+  String get forgotEmailOnly;
+
+  /// No description provided for @forgotHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your phone number. We will send you a code by SMS to choose a new password.'**
+  String get forgotHint;
+
   /// No description provided for @forgotPassword.
   ///
   /// In en, this message translates to:
   /// **'Forgot password?'**
   String get forgotPassword;
+
+  /// No description provided for @forgotTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot your password?'**
+  String get forgotTitle;
 
   /// No description provided for @free.
   ///
@@ -1490,6 +1550,12 @@ abstract class AppLocalizations {
   /// **'Note (optional)'**
   String get noteOptional;
 
+  /// No description provided for @numberConfirmed.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone number confirmed.'**
+  String get numberConfirmed;
+
   /// No description provided for @off.
   ///
   /// In en, this message translates to:
@@ -1898,6 +1964,12 @@ abstract class AppLocalizations {
   /// **'Request failed.'**
   String get requestFailed;
 
+  /// No description provided for @resendIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Send a new code in {seconds}s'**
+  String resendIn(int seconds);
+
   /// No description provided for @resetLinkIncomplete.
   ///
   /// In en, this message translates to:
@@ -1994,6 +2066,18 @@ abstract class AppLocalizations {
   /// **'Send'**
   String get send;
 
+  /// No description provided for @sendCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Send code'**
+  String get sendCode;
+
+  /// No description provided for @sendNewCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Send a new code'**
+  String get sendNewCode;
+
   /// No description provided for @sendOffer.
   ///
   /// In en, this message translates to:
@@ -2077,6 +2161,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'6-digit code from the customer'**
   String get sixDigitCode;
+
+  /// No description provided for @smsCode.
+  ///
+  /// In en, this message translates to:
+  /// **'6-digit code'**
+  String get smsCode;
 
   /// No description provided for @somethingWentWrong.
   ///
@@ -2629,6 +2719,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Works in {area}'**
   String worksIn(Object area);
+
+  /// No description provided for @wrongNumberLogOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Not your number? Log out'**
+  String get wrongNumberLogOut;
 
   /// No description provided for @yearsExp.
   ///

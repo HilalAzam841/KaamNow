@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 import '../../core/api_exception.dart';
 import '../../core/session.dart';
 import '../../l10n/l10n.dart';
-import '../widgets/common.dart';
 import '../widgets/language_button.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -35,16 +34,6 @@ class _LoginScreenState extends State<LoginScreen> {
     } finally {
       if (mounted) setState(() => _busy = false);
     }
-  }
-
-  Future<void> _forgot() async {
-    final t = context.t;
-    final phone = await promptText(context, t.resetPassword,
-        label: t.yourPhoneNumber, ok: t.sendResetLink, required: true, keyboard: TextInputType.phone,
-        initial: _phone.text);
-    if (phone == null || !mounted) return;
-    await runAction(context, () => context.read<Session>().api.requestPasswordReset(phone),
-        success: t.resetLinkSent);
   }
 
   @override
@@ -105,7 +94,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
                         : Text(t.logIn),
                   ),
-                  TextButton(onPressed: _forgot, child: Text(t.forgotPassword)),
+                  TextButton(
+                      key: const Key('login-forgot'),
+                      onPressed: () => context.go('/forgot-password'),
+                      child: Text(t.forgotPassword)),
                   const Divider(height: 32),
                   OutlinedButton(
                     onPressed: () => context.go('/register'),

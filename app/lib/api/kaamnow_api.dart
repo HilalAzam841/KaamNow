@@ -42,8 +42,16 @@ class KaamNowApi {
       User.fromJson(asMap(await client.patch('/auth/me/', body: fields)));
   Future<void> changePassword(String current, String next) =>
       client.post('/auth/password-change/', body: {'current_password': current, 'new_password': next});
-  Future<void> requestPasswordReset(String phone) =>
-      client.post('/auth/password-reset/', body: {'phone': phone}, auth: false);
+  /// Returns true when the server sent a code by SMS (then use [resetPasswordWithCode]).
+  Future<bool> requestPasswordReset(String phone) async =>
+      asMap(await client.post('/auth/password-reset/', body: {'phone': phone}, auth: false))['sms_code'] == true;
+  Future<void> resetPasswordWithCode(String phone, String code, String newPassword) => client.post(
+      '/auth/password-reset/sms-confirm/', body: {'phone': phone, 'code': code, 'new_password': newPassword}, auth: false);
+
+  /// Sends a code to the signed-in user's phone. Returns the seconds to wait before asking again.
+  Future<int> sendPhoneCode() async => parseInt(asMap(await client.post('/auth/phone/send-code/'))['resend_after']);
+  Future<User> verifyPhone(String code) async =>
+      User.fromJson(asMap(await client.post('/auth/phone/verify/', body: {'code': code})));
   Future<void> confirmPasswordReset(String uid, String token, String newPassword) => client.post(
       '/auth/password-reset/confirm/', body: {'uid': uid, 'token': token, 'new_password': newPassword}, auth: false);
 

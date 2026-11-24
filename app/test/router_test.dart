@@ -52,6 +52,26 @@ void main() {
     expect(redirectFor(h.session, '/administrator'), '/admin');
   });
 
+  test('until the number is confirmed, every screen leads to the SMS code screen (admins excepted)', () async {
+    Future<Harness> as(String role, {bool verified = false}) async {
+      final h = Harness(access: 'A', refresh: 'R');
+      h.backend.on('GET /app/config/', (_) => ok({...configJson(), 'phone_verification': {'required': true, 'sms_available': true}}));
+      h.backend.on('GET /auth/me/', (_) => ok({...userJson(role: role), 'phone_verified': verified}));
+      await h.session.restore();
+      return h;
+    }
+
+    final worker = await as('worker');
+    expect(redirectFor(worker.session, '/jobs'), '/verify-phone');
+    expect(redirectFor(worker.session, '/bookings/2'), '/verify-phone');
+    expect(redirectFor(worker.session, '/verify-phone'), isNull);
+    final done = await as('worker', verified: true);
+    expect(redirectFor(done.session, '/jobs'), isNull);
+    expect(redirectFor(done.session, '/verify-phone'), '/jobs');
+    final admin = await as('admin');
+    expect(redirectFor(admin.session, '/admin'), isNull);
+  });
+
   test('after "Log out" the next person lands on their own home, not the last screen', () async {
     final h = await signedInAs('customer');
     h.backend.on('POST /auth/logout/', (_) => ok(null));

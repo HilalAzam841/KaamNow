@@ -105,6 +105,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get back => 'Back';
 
   @override
+  String get backToLogin => 'Back to log in';
+
+  @override
   String get baseLocation => 'Base location';
 
   @override
@@ -248,6 +251,11 @@ class AppLocalizationsEn extends AppLocalizations {
       'CNIC images are private. Only KaamNow staff can see them.';
 
   @override
+  String codeSentTo(String phone) {
+    return 'Enter the code we sent to $phone.';
+  }
+
+  @override
   String comingSoon(Object method) {
     return '$method (coming soon)';
   }
@@ -314,6 +322,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get confirm => 'Confirm';
 
   @override
+  String get confirmAction => 'Confirm';
+
+  @override
   String confirmCashAmount(Object amount) {
     return 'Confirm you received $amount in cash.';
   }
@@ -322,7 +333,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get confirmJobDone => 'Confirm job is done';
 
   @override
+  String confirmNumberHint(String phone) {
+    return 'We will send a 6-digit code by SMS to $phone. This keeps KaamNow safe for customers and workers.';
+  }
+
+  @override
   String get confirmOncePaid => 'Confirm once the customer has paid you.';
+
+  @override
+  String get confirmYourNumber => 'Confirm your phone number';
 
   @override
   String get contact => 'Contact';
@@ -486,6 +505,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get enterPrice => 'Enter a price';
 
   @override
+  String get enterTheCode => 'Enter the code from the SMS.';
+
+  @override
   String get enterValidPhone => 'Enter a valid phone number';
 
   @override
@@ -501,7 +523,23 @@ class AppLocalizationsEn extends AppLocalizations {
       'Finish paying in the new tab. Your plan activates once it is confirmed.';
 
   @override
+  String forgotCodeHint(String phone) {
+    return 'If $phone has a KaamNow account, we have sent it a code by SMS.';
+  }
+
+  @override
+  String get forgotEmailOnly =>
+      'If this number has an account with an email address, we have emailed a link to reset the password.';
+
+  @override
+  String get forgotHint =>
+      'Enter your phone number. We will send you a code by SMS to choose a new password.';
+
+  @override
   String get forgotPassword => 'Forgot password?';
+
+  @override
+  String get forgotTitle => 'Forgot your password?';
 
   @override
   String get free => 'Free';
@@ -831,6 +869,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noteOptional => 'Note (optional)';
 
   @override
+  String get numberConfirmed => 'Phone number confirmed.';
+
+  @override
   String get off => 'Off';
 
   @override
@@ -1079,6 +1120,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get requestFailed => 'Request failed.';
 
   @override
+  String resendIn(int seconds) {
+    return 'Send a new code in ${seconds}s';
+  }
+
+  @override
   String get resetLinkIncomplete => 'This reset link is incomplete';
 
   @override
@@ -1136,6 +1182,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get send => 'Send';
 
   @override
+  String get sendCode => 'Send code';
+
+  @override
+  String get sendNewCode => 'Send a new code';
+
+  @override
   String get sendOffer => 'Send offer';
 
   @override
@@ -1181,6 +1233,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sixDigitCode => '6-digit code from the customer';
+
+  @override
+  String get smsCode => '6-digit code';
 
   @override
   String get somethingWentWrong => 'Something went wrong.';
@@ -1478,6 +1533,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String worksIn(Object area) {
     return 'Works in $area';
   }
+
+  @override
+  String get wrongNumberLogOut => 'Not your number? Log out';
 
   @override
   String yearsExp(Object n) {

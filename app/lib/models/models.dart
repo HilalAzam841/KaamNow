@@ -6,7 +6,7 @@ enum UserRole { customer, worker, admin }
 
 class User {
   User({required this.id, required this.phone, required this.fullName, required this.role, this.email,
-      this.avatar, this.defaultAddress = '', this.workerProfileId, this.language = 'en'});
+      this.avatar, this.defaultAddress = '', this.workerProfileId, this.language = 'en', this.phoneVerified = false});
 
   factory User.fromJson(Map<String, dynamic> j) => User(
         id: parseInt(j['id']),
@@ -18,6 +18,7 @@ class User {
         defaultAddress: str(j['default_address']),
         workerProfileId: j['worker_profile_id'] as int?,
         language: j['language'] == 'ur' ? 'ur' : 'en',
+        phoneVerified: j['phone_verified'] == true,
       );
 
   final int id;
@@ -31,6 +32,9 @@ class User {
 
   /// 'en' or 'ur': the language the server writes this user's alerts in.
   final String language;
+
+  /// Confirmed with an SMS code.
+  final bool phoneVerified;
 
   bool get isWorker => role == UserRole.worker;
   bool get isCustomer => role == UserRole.customer;
@@ -602,7 +606,8 @@ class ClientConfig {
   ClientConfig({required this.cityLat, required this.cityLng, required this.emergencyEnabled,
       required this.emergencyFee, required this.paymentMethods, required this.minOfferPrice,
       required this.minWebVersion, this.supportEmail = '', this.supportPhone = '',
-      this.webPushEnabled = false, this.webPushPublicKey = ''});
+      this.webPushEnabled = false, this.webPushPublicKey = '', this.phoneVerificationRequired = false,
+      this.smsAvailable = false});
   factory ClientConfig.fromJson(Map<String, dynamic> j) {
     final city = asMap(j['city']);
     final em = asMap(j['emergency']);
@@ -618,6 +623,8 @@ class ClientConfig {
       supportPhone: str(asMap(j['support'])['phone']),
       webPushEnabled: asMap(j['web_push'])['enabled'] == true,
       webPushPublicKey: str(asMap(j['web_push'])['public_key']),
+      phoneVerificationRequired: asMap(j['phone_verification'])['required'] == true,
+      smsAvailable: asMap(j['phone_verification'])['sms_available'] == true,
     );
   }
   static ClientConfig fallback() => ClientConfig(cityLat: 31.5204, cityLng: 74.3587, emergencyEnabled: false,
@@ -634,4 +641,10 @@ class ClientConfig {
   final String supportPhone;
   final bool webPushEnabled;
   final String webPushPublicKey;
+
+  /// Customers and workers must confirm their number by SMS before using the app.
+  final bool phoneVerificationRequired;
+
+  /// The server can send SMS codes (also used for "Forgot password").
+  final bool smsAvailable;
 }

@@ -14,7 +14,7 @@ later, and talks to the backend only through the REST API and the booking WebSoc
 
 **Stage 1 (Backend MVP), Stage 2 (Advanced features) and Stage 3 (Flutter web client) are done,
 and Stage 4 adds the admin dashboard to the web app.** Every backend feature below has its business logic, REST endpoint(s), validation and
-automated tests. All 369 backend tests pass against PostgreSQL 16, and the Flutter app has 65
+automated tests. All 390 backend tests pass against PostgreSQL 16, and the Flutter app has 71
 unit and widget tests plus a browser end-to-end run (see `app/README.md`).
 
 ### Stage 1: Backend MVP
@@ -133,6 +133,18 @@ the future mobile apps still works alongside it when configured.
 | JazzCash / Easypaisa checkout opens inside the app (https only); the server still confirms every payment from the gateway's callback | `app/lib/core/checkout_launcher_mobile.dart` |
 | Release builds use https only; sign-in tokens are excluded from phone backups; only location permission is asked for (no background location) | `AndroidManifest.xml`, `res/xml/data_extraction_rules.xml` |
 | Play Store signing from `android/key.properties` or GitHub secrets | `app/android/app/build.gradle.kts`, `app/README.md` |
+
+### Stage 10: Phone verification and password reset by SMS
+
+| Feature | Where |
+|---|---|
+| Customers and workers confirm their phone number with a 6-digit SMS code before posting jobs or sending offers (admins exempt; on once a real SMS service is set up) | `apps/accounts/phone.py`, `POST auth/phone/send-code/`, `POST auth/phone/verify/` |
+| "Forgot password" by SMS code, signing the account out on every other device; the email link still works for accounts with an email | `POST auth/password-reset/`, `POST auth/password-reset/sms-confirm/` |
+| Codes are random, stored only as an HMAC, expire after 10 minutes, burn after 5 wrong tries, can be re-sent after 60 seconds, at most 5 per number per day, and never appear in an API response; the reset request answers the same whether or not the number has an account | `apps/accounts/phone.py`, `views.py` |
+| SMS through Twilio, or written to the server log while developing; messages in the user's language | `apps/common/sms.py` |
+| App: "Confirm your phone number" screen after sign-up (with resend timer and "not your number? log out") and a "Forgot password" screen | `app/lib/ui/auth/verify_phone_screen.dart`, `forgot_password_screen.dart` |
+
+Set it up with `SMS_BACKEND=twilio` and the three `TWILIO_*` values (see `deploy/README.md`).
 
 **Before going live with online payments:** the JazzCash and Easypaisa adapters follow each
 gateway's published integration scheme and are covered by tests with simulated gateway responses.
@@ -293,7 +305,7 @@ be probed), `409` state conflict (already booked, wrong turn, and so on), `429` 
 | Area | Endpoints |
 |---|---|
 | App | `GET app/config/` (public: minimum app versions, emergency fee, offer price limits, which payment methods are configured, WebSocket path) |
-| Auth | `POST auth/register/` · `POST auth/login/` · `POST auth/token/refresh/` · `POST auth/logout/` · `GET/PATCH auth/me/` · `POST auth/password-reset/` · `POST auth/password-reset/confirm/` · `POST auth/password-change/` |
+| Auth | `POST auth/register/` · `POST auth/login/` · `POST auth/token/refresh/` · `POST auth/logout/` · `GET/PATCH auth/me/` · `POST auth/password-reset/` · `POST auth/password-reset/confirm/` · `POST auth/password-reset/sms-confirm/` · `POST auth/phone/send-code/` · `POST auth/phone/verify/` · `POST auth/password-change/` |
 | Workers | `GET/PATCH workers/me/` · `GET/POST workers/documents/` · `GET workers/nearby/?category=&latitude=&longitude=` · `POST workers/availability/` · `GET workers/{id}/` · `GET workers/{id}/reviews/` |
 | Services | `GET services/categories/` · `GET services/categories/{id}/` · admin `POST`/`PATCH` on categories · `GET/POST services/workers/` · `PATCH/DELETE services/workers/{id}/` |
 | Requests | `POST requests/` · `GET requests/` · `GET/PATCH requests/{id}/` · `POST requests/{id}/cancel/` · `GET requests/{id}/nearby-workers/` |
@@ -440,6 +452,7 @@ upgrades on `/ws/`. Serve `MEDIA_ROOT` from it, and **never** serve `PRIVATE_MED
 - Exactly one Celery beat process
 - Database backups enabled, and `PRIVATE_MEDIA_ROOT` backed up and encrypted at rest
 - A real SMTP provider is configured for password-reset emails
+- Twilio (or another SMS service) is set up for phone confirmation and SMS password reset
 - Gateway sandbox test done (see above); throttle rates reviewed for expected traffic
 
 ---

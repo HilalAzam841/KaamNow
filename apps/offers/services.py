@@ -39,6 +39,9 @@ def _rounds(offer):
 
 @transaction.atomic
 def create_offer(worker, service_request, *, price, estimated_arrival_minutes, message="", additional_info=""):
+    from apps.accounts.phone import require_verified
+
+    require_verified(worker.user)
     # Lock the request row so offers cannot be created after it is booked.
     service_request = ServiceRequest.objects.select_for_update().get(pk=service_request.pk)
     if not service_request.is_open:
