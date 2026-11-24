@@ -6,6 +6,7 @@ import 'api/kaamnow_api.dart';
 import 'app.dart';
 import 'config.dart';
 import 'core/api_client.dart';
+import 'core/install/install_controller.dart';
 import 'core/locale_controller.dart';
 import 'core/session.dart';
 import 'core/token_store.dart';
@@ -16,9 +17,10 @@ Future<void> main() async {
   GoRouter.optionURLReflectsImperativeAPIs = true;
   await initializeDateFormatting();
   final locale = await LocaleController.open();
+  final install = await InstallController.open();
   final tokens = await PrefsTokenStore.open();
   final api = KaamNowApi(ApiClient(root: AppConfig.apiRoot, tokens: tokens));
   final session = Session(api, tokens);
-  runApp(KaamNowApp(session: session, locale: locale));
+  runApp(KaamNowApp(session: session, locale: locale, install: install));
   await session.restore();
 }

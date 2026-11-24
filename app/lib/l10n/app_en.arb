@@ -328,8 +328,15 @@
       "n": {}
     }
   },
+  "howToInstall": "How to install",
   "iWantTo": "I want to",
   "imOnMyWay": "I’m on my way",
+  "install": "Install",
+  "installApp": "Install app",
+  "installHint": "Add it to your home screen and open it like an app.",
+  "installTitle": "Install KaamNow",
+  "installedThanks": "KaamNow is installed. You can open it from your home screen.",
+  "iosInstallSteps": "In Safari, tap the Share button, then choose “Add to Home Screen”.",
   "iveArrived": "I’ve arrived",
   "job": "Job",
   "jobAddress": "Job address",
@@ -484,6 +491,7 @@
   "noRequestsYet": "No requests yet",
   "noReviewsYet": "No reviews yet.",
   "noServicesYet": "No services yet",
+  "notNow": "Not now",
   "noteOptional": "Note (optional)",
   "off": "Off",
   "offerSent": "Offer sent. The customer will be notified.",

@@ -545,10 +545,34 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get howToInstall => 'How to install';
+
+  @override
   String get iWantTo => 'I want to';
 
   @override
   String get imOnMyWay => 'I’m on my way';
+
+  @override
+  String get install => 'Install';
+
+  @override
+  String get installApp => 'Install app';
+
+  @override
+  String get installHint =>
+      'Add it to your home screen and open it like an app.';
+
+  @override
+  String get installTitle => 'Install KaamNow';
+
+  @override
+  String get installedThanks =>
+      'KaamNow is installed. You can open it from your home screen.';
+
+  @override
+  String get iosInstallSteps =>
+      'In Safari, tap the Share button, then choose “Add to Home Screen”.';
 
   @override
   String get iveArrived => 'I’ve arrived';
@@ -799,6 +823,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noServicesYet => 'No services yet';
+
+  @override
+  String get notNow => 'Not now';
 
   @override
   String get noteOptional => 'Note (optional)';

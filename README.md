@@ -96,6 +96,17 @@ Editing server translations: change `locale/ur/LC_MESSAGES/django.po`, then run
 commit both files. A test fails if the `.mo` file is out of date or a translation loses a `{placeholder}`.
 App strings live in `app/lib/l10n/app_en.arb` and `app_ur.arb`; run `flutter gen-l10n` after editing.
 
+### Stage 7: Installable web app (PWA)
+
+| Feature | Where |
+|---|---|
+| Installs to the home screen on Android, desktop Chrome/Edge and iPhone (Safari, Share, then Add to Home Screen) with the KaamNow name, icon and colours; opens full screen like an app | `app/web/manifest.json`, `app/web/icons/`, `app/web/index.html` |
+| "Install KaamNow" card on the customer and worker home screens (until installed or dismissed) and an Install app row on the account screen; iPhone users get the steps instead | `app/lib/core/install/`, `app/lib/ui/widgets/install_widgets.dart` |
+| Service worker: app files fetched network-first with an offline copy, a bilingual offline page, and **no caching of API, WebSocket or media responses** (bookings, prices, chats and personal data always come from the server) | `app/web/sw.js`, `app/web/offline.html` |
+| Branded loading screen while the app starts | `app/web/index.html` |
+
+Installing needs HTTPS, which the production stack in `deploy/` already provides.
+
 **Before going live with online payments:** the JazzCash and Easypaisa adapters follow each
 gateway's published integration scheme and are covered by tests with simulated gateway responses.
 They have **not** been run against the real sandboxes yet, because that needs your merchant
