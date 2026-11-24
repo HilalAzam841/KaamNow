@@ -39,6 +39,8 @@ class KaamNowApi {
       client.post('/auth/password-change/', body: {'current_password': current, 'new_password': next});
   Future<void> requestPasswordReset(String phone) =>
       client.post('/auth/password-reset/', body: {'phone': phone}, auth: false);
+  Future<void> confirmPasswordReset(String uid, String token, String newPassword) => client.post(
+      '/auth/password-reset/confirm/', body: {'uid': uid, 'token': token, 'new_password': newPassword}, auth: false);
 
   // ---- Catalog & discovery ----------------------------------------------
   Future<List<ServiceCategory>> categories() async =>

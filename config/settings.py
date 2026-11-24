@@ -291,6 +291,8 @@ ONLINE_PAYMENT_TTL_MINUTES = int(env("ONLINE_PAYMENT_TTL_MINUTES", "30"))
 
 # --- CORS --------------------------------------------------------------------
 CORS_ALLOWED_ORIGINS = env_list("CORS_ALLOWED_ORIGINS", "")
+# Needed for the Django admin login form when it is reached on another origin than the API host.
+CSRF_TRUSTED_ORIGINS = env_list("CSRF_TRUSTED_ORIGINS", "")
 # Regexes for extra browser origins. In DEBUG, any localhost port is allowed so the
 # Flutter web dev server (random port) can reach the API without extra setup.
 CORS_ALLOWED_ORIGIN_REGEXES = env_list("CORS_ALLOWED_ORIGIN_REGEXES", "")
@@ -347,6 +349,8 @@ X_FRAME_OPTIONS = "DENY"
 if not DEBUG:
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
     SECURE_SSL_REDIRECT = env_bool("SECURE_SSL_REDIRECT", True)
+    # Container health checks call the API over plain HTTP from inside the server.
+    SECURE_REDIRECT_EXEMPT = [r"^api/v1/health/$"]
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
     SECURE_HSTS_SECONDS = int(env("SECURE_HSTS_SECONDS", "31536000"))

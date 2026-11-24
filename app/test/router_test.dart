@@ -65,6 +65,15 @@ void main() {
     expect(redirectFor(worker.session, '/admin/settings'), '/jobs');
   });
 
+  test('the password-reset link opens whether signed in or out', () async {
+    final out = Harness();
+    out.backend.on('GET /app/config/', (_) => ok(configJson()));
+    await out.session.restore();
+    expect(redirectFor(out.session, '/reset-password?uid=MQ&token=abc'), isNull);
+    final signedIn = await signedInAs('worker');
+    expect(redirectFor(signedIn.session, '/reset-password?uid=MQ&token=abc'), isNull);
+  });
+
   test('a stored but rejected token signs the user out', () async {
     final h = Harness(access: 'A', refresh: 'R');
     h.backend.on('GET /app/config/', (_) => ok(configJson()));

@@ -25,5 +25,13 @@ and reloads to check the page survives:
 cd app/e2e && ADMIN_PHONE=03009999999 ADMIN_PASSWORD=... node admin.js
 ```
 
+Against the production Docker stack running locally (see `deploy/README.md`):
+
+```bash
+cd app/e2e && export APP_URL=https://localhost:8443/ IGNORE_HTTPS_ERRORS=1 \
+  MANAGE='docker compose -f ../../deploy/docker-compose.yml exec -T api python manage.py'
+node step1.js && node step2.js && node step3.js
+```
+
 Each step prints `OK ...` or `FAIL at <step>` and saves screenshots to `shots/`.
 It creates real users and bookings, so only run it against a development database.

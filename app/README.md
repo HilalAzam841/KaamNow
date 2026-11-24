@@ -58,6 +58,12 @@ Build options (`--dart-define`):
 
 ## Deploy the web app
 
+The normal way is the production stack in [`deploy/`](../deploy/README.md). `app/Dockerfile` builds
+this app into a Caddy image that also proxies the API on the same domain. Built with an empty
+`API_BASE_URL`, the app calls whichever server it was loaded from, so the same image works on any domain.
+
+To host the web app separately from the API instead:
+
 ```bash
 flutter build web --release --no-web-resources-cdn --dart-define=API_BASE_URL=https://api.kaamnow.pk
 ```
@@ -70,7 +76,7 @@ On the backend, add the app's origin to `CORS_ALLOWED_ORIGINS` (for example
 
 ```bash
 flutter analyze
-flutter test          # 42 unit and widget tests (API client, models, routing, key screens, admin dashboard)
+flutter test          # 46 unit and widget tests (API client, models, routing, key screens, admin dashboard)
 ```
 
 `e2e/` drives the real web build against a running backend in Chromium, through the whole job
