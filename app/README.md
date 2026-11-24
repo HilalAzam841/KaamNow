@@ -1,7 +1,7 @@
 # KaamNow app (Flutter)
 
-The customer and worker app for KaamNow. It runs on the **web** today; the same code will build
-the Android and iOS apps later (the `android/` and `ios/` folders are already generated). It
+The customer and worker app for KaamNow. The same code runs on the **web** and as an **Android
+app** (the `ios/` folder is generated for a later iPhone build). It
 talks to the Django backend in the repository root through `/api/v1/` and the booking WebSocket.
 
 ## What works
@@ -91,11 +91,54 @@ Serve `build/web/` from any static host (Nginx, Netlify, Firebase Hosting, S3 + 
 On the backend, add the app's origin to `CORS_ALLOWED_ORIGINS` (for example
 `https://app.kaamnow.pk`). The same setting allows its WebSocket connections.
 
+## Android app
+
+GitHub builds the APK on every pull request and push to `main` (workflow `android`). Open the run
+under **Actions**, then download **kaamnow-android** from its Artifacts and install the `.apk` on
+a phone (Android 7 or newer; allow installing from your browser or file manager when asked).
+
+The APK talks to the server in the repository variable `ANDROID_API_URL` (default
+`https://kaamnow.pk`). Release builds only use https.
+
+To build it yourself you need the Android SDK (Android Studio installs it):
+
+```bash
+flutter build apk --release --dart-define=API_BASE_URL=https://kaamnow.pk
+# app at build/app/outputs/flutter-apk/app-release.apk
+```
+
+**Signing for the Play Store.** Without a key the APK is signed with a test key, which is fine for
+installing directly but not for the Play Store. Create a key once and keep it safe (losing it
+means you cannot update the app):
+
+```bash
+keytool -genkey -v -keystore kaamnow.jks -keyalg RSA -keysize 2048 -validity 10000 -alias kaamnow
+```
+
+Then either put `storeFile`, `storePassword`, `keyAlias` and `keyPassword` in `android/key.properties`
+(never committed), or add the GitHub secrets `ANDROID_KEYSTORE_BASE64` (`base64 -w0 kaamnow.jks`),
+`ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS` and `ANDROID_KEY_PASSWORD`. For the Play Store,
+build an app bundle with `flutter build appbundle` instead of an APK.
+
+What differs from the web app: online payments open the gateway page inside the app, the
+"Install" and browser-notification options are hidden, and sign-in tokens are kept out of phone
+backups. Package name: `pk.kaamnow.app`.
+
+`integration_test/app_test.dart` runs the real app on an emulator against a real backend with the
+demo accounts (GitHub does this on every pull request and saves screenshots as
+**android-screenshots**):
+
+```bash
+python manage.py seed_demo_data && daphne -b 0.0.0.0 -p 8000 config.asgi:application  # repo root, DJANGO_ALLOWED_HOSTS including 10.0.2.2
+flutter drive --driver=test_driver/integration_test.dart --target=integration_test/app_test.dart \
+  --dart-define=API_BASE_URL=http://10.0.2.2:8000
+```
+
 ## Tests
 
 ```bash
 flutter analyze
-flutter test          # 68 unit and widget tests (API client, models, routing, key screens, admin dashboard, Urdu, install, notifications, phone confirmation)
+flutter test          # 71 unit and widget tests (API client, models, routing, key screens, admin dashboard, Urdu, install, notifications, Android checkout, phone confirmation)
 ```
 
 `e2e/` drives the real web build against a running backend in Chromium, through the whole job
@@ -120,9 +163,12 @@ e2e/                     Playwright browser run against the real backend
 - **Maps** use OpenStreetMap tiles; the spec's Google Maps needs an API key. Swap `MAP_TILE_URL`
   (or `google_maps_flutter`) when you have one.
 - **Push notifications** need the server's VAPID keys and HTTPS. On iPhone they work only after the
-  app is added to the home screen (iOS 16.4+). The in-app alert count still refreshes every 30 seconds.
-- **Online payments** open the gateway's hosted checkout in a new tab. The buttons stay disabled
+  app is added to the home screen (iOS 16.4+). The Android app gets push once Firebase is set up
+  (the server side is ready); until then it shows alerts inside the app. The in-app alert count
+  refreshes every 30 seconds.
+- **Online payments** open the gateway's hosted checkout in a new tab (inside the app on Android). The buttons stay disabled
   until JazzCash or Easypaisa credentials are configured on the server.
-- **Live location** is shared while the worker has the booking page open (browsers do not allow
-  background GPS). The mobile apps can share it in the background.
-- Tokens are stored in browser local storage. Serve the app over HTTPS only.
+- **Live location** is shared while the worker has the booking page open, on the web and on Android.
+  Background sharing would need a background-location permission and a Play Store review.
+- Admins can preview worker documents (PDF) on the web dashboard only.
+- On the web, tokens are stored in browser local storage. Serve the app over HTTPS only.

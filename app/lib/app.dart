@@ -132,6 +132,8 @@ String? redirectFor(Session session, String location) {
       return path == '/splash' ? null : withFrom('/splash');
     case SessionStatus.signedOut:
       if (isAuthRoute) return null;
+      // Tapping "Log out" starts afresh: the next person to sign in lands on their own home.
+      if (session.loggedOutByUser) return '/login';
       if (path == '/splash' && from != null) return Uri(path: '/login', queryParameters: {'from': from}).toString();
       return withFrom('/login');
     case SessionStatus.signedIn:

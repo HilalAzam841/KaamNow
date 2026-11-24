@@ -203,11 +203,13 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
     final p = await runAction(context, () => api.createPayment(widget.id, method));
     if (p == null || !mounted) return;
     if (p.checkout != null) {
-      if (openCheckout(p.checkout!)) {
-        showInfo(context, context.t.completePaymentNewTab);
-      } else {
-        showInfo(context, context.t.onlinePaymentUnavailable);
-      }
+      final outcome = await openCheckout(context, p.checkout!);
+      if (!mounted) return;
+      showInfo(context, switch (outcome) {
+        CheckoutOutcome.openedInNewTab => context.t.completePaymentNewTab,
+        CheckoutOutcome.returned => context.t.paymentWindowClosed,
+        CheckoutOutcome.failed => context.t.onlinePaymentUnavailable,
+      });
     } else {
       showInfo(context, context.t.payCash);
     }

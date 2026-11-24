@@ -73,9 +73,13 @@ class PlansScreen extends StatelessWidget {
                               onPressed: () async {
                                 final checkout = await runAction(context, () => api.subscribe(p.id, method: m.code));
                                 if (checkout != null && context.mounted) {
-                                  openCheckout(checkout)
-                                      ? showInfo(context, context.t.finishPayingNewTab)
-                                      : showInfo(context, context.t.onlinePaymentUnavailable);
+                                  final outcome = await openCheckout(context, checkout);
+                                  if (!context.mounted) return;
+                                  showInfo(context, switch (outcome) {
+                                    CheckoutOutcome.openedInNewTab => context.t.finishPayingNewTab,
+                                    CheckoutOutcome.returned => context.t.planPaymentWindowClosed,
+                                    CheckoutOutcome.failed => context.t.onlinePaymentUnavailable,
+                                  });
                                 }
                               },
                               child: Text(context.t.payWith(m.label)),

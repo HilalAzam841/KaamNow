@@ -31,6 +31,9 @@ class Session extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// True after the user tapped "Log out" (as opposed to a session that expired).
+  bool loggedOutByUser = false;
+
   /// Restores a saved session (if any) and loads public config.
   Future<void> restore() async {
     try {
@@ -87,12 +90,14 @@ class Session extends ChangeNotifier {
       }
     }
     await tokens.clear();
+    loggedOutByUser = true;
     _set(SessionStatus.signedOut, null);
   }
 
   void _expired() => _set(SessionStatus.signedOut, null);
 
   void _set(SessionStatus s, User? u) {
+    if (s == SessionStatus.signedIn) loggedOutByUser = false;
     status = s;
     user = u;
     notifyListeners();
