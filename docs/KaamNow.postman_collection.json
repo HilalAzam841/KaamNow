@@ -55,6 +55,26 @@
       "name": "1. Auth",
       "item": [
         {
+          "name": "App config (public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/app/config/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "app",
+                "config"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
           "name": "Register customer",
           "request": {
             "method": "POST",
@@ -1470,6 +1490,32 @@
                 {
                   "key": "token",
                   "value": "{{customer_access}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Worker: my offers",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/offers/?status=pending",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "offers",
+                "?status=pending"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{worker_access}}"
                 }
               ]
             }

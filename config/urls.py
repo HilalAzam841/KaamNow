@@ -7,7 +7,7 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, Spec
 from apps.accounts.urls import auth_urlpatterns, worker_urlpatterns
 from apps.billing.urls import featured_urlpatterns, payment_urlpatterns, subscription_urlpatterns
 from apps.chat.views import BookingMessagesReadView, BookingMessagesView
-from apps.common.views import health
+from apps.common.views import app_config, health
 from apps.tracking.views import BookingLocationView
 from apps.jobs.urls import bookings_router, requests_router
 from apps.offers.urls import offer_urlpatterns, request_offer_urlpatterns
@@ -15,6 +15,7 @@ from apps.reviews.views import ReviewCreateView, WorkerReviewsView
 
 api_v1 = [
     path("health/", health, name="health"),
+    path("app/config/", app_config, name="app-config"),
     path("auth/", include(auth_urlpatterns)),
     path("workers/<int:pk>/reviews/", WorkerReviewsView.as_view(), name="worker-reviews"),
     path("workers/", include(worker_urlpatterns)),

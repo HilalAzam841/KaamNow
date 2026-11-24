@@ -291,6 +291,22 @@ ONLINE_PAYMENT_TTL_MINUTES = int(env("ONLINE_PAYMENT_TTL_MINUTES", "30"))
 
 # --- CORS --------------------------------------------------------------------
 CORS_ALLOWED_ORIGINS = env_list("CORS_ALLOWED_ORIGINS", "")
+# Regexes for extra browser origins. In DEBUG, any localhost port is allowed so the
+# Flutter web dev server (random port) can reach the API without extra setup.
+CORS_ALLOWED_ORIGIN_REGEXES = env_list("CORS_ALLOWED_ORIGIN_REGEXES", "")
+if DEBUG:
+    CORS_ALLOWED_ORIGIN_REGEXES += [r"^http://localhost(:\d+)?$", r"^http://127\.0\.0\.1(:\d+)?$"]
+
+# --- Client app configuration (served by GET /api/v1/app/config/) -----------
+KAAMNOW_APP = {
+    "MIN_ANDROID_VERSION": env("MIN_ANDROID_VERSION", "1.0.0"),
+    "MIN_IOS_VERSION": env("MIN_IOS_VERSION", "1.0.0"),
+    "MIN_WEB_VERSION": env("MIN_WEB_VERSION", "1.0.0"),
+    "CITY_LATITUDE": float(env("CITY_LATITUDE", "31.5204")),
+    "CITY_LONGITUDE": float(env("CITY_LONGITUDE", "74.3587")),
+    "SUPPORT_EMAIL": env("SUPPORT_EMAIL", "support@kaamnow.pk"),
+    "SUPPORT_PHONE": env("SUPPORT_PHONE", ""),
+}
 
 # --- Business configuration -----------------------------------------------
 KAAMNOW = {

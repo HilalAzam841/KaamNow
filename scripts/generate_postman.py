@@ -42,6 +42,7 @@ def req(name, method, path, body=None, token="customer_access", tests=None, form
 
 folders = [
     ("1. Auth", [
+        req("App config (public)", "GET", "/app/config/", token=None),
         req("Register customer", "POST", "/auth/register/", {
             "phone": "03001234567", "password": "Lahore-Pass-2026", "full_name": "Ayesha Khan", "role": "customer",
         }, token=None, tests=[save("customer_access", ".tokens.access"), save("customer_refresh", ".tokens.refresh")]),
@@ -124,6 +125,7 @@ folders = [
         req("Worker counters Rs.900", "POST", "/offers/{{offer_id}}/negotiate/", {"action": "counter", "amount": "900"},
             token="worker_access"),
         req("Negotiation history", "GET", "/offers/{{offer_id}}/negotiations/"),
+        req("Worker: my offers", "GET", "/offers/?status=pending", token="worker_access"),
         req("Customer accepts Rs.900 (creates booking)", "POST", "/offers/{{offer_id}}/accept/", {},
             tests=[save("booking_id", ".id")]),
         req("Reject / withdraw offer", "POST", "/offers/{{offer_id}}/reject/", {"reason": "Found another worker"}),

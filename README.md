@@ -1,19 +1,21 @@
-# KaamNow Backend
+# KaamNow
 
 On-demand local services marketplace for Lahore, Pakistan, using an inDrive-style bidding model.
 A customer posts a job, nearby verified workers send prices, the two sides negotiate, and the
 customer books the worker they prefer.
 
-This repository holds the **Django REST backend**. The Android app (Kotlin + Jetpack Compose) is
-planned for Stage 3 and will talk to this backend only through the REST API.
+This repository holds the **Django REST backend** and, in [`app/`](app/), the **Flutter client**.
+The client runs on the web today. The same Flutter code base will build the Android and iOS apps
+later, and talks to the backend only through the REST API and the booking WebSocket.
 
 ---
 
 ## 1. Current status
 
-**Stage 1 (Backend MVP) and Stage 2 (Advanced features) are done.** Every feature below has its
-business logic, REST endpoint(s), validation and automated tests. All 323 tests pass against
-PostgreSQL 16.
+**Stage 1 (Backend MVP) and Stage 2 (Advanced features) are done, and Stage 3 has its Flutter web
+client.** Every backend feature below has its business logic, REST endpoint(s), validation and
+automated tests. All 335 backend tests pass against PostgreSQL 16, and the Flutter app has 31
+unit and widget tests plus a browser end-to-end run (see `app/README.md`).
 
 ### Stage 1: Backend MVP
 
@@ -55,6 +57,18 @@ PostgreSQL 16.
 | Celery scheduled jobs: expire stale requests, expire unpaid online checkouts, expire plans and listings, purge old GPS points | `*/tasks.py`, `CELERY_BEAT_SCHEDULE` |
 | Admin API for plans, subscriptions, featured listings, complaints, platform settings and extra revenue | `apps/dashboard` |
 
+### Stage 3: Flutter client (web first)
+
+| Feature | Where |
+|---|---|
+| Flutter app for customers and workers, built for the web; Android and iOS later from the same code | `app/` |
+| API client: response envelope, JWT refresh with one shared refresh call, readable errors | `app/lib/core/api_client.dart` |
+| Customer: browse services, post a job (map pin or GPS, photos, emergency), compare offers and sort them, counter, book | `app/lib/ui/customer/` |
+| Worker: verification (CNIC upload, services, base location), go online, job feed, send offers, negotiate | `app/lib/ui/worker/` |
+| Both: bookings, live tracking over WebSocket, chat, completion code, cash payment, reviews, alerts, complaints | `app/lib/ui/bookings/`, `app/lib/ui/account/` |
+| Backend APIs added for client apps: `GET app/config/` (public bootstrap) and `GET offers/` (worker's own offers) | `apps/common/views.py`, `apps/offers/views.py` |
+| WebSocket origin check that accepts CORS-allowed web origins and native apps (no Origin header) | `apps/chat/origin.py` |
+
 **Before going live with online payments:** the JazzCash and Easypaisa adapters follow each
 gateway's published integration scheme and are covered by tests with simulated gateway responses.
 They have **not** been run against the real sandboxes yet, because that needs your merchant
@@ -90,6 +104,7 @@ apps/
   support/              Complaint
 docs/                   openapi.yaml, Postman collection
 scripts/                generate_postman.py
+app/                    Flutter client (web now, Android/iOS later): lib/, test/, e2e/
 ```
 
 Each app follows the same pattern: `models.py`, `services.py` (all business rules and
@@ -211,11 +226,12 @@ be probed), `409` state conflict (already booked, wrong turn, and so on), `429` 
 
 | Area | Endpoints |
 |---|---|
+| App | `GET app/config/` (public: minimum app versions, emergency fee, offer price limits, which payment methods are configured, WebSocket path) |
 | Auth | `POST auth/register/` · `POST auth/login/` · `POST auth/token/refresh/` · `POST auth/logout/` · `GET/PATCH auth/me/` · `POST auth/password-reset/` · `POST auth/password-reset/confirm/` · `POST auth/password-change/` |
 | Workers | `GET/PATCH workers/me/` · `GET/POST workers/documents/` · `GET workers/nearby/?category=&latitude=&longitude=` · `POST workers/availability/` · `GET workers/{id}/` · `GET workers/{id}/reviews/` |
 | Services | `GET services/categories/` · `GET services/categories/{id}/` · admin `POST`/`PATCH` on categories · `GET/POST services/workers/` · `PATCH/DELETE services/workers/{id}/` |
 | Requests | `POST requests/` · `GET requests/` · `GET/PATCH requests/{id}/` · `POST requests/{id}/cancel/` · `GET requests/{id}/nearby-workers/` |
-| Offers | `GET/POST requests/{id}/offers/` · `GET/PATCH offers/{id}/` · `POST offers/{id}/accept/` · `POST offers/{id}/reject/` · `POST offers/{id}/negotiate/` · `GET offers/{id}/negotiations/` |
+| Offers | `GET/POST requests/{id}/offers/` · `GET offers/` (worker's own, `?status=`) · `GET/PATCH offers/{id}/` · `POST offers/{id}/accept/` · `POST offers/{id}/reject/` · `POST offers/{id}/negotiate/` · `GET offers/{id}/negotiations/` |
 | Bookings | `GET bookings/` · `GET bookings/{id}/` · `POST bookings/{id}/status/` · `POST bookings/{id}/completion-otp/` · `POST bookings/{id}/complete/` · `POST bookings/{id}/cancel/` |
 | Chat | `GET/POST bookings/{id}/messages/` · `POST bookings/{id}/messages/read/` |
 | Tracking | `POST bookings/{id}/location/` (worker) · `GET bookings/{id}/location/` |
@@ -232,7 +248,7 @@ Endpoints added beyond the original list, because the flow needs them: `password
 `bookings/{id}/completion-otp/`, `payments/{id}/confirm/`, `payments/earnings/`,
 the notification helpers, and the admin users, suspension, requests, commission settings and audit log endpoints.
 
-Postman: import `docs/KaamNow.postman_collection.json` (94 requests in 12 folders that follow the
+Postman: import `docs/KaamNow.postman_collection.json` (96 requests in 12 folders that follow the
 full flow; test scripts store tokens and ids automatically). Regenerate it with
 `python scripts/generate_postman.py`.
 
@@ -291,7 +307,7 @@ source of data: an app that reconnects can always catch up with `GET /bookings/{
 - **No duplicate offers**: a unique `(request, worker)` constraint, plus the request lock.
 - **OTP**: generated with `secrets`, stored as an HMAC-SHA256 hash, never serialised, 15-minute expiry, 5 attempts and then the code is burned, 60-second resend cooldown, and a throttled endpoint. Failed attempts are committed even though the request returns an error.
 - **Payments**: the amount always comes from the server (booking total, plan price or featured price), never from the client. Cash payments need the worker's confirmation. Online payments settle only from a verified gateway callback: JazzCash by HMAC-SHA256 `pp_SecureHash` with the merchant integrity salt (constant-time compare, merchant id checked); Easypaisa by a server-to-server inquiry, ignoring whatever the redirect claims. The callback amount must equal the payment amount, otherwise the payment is marked `disputed` and nothing is settled. Callbacks are idempotent. A success that arrives after a checkout expired is flagged as disputed rather than settled automatically. Gateway passwords and hashes are stripped before the callback data is stored. There is at most one live payment per booking (partial unique constraint).
-- **WebSockets**: JWT required (suspended users rejected), `AllowedHostsOriginValidator` blocks foreign origins, and only booking participants can join. Events are scoped to one booking group. Only the assigned worker can publish locations. Chat, location and payment callbacks have their own throttles.
+- **WebSockets**: JWT required (suspended users rejected). Browser origins must be in `ALLOWED_HOSTS` or the CORS allow-list (`CORS_ALLOWED_ORIGINS`, `CORS_ALLOWED_ORIGIN_REGEXES`), so the web app can connect from its own domain and other sites cannot; native apps send no Origin and are accepted, and only booking participants can join. Events are scoped to one booking group. Only the assigned worker can publish locations. Chat, location and payment callbacks have their own throttles.
 - **Private conversations**: chat is readable only by the two participants (admins cannot read it through the API; staff can view it read-only in Django admin for disputes). Customers see live location only while the booking is active. Old GPS points are purged after 30 days.
 - **Throttling**: separate scopes for anonymous users, users, auth, password reset, OTP and offers. All limits are configurable through environment variables.
 - **Audit log**: worker verify/reject, document views, user suspend/reactivate, commission and platform-settings changes, category and plan changes, manual subscription activation, featured-listing cancellation and complaint decisions. The audit log cannot be edited in Django admin.
@@ -360,7 +376,7 @@ server {
 
 1. In the Firebase console, create a service account with the "Firebase Cloud Messaging API" enabled and download the JSON key.
 2. Put the file on the server outside the repo, then set `FCM_PROJECT_ID` and `FCM_CREDENTIALS_FILE`.
-3. The Android app calls `POST /api/v1/notifications/devices/` after login and whenever FCM gives it a new token, and calls `DELETE` on logout. It should create a notification channel named `kaamnow_default`.
+3. The mobile app calls `POST /api/v1/notifications/devices/` after login and whenever FCM gives it a new token, and calls `DELETE` on logout. It should create a notification channel named `kaamnow_default`.
 
 ### Production checklist
 

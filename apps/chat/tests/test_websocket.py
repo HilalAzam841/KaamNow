@@ -137,3 +137,26 @@ async def test_events_are_isolated_per_booking(customer, worker, make_booking):
     assert await c2.receive_nothing(timeout=0.5)
     await c1.disconnect()
     await c2.disconnect()
+
+
+async def test_accepts_cors_allowed_browser_origin(booking, customer, settings):
+    settings.CORS_ALLOWED_ORIGINS = ["https://app.kaamnow.pk"]
+    comm = WebsocketCommunicator(application, f"/ws/bookings/{booking.pk}/?token={AccessToken.for_user(customer)}",
+                                 headers=[(b"origin", b"https://app.kaamnow.pk")])
+    connected, _ = await comm.connect()
+    assert connected
+    await comm.disconnect()
+
+
+async def test_accepts_native_client_without_origin(booking, customer):
+    comm = WebsocketCommunicator(application, f"/ws/bookings/{booking.pk}/?token={AccessToken.for_user(customer)}")
+    connected, _ = await comm.connect()
+    assert connected
+    await comm.disconnect()
+
+
+async def test_rejects_malformed_origin(booking, customer):
+    comm = WebsocketCommunicator(application, f"/ws/bookings/{booking.pk}/?token={AccessToken.for_user(customer)}",
+                                 headers=[(b"origin", b"null")])
+    connected, _ = await comm.connect()
+    assert not connected

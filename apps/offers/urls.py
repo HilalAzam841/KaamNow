@@ -7,6 +7,7 @@ request_offer_urlpatterns = [
 ]
 
 offer_urlpatterns = [
+    path("", views.MyOffersView.as_view(), name="my-offers"),
     path("<int:pk>/", views.OfferDetailView.as_view(), name="offer-detail"),
     path("<int:pk>/accept/", views.OfferAcceptView.as_view(), name="offer-accept"),
     path("<int:pk>/reject/", views.OfferRejectView.as_view(), name="offer-reject"),
