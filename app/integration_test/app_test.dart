@@ -1,10 +1,13 @@
-// Runs the real app on an Android phone or emulator against a real KaamNow server that has the
-// demo accounts (python manage.py seed_demo_data). From an emulator the computer is 10.0.2.2:
+// Runs the real app on an Android or iPhone device, emulator or simulator against a real KaamNow server that has the
+// demo accounts (python manage.py seed_demo_data). From the Android emulator the computer is
+// 10.0.2.2; from the iPhone simulator it is localhost:
 //
 //   flutter drive --driver=test_driver/integration_test.dart --target=integration_test/app_test.dart \
 //     --dart-define=API_BASE_URL=http://10.0.2.2:8000
 //
 // Screenshots land in build/android-shots/.
+import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:kaamnow/main.dart' as app;
@@ -33,7 +36,7 @@ void main() {
   var shotsReady = false;
   Future<void> shot(WidgetTester tester, String name) async {
     if (!shotsReady) {
-      await binding.convertFlutterSurfaceToImage();
+      if (Platform.isAndroid) await binding.convertFlutterSurfaceToImage(); // iOS needs no conversion
       shotsReady = true;
     }
     await tester.pump(const Duration(milliseconds: 500));
@@ -54,7 +57,7 @@ void main() {
     await waitFor(tester, find.byKey(const Key('login-phone')));
   }
 
-  testWidgets('customer and worker journeys on Android', (tester) async {
+  testWidgets('customer and worker journeys on the phone app', (tester) async {
     (await SharedPreferences.getInstance()).clear();
     await app.main();
     await waitFor(tester, find.byKey(const Key('login-phone')));
