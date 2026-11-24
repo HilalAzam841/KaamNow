@@ -1271,6 +1271,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaginatedAdminWorkerList'
           description: ''
+  /api/v1/app/config/:
+    get:
+      operationId: app_config_retrieve
+      description: Call on app start. Clients older than `min_supported_version` for
+        their platform should ask the user to update. `payment_methods[].available`
+        is false until a gateway is configured.
+      summary: Public bootstrap config for web and mobile clients (no login needed).
+      tags:
+      - app
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppConfig'
+          description: ''
   /api/v1/auth/login/:
     post:
       operationId: auth_login_create
@@ -2237,6 +2256,58 @@ paths:
       responses:
         '200':
           description: No response body
+  /api/v1/offers/:
+    get:
+      operationId: offers_list
+      description: 'Worker: every offer you have made, newest first, so the app can
+        show "My offers".'
+      summary: 'Worker: list your own offers (optionally filtered by status).'
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - accepted
+          - closed
+          - pending
+          - rejected
+          - withdrawn
+      tags:
+      - offers
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedWorkerOfferList'
+          description: ''
   /api/v1/offers/{id}/:
     get:
       operationId: offers_retrieve
@@ -3826,6 +3897,90 @@ components:
       - user_id
       - verification_status
       - verified_at
+    AppConfig:
+      type: object
+      properties:
+        api_version:
+          type: string
+        min_supported_version:
+          type: object
+          additionalProperties:
+            type: string
+        currency:
+          type: string
+        city:
+          $ref: '#/components/schemas/AppConfigCity'
+        emergency:
+          $ref: '#/components/schemas/AppConfigEmergency'
+        offer_price:
+          $ref: '#/components/schemas/AppConfigOfferPrice'
+        payment_methods:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+        push_enabled:
+          type: boolean
+        websocket_path:
+          type: string
+        support:
+          $ref: '#/components/schemas/AppConfigSupport'
+      required:
+      - api_version
+      - city
+      - currency
+      - emergency
+      - min_supported_version
+      - offer_price
+      - payment_methods
+      - push_enabled
+      - support
+      - websocket_path
+    AppConfigCity:
+      type: object
+      properties:
+        name:
+          type: string
+        latitude:
+          type: number
+          format: double
+        longitude:
+          type: number
+          format: double
+      required:
+      - latitude
+      - longitude
+      - name
+    AppConfigEmergency:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+        fee:
+          type: string
+      required:
+      - enabled
+      - fee
+    AppConfigOfferPrice:
+      type: object
+      properties:
+        min:
+          type: string
+        max:
+          type: string
+      required:
+      - max
+      - min
+    AppConfigSupport:
+      type: object
+      properties:
+        email:
+          type: string
+        phone:
+          type: string
+      required:
+      - email
+      - phone
     AuditLog:
       type: object
       properties:

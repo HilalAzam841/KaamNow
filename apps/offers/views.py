@@ -2,6 +2,8 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404
 from drf_spectacular.utils import OpenApiParameter, extend_schema, inline_serializer
 from rest_framework import generics, status
+from rest_framework.exceptions import ValidationError
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -98,6 +100,30 @@ class RequestOffersView(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
         offer = services.create_offer(request.user.worker_profile, service_request, **serializer.validated_data)
         return Response(WorkerOfferSerializer(offer_queryset().get(pk=offer.pk)).data, status=status.HTTP_201_CREATED)
+
+
+class MyOffersView(generics.GenericAPIView):
+    """Worker: every offer you have made, newest first, so the app can show "My offers"."""
+
+    serializer_class = WorkerOfferSerializer
+    queryset = WorkerOffer.objects.none()  # for schema generation only
+    permission_classes = [IsAuthenticated, IsWorker]
+
+    @extend_schema(
+        tags=["offers"],
+        parameters=[OpenApiParameter("status", str, enum=[c for c, _ in WorkerOffer.Status.choices])],
+        responses={200: WorkerOfferSerializer(many=True)},
+        summary="Worker: list your own offers (optionally filtered by status).",
+    )
+    def get(self, request):
+        qs = offer_queryset().filter(worker=request.user.worker_profile)
+        wanted = request.query_params.get("status")
+        if wanted:
+            if wanted not in WorkerOffer.Status.values:
+                raise ValidationError({"status": f"Unknown status '{wanted}'."})
+            qs = qs.filter(status=wanted)
+        page = self.paginate_queryset(qs.order_by("-created_at"))
+        return self.get_paginated_response(WorkerOfferSerializer(page, many=True).data)
 
 
 class OfferDetailView(APIView):
