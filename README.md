@@ -61,7 +61,7 @@ unit and widget tests plus a browser end-to-end run (see `app/README.md`).
 
 | Feature | Where |
 |---|---|
-| Flutter app for customers and workers, built for the web; Android and iOS later from the same code | `app/` |
+| Flutter app for customers and workers: web, Android and iPhone from the same code | `app/` |
 | API client: response envelope, JWT refresh with one shared refresh call, readable errors | `app/lib/core/api_client.dart` |
 | Customer: browse services, post a job (map pin or GPS, photos, emergency), compare offers and sort them, counter, book | `app/lib/ui/customer/` |
 | Worker: verification (CNIC upload, services, base location), go online, job feed, send offers, negotiate | `app/lib/ui/worker/` |
@@ -134,6 +134,17 @@ the future mobile apps still works alongside it when configured.
 | Release builds use https only; sign-in tokens are excluded from phone backups; only location permission is asked for (no background location) | `AndroidManifest.xml`, `res/xml/data_extraction_rules.xml` |
 | Play Store signing from `android/key.properties` or GitHub secrets | `app/android/app/build.gradle.kts`, `app/README.md` |
 
+### Stage 11: iPhone app
+
+| Feature | Where |
+|---|---|
+| The same Flutter app builds for iPhone (iOS 15+), with the KaamNow name, icon and launch screen, bundle id `pk.kaamnow.app`, portrait only | `app/ios/` |
+| Permission prompts explain why location, camera and photos are needed; internet traffic is https only (plain http only to the local network for development) | `app/ios/Runner/Info.plist` |
+| GitHub builds the app on a Mac and runs it on an iPhone simulator against a real backend: customer and worker sign-in, services from the server, Urdu switch, sign-out | `.github/workflows/ios.yml`, `app/integration_test/app_test.dart` |
+| JazzCash / Easypaisa checkout opens inside the app on iPhone too | `app/lib/core/checkout_launcher_mobile.dart` |
+
+Publishing needs an Apple Developer account (TestFlight, then the App Store); see `app/README.md`.
+
 **Before going live with online payments:** the JazzCash and Easypaisa adapters follow each
 gateway's published integration scheme and are covered by tests with simulated gateway responses.
 They have **not** been run against the real sandboxes yet, because that needs your merchant
@@ -169,7 +180,7 @@ apps/
   support/              Complaint
 docs/                   openapi.yaml, Postman collection
 scripts/                generate_postman.py
-app/                    Flutter client (web now, Android/iOS later): lib/, test/, e2e/
+app/                    Flutter client (web, Android, iPhone): lib/, test/, e2e/, integration_test/
 ```
 
 Each app follows the same pattern: `models.py`, `services.py` (all business rules and

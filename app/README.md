@@ -1,7 +1,7 @@
 # KaamNow app (Flutter)
 
-The customer and worker app for KaamNow. The same code runs on the **web** and as an **Android
-app** (the `ios/` folder is generated for a later iPhone build). It
+The customer and worker app for KaamNow. The same code runs on the **web**, as an **Android
+app** and as an **iPhone app**. It
 talks to the Django backend in the repository root through `/api/v1/` and the booking WebSocket.
 
 ## What works
@@ -133,6 +133,25 @@ python manage.py seed_demo_data && daphne -b 0.0.0.0 -p 8000 config.asgi:applica
 flutter drive --driver=test_driver/integration_test.dart --target=integration_test/app_test.dart \
   --dart-define=API_BASE_URL=http://10.0.2.2:8000
 ```
+
+## iPhone app
+
+GitHub builds the iPhone app on a Mac on every pull request and push to `main` (workflow `ios`) and
+runs it on an iPhone simulator against a real backend with the demo accounts (screenshots under
+**iphone-screenshots**). Bundle id `pk.kaamnow.app`, iOS 15 or newer, portrait only. It talks to the
+server in the repository variable `IOS_API_URL` (or `ANDROID_API_URL`, default `https://kaamnow.pk`).
+
+Unlike Android, an iPhone app cannot be installed from a downloaded file. To put it on phones:
+
+1. Join the [Apple Developer Program](https://developer.apple.com/programs/) (99 USD a year).
+2. On a Mac with Xcode: `flutter build ipa --release --dart-define=API_BASE_URL=https://kaamnow.pk`,
+   then open `ios/Runner.xcworkspace`, choose your team under Signing & Capabilities, and upload the
+   build from Xcode's Organizer (or with Apple's Transporter app).
+3. Testers install it through **TestFlight**; after Apple's review it can go on the App Store.
+
+Same as Android: payments open the gateway page inside the app, the browser-only options are hidden,
+and push notifications come with Firebase (which also delivers to iPhones through Apple's service).
+The location, camera and photo permission prompts explain why the app asks.
 
 ## Tests
 
