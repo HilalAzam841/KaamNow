@@ -9,6 +9,7 @@ import '../../core/session.dart';
 import '../../models/models.dart';
 import '../widgets/common.dart';
 import '../widgets/offer_widgets.dart';
+import '../../l10n/l10n.dart';
 
 /// Worker view of a request: details, plus either an offer form or their existing offer.
 class JobDetailScreen extends StatefulWidget {
@@ -60,7 +61,7 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
       final o = await api.createOffer(widget.id,
           price: _price.text.trim(), etaMinutes: int.parse(_eta.text.trim()), message: _message.text.trim());
       if (!mounted) return;
-      showInfo(context, 'Offer sent. The customer will be notified.');
+      showInfo(context, context.t.offerSent);
       setState(() => _offer = o);
     } on ApiException catch (e) {
       if (mounted) showError(context, e);
@@ -71,23 +72,23 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
 
   Future<void> _agree() async {
     final o = _offer!;
-    if (!await confirm(context, 'Agree to ${rs(o.currentPrice)}?', 'The customer then confirms to book you.', ok: 'Agree')) {
+    if (!await confirm(context, context.t.agreeToQ(rs(o.currentPrice)), context.t.agreeToHint, ok: context.t.agree)) {
       return;
     }
     if (!mounted) return;
-    await runAction(context, () => api.negotiate(o.id, agree: true), success: 'You agreed. Waiting for the customer.');
+    await runAction(context, () => api.negotiate(o.id, agree: true), success: context.t.youAgreed);
     _load();
   }
 
   Future<void> _counter() async {
     final r = await askCounter(context, _offer!.currentPrice);
     if (r == null || !mounted) return;
-    await runAction(context, () => api.negotiate(_offer!.id, amount: r.$1, message: r.$2), success: 'Counter offer sent.');
+    await runAction(context, () => api.negotiate(_offer!.id, amount: r.$1, message: r.$2), success: context.t.counterSent);
     _load();
   }
 
   Future<void> _withdraw() async {
-    if (!await confirm(context, 'Withdraw your offer?', 'You cannot bid on this job again.', ok: 'Withdraw')) return;
+    if (!await confirm(context, context.t.withdrawOfferQ, context.t.withdrawHint, ok: context.t.withdraw)) return;
     if (!mounted) return;
     await runAction(context, () => api.rejectOffer(_offer!.id, reason: 'Withdrawn by worker'));
     _load();
@@ -98,7 +99,7 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
     final r = _request;
     final theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('Job')),
+      appBar: AppBar(title: Text(context.t.job)),
       body: !_loaded
           ? (_error != null ? ErrorView(error: _error!, onRetry: _load) : const Center(child: CircularProgressIndicator()))
           : PageBody(
@@ -113,16 +114,16 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                       ]),
                       Text('${r.categoryName} · ${when(r.preferredTime)}'),
                       if (r.isEmergency)
-                        const Padding(
+                        Padding(
                           padding: EdgeInsets.only(top: 6),
-                          child: Row(children: [Icon(Icons.bolt, color: Colors.red, size: 18), Text(' Emergency job')]),
+                          child: Row(children: [Icon(Icons.bolt, color: Colors.red, size: 18), Text(' ${context.t.emergencyJob}')]),
                         ),
                       const SizedBox(height: 10),
                       Text(r.description),
                       const SizedBox(height: 8),
-                      if (r.area.isNotEmpty) Text('Area: ${r.area}', style: theme.textTheme.bodySmall),
-                      if (r.budget != null) Text('Customer budget: ${rs(r.budget)}', style: theme.textTheme.bodySmall),
-                      Text('The exact address is shared once you are booked.', style: theme.textTheme.bodySmall),
+                      if (r.area.isNotEmpty) Text(context.t.areaLine(r.area), style: theme.textTheme.bodySmall),
+                      if (r.budget != null) Text(context.t.customerBudget(rs(r.budget)), style: theme.textTheme.bodySmall),
+                      Text(context.t.addressAfterBooking, style: theme.textTheme.bodySmall),
                       if (r.images.isNotEmpty) ...[
                         const SizedBox(height: 10),
                         Wrap(spacing: 8, children: [
@@ -147,17 +148,17 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
     return Form(
       key: _form,
       child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-        const SectionTitle('Send your price'),
+        SectionTitle(context.t.sendYourPrice),
         TextFormField(
           key: const Key('offer-price'),
           controller: _price,
           keyboardType: TextInputType.number,
-          decoration: const InputDecoration(labelText: 'Your price', prefixText: 'Rs '),
+          decoration: InputDecoration(labelText: context.t.yourPrice, prefixText: context.t.rsPrefix),
           validator: (v) {
             final n = double.tryParse((v ?? '').trim());
-            if (n == null) return 'Enter a price';
+            if (n == null) return context.t.enterPrice;
             final lo = double.tryParse(min) ?? 0;
-            return n < lo ? 'Minimum is ${rs(min)}' : null;
+            return n < lo ? context.t.minimumIs(rs(min)) : null;
           },
         ),
         const SizedBox(height: 12),
@@ -165,10 +166,10 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
           key: const Key('offer-eta'),
           controller: _eta,
           keyboardType: TextInputType.number,
-          decoration: const InputDecoration(labelText: 'You can arrive in (minutes)'),
+          decoration: InputDecoration(labelText: context.t.arriveInMinutes),
           validator: (v) {
             final n = int.tryParse((v ?? '').trim());
-            return n == null || n < 1 ? 'Enter minutes' : null;
+            return n == null || n < 1 ? context.t.enterMinutes : null;
           },
         ),
         const SizedBox(height: 12),
@@ -176,7 +177,7 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
           key: const Key('offer-message'),
           controller: _message,
           maxLines: 2,
-          decoration: const InputDecoration(labelText: 'Message to the customer (optional)'),
+          decoration: InputDecoration(labelText: context.t.messageToCustomer),
         ),
         const SizedBox(height: 16),
         FilledButton(
@@ -184,7 +185,7 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
           onPressed: _busy ? null : _submitOffer,
           child: _busy
               ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
-              : const Text('Send offer'),
+              : Text(context.t.sendOffer),
         ),
       ]),
     );
@@ -194,7 +195,7 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
     final theme = Theme.of(context);
     final myTurn = o.isPending && o.awaiting == 'worker';
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-      const SectionTitle('Your offer'),
+      SectionTitle(context.t.yourOffer),
       Card(
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -207,15 +208,15 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
             NegotiationHistory(offer: o, viewerIsCustomer: false),
             if (o.isPending) ...[
               const SizedBox(height: 12),
-              Text(myTurn ? 'The customer made a counter offer. Your move.' : 'Waiting for the customer.',
+              Text(myTurn ? context.t.customerCounteredYourMove : context.t.waitingForCustomer,
                   style: theme.textTheme.bodyMedium),
               const SizedBox(height: 8),
               Wrap(spacing: 8, runSpacing: 8, children: [
                 if (myTurn)
-                  FilledButton(key: const Key('offer-agree'), onPressed: _agree, child: Text('Agree to ${rs(o.currentPrice)}')),
+                  FilledButton(key: const Key('offer-agree'), onPressed: _agree, child: Text(context.t.agreeToAmount(rs(o.currentPrice)))),
                 if (myTurn)
-                  OutlinedButton(key: const Key('offer-counter'), onPressed: _counter, child: const Text('Counter')),
-                TextButton(onPressed: _withdraw, child: const Text('Withdraw')),
+                  OutlinedButton(key: const Key('offer-counter'), onPressed: _counter, child: Text(context.t.counter)),
+                TextButton(onPressed: _withdraw, child: Text(context.t.withdraw)),
               ]),
             ],
             if (o.bookingId != null) ...[
@@ -223,7 +224,7 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
               FilledButton.icon(
                 onPressed: () => context.push('/bookings/${o.bookingId}'),
                 icon: const Icon(Icons.event_available),
-                label: const Text('Open booking'),
+                label: Text(context.t.openBooking),
               ),
             ],
           ]),

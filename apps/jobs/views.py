@@ -1,3 +1,4 @@
+from django.utils.translation import gettext as _
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
@@ -135,9 +136,9 @@ class ServiceRequestViewSet(
     def partial_update(self, request, *args, **kwargs):
         obj = self.get_object()
         if obj.customer_id != request.user.pk:
-            raise PermissionDenied("You can only edit your own requests.")
+            raise PermissionDenied(_("You can only edit your own requests."))
         if not obj.is_open:
-            raise BusinessRuleError("Only open requests can be edited.", status_code=status.HTTP_409_CONFLICT)
+            raise BusinessRuleError(_("Only open requests can be edited."), status_code=status.HTTP_409_CONFLICT)
         serializer = ServiceRequestUpdateSerializer(obj, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
@@ -148,7 +149,7 @@ class ServiceRequestViewSet(
     def cancel(self, request, pk=None):
         obj = self.get_object()
         if obj.customer_id != request.user.pk:
-            raise PermissionDenied("You can only cancel your own requests.")
+            raise PermissionDenied(_("You can only cancel your own requests."))
         serializer = CancelSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         obj = services.cancel_service_request(obj, request.user, serializer.validated_data["reason"])
@@ -159,7 +160,7 @@ class ServiceRequestViewSet(
     def nearby_workers(self, request, pk=None):
         obj = self.get_object()
         if obj.customer_id != request.user.pk and not is_admin(request):
-            raise PermissionDenied("Only the request owner can view matching workers.")
+            raise PermissionDenied(_("Only the request owner can view matching workers."))
         workers = services.find_nearby_workers(
             obj.category, obj.latitude, obj.longitude, exclude_user=obj.customer, sponsored_first=True
         )
@@ -223,12 +224,12 @@ class BookingViewSet(viewsets.ReadOnlyModelViewSet):
         serializer.is_valid(raise_exception=True)
         if request.user.pk == booking.customer_id:
             if not serializer.validated_data.get("confirm"):
-                raise BusinessRuleError("Send {\"confirm\": true} to confirm the job is complete.")
+                raise BusinessRuleError(_("Send {\"confirm\": true} to confirm the job is complete."))
             booking = services.confirm_completion_by_customer(booking, request.user)
         elif request.user.pk == booking.worker.user_id:
             otp = serializer.validated_data.get("otp")
             if not otp:
-                raise BusinessRuleError("Enter the completion code from the customer.")
+                raise BusinessRuleError(_("Enter the completion code from the customer."))
             booking = services.complete_booking_with_otp(booking, request.user, otp)
         else:
             raise PermissionDenied()
@@ -239,7 +240,7 @@ class BookingViewSet(viewsets.ReadOnlyModelViewSet):
     def cancel(self, request, pk=None):
         booking = self.get_object()
         if request.user.pk not in (booking.customer_id, booking.worker.user_id):
-            raise PermissionDenied("Only booking participants can cancel.")
+            raise PermissionDenied(_("Only booking participants can cancel."))
         serializer = BookingCancelSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         booking = services.cancel_booking(booking, request.user, serializer.validated_data["reason"])

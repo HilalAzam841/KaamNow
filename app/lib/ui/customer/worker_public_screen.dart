@@ -6,6 +6,7 @@ import '../../core/session.dart';
 import '../../models/models.dart';
 import '../widgets/common.dart';
 import '../widgets/offer_widgets.dart';
+import '../../l10n/l10n.dart';
 
 class WorkerPublicScreen extends StatelessWidget {
   const WorkerPublicScreen({super.key, required this.id});
@@ -15,7 +16,7 @@ class WorkerPublicScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final api = context.read<Session>().api;
     return Scaffold(
-      appBar: AppBar(title: const Text('Worker profile')),
+      appBar: AppBar(title: Text(context.t.workerProfile)),
       body: Loader<(PublicWorker, Paged<Review>)>(
         load: () async => (await api.worker(id), await api.workerReviews(id)),
         builder: (context, data, reload) {
@@ -27,18 +28,18 @@ class WorkerPublicScreen extends StatelessWidget {
               if (w.bio.isNotEmpty) ...[const SizedBox(height: 16), Text(w.bio)],
               if (w.serviceArea.isNotEmpty) ...[
                 const SizedBox(height: 8),
-                Row(children: [const Icon(Icons.map, size: 16), Text(' Works in ${w.serviceArea}')]),
+                Row(children: [const Icon(Icons.map, size: 16), Text(' ${context.t.worksIn(w.serviceArea)}')]),
               ],
-              const SectionTitle('Services'),
+              SectionTitle(context.t.services),
               for (final s in w.services.where((s) => s.isActive))
                 ListTile(
                   contentPadding: EdgeInsets.zero,
                   title: Text(s.categoryName),
                   subtitle: s.description.isEmpty ? null : Text(s.description),
-                  trailing: s.startingPrice == null ? null : Text('from ${rs(s.startingPrice)}'),
+                  trailing: s.startingPrice == null ? null : Text(context.t.fromPrice(rs(s.startingPrice))),
                 ),
-              SectionTitle('Reviews (${reviews.count})'),
-              if (reviews.results.isEmpty) const Text('No reviews yet.'),
+              SectionTitle(context.t.reviewsHeading(reviews.count)),
+              if (reviews.results.isEmpty) Text(context.t.noReviewsYet),
               for (final r in reviews.results)
                 Card(
                   child: ListTile(

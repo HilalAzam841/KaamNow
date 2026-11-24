@@ -1,0 +1,815 @@
+{
+  "@@locale": "en",
+  "aboutMinutes": "about {n} min",
+  "@aboutMinutes": {
+    "placeholders": {
+      "n": {}
+    }
+  },
+  "aboutYou": "About you",
+  "add": "Add",
+  "addAService": "Add a service",
+  "addServicesToSeeJobs": "Add the services you offer to see matching jobs.",
+  "address": "Address",
+  "addressAfterBooking": "The exact address is shared once you are booked.",
+  "addressHelper": "Only the worker you book will see it",
+  "agree": "Agree",
+  "agreeToAmount": "Agree to {amount}",
+  "@agreeToAmount": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
+  "agreeToHint": "The customer then confirms to book you.",
+  "agreeToQ": "Agree to {price}?",
+  "@agreeToQ": {
+    "placeholders": {
+      "price": {}
+    }
+  },
+  "agreedPrice": "Agreed price",
+  "all": "All",
+  "allServicesOffered": "You already offer every service.",
+  "amountDue": "Amount due: {amount}",
+  "@amountDue": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
+  "appName": "KaamNow",
+  "appVersion": "KaamNow {version}",
+  "@appVersion": {
+    "placeholders": {
+      "version": {}
+    }
+  },
+  "areaHint": "e.g. DHA Phase 5",
+  "areaLine": "Area: {area}",
+  "@areaLine": {
+    "placeholders": {
+      "area": {}
+    }
+  },
+  "areaOptional": "Area (optional)",
+  "areasHint": "e.g. Gulberg, Model Town",
+  "areasYouCover": "Areas you cover",
+  "arriveInMinutes": "You can arrive in (minutes)",
+  "atLeast5": "At least 5 characters",
+  "atLeast8": "At least 8 characters",
+  "back": "Back",
+  "baseLocation": "Base location",
+  "baseLocationHint": "Jobs are matched by distance from here. Customers never see it.",
+  "book": "Book",
+  "bookAgree": "You agree to pay {price}. All other offers will be closed.",
+  "@bookAgree": {
+    "placeholders": {
+      "price": {}
+    }
+  },
+  "bookAgreeEmergency": "You agree to pay {price} plus the {fee} emergency fee. All other offers will be closed.",
+  "@bookAgreeEmergency": {
+    "placeholders": {
+      "price": {},
+      "fee": {}
+    }
+  },
+  "bookFor": "Book for {price}",
+  "@bookFor": {
+    "placeholders": {
+      "price": {}
+    }
+  },
+  "bookWorkerQ": "Book {name}?",
+  "@bookWorkerQ": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "booked": "Booked!",
+  "booking": "Booking",
+  "bookingCancelled": "Booking cancelled.",
+  "bookingNumber": "Booking #{id}",
+  "@bookingNumber": {
+    "placeholders": {
+      "id": {}
+    }
+  },
+  "bookingNumberPrice": "Booking #{id} · {price}",
+  "@bookingNumberPrice": {
+    "placeholders": {
+      "id": {},
+      "price": {}
+    }
+  },
+  "budget": "Budget: {amount}",
+  "@budget": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
+  "budgetLower": "budget {amount}",
+  "@budgetLower": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
+  "budgetOptional": "Your budget (optional)",
+  "cancel": "Cancel",
+  "cancelBooking": "Cancel booking",
+  "cancelBookingQ": "Cancel this booking?",
+  "cancelRequest": "Cancel request",
+  "cancelRequestQ": "Cancel this request?",
+  "cancelledReason": "Cancelled: {reason}",
+  "@cancelledReason": {
+    "placeholders": {
+      "reason": {}
+    }
+  },
+  "cashReceivedQ": "Cash received?",
+  "ccAppIssue": "Problem with the app",
+  "ccBehaviour": "Behaviour",
+  "ccDamage": "Damage to property",
+  "ccFraud": "Fraud",
+  "ccNoShow": "Did not show up",
+  "ccOther": "Something else",
+  "ccOvercharging": "Overcharging",
+  "ccPayment": "Payment problem",
+  "ccServiceQuality": "Poor service quality",
+  "change": "Change",
+  "changePassword": "Change password",
+  "changePhoto": "Change photo",
+  "chat": "Chat",
+  "chooseAService": "Choose a service",
+  "chooseNewPassword": "Choose a new password",
+  "chooseService": "Choose a service.",
+  "close": "Close",
+  "cnicNumber": "CNIC number",
+  "cnicPrivate": "CNIC images are private. Only KaamNow staff can see them.",
+  "comingSoon": "{method} (coming soon)",
+  "@comingSoon": {
+    "placeholders": {
+      "method": {}
+    }
+  },
+  "commentOptional": "Comment (optional)",
+  "commissionDue": "Commission due: {amount}",
+  "@commissionDue": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
+  "commissionDueHint": "From cash jobs. KaamNow will contact you about settling it.",
+  "commissionKeep": "KaamNow commission {percent}%: {amount}. You keep {earning}.",
+  "@commissionKeep": {
+    "placeholders": {
+      "percent": {},
+      "amount": {},
+      "earning": {}
+    }
+  },
+  "commissionLine": "{percent}% commission {amount} · {date}",
+  "@commissionLine": {
+    "placeholders": {
+      "percent": {},
+      "amount": {},
+      "date": {}
+    }
+  },
+  "commissionPercent": "Commission {percent}%",
+  "@commissionPercent": {
+    "placeholders": {
+      "percent": {}
+    }
+  },
+  "commissionRateNow": "Your current commission rate is {percent}%.",
+  "@commissionRateNow": {
+    "placeholders": {
+      "percent": {}
+    }
+  },
+  "commissionStandard": "Commission standard",
+  "complete": "Complete",
+  "completeJob": "Complete job",
+  "completePaymentNewTab": "Complete the payment in the new tab. This page updates once the gateway confirms it.",
+  "completeWithCode": "Complete with customer’s code",
+  "completedJobs": "Completed jobs",
+  "completionCode": "Completion code",
+  "completionCodeHint": "Give this code to the worker only when the job is done to your satisfaction.",
+  "confirm": "Confirm",
+  "confirmCashAmount": "Confirm you received {amount} in cash.",
+  "@confirmCashAmount": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
+  "confirmJobDone": "Confirm job is done",
+  "confirmOncePaid": "Confirm once the customer has paid you.",
+  "contact": "Contact",
+  "continueAction": "Continue",
+  "couldNotGetLocation": "Could not get your location.",
+  "couldNotSendLocation": "Could not send your location.",
+  "counter": "Counter",
+  "counterOffer": "Counter offer",
+  "counterSent": "Counter offer sent.",
+  "createAccount": "Create account",
+  "createAnAccount": "Create an account",
+  "currentPassword": "Current password",
+  "currentPlan": "Current plan: {name}",
+  "@currentPlan": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "currentPrice": "Current price: {amount}",
+  "@currentPrice": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
+  "customer": "Customer",
+  "customerBudget": "Customer budget: {amount}",
+  "@customerBudget": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
+  "customerCounteredShort": "Customer countered. Your move.",
+  "customerCounteredYourMove": "The customer made a counter offer. Your move.",
+  "customerNotPaid": "The customer has not paid yet.",
+  "customersPaid": "Customers paid",
+  "daysAgo": "{n} d ago",
+  "@daysAgo": {
+    "placeholders": {
+      "n": {}
+    }
+  },
+  "defaultAddress": "Default address",
+  "describeProblem": "Describe the problem",
+  "details": "Details",
+  "distanceKm": "{km} km",
+  "@distanceKm": {
+    "placeholders": {
+      "km": {}
+    }
+  },
+  "docCertificate": "Certificate",
+  "docCnicBack": "CNIC back",
+  "docCnicFront": "CNIC front",
+  "docOther": "Other",
+  "docUploaded": "{doc} uploaded.",
+  "@docUploaded": {
+    "placeholders": {
+      "doc": {}
+    }
+  },
+  "done": "Done",
+  "downloadFailed": "Download failed.",
+  "earnings": "Earnings",
+  "editProfile": "Edit profile",
+  "email": "Email",
+  "emailOptional": "Email (optional, for password reset)",
+  "emergency": "Emergency",
+  "emergencyFee": "Emergency · fee {fee}",
+  "@emergencyFee": {
+    "placeholders": {
+      "fee": {}
+    }
+  },
+  "emergencyFeeLabel": "Emergency fee",
+  "emergencyJob": "Emergency job",
+  "emergencySubtitle": "Shown first to workers. Adds {fee} to the total.",
+  "@emergencySubtitle": {
+    "placeholders": {
+      "fee": {}
+    }
+  },
+  "enterAddress": "Enter the address",
+  "enterCnic": "Enter your CNIC number",
+  "enterCompletionCode": "Enter completion code",
+  "enterFullName": "Enter your full name",
+  "enterMinutes": "Enter minutes",
+  "enterNumber": "Enter a number",
+  "enterPassword": "Enter your password",
+  "enterPhone": "Enter your phone number",
+  "enterPrice": "Enter a price",
+  "enterValidPhone": "Enter a valid phone number",
+  "etaMinutes": "~{n} min",
+  "@etaMinutes": {
+    "placeholders": {
+      "n": {}
+    }
+  },
+  "filterActive": "Active",
+  "finishPayingNewTab": "Finish paying in the new tab. Your plan activates once it is confirmed.",
+  "forgotPassword": "Forgot password?",
+  "free": "Free",
+  "fromPrice": "from {price}",
+  "@fromPrice": {
+    "placeholders": {
+      "price": {}
+    }
+  },
+  "fromPriceCap": "From {price}",
+  "@fromPriceCap": {
+    "placeholders": {
+      "price": {}
+    }
+  },
+  "fullName": "Full name",
+  "getCompletionCode": "Get completion code",
+  "getVerified": "Get verified to send offers",
+  "getVerifiedHint": "Upload both sides of your CNIC, add your services and set your base location. KaamNow reviews new workers before they can bid.",
+  "helpAndComplaints": "Help and complaints",
+  "hireHelp": "Hire help",
+  "homeIntro": "Describe the job, get prices from nearby verified workers, and pick the one you like.",
+  "hoursAgo": "{n} h ago",
+  "@hoursAgo": {
+    "placeholders": {
+      "n": {}
+    }
+  },
+  "iWantTo": "I want to",
+  "imOnMyWay": "I’m on my way",
+  "iveArrived": "I’ve arrived",
+  "job": "Job",
+  "jobAddress": "Job address",
+  "jobCompleted": "Job completed.",
+  "jobIsBooked": "This job is booked",
+  "jobLocation": "Job location",
+  "jobNumberPrice": "Job #{id} · {price}",
+  "@jobNumberPrice": {
+    "placeholders": {
+      "id": {},
+      "price": {}
+    }
+  },
+  "jobPosted": "Job posted.",
+  "jobPostedNotified": "Job posted. {n} nearby workers were notified.",
+  "@jobPostedNotified": {
+    "placeholders": {
+      "n": {}
+    }
+  },
+  "jobsCount": "{count, plural, =1{1 job} other{{count} jobs}}",
+  "@jobsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "jobsNearYou": "Jobs near you",
+  "justNow": "just now",
+  "kaamnowCommission": "KaamNow commission",
+  "kaamnowReply": "KaamNow: {text}",
+  "@kaamnowReply": {
+    "placeholders": {
+      "text": {}
+    }
+  },
+  "language": "Language",
+  "languageEnglish": "English",
+  "languageUrdu": "اردو",
+  "lastAttempt": "Last attempt: {status}. {reason}",
+  "@lastAttempt": {
+    "placeholders": {
+      "status": {},
+      "reason": {}
+    }
+  },
+  "live": "Live",
+  "liveTracking": "Live tracking",
+  "loadMore": "Load more",
+  "location": "Location",
+  "locationDenied": "Location permission was denied. You can still place the pin on the map.",
+  "locationOff": "Location services are turned off.",
+  "logIn": "Log in",
+  "logOut": "Log out",
+  "loginWithNewPassword": "You can log in with your new password now.",
+  "markAllRead": "Mark all read",
+  "markCompleteQ": "Mark the job as complete?",
+  "messageNotSent": "Message not sent.",
+  "messageToCustomer": "Message to the customer (optional)",
+  "messagesPrivate": "Messages are private between you and the other person on this booking.",
+  "methodCash": "Cash",
+  "methodEasypaisa": "Easypaisa",
+  "methodJazzcash": "JazzCash",
+  "methodRef": "{method} · ref {ref}",
+  "@methodRef": {
+    "placeholders": {
+      "method": {},
+      "ref": {}
+    }
+  },
+  "minimumIs": "Minimum is {amount}",
+  "@minimumIs": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
+  "minutesAgo": "{n} min ago",
+  "@minutesAgo": {
+    "placeholders": {
+      "n": {}
+    }
+  },
+  "moreDetail": "Please give a bit more detail (20+ characters)",
+  "myWorkerProfile": "My worker profile",
+  "negAccept": "{who} accepted at {amount}",
+  "@negAccept": {
+    "placeholders": {
+      "who": {},
+      "amount": {}
+    }
+  },
+  "negAgree": "{who} agreed to {amount}",
+  "@negAgree": {
+    "placeholders": {
+      "who": {},
+      "amount": {}
+    }
+  },
+  "negCounter": "{who} countered with {amount}",
+  "@negCounter": {
+    "placeholders": {
+      "who": {},
+      "amount": {}
+    }
+  },
+  "negOffer": "{who} offered {amount}",
+  "@negOffer": {
+    "placeholders": {
+      "who": {},
+      "amount": {}
+    }
+  },
+  "negReject": "{who} rejected",
+  "@negReject": {
+    "placeholders": {
+      "who": {}
+    }
+  },
+  "negRevise": "{who} revised the price to {amount}",
+  "@negRevise": {
+    "placeholders": {
+      "who": {},
+      "amount": {}
+    }
+  },
+  "negWithdraw": "{who} withdrew",
+  "@negWithdraw": {
+    "placeholders": {
+      "who": {}
+    }
+  },
+  "networkError": "Could not reach KaamNow. Check your connection.",
+  "newPassword": "New password",
+  "no": "No",
+  "noActiveBookings": "No active bookings",
+  "noAlertsYet": "No alerts yet",
+  "noBookingsCustomerHint": "Accept an offer on one of your requests to book a worker.",
+  "noBookingsWorkerHint": "When a customer accepts your offer, the job appears here.",
+  "noCancelledBookings": "No cancelled bookings",
+  "noComplaints": "No complaints",
+  "noComplaintsHint": "If something goes wrong with a job, report it here and KaamNow will look into it.",
+  "noCompletedBookings": "No completed bookings",
+  "noCompletedJobs": "No completed jobs yet.",
+  "noMessagesYet": "No messages yet",
+  "noOffers": "No offers",
+  "noOffersHere": "No offers here",
+  "noOffersHereHint": "Offers you send on jobs appear here.",
+  "noOpenJobs": "No open jobs right now",
+  "noOpenJobsHint": "New jobs in your area and services will show up here, and you will get an alert.",
+  "noRequestsHint": "Post a job to get prices from nearby workers.",
+  "noRequestsYet": "No requests yet",
+  "noReviewsYet": "No reviews yet.",
+  "noServicesYet": "No services yet",
+  "noteOptional": "Note (optional)",
+  "off": "Off",
+  "offerSent": "Offer sent. The customer will be notified.",
+  "offerServices": "Offer services",
+  "offersADay": "{n} offers a day",
+  "@offersADay": {
+    "placeholders": {
+      "n": {}
+    }
+  },
+  "offersCount": "{count, plural, =1{1 offer} other{{count} offers}}",
+  "@offersCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "offersHeading": "Offers ({n})",
+  "@offersHeading": {
+    "placeholders": {
+      "n": {}
+    }
+  },
+  "offersLeftToday": "{n} offers left today",
+  "@offersLeftToday": {
+    "placeholders": {
+      "n": {}
+    }
+  },
+  "ok": "OK",
+  "onlinePaymentSoon": "Online payment is coming soon. Contact KaamNow support to upgrade.",
+  "onlinePaymentUnavailable": "Online payment is not available on this device yet.",
+  "onlyAvailableGetAlerts": "Only available workers get new job alerts.",
+  "onlyIfDone": "Only confirm if the work is done.",
+  "openBooking": "Open booking",
+  "osmCredit": "© OpenStreetMap contributors",
+  "paidAmount": "Paid {amount}",
+  "@paidAmount": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
+  "password": "Password",
+  "passwordChanged": "Password changed",
+  "passwordChangedShort": "Password changed.",
+  "passwordsDontMatch": "The passwords do not match",
+  "payCash": "Pay the worker in cash. They will confirm when they receive it.",
+  "payWith": "Pay with {method}",
+  "@payWith": {
+    "placeholders": {
+      "method": {}
+    }
+  },
+  "payment": "Payment",
+  "paymentConfirmed": "Payment confirmed.",
+  "paymentPending": "{method} payment of {amount} pending",
+  "@paymentPending": {
+    "placeholders": {
+      "method": {},
+      "amount": {}
+    }
+  },
+  "phoneNumber": "Phone number",
+  "photoUpdated": "Photo updated.",
+  "photosOptional": "Photos (optional)",
+  "pinPlaced": "Pin placed. Tap the map to move it.",
+  "plans": "Plans",
+  "postAJob": "Post a job",
+  "postJobGetOffers": "Post job and get offers",
+  "preferredTime": "Preferred time",
+  "pricePerDays": "{price} / {days} days",
+  "@pricePerDays": {
+    "placeholders": {
+      "price": {},
+      "days": {}
+    }
+  },
+  "profileSaved": "Profile saved.",
+  "profileUpdated": "Profile updated.",
+  "rateThisJob": "Rate this job",
+  "rateWorker": "Rate {name}",
+  "@rateWorker": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "ratingNew": "New",
+  "reason": "Reason",
+  "reasonLine": "Reason: {reason}",
+  "@reasonLine": {
+    "placeholders": {
+      "reason": {}
+    }
+  },
+  "reasonOptional": "Reason (optional)",
+  "received": "Received",
+  "recentJobs": "Recent jobs",
+  "reconnecting": "Reconnecting…",
+  "reject": "Reject",
+  "rejectOfferQ": "Reject this offer?",
+  "remove": "Remove",
+  "removeServiceQ": "Remove {name}?",
+  "@removeServiceQ": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "renewsOrEnds": "Renews or ends {date}",
+  "@renewsOrEnds": {
+    "placeholders": {
+      "date": {}
+    }
+  },
+  "repeatNewPassword": "Repeat new password",
+  "reportBooking": "Report booking #{id}",
+  "@reportBooking": {
+    "placeholders": {
+      "id": {}
+    }
+  },
+  "reportProblem": "Report a problem",
+  "request": "Request",
+  "requestCancelled": "Request cancelled.",
+  "requestFailed": "Request failed.",
+  "resetLinkIncomplete": "This reset link is incomplete",
+  "resetLinkIncompleteHint": "Open the link from the email again, or ask for a new one from the login screen.",
+  "resetLinkSent": "If that number has an account with an email, a reset link is on its way.",
+  "resetPassword": "Reset password",
+  "reviewsHeading": "Reviews ({n})",
+  "@reviewsHeading": {
+    "placeholders": {
+      "n": {}
+    }
+  },
+  "rsPrefix": "Rs ",
+  "rupees": "Rs {amount}",
+  "@rupees": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
+  "rupeesUnknown": "Rs —",
+  "salam": "Salam, {name}",
+  "@salam": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "samePriceAcceptInstead": "That is the current price. Accept instead.",
+  "save": "Save",
+  "saveNewPassword": "Save new password",
+  "saveProfile": "Save profile",
+  "saving": "Saving…",
+  "send": "Send",
+  "sendOffer": "Send offer",
+  "sendReport": "Send report",
+  "sendResetLink": "Send reset link",
+  "sendYourPrice": "Send your price",
+  "sendingEvery15": "Sending every 15 seconds while this page is open.",
+  "sentAgo": "Sent {when}",
+  "@sentAgo": {
+    "placeholders": {
+      "when": {}
+    }
+  },
+  "serverTrouble": "KaamNow is having trouble right now. Please try again.",
+  "service": "Service",
+  "serviceAdded": "Service added.",
+  "services": "Services",
+  "setLocationFirst": "Set the job location on the map, or use your current location.",
+  "shareLiveLocation": "Share my live location with the customer",
+  "shortBio": "Short bio",
+  "sixDigitCode": "6-digit code from the customer",
+  "somethingWentWrong": "Something went wrong.",
+  "somethingWrong": "Something went wrong.",
+  "sortFastest": "Fastest arrival",
+  "sortHighestRating": "Highest rating",
+  "sortLowestPrice": "Lowest price",
+  "sortMostExperience": "Most experience",
+  "sortMostJobs": "Most jobs",
+  "sortNearest": "Nearest",
+  "startWork": "Start work",
+  "startingPriceOptional": "Starting price (optional)",
+  "statusAccepted": "Accepted",
+  "statusActive": "Active",
+  "statusArrived": "Arrived",
+  "statusBooked": "Booked",
+  "statusCancelled": "Cancelled",
+  "statusCollected": "Collected",
+  "statusCompleted": "Completed",
+  "statusConfirmed": "Confirmed",
+  "statusDisputed": "Disputed",
+  "statusExpired": "Expired",
+  "statusFailed": "Failed",
+  "statusInProgress": "Work in progress",
+  "statusInReview": "In review",
+  "statusOffered": "Offered",
+  "statusOnTheWay": "On the way",
+  "statusOpen": "Open",
+  "statusPaid": "Paid",
+  "statusPending": "Pending",
+  "statusPendingPayment": "Awaiting payment",
+  "statusRejected": "Rejected",
+  "statusResolved": "Resolved",
+  "statusUpdated": "Status updated: {status}",
+  "@statusUpdated": {
+    "placeholders": {
+      "status": {}
+    }
+  },
+  "statusVerified": "Verified",
+  "statusWithdrawn": "Withdrawn",
+  "stopGettingJobs": "You will stop getting these jobs.",
+  "subject": "Subject",
+  "submit": "Submit",
+  "supportEmail": "Support: {email}",
+  "@supportEmail": {
+    "placeholders": {
+      "email": {}
+    }
+  },
+  "switchToPlan": "Switch to this plan",
+  "switchedTo": "Switched to {name}.",
+  "@switchedTo": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "tabAccount": "Account",
+  "tabAlerts": "Alerts",
+  "tabBookings": "Bookings",
+  "tabHome": "Home",
+  "tabJobs": "Jobs",
+  "tabMyOffers": "My offers",
+  "tabMyRequests": "My requests",
+  "tagline": "Trusted help in Lahore, at your price",
+  "tapMapToPin": "Tap the map to place the pin.",
+  "tellUsWhatHappened": "Tell us what happened",
+  "thanksForReview": "Thanks for your review!",
+  "thanksWillReview": "Thanks. KaamNow will review your report.",
+  "timeline": "Timeline",
+  "titleHint": "e.g. Ceiling fan not working",
+  "titleLabel": "Title",
+  "total": "Total",
+  "trackingStarts": "Tracking starts when the worker sets off.",
+  "tryAgain": "Try again",
+  "typeMessage": "Type a message",
+  "unlimitedOffers": "Unlimited offers",
+  "updateDocsTryAgain": "Update your documents and try again.",
+  "updatedAgo": "updated {when}",
+  "@updatedAgo": {
+    "placeholders": {
+      "when": {}
+    }
+  },
+  "upload": "Upload",
+  "urgentSubtitle": "Shown first to workers. Adds a {fee} fee.",
+  "@urgentSubtitle": {
+    "placeholders": {
+      "fee": {}
+    }
+  },
+  "urgentTitle": "Urgent? Mark your job as an emergency",
+  "useAtLeast8": "Use at least 8 characters",
+  "useMyLocation": "Use my location",
+  "validUntil": "Valid until {time}",
+  "@validUntil": {
+    "placeholders": {
+      "time": {}
+    }
+  },
+  "verificationDocuments": "Verification documents",
+  "verificationRejected": "Verification was rejected",
+  "verifiedByKaamnow": "Verified by KaamNow",
+  "waitingForCounter": "Waiting for {name} to respond to your counter offer.",
+  "@waitingForCounter": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "waitingForCustomer": "Waiting for the customer.",
+  "waitingForCustomerShort": "Waiting for customer",
+  "waitingForGateway": "Waiting for the payment gateway to confirm.",
+  "waitingForOffers": "Waiting for offers",
+  "waitingForOffersHint": "Nearby workers have been notified. Offers appear here as they arrive.",
+  "waitingForWorkerConfirm": "Waiting for the worker to confirm.",
+  "waitingForWorkerLocation": "Waiting for the worker’s location…",
+  "whatHelp": "What do you need help with?",
+  "whatWentWrong": "What went wrong?",
+  "withdraw": "Withdraw",
+  "withdrawHint": "You cannot bid on this job again.",
+  "withdrawOfferQ": "Withdraw your offer?",
+  "workRadius": "Work radius (km)",
+  "worker": "Worker",
+  "workerAway": "{name} is {km} km away",
+  "@workerAway": {
+    "placeholders": {
+      "name": {},
+      "km": {}
+    }
+  },
+  "workerProfile": "Worker profile",
+  "workerProfileServicesDocs": "Worker profile, services and documents",
+  "workerSignupHint": "After signing up, upload your CNIC so KaamNow can verify you before you send offers.",
+  "worksIn": "Works in {area}",
+  "@worksIn": {
+    "placeholders": {
+      "area": {}
+    }
+  },
+  "yearsExp": "{n} yrs exp",
+  "@yearsExp": {
+    "placeholders": {
+      "n": {}
+    }
+  },
+  "yearsExperience": "Years of experience",
+  "yes": "Yes",
+  "you": "You",
+  "youAgreed": "You agreed. Waiting for the customer.",
+  "youAreAvailable": "You are available for jobs",
+  "youAreOffline": "You are offline",
+  "youEarned": "You earned",
+  "yourOffer": "Your offer",
+  "yourPhoneNumber": "Your phone number",
+  "yourPlan": "Your plan",
+  "yourPrice": "Your price"
+}

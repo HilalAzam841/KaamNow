@@ -1,0 +1,787 @@
+# Urdu translations for KaamNow server messages and alerts.
+# Compile after editing: python manage.py compilemessages (or python scripts/compile_messages.py).
+msgid ""
+msgstr ""
+"Project-Id-Version: KaamNow\n"
+"Language: ur\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: apps/accounts/serializers.py
+msgid "This email is already in use."
+msgstr "یہ ای میل پہلے سے استعمال میں ہے۔"
+
+#: apps/accounts/serializers.py
+msgid "An account with this phone number already exists."
+msgstr "اس فون نمبر سے اکاؤنٹ پہلے سے موجود ہے۔"
+
+#: apps/accounts/serializers.py
+msgid "An account with this email already exists."
+msgstr "اس ای میل سے اکاؤنٹ پہلے سے موجود ہے۔"
+
+#: apps/accounts/serializers.py
+msgid "Enter your full name."
+msgstr "اپنا پورا نام درج کریں۔"
+
+#: apps/accounts/serializers.py
+msgid "CNIC number is required for service providers."
+msgstr "کاریگروں کے لیے شناختی کارڈ نمبر ضروری ہے۔"
+
+#: apps/accounts/serializers.py
+msgid "This CNIC is already registered."
+msgstr "یہ شناختی کارڈ پہلے سے رجسٹرڈ ہے۔"
+
+#: apps/accounts/serializers.py
+msgid "Invalid phone number or password."
+msgstr "فون نمبر یا پاس ورڈ غلط ہے۔"
+
+#: apps/accounts/serializers.py
+msgid "This account is suspended. Contact support."
+msgstr "یہ اکاؤنٹ معطل ہے۔ سپورٹ سے رابطہ کریں۔"
+
+#: apps/accounts/serializers.py
+msgid "Provide your phone number or email."
+msgstr "اپنا فون نمبر یا ای میل درج کریں۔"
+
+#: apps/accounts/serializers.py
+msgid "CNIC cannot be changed after verification. Contact support."
+msgstr "تصدیق کے بعد شناختی کارڈ تبدیل نہیں ہو سکتا۔ سپورٹ سے رابطہ کریں۔"
+
+#: apps/accounts/serializers.py
+msgid "Provide both base_latitude and base_longitude."
+msgstr "لوکیشن کے دونوں حصے (base_latitude اور base_longitude) درج کریں۔"
+
+#: apps/accounts/services.py
+msgid "Only customer and worker accounts can self-register."
+msgstr "صرف گاہک اور کاریگر خود رجسٹر ہو سکتے ہیں۔"
+
+#: apps/accounts/services.py
+msgid "This worker is already verified."
+msgstr "اس کاریگر کی تصدیق پہلے ہو چکی ہے۔"
+
+#: apps/accounts/services.py
+msgid "Worker has not uploaded CNIC documents yet."
+msgstr "کاریگر نے ابھی شناختی کارڈ اپ لوڈ نہیں کیا۔"
+
+#: apps/accounts/services.py
+msgid "Account verified"
+msgstr "اکاؤنٹ کی تصدیق ہو گئی"
+
+#: apps/accounts/services.py
+msgid "Your KaamNow service provider account is verified. You can now go online and receive jobs."
+msgstr "آپ کے کام ناؤ کاریگر اکاؤنٹ کی تصدیق ہو گئی ہے۔ اب آپ آن لائن ہو کر کام حاصل کر سکتے ہیں۔"
+
+#: apps/accounts/services.py
+msgid "Verification unsuccessful"
+msgstr "تصدیق نہیں ہو سکی"
+
+#: apps/accounts/services.py
+#, python-brace-format
+msgid "Your verification was not approved: {reason}"
+msgstr "آپ کی تصدیق منظور نہیں ہوئی: {reason}"
+
+#: apps/accounts/services.py
+msgid "Your account must be verified before you can go online."
+msgstr "آن لائن ہونے سے پہلے آپ کے اکاؤنٹ کی تصدیق ضروری ہے۔"
+
+#: apps/accounts/services.py
+msgid "Set your service location before going online."
+msgstr "آن لائن ہونے سے پہلے اپنی سروس لوکیشن مقرر کریں۔"
+
+#: apps/accounts/services.py
+msgid "Add at least one service category before going online."
+msgstr "آن لائن ہونے سے پہلے کم از کم ایک سروس شامل کریں۔"
+
+#: apps/accounts/services.py
+msgid "You cannot suspend your own account."
+msgstr "آپ اپنا اکاؤنٹ معطل نہیں کر سکتے۔"
+
+#: apps/accounts/views.py
+msgid "Current password is incorrect."
+msgstr "موجودہ پاس ورڈ غلط ہے۔"
+
+#: apps/billing/serializers.py
+msgid "Benefits must be a list of short strings."
+msgstr "فوائد مختصر جملوں کی فہرست ہونی چاہیے۔"
+
+#: apps/billing/services.py
+#, python-brace-format
+msgid "{method} payments are not available right now."
+msgstr "{method} سے ادائیگی ابھی دستیاب نہیں۔"
+
+#: apps/billing/services.py
+msgid "A payment for this booking is already in progress."
+msgstr "اس بکنگ کی ادائیگی پہلے سے جاری ہے۔"
+
+#: apps/billing/services.py
+msgid "Payment confirmed"
+msgstr "ادائیگی کی تصدیق ہو گئی"
+
+#: apps/billing/services.py
+#, python-brace-format
+msgid "Your payment of {amount} for booking #{id} is confirmed."
+msgstr "بکنگ نمبر {id} کے لیے آپ کی {amount} کی ادائیگی کی تصدیق ہو گئی ہے۔"
+
+#: apps/billing/services.py
+msgid "Payment received"
+msgstr "ادائیگی موصول ہو گئی"
+
+#: apps/billing/services.py
+#, python-brace-format
+msgid "The customer paid {amount} for booking #{id} via {method}."
+msgstr "گاہک نے بکنگ نمبر {id} کے لیے {method} سے {amount} ادا کر دیے۔"
+
+#: apps/billing/services.py
+msgid "You can only pay for your own bookings."
+msgstr "آپ صرف اپنی بکنگ کی ادائیگی کر سکتے ہیں۔"
+
+#: apps/billing/services.py
+msgid "Payment can be recorded only after the job is completed."
+msgstr "ادائیگی کام مکمل ہونے کے بعد ہی درج ہو سکتی ہے۔"
+
+#: apps/billing/services.py
+msgid "This booking is already paid."
+msgstr "اس بکنگ کی ادائیگی ہو چکی ہے۔"
+
+#: apps/billing/services.py
+msgid "Confirm cash received"
+msgstr "نقد رقم ملنے کی تصدیق کریں"
+
+#: apps/billing/services.py
+#, python-brace-format
+msgid "Customer marked {amount} as paid in cash for booking #{id}. Please confirm."
+msgstr "گاہک کے مطابق بکنگ نمبر {id} کے لیے {amount} نقد ادا کر دیے گئے ہیں۔ براہِ کرم تصدیق کریں۔"
+
+#: apps/billing/services.py
+msgid "Only booking payments can be confirmed by a worker."
+msgstr "کاریگر صرف بکنگ کی ادائیگی کی تصدیق کر سکتا ہے۔"
+
+#: apps/billing/services.py
+msgid "Only the assigned worker can confirm cash receipt."
+msgstr "نقد رقم کی تصدیق صرف متعلقہ کاریگر کر سکتا ہے۔"
+
+#: apps/billing/services.py
+msgid "Online payments are confirmed automatically by the payment gateway."
+msgstr "آن لائن ادائیگی کی تصدیق پیمنٹ گیٹ وے خود کرتا ہے۔"
+
+#: apps/billing/services.py
+msgid "This payment is already closed."
+msgstr "یہ ادائیگی پہلے ہی بند ہو چکی ہے۔"
+
+#: apps/billing/services.py
+msgid "Payment failed"
+msgstr "ادائیگی ناکام"
+
+#: apps/billing/services.py
+#, python-brace-format
+msgid "Your {method} payment did not go through. Please try again."
+msgstr "آپ کی {method} ادائیگی مکمل نہیں ہوئی۔ براہِ کرم دوبارہ کوشش کریں۔"
+
+#: apps/billing/services.py
+msgid "Pay with JazzCash or Easypaisa. Contact support for other payment options."
+msgstr "جاز کیش یا ایزی پیسہ سے ادائیگی کریں۔ دوسرے طریقوں کے لیے سپورٹ سے رابطہ کریں۔"
+
+#: apps/billing/services.py
+msgid "This plan is not available."
+msgstr "یہ پلان دستیاب نہیں۔"
+
+#: apps/billing/services.py
+msgid "Your account must be verified before subscribing."
+msgstr "پلان لینے سے پہلے آپ کے اکاؤنٹ کی تصدیق ضروری ہے۔"
+
+#: apps/billing/services.py
+msgid "You already have an active paid plan. It will return to Free when it ends."
+msgstr "آپ کا ایک پیڈ پلان پہلے سے فعال ہے۔ ختم ہونے پر یہ مفت پلان پر واپس آ جائے گا۔"
+
+#: apps/billing/services.py
+msgid "You are already on this plan."
+msgstr "آپ پہلے سے اسی پلان پر ہیں۔"
+
+#: apps/billing/services.py
+#, python-brace-format
+msgid "{plan} plan active"
+msgstr "{plan} پلان فعال ہو گیا"
+
+#: apps/billing/services.py
+#, python-brace-format
+msgid "Your {plan} plan is active until {date}."
+msgstr "آپ کا {plan} پلان {date} تک فعال ہے۔"
+
+#: apps/billing/services.py
+msgid "This featured plan is not available."
+msgstr "یہ فیچرڈ پلان دستیاب نہیں۔"
+
+#: apps/billing/services.py
+msgid "Only verified workers can buy featured placement."
+msgstr "فیچرڈ جگہ صرف تصدیق شدہ کاریگر خرید سکتے ہیں۔"
+
+#: apps/billing/services.py
+msgid "You can only feature a category you offer."
+msgstr "آپ صرف اپنی پیش کردہ سروس میں فیچرڈ ہو سکتے ہیں۔"
+
+#: apps/billing/services.py
+msgid "You are already featured in this category."
+msgstr "آپ اس سروس میں پہلے سے فیچرڈ ہیں۔"
+
+#: apps/billing/services.py
+msgid "All featured slots in this category are taken. Please try again later."
+msgstr "اس سروس کی تمام فیچرڈ جگہیں بھر چکی ہیں۔ براہِ کرم بعد میں کوشش کریں۔"
+
+#: apps/billing/services.py
+msgid "You are featured"
+msgstr "آپ فیچرڈ ہیں"
+
+#: apps/billing/services.py
+#, python-brace-format
+msgid "You are now a sponsored {category} until {date}."
+msgstr "آپ اب {date} تک اسپانسرڈ {category} ہیں۔"
+
+#: apps/catalog/serializers.py
+msgid "A category with this name already exists."
+msgstr "اس نام کی سروس پہلے سے موجود ہے۔"
+
+#: apps/catalog/serializers.py
+msgid "This category is not active."
+msgstr "یہ سروس فعال نہیں۔"
+
+#: apps/catalog/serializers.py
+msgid "You already offer this service."
+msgstr "آپ یہ سروس پہلے سے پیش کر رہے ہیں۔"
+
+#: apps/catalog/serializers.py
+msgid "Category cannot be changed. Add a new service instead."
+msgstr "سروس کی قسم تبدیل نہیں ہو سکتی۔ اس کے بجائے نئی سروس شامل کریں۔"
+
+#: apps/catalog/views.py
+msgid "Only service providers can add services."
+msgstr "سروس صرف کاریگر شامل کر سکتے ہیں۔"
+
+#: apps/chat/services.py
+msgid "You are not part of this booking."
+msgstr "آپ اس بکنگ کا حصہ نہیں ہیں۔"
+
+#: apps/chat/services.py
+msgid "Message cannot be empty."
+msgstr "پیغام خالی نہیں ہو سکتا۔"
+
+#: apps/chat/services.py
+msgid "Message is too long (max 2000 characters)."
+msgstr "پیغام بہت لمبا ہے (زیادہ سے زیادہ 2000 حروف)۔"
+
+#: apps/chat/services.py
+msgid "Chat is closed for this booking."
+msgstr "اس بکنگ کی چیٹ بند ہو چکی ہے۔"
+
+#: apps/chat/services.py
+#, python-brace-format
+msgid "Message from {name}"
+msgstr "{name} کا پیغام"
+
+#: apps/common/exceptions.py
+msgid "This action is not allowed."
+msgstr "یہ عمل کرنے کی اجازت نہیں۔"
+
+#: apps/common/exceptions.py
+msgid "Internal server error."
+msgstr "سرور میں خرابی پیش آ گئی۔"
+
+#: apps/common/i18n.py
+#, python-brace-format
+msgid "Rs. {amount}"
+msgstr "{amount} روپے"
+
+#: apps/common/permissions.py
+msgid "Only customers can perform this action."
+msgstr "یہ کام صرف گاہک کر سکتے ہیں۔"
+
+#: apps/common/permissions.py
+msgid "Only service providers can perform this action."
+msgstr "یہ کام صرف کاریگر کر سکتے ہیں۔"
+
+#: apps/common/permissions.py
+msgid "Your service provider account must be verified by KaamNow first."
+msgstr "پہلے کام ناؤ کی طرف سے آپ کے کاریگر اکاؤنٹ کی تصدیق ضروری ہے۔"
+
+#: apps/common/validators.py
+msgid "Enter a valid Pakistani mobile number, e.g. 03001234567."
+msgstr "درست پاکستانی موبائل نمبر درج کریں، مثلاً 03001234567۔"
+
+#: apps/common/validators.py
+msgid "Phone number must be in the format +923XXXXXXXXX."
+msgstr "فون نمبر ‎+923XXXXXXXXX‎ کی شکل میں ہونا چاہیے۔"
+
+#: apps/common/validators.py
+msgid "CNIC must contain 13 digits, e.g. 35202-1234567-1."
+msgstr "شناختی کارڈ نمبر میں 13 ہندسے ہونے چاہییں، مثلاً 35202-1234567-1۔"
+
+#: apps/common/validators.py
+msgid "CNIC must contain exactly 13 digits."
+msgstr "شناختی کارڈ نمبر میں پورے 13 ہندسے ہونے چاہییں۔"
+
+#: apps/common/validators.py
+#, python-brace-format
+msgid "File too large. Maximum size is {max_mb} MB."
+msgstr "فائل بہت بڑی ہے۔ زیادہ سے زیادہ سائز {max_mb} MB ہے۔"
+
+#: apps/common/validators.py
+msgid "Upload a valid image file."
+msgstr "درست تصویر اپ لوڈ کریں۔"
+
+#: apps/common/validators.py
+msgid "Only JPEG, PNG and WEBP images are allowed."
+msgstr "صرف JPEG، PNG اور WEBP تصاویر کی اجازت ہے۔"
+
+#: apps/common/validators.py
+msgid "Only .jpg, .jpeg, .png and .webp images are allowed."
+msgstr "صرف ‎.jpg، .jpeg، .png‎ اور ‎.webp‎ تصاویر کی اجازت ہے۔"
+
+#: apps/common/validators.py
+msgid "Only .jpg, .jpeg, .png, .webp and .pdf files are allowed."
+msgstr "صرف ‎.jpg، .jpeg، .png، .webp‎ اور ‎.pdf‎ فائلوں کی اجازت ہے۔"
+
+#: apps/common/validators.py
+msgid "Upload a valid PDF file."
+msgstr "درست PDF فائل اپ لوڈ کریں۔"
+
+#: apps/dashboard/serializers.py
+msgid "date_from must be before date_to."
+msgstr "date_from کی تاریخ date_to سے پہلے ہونی چاہیے۔"
+
+#: apps/jobs/serializers.py
+msgid "Preferred time cannot be in the past."
+msgstr "وقت گزرا ہوا نہیں ہو سکتا۔"
+
+#: apps/jobs/serializers.py
+msgid "Preferred time must be within the next 60 days."
+msgstr "وقت اگلے 60 دن کے اندر ہونا چاہیے۔"
+
+#: apps/jobs/serializers.py
+msgid "Title is too short."
+msgstr "عنوان بہت مختصر ہے۔"
+
+#: apps/jobs/serializers.py
+msgid "Please describe the problem in at least 10 characters."
+msgstr "براہِ کرم مسئلہ کم از کم 10 حروف میں بیان کریں۔"
+
+#: apps/jobs/services.py
+msgid "This service category is not available."
+msgstr "یہ سروس دستیاب نہیں۔"
+
+#: apps/jobs/services.py
+msgid "Emergency service is not available right now."
+msgstr "ایمرجنسی سروس ابھی دستیاب نہیں۔"
+
+#: apps/jobs/services.py
+#, python-brace-format
+msgid "URGENT: New {category} request nearby"
+msgstr "فوری: قریب {category} کی نئی درخواست"
+
+#: apps/jobs/services.py
+#, python-brace-format
+msgid "New {category} request nearby"
+msgstr "قریب {category} کی نئی درخواست"
+
+#: apps/jobs/services.py
+msgid "Only open requests can be cancelled. Cancel the booking instead."
+msgstr "صرف کھلی درخواستیں منسوخ ہو سکتی ہیں۔ اس کے بجائے بکنگ منسوخ کریں۔"
+
+#: apps/jobs/services.py
+msgid "Request cancelled"
+msgstr "درخواست منسوخ ہو گئی"
+
+#: apps/jobs/services.py
+#, python-brace-format
+msgid "The customer cancelled '{title}'."
+msgstr "گاہک نے '{title}' منسوخ کر دی۔"
+
+#: apps/jobs/services.py
+msgid "Your worker is on the way."
+msgstr "آپ کا کاریگر راستے میں ہے۔"
+
+#: apps/jobs/services.py
+msgid "Your worker has arrived."
+msgstr "آپ کا کاریگر پہنچ گیا ہے۔"
+
+#: apps/jobs/services.py
+msgid "Your worker has started the job."
+msgstr "آپ کے کاریگر نے کام شروع کر دیا ہے۔"
+
+#: apps/jobs/services.py
+msgid "Only the assigned worker can update this booking."
+msgstr "یہ بکنگ صرف متعلقہ کاریگر اپ ڈیٹ کر سکتا ہے۔"
+
+#: apps/jobs/services.py
+msgid "This status change is not allowed right now."
+msgstr "اسٹیٹس میں یہ تبدیلی ابھی ممکن نہیں۔"
+
+#: apps/jobs/services.py
+msgid "Booking update"
+msgstr "بکنگ اپ ڈیٹ"
+
+#: apps/jobs/services.py
+msgid "Your booking was updated."
+msgstr "آپ کی بکنگ اپ ڈیٹ ہو گئی ہے۔"
+
+#: apps/jobs/services.py
+msgid "This booking can no longer be cancelled."
+msgstr "یہ بکنگ اب منسوخ نہیں ہو سکتی۔"
+
+#: apps/jobs/services.py
+msgid "Booking cancelled"
+msgstr "بکنگ منسوخ ہو گئی"
+
+#: apps/jobs/services.py
+#, python-brace-format
+msgid "Booking #{id} was cancelled. Reason: {reason}"
+msgstr "بکنگ نمبر {id} منسوخ ہو گئی۔ وجہ: {reason}"
+
+#: apps/jobs/services.py
+msgid "Only the customer can request the completion code."
+msgstr "تکمیل کوڈ صرف گاہک حاصل کر سکتا ہے۔"
+
+#: apps/jobs/services.py
+msgid "A completion code is available once work has started."
+msgstr "تکمیل کوڈ کام شروع ہونے کے بعد ملتا ہے۔"
+
+#: apps/jobs/services.py
+msgid "Please wait before requesting a new code."
+msgstr "نیا کوڈ مانگنے سے پہلے تھوڑا انتظار کریں۔"
+
+#: apps/jobs/services.py
+msgid "Job completed"
+msgstr "کام مکمل ہو گیا"
+
+#: apps/jobs/services.py
+#, python-brace-format
+msgid "Booking #{id} is complete. Amount: {amount}."
+msgstr "بکنگ نمبر {id} مکمل ہو گئی۔ رقم: {amount}۔"
+
+#: apps/jobs/services.py
+msgid "Only the assigned worker can submit the completion code."
+msgstr "تکمیل کوڈ صرف متعلقہ کاریگر درج کر سکتا ہے۔"
+
+#: apps/jobs/services.py
+msgid "Booking is not in progress."
+msgstr "بکنگ پر کام جاری نہیں۔"
+
+#: apps/jobs/services.py
+msgid "No completion code has been issued. Ask the customer to generate one."
+msgstr "ابھی کوئی تکمیل کوڈ جاری نہیں ہوا۔ گاہک سے کوڈ بنانے کو کہیں۔"
+
+#: apps/jobs/services.py
+msgid "The completion code has expired. Ask the customer for a new one."
+msgstr "تکمیل کوڈ کی مدت ختم ہو گئی۔ گاہک سے نیا کوڈ مانگیں۔"
+
+#: apps/jobs/services.py
+msgid "Too many incorrect attempts. Ask the customer for a new code."
+msgstr "بہت زیادہ غلط کوششیں۔ گاہک سے نیا کوڈ مانگیں۔"
+
+#: apps/jobs/services.py
+msgid "Only the customer can confirm completion."
+msgstr "تکمیل کی تصدیق صرف گاہک کر سکتا ہے۔"
+
+#: apps/jobs/views.py
+msgid "You can only edit your own requests."
+msgstr "آپ صرف اپنی درخواستوں میں ترمیم کر سکتے ہیں۔"
+
+#: apps/jobs/views.py
+msgid "Only open requests can be edited."
+msgstr "صرف کھلی درخواستوں میں ترمیم ہو سکتی ہے۔"
+
+#: apps/jobs/views.py
+msgid "You can only cancel your own requests."
+msgstr "آپ صرف اپنی درخواستیں منسوخ کر سکتے ہیں۔"
+
+#: apps/jobs/views.py
+msgid "Only the request owner can view matching workers."
+msgstr "مناسب کاریگر صرف درخواست دینے والا دیکھ سکتا ہے۔"
+
+#: apps/jobs/views.py
+msgid "Send {\"confirm\": true} to confirm the job is complete."
+msgstr "کام مکمل ہونے کی تصدیق کے لیے {\"confirm\": true} بھیجیں۔"
+
+#: apps/jobs/views.py
+msgid "Enter the completion code from the customer."
+msgstr "گاہک سے ملا تکمیل کوڈ درج کریں۔"
+
+#: apps/jobs/views.py
+msgid "Only booking participants can cancel."
+msgstr "صرف بکنگ کے فریقین منسوخ کر سکتے ہیں۔"
+
+#: apps/notifications/serializers.py
+msgid "Invalid device token."
+msgstr "ڈیوائس ٹوکن درست نہیں۔"
+
+#: apps/offers/serializers.py
+msgid "Nothing to update."
+msgstr "تبدیل کرنے کے لیے کچھ نہیں۔"
+
+#: apps/offers/serializers.py
+msgid "Amount is required for a counter proposal."
+msgstr "جوابی پیشکش کے لیے رقم ضروری ہے۔"
+
+#: apps/offers/services.py
+#, python-brace-format
+msgid "Price must be between Rs. {low} and Rs. {high}."
+msgstr "قیمت {low} اور {high} روپے کے درمیان ہونی چاہیے۔"
+
+#: apps/offers/services.py
+msgid "This request is no longer accepting offers."
+msgstr "یہ درخواست اب پیشکشیں قبول نہیں کر رہی۔"
+
+#: apps/offers/services.py
+msgid "You are not eligible to bid on this request (check verification, availability, category and radius)."
+msgstr "آپ اس درخواست پر پیشکش نہیں کر سکتے (تصدیق، دستیابی، سروس اور فاصلہ چیک کریں)۔"
+
+#: apps/offers/services.py
+msgid "You have already made an offer on this request. Update it instead."
+msgstr "آپ اس درخواست پر پہلے ہی پیشکش کر چکے ہیں۔ اسی میں ترمیم کریں۔"
+
+#: apps/offers/services.py
+msgid "You have already made an offer on this request."
+msgstr "آپ اس درخواست پر پہلے ہی پیشکش کر چکے ہیں۔"
+
+#: apps/offers/services.py
+msgid "New offer received"
+msgstr "نئی پیشکش موصول ہوئی"
+
+#: apps/offers/services.py
+#, python-brace-format
+msgid "{name} offered {amount} for '{title}'."
+msgstr "{name} نے '{title}' کے لیے {amount} کی پیشکش کی۔"
+
+#: apps/offers/services.py
+msgid "This offer can no longer be changed."
+msgstr "اس پیشکش میں اب تبدیلی نہیں ہو سکتی۔"
+
+#: apps/offers/services.py
+msgid "This request is no longer open."
+msgstr "یہ درخواست اب کھلی نہیں۔"
+
+#: apps/offers/services.py
+msgid "You can only edit your own offers."
+msgstr "آپ صرف اپنی پیشکشوں میں ترمیم کر سکتے ہیں۔"
+
+#: apps/offers/services.py
+msgid "Maximum negotiation rounds reached."
+msgstr "بھاؤ تاؤ کی حد پوری ہو گئی۔"
+
+#: apps/offers/services.py
+msgid "Offer updated"
+msgstr "پیشکش اپ ڈیٹ ہو گئی"
+
+#: apps/offers/services.py
+#, python-brace-format
+msgid "{name} updated their price to {amount}."
+msgstr "{name} نے قیمت بدل کر {amount} کر دی۔"
+
+#: apps/offers/services.py
+msgid "You are not a participant in this negotiation."
+msgstr "آپ اس بھاؤ تاؤ میں شامل نہیں ہیں۔"
+
+#: apps/offers/services.py
+msgid "Waiting for the other party to respond."
+msgstr "دوسرے فریق کے جواب کا انتظار ہے۔"
+
+#: apps/offers/services.py
+msgid "Maximum negotiation rounds reached. Accept or reject the current price."
+msgstr "بھاؤ تاؤ کی حد پوری ہو گئی۔ موجودہ قیمت قبول یا مسترد کریں۔"
+
+#: apps/offers/services.py
+msgid "Counter amount must differ from the current price. Use 'agree' instead."
+msgstr "جوابی رقم موجودہ قیمت سے مختلف ہونی چاہیے۔ اس کے بجائے رضامندی دیں۔"
+
+#: apps/offers/services.py
+msgid "New counter offer"
+msgstr "نئی جوابی پیشکش"
+
+#: apps/offers/services.py
+#, python-brace-format
+msgid "Counter proposal: {amount}."
+msgstr "جوابی پیشکش: {amount}۔"
+
+#: apps/offers/services.py
+msgid "Price agreed"
+msgstr "قیمت طے ہو گئی"
+
+#: apps/offers/services.py
+#, python-brace-format
+msgid "{name} agreed to {amount}. Confirm to book."
+msgstr "{name} {amount} پر راضی ہیں۔ بک کرنے کے لیے تصدیق کریں۔"
+
+#: apps/offers/services.py
+msgid "Unknown negotiation action."
+msgstr "نامعلوم عمل۔"
+
+#: apps/offers/services.py
+msgid "Only the customer who posted the request can accept offers."
+msgstr "پیشکش صرف درخواست دینے والا گاہک قبول کر سکتا ہے۔"
+
+#: apps/offers/services.py
+msgid "This request has already been booked or closed."
+msgstr "یہ درخواست پہلے ہی بک یا بند ہو چکی ہے۔"
+
+#: apps/offers/services.py
+msgid "This offer is no longer available."
+msgstr "یہ پیشکش اب دستیاب نہیں۔"
+
+#: apps/offers/services.py
+msgid "You proposed a new price. Wait for the worker to respond before accepting."
+msgstr "آپ نے نئی قیمت تجویز کی ہے۔ قبول کرنے سے پہلے کاریگر کے جواب کا انتظار کریں۔"
+
+#: apps/offers/services.py
+msgid "This worker is no longer available."
+msgstr "یہ کاریگر اب دستیاب نہیں۔"
+
+#: apps/offers/services.py
+msgid "This worker has too many active bookings right now."
+msgstr "اس کاریگر کے پاس اس وقت بہت سی جاری بکنگز ہیں۔"
+
+#: apps/offers/services.py
+msgid "Offer accepted"
+msgstr "پیشکش قبول ہو گئی"
+
+#: apps/offers/services.py
+#, python-brace-format
+msgid "Your offer of {amount} was accepted. Booking #{id} is confirmed."
+msgstr "آپ کی {amount} کی پیشکش قبول ہو گئی۔ بکنگ نمبر {id} کنفرم ہے۔"
+
+#: apps/offers/services.py
+msgid "Request booked"
+msgstr "درخواست بک ہو گئی"
+
+#: apps/offers/services.py
+#, python-brace-format
+msgid "'{title}' was booked with another provider."
+msgstr "'{title}' کسی اور کاریگر کے ساتھ بک ہو گئی۔"
+
+#: apps/offers/services.py
+msgid "This request has already been booked."
+msgstr "یہ درخواست پہلے ہی بک ہو چکی ہے۔"
+
+#: apps/offers/services.py
+msgid "You are not a participant in this offer."
+msgstr "آپ اس پیشکش میں شامل نہیں ہیں۔"
+
+#: apps/offers/services.py
+msgid "Offer declined"
+msgstr "پیشکش مسترد ہو گئی"
+
+#: apps/offers/services.py
+msgid "Offer withdrawn"
+msgstr "پیشکش واپس لے لی گئی"
+
+#: apps/reviews/services.py
+msgid "You can only review your own bookings."
+msgstr "آپ صرف اپنی بکنگ کا ریویو دے سکتے ہیں۔"
+
+#: apps/reviews/services.py
+msgid "You can review a worker only after the job is completed."
+msgstr "کاریگر کا ریویو کام مکمل ہونے کے بعد ہی دیا جا سکتا ہے۔"
+
+#: apps/reviews/services.py
+msgid "You have already reviewed this booking."
+msgstr "آپ اس بکنگ کا ریویو پہلے ہی دے چکے ہیں۔"
+
+#: apps/reviews/services.py
+msgid "New review"
+msgstr "نیا ریویو"
+
+#: apps/reviews/services.py
+#, python-brace-format
+msgid "You received a {rating}-star review."
+msgstr "آپ کو {rating} اسٹار کا ریویو ملا۔"
+
+#: apps/support/services.py
+msgid "You can only report problems with your own bookings."
+msgstr "آپ صرف اپنی بکنگ کے مسائل رپورٹ کر سکتے ہیں۔"
+
+#: apps/support/services.py
+msgid "You already have an open complaint for this booking."
+msgstr "اس بکنگ کے لیے آپ کی ایک شکایت پہلے سے کھلی ہے۔"
+
+#: apps/support/services.py
+msgid "Complaint received"
+msgstr "شکایت موصول ہو گئی"
+
+#: apps/support/services.py
+#, python-brace-format
+msgid "We received your complaint #{id}. Our team will review it."
+msgstr "ہمیں آپ کی شکایت نمبر {id} موصول ہو گئی ہے۔ ہماری ٹیم اس کا جائزہ لے گی۔"
+
+#: apps/support/services.py
+#, python-brace-format
+msgid "Complaint #{id} in review"
+msgstr "شکایت نمبر {id} زیرِ غور"
+
+#: apps/support/services.py
+#, python-brace-format
+msgid "Complaint #{id} resolved"
+msgstr "شکایت نمبر {id} حل ہو گئی"
+
+#: apps/support/services.py
+#, python-brace-format
+msgid "Complaint #{id} closed"
+msgstr "شکایت نمبر {id} بند کر دی گئی"
+
+#: apps/support/services.py
+#, python-brace-format
+msgid "Complaint #{id} reopened"
+msgstr "شکایت نمبر {id} دوبارہ کھل گئی"
+
+#: apps/support/services.py
+msgid "Our team is looking into your complaint."
+msgstr "ہماری ٹیم آپ کی شکایت دیکھ رہی ہے۔"
+
+#: apps/support/services.py
+msgid "Your complaint has been resolved."
+msgstr "آپ کی شکایت حل ہو گئی ہے۔"
+
+#: apps/support/services.py
+msgid "Your complaint has been closed."
+msgstr "آپ کی شکایت بند کر دی گئی ہے۔"
+
+#: apps/support/services.py
+msgid "Your complaint is open again."
+msgstr "آپ کی شکایت دوبارہ کھل گئی ہے۔"
+
+#: apps/support/services.py
+msgid "A resolution note is required."
+msgstr "حل کا نوٹ ضروری ہے۔"
+
+#: apps/tracking/services.py
+msgid "Only the assigned worker can share location."
+msgstr "لوکیشن صرف متعلقہ کاریگر شیئر کر سکتا ہے۔"
+
+#: apps/tracking/services.py
+msgid "Location sharing is only available during an active booking."
+msgstr "لوکیشن صرف جاری بکنگ کے دوران شیئر ہو سکتی ہے۔"
+
+#: apps/tracking/services.py
+msgid "Invalid coordinates."
+msgstr "لوکیشن درست نہیں۔"
+
+#: apps/tracking/services.py
+msgid "Live location is only shared during an active booking."
+msgstr "لائیو لوکیشن صرف جاری بکنگ کے دوران شیئر ہوتی ہے۔"
+
+#: apps/billing/models.py
+msgid "Cash"
+msgstr "نقد"
+
+#: apps/billing/models.py
+msgid "JazzCash"
+msgstr "جاز کیش"
+
+#: apps/billing/models.py
+msgid "Easypaisa"
+msgstr "ایزی پیسہ"
+
+#: apps/jobs/services.py
+#, python-brace-format
+msgid "Incorrect completion code. {n} attempt left."
+msgid_plural "Incorrect completion code. {n} attempts left."
+msgstr[0] "غلط تکمیل کوڈ۔ {n} کوشش باقی ہے۔"
+msgstr[1] "غلط تکمیل کوڈ۔ {n} کوششیں باقی ہیں۔"

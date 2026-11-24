@@ -1,3 +1,4 @@
+from django.utils.translation import gettext as _
 from rest_framework import serializers
 
 from .models import DeviceToken, Notification
@@ -20,7 +21,7 @@ class DeviceTokenSerializer(serializers.ModelSerializer):
     def validate_token(self, value):
         value = value.strip()
         if len(value) < 20:
-            raise serializers.ValidationError("Invalid device token.")
+            raise serializers.ValidationError(_("Invalid device token."))
         return value
 
 

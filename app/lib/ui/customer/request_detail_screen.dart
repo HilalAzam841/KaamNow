@@ -10,15 +10,16 @@ import '../../core/session.dart';
 import '../../models/models.dart';
 import '../widgets/common.dart';
 import '../widgets/offer_widgets.dart';
+import '../../l10n/l10n.dart';
 
-const _sortOptions = {
-  'price': 'Lowest price',
-  'rating': 'Highest rating',
-  'distance': 'Nearest',
-  'eta': 'Fastest arrival',
-  'completed_jobs': 'Most jobs',
-  'experience': 'Most experience',
-};
+Map<String, String> _sortOptions(AppLocalizations t) => {
+      'price': t.sortLowestPrice,
+      'rating': t.sortHighestRating,
+      'distance': t.sortNearest,
+      'eta': t.sortFastest,
+      'completed_jobs': t.sortMostJobs,
+      'experience': t.sortMostExperience,
+    };
 
 /// Customer view of one request: details plus every offer, with compare, counter, accept, reject.
 class RequestDetailScreen extends StatefulWidget {
@@ -65,33 +66,35 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
   }
 
   Future<void> _accept(WorkerOffer o) async {
-    final ok = await confirm(context, 'Book ${o.worker.fullName}?',
-        'You agree to pay ${rs(o.currentPrice)}${_request!.isEmergency ? ' plus the ${rs(_request!.emergencyFee)} emergency fee' : ''}. '
-        'All other offers will be closed.',
-        ok: 'Book');
+    final t = context.t;
+    final ok = await confirm(context, t.bookWorkerQ(o.worker.fullName),
+        _request!.isEmergency
+            ? t.bookAgreeEmergency(rs(o.currentPrice), rs(_request!.emergencyFee))
+            : t.bookAgree(rs(o.currentPrice)),
+        ok: t.book);
     if (!ok || !mounted) return;
-    final booking = await runAction(context, () => api.acceptOffer(o.id), success: 'Booked!');
+    final booking = await runAction(context, () => api.acceptOffer(o.id), success: context.t.booked);
     if (booking != null && mounted) context.pushReplacement('/bookings/${booking.id}');
   }
 
   Future<void> _counter(WorkerOffer o) async {
     final r = await askCounter(context, o.currentPrice);
     if (r == null || !mounted) return;
-    await runAction(context, () => api.negotiate(o.id, amount: r.$1, message: r.$2), success: 'Counter offer sent.');
+    await runAction(context, () => api.negotiate(o.id, amount: r.$1, message: r.$2), success: context.t.counterSent);
     _load();
   }
 
   Future<void> _reject(WorkerOffer o) async {
-    final reason = await promptText(context, 'Reject this offer?', label: 'Reason (optional)', ok: 'Reject');
+    final reason = await promptText(context, context.t.rejectOfferQ, label: context.t.reasonOptional, ok: context.t.reject);
     if (reason == null || !mounted) return;
     await runAction(context, () => api.rejectOffer(o.id, reason: reason));
     _load();
   }
 
   Future<void> _cancelRequest() async {
-    final reason = await promptText(context, 'Cancel this request?', label: 'Reason', ok: 'Cancel request', required: true);
+    final reason = await promptText(context, context.t.cancelRequestQ, label: context.t.reason, ok: context.t.cancelRequest, required: true);
     if (reason == null || !mounted) return;
-    await runAction(context, () => api.cancelRequest(widget.id, reason), success: 'Request cancelled.');
+    await runAction(context, () => api.cancelRequest(widget.id, reason), success: context.t.requestCancelled);
     _load();
   }
 
@@ -100,10 +103,10 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
     final r = _request;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Request'),
+        title: Text(context.t.request),
         actions: [
           if (r != null && r.isOpen)
-            IconButton(tooltip: 'Cancel request', onPressed: _cancelRequest, icon: const Icon(Icons.cancel_outlined)),
+            IconButton(tooltip: context.t.cancelRequest, onPressed: _cancelRequest, icon: const Icon(Icons.cancel_outlined)),
         ],
       ),
       body: r == null
@@ -118,18 +121,18 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
                       color: Theme.of(context).colorScheme.primaryContainer,
                       child: ListTile(
                         leading: const Icon(Icons.event_available),
-                        title: const Text('This job is booked'),
+                        title: Text(context.t.jobIsBooked),
                         trailing: const Icon(Icons.chevron_right),
                         onTap: () => context.push('/bookings/${r.bookingId}'),
                       ),
                     ),
                   SectionTitle(
-                    'Offers (${_offers.length})',
+                    context.t.offersHeading(_offers.length),
                     trailing: _offers.length > 1
                         ? DropdownButton<String>(
                             value: _sort,
                             underline: const SizedBox(),
-                            items: [for (final e in _sortOptions.entries) DropdownMenuItem(value: e.key, child: Text(e.value))],
+                            items: [for (final e in _sortOptions(context.t).entries) DropdownMenuItem(value: e.key, child: Text(e.value))],
                             onChanged: (v) {
                               setState(() => _sort = v!);
                               _load();
@@ -140,8 +143,8 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
                   if (_offers.isEmpty)
                     EmptyView(
                       icon: Icons.hourglass_top,
-                      title: r.isOpen ? 'Waiting for offers' : 'No offers',
-                      subtitle: r.isOpen ? 'Nearby workers have been notified. Offers appear here as they arrive.' : null,
+                      title: r.isOpen ? context.t.waitingForOffers : context.t.noOffers,
+                      subtitle: r.isOpen ? context.t.waitingForOffersHint : null,
                     ),
                   for (final o in _offers)
                     _OfferCard(
@@ -180,14 +183,14 @@ class _RequestHeader extends StatelessWidget {
             const SizedBox(height: 6),
             Row(children: [
               const Icon(Icons.bolt, color: Colors.red, size: 18),
-              Text(' Emergency · fee ${rs(r.emergencyFee)}'),
+              Text(' ${context.t.emergencyFee(rs(r.emergencyFee))}'),
             ]),
           ],
           const SizedBox(height: 10),
           Text(r.description),
           const SizedBox(height: 8),
           Text('${r.address}${r.area.isNotEmpty ? ', ${r.area}' : ''}', style: theme.textTheme.bodySmall),
-          if (r.budget != null) Text('Budget: ${rs(r.budget)}', style: theme.textTheme.bodySmall),
+          if (r.budget != null) Text(context.t.budget(rs(r.budget)), style: theme.textTheme.bodySmall),
           if (r.images.isNotEmpty) ...[
             const SizedBox(height: 10),
             SizedBox(
@@ -195,7 +198,7 @@ class _RequestHeader extends StatelessWidget {
               child: ListView(scrollDirection: Axis.horizontal, children: [
                 for (final url in r.images)
                   Padding(
-                    padding: const EdgeInsets.only(right: 8),
+                    padding: const EdgeInsetsDirectional.only(end: 8),
                     child: ClipRRect(borderRadius: BorderRadius.circular(8),
                         child: Image.network(url, width: 80, height: 80, fit: BoxFit.cover,
                             errorBuilder: (_, _, _) => const SizedBox(width: 80, child: Icon(Icons.broken_image)))),
@@ -205,7 +208,7 @@ class _RequestHeader extends StatelessWidget {
           ],
           if (r.cancelReason.isNotEmpty) ...[
             const SizedBox(height: 8),
-            Text('Cancelled: ${r.cancelReason}', style: TextStyle(color: theme.colorScheme.error)),
+            Text(context.t.cancelledReason(r.cancelReason), style: TextStyle(color: theme.colorScheme.error)),
           ],
         ]),
       ),
@@ -243,10 +246,10 @@ class _OfferCard extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Wrap(spacing: 14, runSpacing: 4, children: [
-            Row(mainAxisSize: MainAxisSize.min, children: [const Icon(Icons.timer, size: 16), Text(' ~${o.etaMinutes} min')]),
+            Row(mainAxisSize: MainAxisSize.min, children: [const Icon(Icons.timer, size: 16), Text(' ${context.t.etaMinutes(o.etaMinutes)}')]),
             if (o.distanceKm != null)
               Row(mainAxisSize: MainAxisSize.min,
-                  children: [const Icon(Icons.place, size: 16), Text(' ${o.distanceKm!.toStringAsFixed(1)} km')]),
+                  children: [const Icon(Icons.place, size: 16), Text(' ${context.t.distanceKm(o.distanceKm!.toStringAsFixed(1))}')]),
             if (!o.isPending) StatusChip(o.status),
           ]),
           if (o.message.isNotEmpty) ...[const SizedBox(height: 8), Text('"${o.message}"')],
@@ -257,7 +260,7 @@ class _OfferCard extends StatelessWidget {
           if (o.isPending && requestOpen) ...[
             const SizedBox(height: 10),
             if (!myTurn)
-              Text('Waiting for ${o.worker.fullName.split(' ').first} to respond to your counter offer.',
+              Text(context.t.waitingForCounter(o.worker.fullName.split(' ').first),
                   style: theme.textTheme.bodySmall),
             const SizedBox(height: 6),
             Wrap(spacing: 8, runSpacing: 8, children: [
@@ -266,16 +269,16 @@ class _OfferCard extends StatelessWidget {
                   key: Key('accept-${o.id}'),
                   onPressed: onAccept,
                   icon: const Icon(Icons.check),
-                  label: Text('Book for ${rs(o.currentPrice)}'),
+                  label: Text(context.t.bookFor(rs(o.currentPrice))),
                 ),
               if (myTurn)
                 OutlinedButton.icon(
                   key: Key('counter-${o.id}'),
                   onPressed: onCounter,
                   icon: const Icon(Icons.swap_horiz),
-                  label: const Text('Counter'),
+                  label: Text(context.t.counter),
                 ),
-              TextButton(onPressed: onReject, child: const Text('Reject')),
+              TextButton(onPressed: onReject, child: Text(context.t.reject)),
             ]),
           ],
         ]),

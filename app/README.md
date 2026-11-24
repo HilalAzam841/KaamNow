@@ -33,6 +33,16 @@ An admin who logs in gets the admin dashboard at `/admin` instead (sidebar on wi
 | Settings | Commission %, emergency fee, emergency jobs on or off (a commission change asks for confirmation) |
 | Audit log | Every sensitive admin action, filterable by type |
 
+### Urdu
+
+Customers and workers can switch between English and اردو on the login, sign-up and account
+screens. Urdu turns the whole app right to left and uses the bundled Noto Nastaliq Urdu font
+(`assets/fonts/`, SIL Open Font License). The choice is remembered in the browser, sent to the
+server with every request (`Accept-Language`) and saved on the account, so server messages and
+alerts arrive in the same language. Amounts read "1,800 روپے"; numbers stay in Western digits.
+The admin dashboard is always English. Strings are in `lib/l10n/app_en.arb` and `app_ur.arb`
+(`flutter gen-l10n` regenerates `lib/l10n/gen/`).
+
 Customers and workers who open an `/admin` link are sent back to their own home screen, and the
 server checks the admin role on every admin endpoint regardless.
 
@@ -76,11 +86,11 @@ On the backend, add the app's origin to `CORS_ALLOWED_ORIGINS` (for example
 
 ```bash
 flutter analyze
-flutter test          # 46 unit and widget tests (API client, models, routing, key screens, admin dashboard)
+flutter test          # 51 unit and widget tests (API client, models, routing, key screens, admin dashboard, Urdu)
 ```
 
 `e2e/` drives the real web build against a running backend in Chromium, through the whole job
-from sign-up to payment, review and earnings, plus an admin walk-through. See `e2e/README.md`.
+from sign-up to payment, review and earnings, plus an admin walk-through and an Urdu walk-through. See `e2e/README.md`.
 
 ## Structure
 

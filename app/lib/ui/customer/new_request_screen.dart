@@ -12,6 +12,7 @@ import '../../core/session.dart';
 import '../../models/models.dart';
 import '../widgets/common.dart';
 import '../widgets/map_view.dart';
+import '../../l10n/l10n.dart';
 
 class NewRequestScreen extends StatefulWidget {
   const NewRequestScreen({super.key, this.categoryId});
@@ -80,8 +81,8 @@ class _NewRequestScreenState extends State<NewRequestScreen> {
   Future<void> _submit() async {
     setState(() => _fieldErrors = {});
     if (!_form.currentState!.validate()) return;
-    if (_category == null) return showInfo(context, 'Choose a service.');
-    if (_pin == null) return showInfo(context, 'Set the job location on the map, or use your current location.');
+    if (_category == null) return showInfo(context, context.t.chooseService);
+    if (_pin == null) return showInfo(context, context.t.setLocationFirst);
     setState(() => _busy = true);
     try {
       final req = await context.read<Session>().api.createRequest(
@@ -99,8 +100,8 @@ class _NewRequestScreenState extends State<NewRequestScreen> {
           );
       if (!mounted) return;
       showInfo(context, req.matchedWorkersCount == null
-          ? 'Job posted.'
-          : 'Job posted. ${req.matchedWorkersCount} nearby workers were notified.');
+          ? context.t.jobPosted
+          : context.t.jobPostedNotified(req.matchedWorkersCount!));
       context.pushReplacement('/requests/${req.id}');
     } on ApiException catch (e) {
       setState(() => _fieldErrors = e.fieldErrors);
@@ -116,7 +117,7 @@ class _NewRequestScreenState extends State<NewRequestScreen> {
     final config = context.watch<Session>().config;
     final center = _pin ?? LatLng(config.cityLat, config.cityLng);
     return Scaffold(
-      appBar: AppBar(title: const Text('Post a job')),
+      appBar: AppBar(title: Text(context.t.postAJob)),
       body: PageBody(
         child: Form(
           key: _form,
@@ -124,16 +125,16 @@ class _NewRequestScreenState extends State<NewRequestScreen> {
             DropdownButtonFormField<int>(
               key: const Key('req-category'),
               initialValue: _categories.any((c) => c.id == _category) ? _category : null,
-              decoration: const InputDecoration(labelText: 'Service'),
+              decoration: InputDecoration(labelText: context.t.service),
               items: [for (final c in _categories) DropdownMenuItem(value: c.id, child: Text(c.name))],
               onChanged: (v) => setState(() => _category = v),
-              validator: (v) => v == null ? 'Choose a service' : _fieldErrors['category'],
+              validator: (v) => v == null ? context.t.chooseAService : _fieldErrors['category'],
             ),
             const SizedBox(height: 12),
             TextFormField(
               key: const Key('req-title'),
               controller: _title,
-              decoration: const InputDecoration(labelText: 'Title', hintText: 'e.g. Ceiling fan not working'),
+              decoration: InputDecoration(labelText: context.t.titleLabel, hintText: context.t.titleHint),
               validator: (v) => (v ?? '').trim().length < 5 ? 'At least 5 characters' : _fieldErrors['title'],
             ),
             const SizedBox(height: 12),
@@ -141,22 +142,22 @@ class _NewRequestScreenState extends State<NewRequestScreen> {
               key: const Key('req-description'),
               controller: _description,
               maxLines: 4,
-              decoration: const InputDecoration(labelText: 'Describe the problem', alignLabelWithHint: true),
+              decoration: InputDecoration(labelText: context.t.describeProblem, alignLabelWithHint: true),
               validator: (v) =>
                   (v ?? '').trim().length < 10 ? 'Add a little more detail (10+ characters)' : _fieldErrors['description'],
             ),
-            const SectionTitle('Location'),
+            SectionTitle(context.t.location),
             KaamMap(
               center: center,
               zoom: _pin == null ? 12 : 15,
               key: ValueKey(_pin),
-              pins: [if (_pin != null) MapPin(_pin!, icon: Icons.location_pin, color: Colors.red, label: 'Job location')],
+              pins: [if (_pin != null) MapPin(_pin!, icon: Icons.location_pin, color: Colors.red, label: context.t.jobLocation)],
               onTap: (p) => setState(() => _pin = p),
             ),
             const SizedBox(height: 8),
             Row(children: [
               Expanded(
-                child: Text(_pin == null ? 'Tap the map to place the pin.' : 'Pin placed. Tap the map to move it.',
+                child: Text(_pin == null ? context.t.tapMapToPin : context.t.pinPlaced,
                     style: Theme.of(context).textTheme.bodySmall),
               ),
               TextButton.icon(
@@ -164,38 +165,38 @@ class _NewRequestScreenState extends State<NewRequestScreen> {
                 icon: _locating
                     ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
                     : const Icon(Icons.my_location),
-                label: const Text('Use my location'),
+                label: Text(context.t.useMyLocation),
               ),
             ]),
             const SizedBox(height: 8),
             TextFormField(
               key: const Key('req-address'),
               controller: _address,
-              decoration: const InputDecoration(labelText: 'Address', helperText: 'Only the worker you book will see it'),
-              validator: (v) => (v ?? '').trim().length < 5 ? 'Enter the address' : _fieldErrors['address'],
+              decoration: InputDecoration(labelText: context.t.address, helperText: context.t.addressHelper),
+              validator: (v) => (v ?? '').trim().length < 5 ? context.t.enterAddress : _fieldErrors['address'],
             ),
             const SizedBox(height: 12),
             TextFormField(
               controller: _area,
-              decoration: const InputDecoration(labelText: 'Area (optional)', hintText: 'e.g. DHA Phase 5'),
+              decoration: InputDecoration(labelText: context.t.areaOptional, hintText: context.t.areaHint),
             ),
-            const SectionTitle('Details'),
+            SectionTitle(context.t.details),
             ListTile(
               contentPadding: EdgeInsets.zero,
               leading: const Icon(Icons.schedule),
-              title: const Text('Preferred time'),
+              title: Text(context.t.preferredTime),
               subtitle: Text(when(_when)),
-              trailing: TextButton(onPressed: _pickTime, child: const Text('Change')),
+              trailing: TextButton(onPressed: _pickTime, child: Text(context.t.change)),
             ),
             if (_fieldErrors['preferred_time'] != null)
               Text(_fieldErrors['preferred_time']!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
             TextFormField(
               controller: _budget,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(labelText: 'Your budget (optional)', prefixText: 'Rs '),
+              decoration: InputDecoration(labelText: context.t.budgetOptional, prefixText: context.t.rsPrefix),
               validator: (v) {
                 if ((v ?? '').trim().isEmpty) return _fieldErrors['budget'];
-                return double.tryParse(v!.trim()) == null ? 'Enter a number' : _fieldErrors['budget'];
+                return double.tryParse(v!.trim()) == null ? context.t.enterNumber : _fieldErrors['budget'];
               },
             ),
             if (config.emergencyEnabled)
@@ -203,10 +204,10 @@ class _NewRequestScreenState extends State<NewRequestScreen> {
                 contentPadding: EdgeInsets.zero,
                 value: _emergency,
                 onChanged: (v) => setState(() => _emergency = v),
-                title: const Text('Emergency'),
-                subtitle: Text('Shown first to workers. Adds ${rs(config.emergencyFee)} to the total.'),
+                title: Text(context.t.emergency),
+                subtitle: Text(context.t.emergencySubtitle(rs(config.emergencyFee))),
               ),
-            const SectionTitle('Photos (optional)'),
+            SectionTitle(context.t.photosOptional),
             Wrap(spacing: 8, runSpacing: 8, children: [
               for (var i = 0; i < _images.length; i++)
                 Stack(children: [
@@ -214,8 +215,8 @@ class _NewRequestScreenState extends State<NewRequestScreen> {
                     borderRadius: BorderRadius.circular(8),
                     child: Image.memory(_images[i].bytes, width: 84, height: 84, fit: BoxFit.cover),
                   ),
-                  Positioned(
-                    right: 0,
+                  PositionedDirectional(
+                    end: 0,
                     top: 0,
                     child: IconButton.filledTonal(
                       iconSize: 16,
@@ -226,7 +227,7 @@ class _NewRequestScreenState extends State<NewRequestScreen> {
                   ),
                 ]),
               if (_images.length < 5)
-                OutlinedButton.icon(onPressed: _pickImages, icon: const Icon(Icons.add_a_photo), label: const Text('Add')),
+                OutlinedButton.icon(onPressed: _pickImages, icon: const Icon(Icons.add_a_photo), label: Text(context.t.add)),
             ]),
             const SizedBox(height: 24),
             FilledButton(
@@ -234,7 +235,7 @@ class _NewRequestScreenState extends State<NewRequestScreen> {
               onPressed: _busy ? null : _submit,
               child: _busy
                   ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                  : const Text('Post job and get offers'),
+                  : Text(context.t.postJobGetOffers),
             ),
             const SizedBox(height: 32),
           ]),

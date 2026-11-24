@@ -1,3 +1,4 @@
+from django.utils.translation import gettext as _
 from datetime import timedelta
 
 from django.conf import settings
@@ -8,6 +9,7 @@ from rest_framework import status as http_status
 from apps.common.exceptions import BusinessRuleError
 from apps.common.realtime import broadcast_to_booking
 from apps.jobs.models import Booking
+from apps.common.i18n import t
 from apps.notifications.models import Notification
 from apps.notifications.services import push_only
 
@@ -37,19 +39,19 @@ def serialize_message(message):
 @transaction.atomic
 def send_message(booking, sender, body):
     if sender.pk not in (booking.customer_id, booking.worker.user_id):
-        raise BusinessRuleError("You are not part of this booking.", status_code=403)
+        raise BusinessRuleError(_("You are not part of this booking."), status_code=403)
     body = (body or "").strip()
     if not body:
-        raise BusinessRuleError("Message cannot be empty.")
+        raise BusinessRuleError(_("Message cannot be empty."))
     if len(body) > 2000:
-        raise BusinessRuleError("Message is too long (max 2000 characters).")
+        raise BusinessRuleError(_("Message is too long (max 2000 characters)."))
     if not chat_is_open(booking):
-        raise BusinessRuleError("Chat is closed for this booking.", status_code=http_status.HTTP_409_CONFLICT)
+        raise BusinessRuleError(_("Chat is closed for this booking."), status_code=http_status.HTTP_409_CONFLICT)
     message = ChatMessage.objects.create(booking=booking, sender=sender, body=body)
     broadcast_to_booking(booking.pk, "chat.message", serialize_message(message))
     recipient = booking.worker.user if sender.pk == booking.customer_id else booking.customer
     transaction.on_commit(lambda: push_only(
-        recipient, Notification.Type.CHAT_MESSAGE, f"Message from {sender.full_name.split(' ')[0]}", body[:120],
+        recipient, Notification.Type.CHAT_MESSAGE, t("Message from {name}", name=sender.full_name.split(" ")[0]), body[:120],
         {"booking_id": booking.pk, "message_id": message.pk},
     ))
     return message

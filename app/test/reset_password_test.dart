@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:kaamnow/l10n/l10n.dart';
 import 'package:kaamnow/ui/auth/reset_password_screen.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
@@ -12,7 +13,7 @@ void main() {
     final h = Harness();
     await tester.pumpWidget(ChangeNotifierProvider.value(
       value: h.session,
-      child: MaterialApp(home: ResetPasswordScreen(uid: uid, token: token)),
+      child: MaterialApp(localizationsDelegates: AppLocalizations.localizationsDelegates, home: ResetPasswordScreen(uid: uid, token: token)),
     ));
     return h;
   }

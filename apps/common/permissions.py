@@ -1,3 +1,4 @@
+from django.utils.translation import gettext_lazy as _
 from rest_framework.permissions import SAFE_METHODS, BasePermission
 
 
@@ -6,21 +7,21 @@ def _role(user):
 
 
 class IsCustomer(BasePermission):
-    message = "Only customers can perform this action."
+    message = _("Only customers can perform this action.")
 
     def has_permission(self, request, view):
         return _role(request.user) == "customer"
 
 
 class IsWorker(BasePermission):
-    message = "Only service providers can perform this action."
+    message = _("Only service providers can perform this action.")
 
     def has_permission(self, request, view):
         return _role(request.user) == "worker" and hasattr(request.user, "worker_profile")
 
 
 class IsVerifiedWorker(BasePermission):
-    message = "Your service provider account must be verified by KaamNow first."
+    message = _("Your service provider account must be verified by KaamNow first.")
 
     def has_permission(self, request, view):
         user = request.user

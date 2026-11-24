@@ -1,3 +1,4 @@
+from django.utils.translation import gettext as _, ngettext
 import hashlib
 import hmac
 import secrets
@@ -13,6 +14,7 @@ from rest_framework import status as http_status
 from apps.accounts.models import WorkerProfile
 from apps.common.exceptions import BusinessRuleError
 from apps.common.geo import bounding_box, get_geo_backend, haversine_km
+from apps.common.i18n import category_name, money, t
 from apps.notifications.models import Notification
 from apps.notifications.services import notify, notify_many
 
@@ -118,11 +120,11 @@ def create_service_request(customer, images=None, **data):
 
     category = data["category"]
     if not category.is_active:
-        raise BusinessRuleError("This service category is not available.")
+        raise BusinessRuleError(_("This service category is not available."))
     if data.get("is_emergency"):
         platform = PlatformSettings.load()
         if not platform.emergency_enabled:
-            raise BusinessRuleError("Emergency service is not available right now.")
+            raise BusinessRuleError(_("Emergency service is not available right now."))
         data["emergency_fee"] = platform.emergency_fee
     else:
         data["emergency_fee"] = Decimal("0")
@@ -132,10 +134,14 @@ def create_service_request(customer, images=None, **data):
 
     workers = find_nearby_workers(category, service_request.latitude, service_request.longitude, exclude_user=customer)
     if workers:
-        prefix = "URGENT: " if service_request.is_emergency else ""
+        title = (
+            t("URGENT: New {category} request nearby", category=category_name(category))
+            if service_request.is_emergency
+            else t("New {category} request nearby", category=category_name(category))
+        )
         transaction.on_commit(lambda: notify_many(
             [w.user for w in workers], Notification.Type.NEW_REQUEST,
-            f"{prefix}New {category.name} request nearby",
+            title,
             service_request.title,
             {"request_id": service_request.pk, "is_emergency": service_request.is_emergency},
         ))
@@ -150,7 +156,7 @@ def cancel_service_request(service_request, user, reason=""):
     service_request = ServiceRequest.objects.select_for_update().get(pk=service_request.pk)
     if service_request.status != ServiceRequest.Status.OPEN:
         raise BusinessRuleError(
-            "Only open requests can be cancelled. Cancel the booking instead.", status_code=http_status.HTTP_409_CONFLICT
+            _("Only open requests can be cancelled. Cancel the booking instead."), status_code=http_status.HTTP_409_CONFLICT
         )
     service_request.status = ServiceRequest.Status.CANCELLED
     service_request.cancelled_at = timezone.now()
@@ -168,7 +174,7 @@ def cancel_service_request(service_request, user, reason=""):
     if pending:
         notify_many(
             [o.worker.user for o in pending], Notification.Type.REQUEST_CANCELLED,
-            "Request cancelled", f"The customer cancelled '{service_request.title}'.",
+            t("Request cancelled"), t("The customer cancelled '{title}'.", title=service_request.title),
             {"request_id": service_request.pk},
         )
     return service_request
@@ -200,15 +206,22 @@ def _log(booking, from_status, to_status, user, note=""):
                                                         "to": to_status, "note": note})
 
 
+STATUS_ALERTS = {
+    Booking.Status.ON_THE_WAY: t("Your worker is on the way."),
+    Booking.Status.ARRIVED: t("Your worker has arrived."),
+    Booking.Status.IN_PROGRESS: t("Your worker has started the job."),
+}
+
+
 @transaction.atomic
 def update_booking_status(booking, worker_user, new_status, note=""):
     booking = Booking.objects.select_for_update().get(pk=booking.pk)
     if booking.worker.user_id != worker_user.pk:
-        raise BusinessRuleError("Only the assigned worker can update this booking.", status_code=403)
+        raise BusinessRuleError(_("Only the assigned worker can update this booking."), status_code=403)
     allowed = WORKER_TRANSITIONS.get(booking.status, set())
     if new_status not in allowed:
         raise BusinessRuleError(
-            f"Cannot change status from '{booking.status}' to '{new_status}'.", status_code=http_status.HTTP_409_CONFLICT
+            _("This status change is not allowed right now."), status_code=http_status.HTTP_409_CONFLICT
         )
     old = booking.status
     booking.status = new_status
@@ -216,8 +229,8 @@ def update_booking_status(booking, worker_user, new_status, note=""):
     booking.save(update_fields=["status", STATUS_TIMESTAMP[new_status], "updated_at"])
     _log(booking, old, new_status, worker_user, note)
     notify(
-        booking.customer, Notification.Type.BOOKING_STATUS, "Booking update",
-        f"Your worker status: {booking.get_status_display()}.",
+        booking.customer, Notification.Type.BOOKING_STATUS, t("Booking update"),
+        STATUS_ALERTS.get(new_status, t("Your booking was updated.")),
         {"booking_id": booking.pk, "status": new_status},
     )
     return booking
@@ -228,7 +241,7 @@ def cancel_booking(booking, user, reason):
     booking = Booking.objects.select_for_update().select_related("request", "worker__user", "customer").get(pk=booking.pk)
     if booking.status not in (Booking.Status.CONFIRMED, Booking.Status.ON_THE_WAY, Booking.Status.ARRIVED):
         raise BusinessRuleError(
-            "This booking can no longer be cancelled.", status_code=http_status.HTTP_409_CONFLICT
+            _("This booking can no longer be cancelled."), status_code=http_status.HTTP_409_CONFLICT
         )
     old = booking.status
     booking.status = Booking.Status.CANCELLED
@@ -245,8 +258,8 @@ def cancel_booking(booking, user, reason):
     _log(booking, old, Booking.Status.CANCELLED, user, reason)
     other = booking.worker.user if user.pk == booking.customer_id else booking.customer
     notify(
-        other, Notification.Type.BOOKING_CANCELLED, "Booking cancelled",
-        f"Booking #{booking.pk} was cancelled. Reason: {reason}", {"booking_id": booking.pk},
+        other, Notification.Type.BOOKING_CANCELLED, t("Booking cancelled"),
+        t("Booking #{id} was cancelled. Reason: {reason}", id=booking.pk, reason=reason), {"booking_id": booking.pk},
     )
     return booking
 
@@ -269,17 +282,17 @@ def issue_completion_otp(booking, customer_user):
     """Creates a fresh completion OTP and returns the plaintext ONLY to the caller (the customer)."""
     booking = Booking.objects.select_for_update().get(pk=booking.pk)
     if booking.customer_id != customer_user.pk:
-        raise BusinessRuleError("Only the customer can request the completion code.", status_code=403)
+        raise BusinessRuleError(_("Only the customer can request the completion code."), status_code=403)
     if booking.status != Booking.Status.IN_PROGRESS:
         raise BusinessRuleError(
-            "A completion code is available once work has started.", status_code=http_status.HTTP_409_CONFLICT
+            _("A completion code is available once work has started."), status_code=http_status.HTTP_409_CONFLICT
         )
     cfg = settings.KAAMNOW
     now = timezone.now()
     if booking.completion_otp_sent_at and (now - booking.completion_otp_sent_at).total_seconds() < cfg[
         "OTP_RESEND_COOLDOWN_SECONDS"
     ]:
-        raise BusinessRuleError("Please wait before requesting a new code.", status_code=http_status.HTTP_429_TOO_MANY_REQUESTS)
+        raise BusinessRuleError(_("Please wait before requesting a new code."), status_code=http_status.HTTP_429_TOO_MANY_REQUESTS)
 
     otp = _generate_otp()
     booking.completion_otp_hash = _hash_otp(booking.pk, otp)
@@ -310,8 +323,8 @@ def _finalize_completion(booking, user, via):
     record_commission(booking)
     for recipient in (booking.customer, booking.worker.user):
         notify(
-            recipient, Notification.Type.BOOKING_COMPLETED, "Job completed",
-            f"Booking #{booking.pk} is complete. Amount: Rs. {booking.agreed_price}.", {"booking_id": booking.pk},
+            recipient, Notification.Type.BOOKING_COMPLETED, t("Job completed"),
+            t("Booking #{id} is complete. Amount: {amount}.", id=booking.pk, amount=money(booking.agreed_price)), {"booking_id": booking.pk},
         )
     return booking
 
@@ -325,16 +338,16 @@ def complete_booking_with_otp(booking, worker_user, otp):
     with transaction.atomic():
         booking = Booking.objects.select_for_update().select_related("worker__user", "customer").get(pk=booking.pk)
         if booking.worker.user_id != worker_user.pk:
-            raise BusinessRuleError("Only the assigned worker can submit the completion code.", status_code=403)
+            raise BusinessRuleError(_("Only the assigned worker can submit the completion code."), status_code=403)
         if booking.status != Booking.Status.IN_PROGRESS:
-            raise BusinessRuleError("Booking is not in progress.", status_code=http_status.HTTP_409_CONFLICT)
+            raise BusinessRuleError(_("Booking is not in progress."), status_code=http_status.HTTP_409_CONFLICT)
         if not booking.completion_otp_hash or not booking.completion_otp_expires_at:
-            raise OTPVerificationFailed("No completion code has been issued. Ask the customer to generate one.")
+            raise OTPVerificationFailed(_("No completion code has been issued. Ask the customer to generate one."))
         if timezone.now() > booking.completion_otp_expires_at:
-            raise OTPVerificationFailed("The completion code has expired. Ask the customer for a new one.")
+            raise OTPVerificationFailed(_("The completion code has expired. Ask the customer for a new one."))
         if booking.completion_otp_attempts >= settings.KAAMNOW["OTP_MAX_ATTEMPTS"]:
             raise OTPVerificationFailed(
-                "Too many incorrect attempts. Ask the customer for a new code.",
+                _("Too many incorrect attempts. Ask the customer for a new code."),
                 status_code=http_status.HTTP_429_TOO_MANY_REQUESTS,
             )
         valid = hmac.compare_digest(booking.completion_otp_hash, _hash_otp(booking.pk, str(otp)))
@@ -346,7 +359,11 @@ def complete_booking_with_otp(booking, worker_user, otp):
         booking.save(update_fields=["completion_otp_attempts", "completion_otp_hash", "updated_at"])
     # Raised outside the atomic block so the attempt counter is committed.
     remaining = max(settings.KAAMNOW["OTP_MAX_ATTEMPTS"] - booking.completion_otp_attempts, 0)
-    raise OTPVerificationFailed(f"Incorrect completion code. {remaining} attempt(s) left.")
+    raise OTPVerificationFailed(
+        ngettext("Incorrect completion code. {n} attempt left.", "Incorrect completion code. {n} attempts left.", remaining).format(
+            n=remaining
+        )
+    )
 
 
 @transaction.atomic
@@ -354,9 +371,9 @@ def confirm_completion_by_customer(booking, customer_user):
     """Customer confirms completion in-app (they are the party the OTP protects)."""
     booking = Booking.objects.select_for_update().select_related("worker__user", "customer").get(pk=booking.pk)
     if booking.customer_id != customer_user.pk:
-        raise BusinessRuleError("Only the customer can confirm completion.", status_code=403)
+        raise BusinessRuleError(_("Only the customer can confirm completion."), status_code=403)
     if booking.status != Booking.Status.IN_PROGRESS:
-        raise BusinessRuleError("Booking is not in progress.", status_code=http_status.HTTP_409_CONFLICT)
+        raise BusinessRuleError(_("Booking is not in progress."), status_code=http_status.HTTP_409_CONFLICT)
     return _finalize_completion(booking, customer_user, "customer_confirmation")
 
 

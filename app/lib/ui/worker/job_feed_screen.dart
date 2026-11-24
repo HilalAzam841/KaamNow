@@ -6,6 +6,7 @@ import '../../core/format.dart';
 import '../../core/session.dart';
 import '../../models/models.dart';
 import '../widgets/common.dart';
+import '../../l10n/l10n.dart';
 
 /// Open requests near the worker that match their services. Emergencies come first.
 class JobFeedScreen extends StatelessWidget {
@@ -15,7 +16,7 @@ class JobFeedScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final api = context.read<Session>().api;
     return Scaffold(
-      appBar: AppBar(title: const Text('Jobs near you')),
+      appBar: AppBar(title: Text(context.t.jobsNearYou)),
       body: Loader<(WorkerProfile, Paged<ServiceRequest>)>(
         load: () async => (await api.myWorkerProfile(), await api.requests(scope: 'feed')),
         builder: (context, data, reload) {
@@ -28,9 +29,9 @@ class JobFeedScreen extends StatelessWidget {
                 if (page.results.isEmpty)
                   EmptyView(
                     icon: Icons.work_outline,
-                    title: 'No open jobs right now',
+                    title: context.t.noOpenJobs,
                     subtitle: profile.isVerified && profile.isAvailable
-                        ? 'New jobs in your area and services will show up here, and you will get an alert.'
+                        ? context.t.noOpenJobsHint
                         : null,
                   ),
                 for (final r in page.results)
@@ -38,13 +39,13 @@ class JobFeedScreen extends StatelessWidget {
                     key: Key('job-${r.id}'),
                     child: ListTile(
                       leading: r.isEmergency
-                          ? const Tooltip(message: 'Emergency', child: Icon(Icons.bolt, color: Colors.red))
+                          ? Tooltip(message: context.t.emergency, child: Icon(Icons.bolt, color: Colors.red))
                           : const Icon(Icons.work),
                       title: Text(r.title),
                       subtitle: Text('${r.categoryName}${r.area.isNotEmpty ? ' · ${r.area}' : ''}\n'
-                          '${when(r.preferredTime)}${r.budget != null ? ' · budget ${rs(r.budget)}' : ''}'),
+                          '${when(r.preferredTime)}${r.budget != null ? ' · ${context.t.budgetLower(rs(r.budget))}' : ''}'),
                       isThreeLine: true,
-                      trailing: Text('${r.offersCount} offer${r.offersCount == 1 ? '' : 's'}'),
+                      trailing: Text(context.t.offersCount(r.offersCount)),
                       onTap: () async {
                         await context.push('/jobs/${r.id}');
                         reload();
@@ -74,11 +75,10 @@ class _ReadinessBanner extends StatelessWidget {
         color: rejected ? theme.colorScheme.errorContainer : theme.colorScheme.tertiaryContainer,
         child: ListTile(
           leading: Icon(rejected ? Icons.error : Icons.verified_user_outlined),
-          title: Text(rejected ? 'Verification was rejected' : 'Get verified to send offers'),
+          title: Text(rejected ? context.t.verificationRejected : context.t.getVerified),
           subtitle: Text(rejected
-              ? (profile.rejectionReason.isEmpty ? 'Update your documents and try again.' : profile.rejectionReason)
-              : 'Upload both sides of your CNIC, add your services and set your base location. '
-                  'KaamNow reviews new workers before they can bid.'),
+              ? (profile.rejectionReason.isEmpty ? context.t.updateDocsTryAgain : profile.rejectionReason)
+              : context.t.getVerifiedHint),
           trailing: const Icon(Icons.chevron_right),
           onTap: () async {
             await context.push('/worker/profile');
@@ -91,8 +91,8 @@ class _ReadinessBanner extends StatelessWidget {
       child: SwitchListTile(
         key: const Key('availability'),
         value: profile.isAvailable,
-        title: Text(profile.isAvailable ? 'You are available for jobs' : 'You are offline'),
-        subtitle: const Text('Only available workers get new job alerts.'),
+        title: Text(profile.isAvailable ? context.t.youAreAvailable : context.t.youAreOffline),
+        subtitle: Text(context.t.onlyAvailableGetAlerts),
         onChanged: (v) async {
           await runAction(context, () => context.read<Session>().api.setAvailability(v));
           onChanged();

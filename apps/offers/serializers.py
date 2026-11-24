@@ -1,3 +1,4 @@
+from django.utils.translation import gettext as _
 from decimal import Decimal
 
 from rest_framework import serializers
@@ -48,7 +49,7 @@ class OfferUpdateSerializer(serializers.Serializer):
 
     def validate(self, attrs):
         if not attrs:
-            raise serializers.ValidationError("Nothing to update.")
+            raise serializers.ValidationError(_("Nothing to update."))
         return attrs
 
 
@@ -59,7 +60,7 @@ class NegotiateSerializer(serializers.Serializer):
 
     def validate(self, attrs):
         if attrs["action"] == "counter" and attrs.get("amount") is None:
-            raise serializers.ValidationError({"amount": "Amount is required for a counter proposal."})
+            raise serializers.ValidationError({"amount": _("Amount is required for a counter proposal.")})
         return attrs
 
 

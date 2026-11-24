@@ -1,9 +1,11 @@
+from django.utils.translation import gettext as _
 from django.db import transaction
 from django.utils import timezone
 
 from apps.common.exceptions import BusinessRuleError
 from apps.dashboard.models import AuditLog
 from apps.dashboard.services import audit
+from apps.common.i18n import t
 from apps.notifications.models import Notification
 from apps.notifications.services import notify
 
@@ -13,7 +15,7 @@ from .models import User, WorkerDocument, WorkerProfile
 @transaction.atomic
 def register_user(*, phone, password, full_name, role, email=None, cnic_number=None):
     if role not in (User.Role.CUSTOMER, User.Role.WORKER):
-        raise BusinessRuleError("Only customer and worker accounts can self-register.")
+        raise BusinessRuleError(_("Only customer and worker accounts can self-register."))
     user = User.objects.create_user(phone=phone, password=password, full_name=full_name, role=role, email=email)
     if role == User.Role.WORKER:
         WorkerProfile.objects.create(user=user, cnic_number=cnic_number)
@@ -24,11 +26,11 @@ def register_user(*, phone, password, full_name, role, email=None, cnic_number=N
 def verify_worker(worker: WorkerProfile, admin_user, request=None):
     worker = WorkerProfile.objects.select_for_update().get(pk=worker.pk)
     if worker.is_verified:
-        raise BusinessRuleError("This worker is already verified.")
+        raise BusinessRuleError(_("This worker is already verified."))
     if not worker.documents.filter(
         document_type__in=[WorkerDocument.DocumentType.CNIC_FRONT, WorkerDocument.DocumentType.CNIC_BACK]
     ).exists():
-        raise BusinessRuleError("Worker has not uploaded CNIC documents yet.")
+        raise BusinessRuleError(_("Worker has not uploaded CNIC documents yet."))
     worker.verification_status = WorkerProfile.VerificationStatus.VERIFIED
     worker.verified_at = timezone.now()
     worker.verified_by = admin_user
@@ -39,8 +41,8 @@ def verify_worker(worker: WorkerProfile, admin_user, request=None):
     )
     audit(admin_user, AuditLog.Action.WORKER_VERIFIED, worker, request)
     notify(
-        worker.user, Notification.Type.VERIFICATION, "Account verified",
-        "Your KaamNow service provider account is verified. You can now go online and receive jobs.",
+        worker.user, Notification.Type.VERIFICATION, t("Account verified"),
+        t("Your KaamNow service provider account is verified. You can now go online and receive jobs."),
     )
     return worker
 
@@ -61,8 +63,8 @@ def reject_worker(worker: WorkerProfile, admin_user, reason, request=None):
     )
     audit(admin_user, AuditLog.Action.WORKER_REJECTED, worker, request, reason=reason)
     notify(
-        worker.user, Notification.Type.VERIFICATION, "Verification unsuccessful",
-        f"Your verification was not approved: {reason}",
+        worker.user, Notification.Type.VERIFICATION, t("Verification unsuccessful"),
+        t("Your verification was not approved: {reason}", reason=reason),
     )
     return worker
 
@@ -70,11 +72,11 @@ def reject_worker(worker: WorkerProfile, admin_user, reason, request=None):
 def set_availability(worker: WorkerProfile, is_available: bool):
     if is_available:
         if not worker.is_verified:
-            raise BusinessRuleError("Your account must be verified before you can go online.")
+            raise BusinessRuleError(_("Your account must be verified before you can go online."))
         if worker.base_latitude is None or worker.base_longitude is None:
-            raise BusinessRuleError("Set your service location before going online.")
+            raise BusinessRuleError(_("Set your service location before going online."))
         if not worker.services.filter(is_active=True, category__is_active=True).exists():
-            raise BusinessRuleError("Add at least one service category before going online.")
+            raise BusinessRuleError(_("Add at least one service category before going online."))
     worker.is_available = is_available
     worker.save(update_fields=["is_available", "updated_at"])
     return worker
@@ -83,7 +85,7 @@ def set_availability(worker: WorkerProfile, is_available: bool):
 @transaction.atomic
 def set_suspension(user: User, admin_user, suspend: bool, reason="", request=None):
     if user.pk == admin_user.pk:
-        raise BusinessRuleError("You cannot suspend your own account.")
+        raise BusinessRuleError(_("You cannot suspend your own account."))
     user.is_suspended = suspend
     user.suspended_reason = reason if suspend else ""
     user.save(update_fields=["is_suspended", "suspended_reason", "updated_at"])

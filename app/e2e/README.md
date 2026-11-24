@@ -25,6 +25,13 @@ and reloads to check the page survives:
 cd app/e2e && ADMIN_PHONE=03009999999 ADMIN_PASSWORD=... node admin.js
 ```
 
+`urdu.js` switches the login screen to Urdu and visits the customer's and worker's main screens
+(run it after step1-3, which create the users it signs in as), then switches back to English:
+
+```bash
+cd app/e2e && node urdu.js
+```
+
 Against the production Docker stack running locally (see `deploy/README.md`):
 
 ```bash

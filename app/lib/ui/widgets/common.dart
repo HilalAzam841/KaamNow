@@ -2,6 +2,7 @@ import 'package:material_ui/material_ui.dart';
 
 import '../../core/api_exception.dart';
 import '../../core/format.dart';
+import '../../l10n/l10n.dart';
 
 /// Loads data once (and on pull-to-refresh), showing spinner / error / content.
 class Loader<T> extends StatefulWidget {
@@ -55,7 +56,7 @@ class ErrorView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final msg = error is ApiException ? (error as ApiException).displayMessage : 'Something went wrong.';
+    final msg = error is ApiException ? (error as ApiException).displayMessage : context.t.somethingWentWrong;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
@@ -65,7 +66,7 @@ class ErrorView extends StatelessWidget {
           Text(msg, textAlign: TextAlign.center),
           if (onRetry != null) ...[
             const SizedBox(height: 12),
-            FilledButton.tonal(onPressed: onRetry, child: const Text('Try again')),
+            FilledButton.tonal(onPressed: onRetry, child: Text(context.t.tryAgain)),
           ],
         ]),
       ),
@@ -128,7 +129,7 @@ class StatusChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(20)),
-      child: Text(label ?? bookingStatusLabels[status] ?? humanize(status),
+      child: Text(label ?? statusLabel(status),
           style: TextStyle(color: fg, fontSize: 12, fontWeight: FontWeight.w600)),
     );
   }
@@ -142,7 +143,7 @@ class RatingLine extends StatelessWidget {
   Widget build(BuildContext context) => Row(mainAxisSize: MainAxisSize.min, children: [
         const Icon(Icons.star_rounded, size: 18, color: Colors.amber),
         const SizedBox(width: 2),
-        Text(count == 0 ? 'New' : '${double.tryParse(rating)?.toStringAsFixed(1) ?? rating} ($count)'),
+        Text(count == 0 ? context.t.ratingNew : '${double.tryParse(rating)?.toStringAsFixed(1) ?? rating} ($count)'),
       ]);
 }
 
@@ -161,7 +162,7 @@ class SectionTitle extends StatelessWidget {
 }
 
 void showError(BuildContext context, Object error) {
-  final msg = error is ApiException ? error.displayMessage : 'Something went wrong.';
+  final msg = error is ApiException ? error.displayMessage : context.t.somethingWentWrong;
   ScaffoldMessenger.of(context)
     ..hideCurrentSnackBar()
     ..showSnackBar(SnackBar(content: Text(msg), behavior: SnackBarBehavior.floating));
@@ -185,15 +186,15 @@ Future<T?> runAction<T>(BuildContext context, Future<T> Function() action, {Stri
   }
 }
 
-Future<bool> confirm(BuildContext context, String title, String message, {String ok = 'Yes'}) async {
+Future<bool> confirm(BuildContext context, String title, String message, {String? ok}) async {
   final r = await showDialog<bool>(
     context: context,
     builder: (c) => AlertDialog(
       title: Text(title),
       content: Text(message),
       actions: [
-        TextButton(onPressed: () => Navigator.pop(c, false), child: const Text('No')),
-        FilledButton(onPressed: () => Navigator.pop(c, true), child: Text(ok)),
+        TextButton(onPressed: () => Navigator.pop(c, false), child: Text(c.t.no)),
+        FilledButton(onPressed: () => Navigator.pop(c, true), child: Text(ok ?? c.t.yes)),
       ],
     ),
   );
@@ -202,7 +203,7 @@ Future<bool> confirm(BuildContext context, String title, String message, {String
 
 /// Asks for one line of text. Returns null if cancelled.
 Future<String?> promptText(BuildContext context, String title,
-    {String label = '', String ok = 'OK', bool required = false, TextInputType? keyboard, String initial = ''}) {
+    {String label = '', String? ok, bool required = false, TextInputType? keyboard, String initial = ''}) {
   final ctrl = TextEditingController(text: initial);
   return showDialog<String>(
     context: context,
@@ -217,10 +218,10 @@ Future<String?> promptText(BuildContext context, String title,
           onChanged: (_) => setState(() {}),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(c), child: const Text('Cancel')),
+          TextButton(onPressed: () => Navigator.pop(c), child: Text(c.t.cancel)),
           FilledButton(
             onPressed: required && ctrl.text.trim().isEmpty ? null : () => Navigator.pop(c, ctrl.text.trim()),
-            child: Text(ok),
+            child: Text(ok ?? c.t.ok),
           ),
         ],
       );

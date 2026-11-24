@@ -6,7 +6,7 @@ enum UserRole { customer, worker, admin }
 
 class User {
   User({required this.id, required this.phone, required this.fullName, required this.role, this.email,
-      this.avatar, this.defaultAddress = '', this.workerProfileId});
+      this.avatar, this.defaultAddress = '', this.workerProfileId, this.language = 'en'});
 
   factory User.fromJson(Map<String, dynamic> j) => User(
         id: parseInt(j['id']),
@@ -17,6 +17,7 @@ class User {
         avatar: j['avatar'] as String?,
         defaultAddress: str(j['default_address']),
         workerProfileId: j['worker_profile_id'] as int?,
+        language: j['language'] == 'ur' ? 'ur' : 'en',
       );
 
   final int id;
@@ -27,6 +28,9 @@ class User {
   final String? avatar;
   final String defaultAddress;
   final int? workerProfileId;
+
+  /// 'en' or 'ur': the language the server writes this user's alerts in.
+  final String language;
 
   bool get isWorker => role == UserRole.worker;
   bool get isCustomer => role == UserRole.customer;

@@ -1,3 +1,4 @@
+from django.utils.translation import gettext as _
 import django_filters
 from django.db.models import Exists, OuterRef
 from django.utils import timezone
@@ -113,5 +114,5 @@ class WorkerServiceViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         if not self._is_worker():
-            raise PermissionDenied("Only service providers can add services.")
+            raise PermissionDenied(_("Only service providers can add services."))
         serializer.save(worker=self.request.user.worker_profile)

@@ -1,3 +1,4 @@
+from django.utils.translation import gettext as _
 from decimal import ROUND_HALF_UP, Decimal
 
 from django.db import IntegrityError, transaction
@@ -6,6 +7,7 @@ from django.db.models import Avg, Count
 from apps.accounts.models import WorkerProfile
 from apps.common.exceptions import BusinessRuleError, ConflictError
 from apps.jobs.models import Booking
+from apps.common.i18n import t
 from apps.notifications.models import Notification
 from apps.notifications.services import notify
 
@@ -22,21 +24,21 @@ def refresh_worker_rating(worker_id):
 def create_review(customer, booking, rating, comment=""):
     booking = Booking.objects.select_for_update().select_related("worker__user").get(pk=booking.pk)
     if booking.customer_id != customer.pk:
-        raise BusinessRuleError("You can only review your own bookings.", status_code=403)
+        raise BusinessRuleError(_("You can only review your own bookings."), status_code=403)
     if booking.status != Booking.Status.COMPLETED:
-        raise ConflictError("You can review a worker only after the job is completed.")
+        raise ConflictError(_("You can review a worker only after the job is completed."))
     if Review.objects.filter(booking=booking).exists():
-        raise ConflictError("You have already reviewed this booking.")
+        raise ConflictError(_("You have already reviewed this booking."))
     try:
         with transaction.atomic():
             review = Review.objects.create(
                 booking=booking, customer=customer, worker=booking.worker, rating=rating, comment=comment
             )
     except IntegrityError as exc:
-        raise ConflictError("You have already reviewed this booking.") from exc
+        raise ConflictError(_("You have already reviewed this booking.")) from exc
     refresh_worker_rating(booking.worker_id)
     notify(
-        booking.worker.user, Notification.Type.REVIEW, "New review",
-        f"You received a {rating}-star review.", {"booking_id": booking.pk, "review_id": review.pk},
+        booking.worker.user, Notification.Type.REVIEW, t("New review"),
+        t("You received a {rating}-star review.", rating=rating), {"booking_id": booking.pk, "review_id": review.pk},
     )
     return review

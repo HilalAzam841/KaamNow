@@ -2,7 +2,10 @@ import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
+import 'core/format.dart';
+import 'core/locale_controller.dart';
 import 'core/session.dart';
+import 'l10n/l10n.dart';
 import 'ui/account/account_screen.dart';
 import 'ui/admin/admin_shell.dart';
 import 'ui/admin/audit_screen.dart';
@@ -145,34 +148,90 @@ String? redirectFor(Session session, String location) {
 }
 
 class KaamNowApp extends StatefulWidget {
-  const KaamNowApp({super.key, required this.session});
+  KaamNowApp({super.key, required this.session, LocaleController? locale}) : locale = locale ?? LocaleController();
   final Session session;
+  final LocaleController locale;
   @override
   State<KaamNowApp> createState() => _KaamNowAppState();
 }
 
 class _KaamNowAppState extends State<KaamNowApp> {
   late final GoRouter _router = buildRouter(widget.session);
+  String? _syncedLanguage;
+
+  @override
+  void initState() {
+    super.initState();
+    widget.locale.addListener(_onLanguageOrSession);
+    widget.session.addListener(_onLanguageOrSession);
+    _onLanguageOrSession();
+  }
+
+  @override
+  void dispose() {
+    widget.locale.removeListener(_onLanguageOrSession);
+    widget.session.removeListener(_onLanguageOrSession);
+    super.dispose();
+  }
+
+  /// The admin dashboard is English-only; everyone else gets the language they picked.
+  String get _effectiveLanguage => widget.session.user?.isAdmin == true ? 'en' : widget.locale.code;
+
+  /// Sends the language with every request, and saves it on the account so alerts
+  /// (written by the server, also when the app is closed) use it too.
+  void _onLanguageOrSession() {
+    final code = _effectiveLanguage;
+    widget.session.api.client.language = code;
+    final user = widget.session.user;
+    if (user == null || user.isAdmin) {
+      _syncedLanguage = null;
+      return;
+    }
+    if (user.language == code || _syncedLanguage == code) return;
+    _syncedLanguage = code;
+    widget.session.api.updateMe({'language': code}).then((_) {}, onError: (_) => _syncedLanguage = null);
+  }
+
+  ThemeData _theme(Brightness brightness, bool urdu) {
+    const seed = Color(0xFF0E7C66);
+    final base = ThemeData(
+      colorScheme: ColorScheme.fromSeed(seedColor: seed, brightness: brightness),
+      inputDecorationTheme: const InputDecorationTheme(border: OutlineInputBorder()),
+      cardTheme: const CardThemeData(margin: EdgeInsets.symmetric(vertical: 6)),
+      // Nastaliq script needs room above and below the line.
+      fontFamily: urdu ? 'NotoNastaliqUrdu' : null,
+    );
+    if (!urdu) return base;
+    return base.copyWith(textTheme: base.textTheme.apply(heightFactor: 1.0, heightDelta: 0.35));
+  }
 
   @override
   Widget build(BuildContext context) {
-    const seed = Color(0xFF0E7C66);
-    return ChangeNotifierProvider.value(
-      value: widget.session,
-      child: MaterialApp.router(
-        title: 'KaamNow',
-        debugShowCheckedModeBanner: false,
-        routerConfig: _router,
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: seed),
-          inputDecorationTheme: const InputDecorationTheme(border: OutlineInputBorder()),
-          cardTheme: const CardThemeData(margin: EdgeInsets.symmetric(vertical: 6)),
-        ),
-        darkTheme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: seed, brightness: Brightness.dark),
-          inputDecorationTheme: const InputDecorationTheme(border: OutlineInputBorder()),
-          cardTheme: const CardThemeData(margin: EdgeInsets.symmetric(vertical: 6)),
-        ),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(value: widget.session),
+        ChangeNotifierProvider.value(value: widget.locale),
+      ],
+      child: ListenableBuilder(
+        listenable: Listenable.merge([widget.locale, widget.session]),
+        builder: (context, _) {
+          final code = _effectiveLanguage;
+          final urdu = code == 'ur';
+          return MaterialApp.router(
+            onGenerateTitle: (context) => context.t.appName,
+            debugShowCheckedModeBanner: false,
+            routerConfig: _router,
+            locale: Locale(code),
+            supportedLocales: AppLocalizations.supportedLocales,
+            localizationsDelegates: const [AppLocalizations.delegate, ...GlobalMaterialLocalizations.delegates],
+            builder: (context, child) {
+              useStrings(context.t);
+              return child!;
+            },
+            theme: _theme(Brightness.light, urdu),
+            darkTheme: _theme(Brightness.dark, urdu),
+          );
+        },
       ),
     );
   }

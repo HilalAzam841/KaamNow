@@ -4,7 +4,10 @@ import 'package:provider/provider.dart';
 
 import '../../config.dart';
 import '../../core/session.dart';
+import '../../core/format.dart';
 import '../widgets/common.dart';
+import '../widgets/language_button.dart';
+import '../../l10n/l10n.dart';
 
 class AccountScreen extends StatelessWidget {
   const AccountScreen({super.key});
@@ -18,19 +21,19 @@ class AccountScreen extends StatelessWidget {
     final ok = await showDialog<bool>(
       context: context,
       builder: (c) => AlertDialog(
-        title: const Text('Edit profile'),
+        title: Text(context.t.editProfile),
         content: Column(mainAxisSize: MainAxisSize.min, children: [
-          TextField(controller: name, decoration: const InputDecoration(labelText: 'Full name')),
+          TextField(controller: name, decoration: InputDecoration(labelText: context.t.fullName)),
           const SizedBox(height: 12),
-          TextField(controller: email, decoration: const InputDecoration(labelText: 'Email')),
+          TextField(controller: email, decoration: InputDecoration(labelText: context.t.email)),
           if (u.isCustomer) ...[
             const SizedBox(height: 12),
-            TextField(controller: address, decoration: const InputDecoration(labelText: 'Default address')),
+            TextField(controller: address, decoration: InputDecoration(labelText: context.t.defaultAddress)),
           ],
         ]),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(c, false), child: const Text('Cancel')),
-          FilledButton(onPressed: () => Navigator.pop(c, true), child: const Text('Save')),
+          TextButton(onPressed: () => Navigator.pop(c, false), child: Text(context.t.cancel)),
+          FilledButton(onPressed: () => Navigator.pop(c, true), child: Text(context.t.save)),
         ],
       ),
     );
@@ -42,7 +45,7 @@ class AccountScreen extends StatelessWidget {
         if (u.isCustomer) 'default_address': address.text.trim(),
       });
       await session.refreshUser();
-    }, success: 'Profile updated.');
+    }, success: context.t.profileUpdated);
   }
 
   Future<void> _changePassword(BuildContext context) async {
@@ -51,21 +54,21 @@ class AccountScreen extends StatelessWidget {
     final ok = await showDialog<bool>(
       context: context,
       builder: (c) => AlertDialog(
-        title: const Text('Change password'),
+        title: Text(context.t.changePassword),
         content: Column(mainAxisSize: MainAxisSize.min, children: [
-          TextField(controller: current, obscureText: true, decoration: const InputDecoration(labelText: 'Current password')),
+          TextField(controller: current, obscureText: true, decoration: InputDecoration(labelText: context.t.currentPassword)),
           const SizedBox(height: 12),
-          TextField(controller: next, obscureText: true, decoration: const InputDecoration(labelText: 'New password')),
+          TextField(controller: next, obscureText: true, decoration: InputDecoration(labelText: context.t.newPassword)),
         ]),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(c, false), child: const Text('Cancel')),
-          FilledButton(onPressed: () => Navigator.pop(c, true), child: const Text('Change')),
+          TextButton(onPressed: () => Navigator.pop(c, false), child: Text(context.t.cancel)),
+          FilledButton(onPressed: () => Navigator.pop(c, true), child: Text(context.t.change)),
         ],
       ),
     );
     if (ok != true || !context.mounted) return;
     await runAction(context, () => context.read<Session>().api.changePassword(current.text, next.text),
-        success: 'Password changed.');
+        success: context.t.passwordChangedShort);
   }
 
   @override
@@ -74,13 +77,13 @@ class AccountScreen extends StatelessWidget {
     final u = session.user;
     if (u == null) return const SizedBox();
     return Scaffold(
-      appBar: AppBar(title: const Text('Account')),
+      appBar: AppBar(title: Text(context.t.tabAccount)),
       body: PageBody(
         child: ListView(children: [
           ListTile(
             leading: Avatar(name: u.fullName, url: u.avatar),
             title: Text(u.fullName),
-            subtitle: Text('${u.phone}${u.email != null ? '\n${u.email}' : ''}'),
+            subtitle: Text('${ltr(u.phone)}${u.email != null ? '\n${ltr(u.email!)}' : ''}'),
             isThreeLine: u.email != null,
             trailing: IconButton(icon: const Icon(Icons.edit), onPressed: () => _editProfile(context)),
           ),
@@ -88,24 +91,29 @@ class AccountScreen extends StatelessWidget {
           if (u.isWorker) ...[
             ListTile(
               leading: const Icon(Icons.badge),
-              title: const Text('Worker profile, services and documents'),
+              title: Text(context.t.workerProfileServicesDocs),
               onTap: () => context.push('/worker/profile'),
             ),
-            ListTile(leading: const Icon(Icons.payments), title: const Text('Earnings'), onTap: () => context.push('/worker/earnings')),
-            ListTile(leading: const Icon(Icons.workspace_premium), title: const Text('Plans'), onTap: () => context.push('/worker/plans')),
+            ListTile(leading: const Icon(Icons.payments), title: Text(context.t.earnings), onTap: () => context.push('/worker/earnings')),
+            ListTile(leading: const Icon(Icons.workspace_premium), title: Text(context.t.plans), onTap: () => context.push('/worker/plans')),
           ],
-          ListTile(leading: const Icon(Icons.support_agent), title: const Text('Help and complaints'), onTap: () => context.push('/complaints')),
-          ListTile(leading: const Icon(Icons.lock), title: const Text('Change password'), onTap: () => _changePassword(context)),
+          ListTile(leading: const Icon(Icons.support_agent), title: Text(context.t.helpAndComplaints), onTap: () => context.push('/complaints')),
+          ListTile(
+            leading: const Icon(Icons.translate),
+            title: Text(context.t.language),
+            trailing: const LanguageButton(),
+          ),
+          ListTile(leading: const Icon(Icons.lock), title: Text(context.t.changePassword), onTap: () => _changePassword(context)),
           ListTile(
             key: const Key('logout'),
             leading: const Icon(Icons.logout),
-            title: const Text('Log out'),
+            title: Text(context.t.logOut),
             onTap: () => session.logout(),
           ),
           const Divider(),
           if (session.config.supportEmail.isNotEmpty)
-            ListTile(dense: true, leading: const Icon(Icons.mail_outline), title: Text('Support: ${session.config.supportEmail}')),
-          const ListTile(dense: true, title: Text('KaamNow ${AppConfig.appVersion}')),
+            ListTile(dense: true, leading: const Icon(Icons.mail_outline), title: Text(context.t.supportEmail(session.config.supportEmail))),
+          ListTile(dense: true, title: Text(context.t.appVersion(AppConfig.appVersion))),
         ]),
       ),
     );

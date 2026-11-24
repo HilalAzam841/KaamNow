@@ -1,3 +1,4 @@
+from django.utils.translation import gettext as _
 import logging
 import secrets
 from datetime import timedelta
@@ -10,6 +11,7 @@ from django.utils import timezone
 from rest_framework import status as http_status
 
 from apps.common.exceptions import BusinessRuleError, ConflictError
+from apps.common.i18n import category_name, money, t
 from apps.notifications.models import Notification
 from apps.notifications.services import notify
 
@@ -101,7 +103,7 @@ def _create_payment(*, purpose, payer, amount, method, booking=None):
     if method in Payment.ONLINE_METHODS:
         gateway = get_gateway(method)
         if not gateway.is_configured:
-            raise BusinessRuleError(f"{Payment.Method(method).label} payments are not available right now.")
+            raise BusinessRuleError(_("{method} payments are not available right now.").format(method=Payment.Method(method).label))
         expires_at = timezone.now() + timedelta(minutes=settings.ONLINE_PAYMENT_TTL_MINUTES)
     try:
         with transaction.atomic():
@@ -110,7 +112,7 @@ def _create_payment(*, purpose, payer, amount, method, booking=None):
                 reference=_reference(), expires_at=expires_at,
             )
     except IntegrityError as exc:
-        raise ConflictError("A payment for this booking is already in progress.") from exc
+        raise ConflictError(_("A payment for this booking is already in progress.")) from exc
     if method in Payment.ONLINE_METHODS:
         try:
             checkout = get_gateway(method).build_checkout(payment).as_dict()
@@ -168,14 +170,15 @@ def _complete_payment(payment, confirmed_by=None):
                                    "Emergency service fee", booking, booking.worker))
         LedgerEntry.objects.bulk_create(entries)
         notify(
-            payment.payer, Notification.Type.PAYMENT, "Payment confirmed",
-            f"Your payment of Rs. {payment.amount} for booking #{booking.pk} is confirmed.",
+            payment.payer, Notification.Type.PAYMENT, t("Payment confirmed"),
+            t("Your payment of {amount} for booking #{id} is confirmed.", amount=money(payment.amount), id=booking.pk),
             {"payment_id": payment.pk, "booking_id": booking.pk},
         )
         if payment.is_online:
             notify(
-                booking.worker.user, Notification.Type.PAYMENT, "Payment received",
-                f"The customer paid Rs. {payment.amount} for booking #{booking.pk} via {payment.get_method_display()}.",
+                booking.worker.user, Notification.Type.PAYMENT, t("Payment received"),
+                t("The customer paid {amount} for booking #{id} via {method}.", amount=money(payment.amount),
+                  id=booking.pk, method=t(payment.get_method_display())),
                 {"payment_id": payment.pk, "booking_id": booking.pk},
             )
 
@@ -214,13 +217,13 @@ def record_payment(booking, payer, method):
 
     booking = Booking.objects.select_for_update().get(pk=booking.pk)
     if booking.customer_id != payer.pk:
-        raise BusinessRuleError("You can only pay for your own bookings.", status_code=403)
+        raise BusinessRuleError(_("You can only pay for your own bookings."), status_code=403)
     if booking.status != Booking.Status.COMPLETED:
-        raise ConflictError("Payment can be recorded only after the job is completed.")
+        raise ConflictError(_("Payment can be recorded only after the job is completed."))
     live = Payment.objects.filter(booking=booking, status__in=[Payment.Status.PENDING, Payment.Status.COMPLETED])
     for existing in live.select_for_update():
         if existing.status == Payment.Status.COMPLETED:
-            raise ConflictError("This booking is already paid.")
+            raise ConflictError(_("This booking is already paid."))
         if not _expire_if_stale(existing):
             if existing.method != method:
                 # Switching method (e.g. JazzCash failed, paying cash instead) cancels the old attempt.
@@ -228,14 +231,15 @@ def record_payment(booking, payer, method):
                 existing.failure_reason = f"Replaced by a {method} payment."
                 existing.save(update_fields=["status", "failure_reason", "updated_at"])
             else:
-                raise ConflictError("A payment for this booking is already in progress.")
+                raise ConflictError(_("A payment for this booking is already in progress."))
     payment, checkout = _create_payment(
         purpose=Payment.Purpose.BOOKING, payer=payer, amount=booking.total_amount, method=method, booking=booking
     )
     if method == Payment.Method.CASH:
         notify(
-            booking.worker.user, Notification.Type.PAYMENT, "Confirm cash received",
-            f"Customer marked Rs. {payment.amount} as paid in cash for booking #{booking.pk}. Please confirm.",
+            booking.worker.user, Notification.Type.PAYMENT, t("Confirm cash received"),
+            t("Customer marked {amount} as paid in cash for booking #{id}. Please confirm.",
+              amount=money(payment.amount), id=booking.pk),
             {"payment_id": payment.pk, "booking_id": booking.pk},
         )
     return payment, checkout
@@ -247,13 +251,13 @@ def confirm_cash_payment(payment, worker_user):
         Payment.objects.select_for_update(of=("self",)).select_related("booking__worker__user").get(pk=payment.pk)
     )
     if payment.purpose != Payment.Purpose.BOOKING or payment.booking is None:
-        raise BusinessRuleError("Only booking payments can be confirmed by a worker.")
+        raise BusinessRuleError(_("Only booking payments can be confirmed by a worker."))
     if payment.booking.worker.user_id != worker_user.pk:
-        raise BusinessRuleError("Only the assigned worker can confirm cash receipt.", status_code=403)
+        raise BusinessRuleError(_("Only the assigned worker can confirm cash receipt."), status_code=403)
     if payment.method != Payment.Method.CASH:
-        raise BusinessRuleError("Online payments are confirmed automatically by the payment gateway.")
+        raise BusinessRuleError(_("Online payments are confirmed automatically by the payment gateway."))
     if payment.status != Payment.Status.PENDING:
-        raise ConflictError(f"Payment is already {payment.status}.")
+        raise ConflictError(_("This payment is already closed."))
     return _complete_payment(payment, confirmed_by=worker_user)
 
 
@@ -304,8 +308,9 @@ def handle_gateway_callback(method, data):
             payment.failure_reason = result.message[:255]
             payment.save(update_fields=["status", "failure_reason", "gateway_response", "gateway_transaction_id",
                                         "updated_at"])
-            notify(payment.payer, Notification.Type.PAYMENT, "Payment failed",
-                   f"Your {payment.get_method_display()} payment did not go through. Please try again.",
+            notify(payment.payer, Notification.Type.PAYMENT, t("Payment failed"),
+                   t("Your {method} payment did not go through. Please try again.",
+                     method=t(payment.get_method_display())),
                    {"payment_id": payment.pk})
             return payment
         payment.save(update_fields=["gateway_response", "gateway_transaction_id", "updated_at"])
@@ -336,22 +341,22 @@ def expire_stale_online_payments():
 # --------------------------------------------------------------------------
 def _require_online(method):
     if method not in Payment.ONLINE_METHODS:
-        raise BusinessRuleError("Pay with JazzCash or Easypaisa. Contact support for other payment options.")
+        raise BusinessRuleError(_("Pay with JazzCash or Easypaisa. Contact support for other payment options."))
 
 
 @transaction.atomic
 def subscribe(worker, plan: SubscriptionPlan, method=None):
     """Starts a subscription. Free plans activate immediately; paid plans after verified payment."""
     if not plan.is_active:
-        raise BusinessRuleError("This plan is not available.")
+        raise BusinessRuleError(_("This plan is not available."))
     if not worker.is_verified:
-        raise BusinessRuleError("Your account must be verified before subscribing.", status_code=403)
+        raise BusinessRuleError(_("Your account must be verified before subscribing."), status_code=403)
     current = active_subscription(worker)
     if plan.is_free:
         if current and not current.plan.is_free:
-            raise ConflictError("You already have an active paid plan. It will return to Free when it ends.")
+            raise ConflictError(_("You already have an active paid plan. It will return to Free when it ends."))
         if current and current.plan_id == plan.pk:
-            raise ConflictError("You are already on this plan.")
+            raise ConflictError(_("You are already on this plan."))
         subscription = WorkerSubscription.objects.create(worker=worker, plan=plan, amount=Decimal("0"))
         return activate_subscription(subscription), None
 
@@ -393,8 +398,10 @@ def activate_subscription(subscription, activated_by=None):
     subscription.activated_by = activated_by
     subscription.save(update_fields=["status", "starts_at", "ends_at", "activated_by", "updated_at"])
     notify(
-        subscription.worker.user, Notification.Type.SUBSCRIPTION, f"{subscription.plan.name} plan active",
-        f"Your {subscription.plan.name} plan is active until {timezone.localtime(subscription.ends_at):%d %b %Y}.",
+        subscription.worker.user, Notification.Type.SUBSCRIPTION,
+        t("{plan} plan active", plan=subscription.plan.name),
+        t("Your {plan} plan is active until {date}.", plan=subscription.plan.name,
+          date=f"{timezone.localtime(subscription.ends_at):%d-%m-%Y}"),
         {"subscription_id": subscription.pk},
     )
     return subscription
@@ -452,18 +459,18 @@ def purchase_featured_listing(worker, plan: FeaturedPlan, category, method):
     from apps.catalog.models import ServiceCategory
 
     if not plan.is_active:
-        raise BusinessRuleError("This featured plan is not available.")
+        raise BusinessRuleError(_("This featured plan is not available."))
     if not worker.is_verified:
-        raise BusinessRuleError("Only verified workers can buy featured placement.", status_code=403)
+        raise BusinessRuleError(_("Only verified workers can buy featured placement."), status_code=403)
     if not worker.services.filter(category=category, is_active=True).exists():
-        raise BusinessRuleError("You can only feature a category you offer.")
+        raise BusinessRuleError(_("You can only feature a category you offer."))
     _require_online(method)
     ServiceCategory.objects.select_for_update().get(pk=category.pk)  # serialise slot counting per category
     if FeaturedListing.objects.filter(worker=worker, category=category, status=FeaturedListing.Status.ACTIVE,
                                       ends_at__gt=timezone.now()).exists():
-        raise ConflictError("You are already featured in this category.")
+        raise ConflictError(_("You are already featured in this category."))
     if _featured_slots_taken(category) >= settings.KAAMNOW["MAX_FEATURED_PER_CATEGORY"]:
-        raise ConflictError("All featured slots in this category are taken. Please try again later.")
+        raise ConflictError(_("All featured slots in this category are taken. Please try again later."))
     FeaturedListing.objects.filter(worker=worker, category=category,
                                    status=FeaturedListing.Status.PENDING_PAYMENT).update(
         status=FeaturedListing.Status.CANCELLED, updated_at=timezone.now()
@@ -489,8 +496,9 @@ def activate_featured_listing(listing):
     listing.ends_at = now + timedelta(days=listing.plan.duration_days)
     listing.save(update_fields=["status", "starts_at", "ends_at", "updated_at"])
     notify(
-        listing.worker.user, Notification.Type.FEATURED, "You are featured",
-        f"You are now a sponsored {listing.category.name} until {timezone.localtime(listing.ends_at):%d %b %Y}.",
+        listing.worker.user, Notification.Type.FEATURED, t("You are featured"),
+        t("You are now a sponsored {category} until {date}.", category=category_name(listing.category),
+          date=f"{timezone.localtime(listing.ends_at):%d-%m-%Y}"),
         {"featured_listing_id": listing.pk},
     )
     return listing

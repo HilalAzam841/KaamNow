@@ -11,8 +11,10 @@ import '../../core/session.dart';
 import '../../models/models.dart';
 import '../widgets/common.dart';
 import '../widgets/map_view.dart';
+import '../../l10n/l10n.dart';
 
-const _docTypes = {'cnic_front': 'CNIC front', 'cnic_back': 'CNIC back', 'certificate': 'Certificate', 'other': 'Other'};
+Map<String, String> _docTypes(AppLocalizations t) =>
+    {'cnic_front': t.docCnicFront, 'cnic_back': t.docCnicBack, 'certificate': t.docCertificate, 'other': t.docOther};
 
 /// Everything a worker needs to get verified and win jobs.
 class WorkerProfileScreen extends StatefulWidget {
@@ -74,7 +76,7 @@ class _WorkerProfileScreenState extends State<WorkerProfileScreen> {
         if (_base != null) 'base_latitude': _base!.latitude.toStringAsFixed(6),
         if (_base != null) 'base_longitude': _base!.longitude.toStringAsFixed(6),
       }),
-      success: 'Profile saved.',
+      success: context.t.profileSaved,
     );
     if (mounted) setState(() => _saving = false);
     if (p != null) _load();
@@ -92,7 +94,7 @@ class _WorkerProfileScreenState extends State<WorkerProfileScreen> {
     if (f == null || !mounted) return;
     final file = UploadFile(field: 'file', filename: f.name, bytes: await f.readAsBytes());
     if (!mounted) return;
-    await runAction(context, () => api.uploadDocument(type, file), success: '${_docTypes[type]} uploaded.');
+    await runAction(context, () => api.uploadDocument(type, file), success: context.t.docUploaded(_docTypes(context.t)[type]!));
     _load();
   }
 
@@ -101,17 +103,17 @@ class _WorkerProfileScreenState extends State<WorkerProfileScreen> {
     if (f == null || !mounted) return;
     final file = UploadFile(field: 'profile_picture', filename: f.name, bytes: await f.readAsBytes());
     if (!mounted) return;
-    await runAction(context, () => api.uploadProfilePicture(file), success: 'Photo updated.');
+    await runAction(context, () => api.uploadProfilePicture(file), success: context.t.photoUpdated);
     _load();
   }
 
   Future<void> _addService() async {
     final existing = _p!.services.map((s) => s.category).toSet();
     final options = _categories.where((c) => !existing.contains(c.id)).toList();
-    if (options.isEmpty) return showInfo(context, 'You already offer every service.');
+    if (options.isEmpty) return showInfo(context, context.t.allServicesOffered);
     final r = await showDialog<(int, String)>(context: context, builder: (_) => _AddServiceDialog(options: options));
     if (r == null || !mounted) return;
-    await runAction(context, () => api.addService(r.$1, startingPrice: r.$2), success: 'Service added.');
+    await runAction(context, () => api.addService(r.$1, startingPrice: r.$2), success: context.t.serviceAdded);
     _load();
   }
 
@@ -121,7 +123,7 @@ class _WorkerProfileScreenState extends State<WorkerProfileScreen> {
     final theme = Theme.of(context);
     final config = context.read<Session>().config;
     return Scaffold(
-      appBar: AppBar(title: const Text('My worker profile')),
+      appBar: AppBar(title: Text(context.t.myWorkerProfile)),
       body: p == null
           ? (_error != null ? ErrorView(error: _error!, onRetry: _load) : const Center(child: CircularProgressIndicator()))
           : PageBody(
@@ -129,11 +131,11 @@ class _WorkerProfileScreenState extends State<WorkerProfileScreen> {
                 Row(children: [
                   Stack(children: [
                     Avatar(name: p.fullName, url: p.profilePicture, radius: 36),
-                    Positioned(
-                      right: -4,
+                    PositionedDirectional(
+                      end: -4,
                       bottom: -4,
                       child: IconButton.filledTonal(
-                          iconSize: 16, onPressed: _uploadPhoto, icon: const Icon(Icons.camera_alt), tooltip: 'Change photo'),
+                          iconSize: 16, onPressed: _uploadPhoto, icon: const Icon(Icons.camera_alt), tooltip: context.t.changePhoto),
                     ),
                   ]),
                   const SizedBox(width: 16),
@@ -141,7 +143,7 @@ class _WorkerProfileScreenState extends State<WorkerProfileScreen> {
                     child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                       Text(p.fullName, style: theme.textTheme.titleLarge),
                       const SizedBox(height: 4),
-                      StatusChip(p.verificationStatus, label: humanize(p.verificationStatus)),
+                      StatusChip(p.verificationStatus, label: statusLabel(p.verificationStatus)),
                       const SizedBox(height: 4),
                       RatingLine(rating: p.averageRating, count: p.ratingCount),
                     ]),
@@ -150,58 +152,58 @@ class _WorkerProfileScreenState extends State<WorkerProfileScreen> {
                 if (p.verificationStatus == 'rejected' && p.rejectionReason.isNotEmpty)
                   Padding(
                     padding: const EdgeInsets.only(top: 12),
-                    child: Text('Reason: ${p.rejectionReason}', style: TextStyle(color: theme.colorScheme.error)),
+                    child: Text(context.t.reasonLine(p.rejectionReason), style: TextStyle(color: theme.colorScheme.error)),
                   ),
-                const SectionTitle('Verification documents'),
-                Text('CNIC images are private. Only KaamNow staff can see them.', style: theme.textTheme.bodySmall),
+                SectionTitle(context.t.verificationDocuments),
+                Text(context.t.cnicPrivate, style: theme.textTheme.bodySmall),
                 const SizedBox(height: 8),
-                for (final type in _docTypes.keys)
+                for (final type in _docTypes(context.t).keys)
                   ListTile(
                     contentPadding: EdgeInsets.zero,
                     leading: Icon(_docs.any((d) => d.documentType == type) ? Icons.check_circle : Icons.upload_file,
                         color: _docs.any((d) => d.documentType == type) ? Colors.green : null),
-                    title: Text(_docTypes[type]!),
-                    subtitle: Text(_docs.where((d) => d.documentType == type).map((d) => '${d.filename} (${d.status})').join(', ')),
-                    trailing: TextButton(key: Key('upload-$type'), onPressed: () => _upload(type), child: const Text('Upload')),
+                    title: Text(_docTypes(context.t)[type]!),
+                    subtitle: Text(_docs.where((d) => d.documentType == type).map((d) => '${d.filename} (${statusLabel(d.status)})').join(', ')),
+                    trailing: TextButton(key: Key('upload-$type'), onPressed: () => _upload(type), child: Text(context.t.upload)),
                   ),
-                SectionTitle('Services', trailing: TextButton.icon(
+                SectionTitle(context.t.services, trailing: TextButton.icon(
                   key: const Key('add-service'),
-                  onPressed: _addService, icon: const Icon(Icons.add), label: const Text('Add'))),
-                if (p.services.isEmpty) const Text('Add the services you offer to see matching jobs.'),
+                  onPressed: _addService, icon: const Icon(Icons.add), label: Text(context.t.add))),
+                if (p.services.isEmpty) Text(context.t.addServicesToSeeJobs),
                 for (final s in p.services)
                   ListTile(
                     contentPadding: EdgeInsets.zero,
                     title: Text(s.categoryName),
-                    subtitle: s.startingPrice == null ? null : Text('From ${rs(s.startingPrice)}'),
+                    subtitle: s.startingPrice == null ? null : Text(context.t.fromPriceCap(rs(s.startingPrice))),
                     trailing: IconButton(
-                      tooltip: 'Remove',
+                      tooltip: context.t.remove,
                       icon: const Icon(Icons.delete_outline),
                       onPressed: () async {
-                        if (!await confirm(context, 'Remove ${s.categoryName}?', 'You will stop getting these jobs.')) return;
+                        if (!await confirm(context, context.t.removeServiceQ(s.categoryName), context.t.stopGettingJobs)) return;
                         if (!context.mounted) return;
                         await runAction(context, () => api.removeService(s.id));
                         _load();
                       },
                     ),
                   ),
-                const SectionTitle('About you'),
-                TextField(controller: _bio, maxLines: 3, decoration: const InputDecoration(labelText: 'Short bio')),
+                SectionTitle(context.t.aboutYou),
+                TextField(controller: _bio, maxLines: 3, decoration: InputDecoration(labelText: context.t.shortBio)),
                 const SizedBox(height: 12),
                 Row(children: [
                   Expanded(
                     child: TextField(controller: _exp, keyboardType: TextInputType.number,
-                        decoration: const InputDecoration(labelText: 'Years of experience')),
+                        decoration: InputDecoration(labelText: context.t.yearsExperience)),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: TextField(controller: _radius, keyboardType: TextInputType.number,
-                        decoration: const InputDecoration(labelText: 'Work radius (km)')),
+                        decoration: InputDecoration(labelText: context.t.workRadius)),
                   ),
                 ]),
                 const SizedBox(height: 12),
-                TextField(controller: _area, decoration: const InputDecoration(labelText: 'Areas you cover', hintText: 'e.g. Gulberg, Model Town')),
-                const SectionTitle('Base location'),
-                Text('Jobs are matched by distance from here. Customers never see it.', style: theme.textTheme.bodySmall),
+                TextField(controller: _area, decoration: InputDecoration(labelText: context.t.areasYouCover, hintText: context.t.areasHint)),
+                SectionTitle(context.t.baseLocation),
+                Text(context.t.baseLocationHint, style: theme.textTheme.bodySmall),
                 const SizedBox(height: 8),
                 KaamMap(
                   key: ValueKey(_base),
@@ -211,14 +213,14 @@ class _WorkerProfileScreenState extends State<WorkerProfileScreen> {
                   onTap: (pt) => setState(() => _base = pt),
                 ),
                 Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton.icon(onPressed: _useMyLocation, icon: const Icon(Icons.my_location), label: const Text('Use my location')),
+                  alignment: AlignmentDirectional.centerEnd,
+                  child: TextButton.icon(onPressed: _useMyLocation, icon: const Icon(Icons.my_location), label: Text(context.t.useMyLocation)),
                 ),
                 const SizedBox(height: 12),
                 FilledButton(
                   key: const Key('save-profile'),
                   onPressed: _saving ? null : _save,
-                  child: const Text('Save profile'),
+                  child: Text(context.t.saveProfile),
                 ),
                 const SizedBox(height: 32),
               ]),
@@ -240,25 +242,25 @@ class _AddServiceDialogState extends State<_AddServiceDialog> {
 
   @override
   Widget build(BuildContext context) => AlertDialog(
-        title: const Text('Add a service'),
+        title: Text(context.t.addAService),
         content: Column(mainAxisSize: MainAxisSize.min, children: [
           DropdownButtonFormField<int>(
             key: const Key('service-category'),
             initialValue: _category,
-            decoration: const InputDecoration(labelText: 'Service'),
+            decoration: InputDecoration(labelText: context.t.service),
             items: [for (final c in widget.options) DropdownMenuItem(value: c.id, child: Text(c.name))],
             onChanged: (v) => setState(() => _category = v),
           ),
           const SizedBox(height: 12),
           TextField(controller: _price, keyboardType: TextInputType.number,
-              decoration: const InputDecoration(labelText: 'Starting price (optional)', prefixText: 'Rs ')),
+              decoration: InputDecoration(labelText: context.t.startingPriceOptional, prefixText: context.t.rsPrefix)),
         ]),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+          TextButton(onPressed: () => Navigator.pop(context), child: Text(context.t.cancel)),
           FilledButton(
             key: const Key('service-save'),
             onPressed: _category == null ? null : () => Navigator.pop(context, (_category!, _price.text.trim())),
-            child: const Text('Add'),
+            child: Text(context.t.add),
           ),
         ],
       );

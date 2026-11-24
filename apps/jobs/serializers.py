@@ -1,3 +1,4 @@
+from django.utils.translation import gettext as _
 from datetime import timedelta
 from decimal import ROUND_HALF_UP, Decimal
 
@@ -38,21 +39,21 @@ class ServiceRequestCreateSerializer(serializers.ModelSerializer):
 
     def validate_preferred_time(self, value):
         if value < timezone.now() - timedelta(minutes=5):
-            raise serializers.ValidationError("Preferred time cannot be in the past.")
+            raise serializers.ValidationError(_("Preferred time cannot be in the past."))
         if value > timezone.now() + timedelta(days=60):
-            raise serializers.ValidationError("Preferred time must be within the next 60 days.")
+            raise serializers.ValidationError(_("Preferred time must be within the next 60 days."))
         return value
 
     def validate_title(self, value):
         value = value.strip()
         if len(value) < 3:
-            raise serializers.ValidationError("Title is too short.")
+            raise serializers.ValidationError(_("Title is too short."))
         return value
 
     def validate_description(self, value):
         value = value.strip()
         if len(value) < 10:
-            raise serializers.ValidationError("Please describe the problem in at least 10 characters.")
+            raise serializers.ValidationError(_("Please describe the problem in at least 10 characters."))
         return value
 
 
@@ -69,7 +70,7 @@ class ServiceRequestUpdateSerializer(serializers.ModelSerializer):
 class ServiceRequestSerializer(serializers.ModelSerializer):
     """Full view for the request owner and admins."""
 
-    category_name = serializers.CharField(source="category.name", read_only=True)
+    category_name = serializers.CharField(source="category.display_name", read_only=True)
     images = ServiceRequestImageSerializer(many=True, read_only=True)
     offers_count = serializers.SerializerMethodField()
     booking_id = serializers.SerializerMethodField()
@@ -104,7 +105,7 @@ def _approx(value):
 class ServiceRequestForWorkerSerializer(serializers.ModelSerializer):
     """What a worker sees before being booked: no address, phone or exact location."""
 
-    category_name = serializers.CharField(source="category.name", read_only=True)
+    category_name = serializers.CharField(source="category.display_name", read_only=True)
     customer_name = serializers.SerializerMethodField()
     approx_latitude = serializers.SerializerMethodField()
     approx_longitude = serializers.SerializerMethodField()
@@ -194,7 +195,7 @@ class BookingSerializer(serializers.ModelSerializer):
 
     request_id = serializers.IntegerField(source="request.id", read_only=True)
     title = serializers.CharField(source="request.title", read_only=True)
-    category_name = serializers.CharField(source="request.category.name", read_only=True)
+    category_name = serializers.CharField(source="request.category.display_name", read_only=True)
     preferred_time = serializers.DateTimeField(source="request.preferred_time", read_only=True)
     worker = PublicWorkerSerializer(read_only=True)
     customer_name = serializers.CharField(source="customer.full_name", read_only=True)

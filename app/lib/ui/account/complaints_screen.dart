@@ -6,18 +6,19 @@ import '../../core/format.dart';
 import '../../core/session.dart';
 import '../../models/models.dart';
 import '../widgets/common.dart';
+import '../../l10n/l10n.dart';
 
-const complaintCategories = {
-  'service_quality': 'Poor service quality',
-  'no_show': 'Did not show up',
-  'overcharging': 'Overcharging',
-  'behaviour': 'Behaviour',
-  'payment': 'Payment problem',
-  'damage': 'Damage to property',
-  'fraud': 'Fraud',
-  'app_issue': 'Problem with the app',
-  'other': 'Something else',
-};
+Map<String, String> complaintCategories(AppLocalizations t) => {
+      'service_quality': t.ccServiceQuality,
+      'no_show': t.ccNoShow,
+      'overcharging': t.ccOvercharging,
+      'behaviour': t.ccBehaviour,
+      'payment': t.ccPayment,
+      'damage': t.ccDamage,
+      'fraud': t.ccFraud,
+      'app_issue': t.ccAppIssue,
+      'other': t.ccOther,
+    };
 
 class ComplaintsScreen extends StatelessWidget {
   const ComplaintsScreen({super.key});
@@ -26,18 +27,18 @@ class ComplaintsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final api = context.read<Session>().api;
     return Scaffold(
-      appBar: AppBar(title: const Text('Help and complaints')),
+      appBar: AppBar(title: Text(context.t.helpAndComplaints)),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => context.push('/complaints/new'),
         icon: const Icon(Icons.add),
-        label: const Text('Report a problem'),
+        label: Text(context.t.reportProblem),
       ),
       body: Loader<Paged<Complaint>>(
         load: api.complaints,
         builder: (context, page, reload) {
           if (page.results.isEmpty) {
-            return const EmptyView(icon: Icons.support_agent, title: 'No complaints',
-                subtitle: 'If something goes wrong with a job, report it here and KaamNow will look into it.');
+            return EmptyView(icon: Icons.support_agent, title: context.t.noComplaints,
+                subtitle: context.t.noComplaintsHint);
           }
           return RefreshIndicator(
             onRefresh: reload,
@@ -48,10 +49,10 @@ class ComplaintsScreen extends StatelessWidget {
                     child: ListTile(
                       title: Text(c.subject),
                       subtitle: Text([
-                        complaintCategories[c.category] ?? humanize(c.category),
-                        if (c.bookingId != null) 'Booking #${c.bookingId}',
+                        complaintCategories(context.t)[c.category] ?? humanize(c.category),
+                        if (c.bookingId != null) context.t.bookingNumber(c.bookingId!),
                         day(c.createdAt),
-                        if (c.resolution.isNotEmpty) 'KaamNow: ${c.resolution}',
+                        if (c.resolution.isNotEmpty) context.t.kaamnowReply(c.resolution),
                       ].join(' · ')),
                       trailing: StatusChip(c.status),
                     ),
@@ -86,7 +87,7 @@ class _NewComplaintScreenState extends State<NewComplaintScreen> {
       context,
       () => context.read<Session>().api.createComplaint(
           bookingId: widget.bookingId, category: _category, subject: _subject.text.trim(), description: _description.text.trim()),
-      success: 'Thanks. KaamNow will review your report.',
+      success: context.t.thanksWillReview,
     );
     if (!mounted) return;
     setState(() => _busy = false);
@@ -95,32 +96,32 @@ class _NewComplaintScreenState extends State<NewComplaintScreen> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(title: Text(widget.bookingId == null ? 'Report a problem' : 'Report booking #${widget.bookingId}')),
+        appBar: AppBar(title: Text(widget.bookingId == null ? context.t.reportProblem : context.t.reportBooking(widget.bookingId!))),
         body: PageBody(
           child: Form(
             key: _form,
             child: ListView(padding: const EdgeInsets.all(16), children: [
               DropdownButtonFormField<String>(
                 initialValue: _category,
-                decoration: const InputDecoration(labelText: 'What went wrong?'),
-                items: [for (final e in complaintCategories.entries) DropdownMenuItem(value: e.key, child: Text(e.value))],
+                decoration: InputDecoration(labelText: context.t.whatWentWrong),
+                items: [for (final e in complaintCategories(context.t).entries) DropdownMenuItem(value: e.key, child: Text(e.value))],
                 onChanged: (v) => setState(() => _category = v!),
               ),
               const SizedBox(height: 12),
               TextFormField(
                 controller: _subject,
-                decoration: const InputDecoration(labelText: 'Subject'),
-                validator: (v) => (v ?? '').trim().length < 5 ? 'At least 5 characters' : null,
+                decoration: InputDecoration(labelText: context.t.subject),
+                validator: (v) => (v ?? '').trim().length < 5 ? context.t.atLeast5 : null,
               ),
               const SizedBox(height: 12),
               TextFormField(
                 controller: _description,
                 maxLines: 5,
-                decoration: const InputDecoration(labelText: 'Tell us what happened', alignLabelWithHint: true),
-                validator: (v) => (v ?? '').trim().length < 20 ? 'Please give a bit more detail (20+ characters)' : null,
+                decoration: InputDecoration(labelText: context.t.tellUsWhatHappened, alignLabelWithHint: true),
+                validator: (v) => (v ?? '').trim().length < 20 ? context.t.moreDetail : null,
               ),
               const SizedBox(height: 20),
-              FilledButton(onPressed: _busy ? null : _submit, child: const Text('Send report')),
+              FilledButton(onPressed: _busy ? null : _submit, child: Text(context.t.sendReport)),
             ]),
           ),
         ),
