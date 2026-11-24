@@ -1,0 +1,45 @@
+# One domain for everything. Caddy gets and renews the HTTPS certificate by itself.
+#   /api/*, /ws/*, /django-admin/*, /static/*  -> Django (HTTP and WebSockets)
+#   /media/*                                   -> public uploads (job photos, avatars)
+#   everything else                            -> the Flutter web app
+# CNIC documents (private media) are never mounted here, so they cannot be served.
+{
+	email {$ACME_EMAIL}
+}
+
+{$SITE_ADDRESS} {
+	encode zstd gzip
+
+	request_body {
+		max_size 12MB
+	}
+
+	header {
+		X-Content-Type-Options nosniff
+		Referrer-Policy strict-origin-when-cross-origin
+		Permissions-Policy "camera=(), microphone=(), geolocation=(self)"
+		-Server
+	}
+
+	@backend path /api/* /ws/* /django-admin/* /static/*
+	handle @backend {
+		reverse_proxy api:8000
+	}
+
+	handle /media/* {
+		header Content-Security-Policy "default-src 'none'; img-src 'self'; style-src 'unsafe-inline'"
+		header Cache-Control "public, max-age=86400"
+		root * /srv
+		file_server
+	}
+
+	handle {
+		header X-Frame-Options DENY
+		header Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		# Flutter's file names are not content-hashed, so browsers revalidate (cheap, via ETag).
+		header Cache-Control "no-cache"
+		root * /srv/web
+		try_files {path} /index.html
+		file_server
+	}
+}

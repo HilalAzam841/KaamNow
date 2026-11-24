@@ -21,3 +21,7 @@ staticfiles/
 .vscode/
 .DS_Store
 celerybeat-schedule*
+
+# Production deploy
+deploy/backups/
+deploy/secrets/

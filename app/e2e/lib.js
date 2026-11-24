@@ -2,7 +2,9 @@ const fs = require('fs');
 const BASE = process.env.APP_URL || 'http://localhost:8080/';
 fs.mkdirSync('shots', { recursive: true });
 async function open(browser, opts = {}) {
-  const ctx = await browser.newContext({ viewport: { width: 430, height: 900 }, ...opts });
+  // IGNORE_HTTPS_ERRORS=1 for a local production stack with Caddy's self-signed localhost certificate.
+  const tls = process.env.IGNORE_HTTPS_ERRORS ? { ignoreHTTPSErrors: true } : {};
+  const ctx = await browser.newContext({ viewport: { width: 430, height: 900 }, ...tls, ...opts });
   const page = await ctx.newPage();
   page.errors = [];
   page.on('pageerror', e => page.errors.push(String(e)));

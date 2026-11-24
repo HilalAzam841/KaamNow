@@ -317,53 +317,42 @@ source of data: an app that reconnects can always catch up with `GET /bookings/{
 
 ## 8. Deployment
 
-Production runs five processes: **PostgreSQL**, **Redis**, the **API** (Daphne, serving HTTP and
-WebSockets), a **Celery worker** (push notifications) and **Celery beat** (scheduled jobs).
+**The step-by-step guide is [`deploy/README.md`](deploy/README.md).** One Ubuntu server runs the whole
+stack with `docker compose up -d --build`:
 
-### Option A: Docker Compose (recommended)
+| Service | What it does |
+|---|---|
+| `web` | Caddy: automatic HTTPS for your domain; serves the Flutter web app; proxies `/api`, `/ws`, `/django-admin`, `/static` to Django; serves `/media`; never serves CNIC documents |
+| `api` | Django on Daphne (HTTP and WebSockets), health-checked |
+| `migrate` | Applies database migrations before the API starts |
+| `worker`, `beat` | Celery background jobs and the scheduler (one beat) |
+| `db`, `redis` | PostgreSQL 16 and Redis 7, not reachable from outside the server |
+| `backup` | Database dump, CNIC documents and uploads every 24 hours, kept 14 days |
 
-1. Create a `.env` from `.env.example` with `DJANGO_DEBUG=false`, a strong `DJANGO_SECRET_KEY`, `DJANGO_ALLOWED_HOSTS=api.kaamnow.pk`, the database password, SMTP settings, and the gateway and Firebase values you use.
-2. `docker compose up -d --build` starts `db`, `redis`, `api`, `worker` and `beat`. The API container runs `migrate` and then starts Daphne on port 8000.
-3. Put Nginx or a load balancer in front, terminate TLS there, forward `X-Forwarded-Proto`, and allow WebSocket upgrades on `/ws/`.
-4. Serve `MEDIA_ROOT` (request images, avatars) from Nginx or object storage. **Never** serve `PRIVATE_MEDIA_ROOT`.
-5. Create the first admin: `docker compose exec api python manage.py createsuperuser`.
+`deploy/setup-server.sh` prepares a fresh server (Docker, firewall, swap, security updates), and
+`deploy/new-env.sh` writes the settings file with fresh secrets. The `images and deploy` GitHub
+Actions workflow checks on every pull request that both images build. On `main` it publishes them to
+GitHub Container Registry, and deploys over SSH once you set `DEPLOY_HOST` (see the guide).
 
-### Option B: VM with systemd
+This stack has been run end to end: the full customer and worker journey passed over HTTPS and secure
+WebSockets, along with password reset, a backup, and a restore of that backup.
+`manage.py check --deploy` reports no issues.
+
+### Without Docker (VM with systemd)
 
 ```bash
 pip install -r requirements.txt
 export $(grep -v '^#' .env | xargs)
 python manage.py migrate --noinput
 python manage.py collectstatic --noinput
-daphne -b 127.0.0.1 -p 8000 config.asgi:application   # systemd unit 1
-celery -A config worker -l info                        # systemd unit 2
-celery -A config beat -l info                          # systemd unit 3 (run exactly one)
+daphne -b 127.0.0.1 -p 8000 --proxy-headers config.asgi:application   # systemd unit 1
+celery -A config worker -l info                                        # systemd unit 2
+celery -A config beat -l info                                          # systemd unit 3 (run exactly one)
 ```
 
-Example Nginx configuration:
-
-```nginx
-server {
-    server_name api.kaamnow.pk;
-    client_max_body_size 12m;
-    location /media/ { alias /var/lib/kaamnow/media/; }
-    # NOTE: no location for private_media on purpose.
-    location /ws/ {
-        proxy_pass http://127.0.0.1:8000;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "upgrade";
-        proxy_set_header Host $host;
-        proxy_read_timeout 3600s;
-    }
-    location / {
-        proxy_pass http://127.0.0.1:8000;
-        proxy_set_header Host $host;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
-}
-```
+Put a TLS-terminating proxy in front that forwards `X-Forwarded-Proto` and allows WebSocket
+upgrades on `/ws/`. Serve `MEDIA_ROOT` from it, and **never** serve `PRIVATE_MEDIA_ROOT`.
+`deploy/Caddyfile` shows the routes.
 
 ### Payment gateway go-live
 
