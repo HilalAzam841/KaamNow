@@ -12,7 +12,7 @@ from django.conf import settings
 from django.db import transaction
 from django.utils import timezone, translation
 
-from . import fcm
+from . import fcm, webpush
 from .models import Notification
 
 logger = logging.getLogger(__name__)
@@ -31,8 +31,33 @@ class FCMPushSender:
         transaction.on_commit(lambda: send_push.delay(user.pk, title, body, payload))
 
 
+class WebPushSender:
+    def send(self, user, title, body, data):
+        from .tasks import send_web_push
+
+        payload = {k: (str(v) if not isinstance(v, (str, int, float, bool)) else v) for k, v in (data or {}).items()}
+        transaction.on_commit(lambda: send_web_push.delay(user.pk, title, body, payload))
+
+
+class CombinedPushSender:
+    def __init__(self, senders):
+        self.senders = senders
+
+    def send(self, user, title, body, data):
+        for sender in self.senders:
+            sender.send(user, title, body, data)
+
+
 def get_push_sender():
-    return FCMPushSender() if fcm.is_configured() else NullPushSender()
+    """Firebase (mobile apps, once configured) and standard web push (browsers), whichever are set up."""
+    senders = []
+    if fcm.is_configured():
+        senders.append(FCMPushSender())
+    if webpush.is_configured():
+        senders.append(WebPushSender())
+    if not senders:
+        return NullPushSender()
+    return senders[0] if len(senders) == 1 else CombinedPushSender(senders)
 
 
 def render_for(user, *texts):

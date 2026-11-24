@@ -32,6 +32,11 @@ class KaamNowApi {
   }
 
   Future<void> logout(String refresh) => client.post('/auth/logout/', body: {'refresh': refresh});
+  /// Browser notifications: [subscription] is PushSubscription.toJSON().
+  Future<void> subscribeWebPush(Map<String, dynamic> subscription) =>
+      client.post('/notifications/web-push/subscribe/', body: subscription);
+  Future<void> unsubscribeWebPush(String endpoint) =>
+      client.post('/notifications/web-push/unsubscribe/', body: {'endpoint': endpoint});
   Future<User> me() async => User.fromJson(asMap(await client.get('/auth/me/')));
   Future<User> updateMe(Map<String, dynamic> fields) async =>
       User.fromJson(asMap(await client.patch('/auth/me/', body: fields)));

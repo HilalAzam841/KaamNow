@@ -7,6 +7,7 @@ import '../../core/session.dart';
 import '../../models/models.dart';
 import '../widgets/common.dart';
 import '../widgets/install_widgets.dart';
+import '../widgets/push_widgets.dart';
 import '../widgets/language_button.dart';
 import '../../l10n/l10n.dart';
 
@@ -27,6 +28,7 @@ class JobFeedScreen extends StatelessWidget {
             onRefresh: reload,
             child: PageBody(
               child: ListView(padding: const EdgeInsets.all(12), children: [
+                const PushBanner(),
                 const InstallBanner(),
                 _ReadinessBanner(profile: profile, onChanged: reload),
                 if (page.results.isEmpty)

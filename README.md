@@ -14,7 +14,7 @@ later, and talks to the backend only through the REST API and the booking WebSoc
 
 **Stage 1 (Backend MVP), Stage 2 (Advanced features) and Stage 3 (Flutter web client) are done,
 and Stage 4 adds the admin dashboard to the web app.** Every backend feature below has its business logic, REST endpoint(s), validation and
-automated tests. All 335 backend tests pass against PostgreSQL 16, and the Flutter app has 46
+automated tests. All 369 backend tests pass against PostgreSQL 16, and the Flutter app has 62
 unit and widget tests plus a browser end-to-end run (see `app/README.md`).
 
 ### Stage 1: Backend MVP
@@ -106,6 +106,22 @@ App strings live in `app/lib/l10n/app_en.arb` and `app_ur.arb`; run `flutter gen
 | Branded loading screen while the app starts | `app/web/index.html` |
 
 Installing needs HTTPS, which the production stack in `deploy/` already provides.
+
+### Stage 8: Push notifications in the web app
+
+| Feature | Where |
+|---|---|
+| Standard Web Push with VAPID keys (works in Chrome, Edge, Firefox, Safari on Mac, and on iPhone once the app is installed). No Firebase account needed. Payloads are encrypted for each browser (RFC 8291, checked against the RFC test vector) | `apps/notifications/webpush.py` |
+| Each browser's subscription is saved per user; subscribing again from the same browser moves it to whoever is signed in, signing out removes it, and subscriptions the push service reports as gone are switched off | `apps/notifications/models.py` (`WebPushSubscription`), `views.py`, `tasks.py` |
+| Every in-app alert is also sent as a push, in the user's language, with a link to the right screen (offer, booking, chat, job, complaint, plan); chat messages replace each other instead of piling up | `apps/notifications/tasks.py` (`send_web_push`, `deep_link`) |
+| Only real push-service hosts are accepted as endpoints, so the server cannot be pointed at internal URLs | `webpush.validate_subscription` |
+| "Get alerts" card on the customer home and worker job feed, and a "Notifications on this device" switch on the account screen; iPhone users are told to install the app first | `app/lib/core/push/`, `app/lib/ui/widgets/push_widgets.dart` |
+| The service worker shows the notification and opens the right screen when it is tapped | `app/web/sw.js` |
+
+Turn it on by generating keys once with `python manage.py generate_vapid_keys` (or `deploy/new-env.sh`,
+which does it for you) and setting `WEBPUSH_VAPID_PUBLIC_KEY` and `WEBPUSH_VAPID_PRIVATE_KEY`. Without
+them the app hides the push options and keeps showing alerts inside the app. Firebase (FCM) push for
+the future mobile apps still works alongside it when configured.
 
 **Before going live with online payments:** the JazzCash and Easypaisa adapters follow each
 gateway's published integration scheme and are covered by tests with simulated gateway responses.

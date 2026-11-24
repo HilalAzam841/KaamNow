@@ -264,6 +264,14 @@ FCM_PROJECT_ID = env("FCM_PROJECT_ID", "")
 # Path to the Firebase service-account JSON file (keep it outside the repo).
 FCM_CREDENTIALS_FILE = env("FCM_CREDENTIALS_FILE", "")
 
+# --- Web Push (browser notifications, no Firebase needed) ---------------------
+# Generate once with `python manage.py generate_vapid_keys` (deploy/new-env.sh does it for you).
+# Changing the keys unsubscribes every browser, so keep them for the life of the site.
+WEBPUSH_VAPID_PUBLIC_KEY = env("WEBPUSH_VAPID_PUBLIC_KEY", "")
+WEBPUSH_VAPID_PRIVATE_KEY = env("WEBPUSH_VAPID_PRIVATE_KEY", "")
+# Contact the browser push services can use if something goes wrong.
+WEBPUSH_SUBJECT = env("WEBPUSH_SUBJECT", "mailto:" + env("SUPPORT_EMAIL", "support@kaamnow.pk"))
+
 # --- Payment gateways ---------------------------------------------------------
 # Never commit real credentials. Leave blank to disable a gateway.
 PAYMENT_GATEWAYS = {

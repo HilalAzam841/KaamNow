@@ -1,3 +1,4 @@
+from django.utils.translation import gettext as _
 from django.utils import timezone
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import mixins, viewsets
@@ -7,8 +8,17 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
 
-from .models import DeviceToken, Notification
-from .serializers import DeviceTokenDeleteSerializer, DeviceTokenSerializer, NotificationSerializer
+from apps.common.exceptions import BusinessRuleError
+
+from . import webpush
+from .models import DeviceToken, Notification, WebPushSubscription
+from .serializers import (
+    DeviceTokenDeleteSerializer,
+    DeviceTokenSerializer,
+    NotificationSerializer,
+    WebPushSubscribeSerializer,
+    WebPushUnsubscribeSerializer,
+)
 from .services import mark_read
 
 
@@ -62,3 +72,42 @@ class DeviceTokenView(APIView):
         serializer.is_valid(raise_exception=True)
         deleted, _ = DeviceToken.objects.filter(user=request.user, token=serializer.validated_data["token"]).delete()
         return Response({"deleted": deleted})
+
+
+class WebPushSubscribeView(APIView):
+    """Turn on browser notifications for this browser (send PushSubscription.toJSON())."""
+
+    @extend_schema(tags=["notifications"], request=WebPushSubscribeSerializer, responses={201: dict})
+    def post(self, request):
+        if not webpush.is_configured():
+            raise BusinessRuleError(
+                _("Browser notifications are not set up on this server."), status_code=status.HTTP_503_SERVICE_UNAVAILABLE
+            )
+        serializer = WebPushSubscribeSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+        # One browser, one subscription: if someone else used this browser before, it moves to this user.
+        WebPushSubscription.objects.update_or_create(
+            endpoint=data["endpoint"],
+            defaults={
+                "user": request.user,
+                "p256dh": data["keys"]["p256dh"],
+                "auth": data["keys"]["auth"],
+                "user_agent": request.META.get("HTTP_USER_AGENT", "")[:255],
+                "is_active": True,
+            },
+        )
+        return Response({"subscribed": True}, status=status.HTTP_201_CREATED)
+
+
+class WebPushUnsubscribeView(APIView):
+    """Turn off browser notifications for this browser (also called on log out)."""
+
+    @extend_schema(tags=["notifications"], request=WebPushUnsubscribeSerializer, responses={200: dict})
+    def post(self, request):
+        serializer = WebPushUnsubscribeSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        deleted, _ = WebPushSubscription.objects.filter(
+            user=request.user, endpoint=serializer.validated_data["endpoint"]
+        ).delete()
+        return Response({"unsubscribed": bool(deleted)})

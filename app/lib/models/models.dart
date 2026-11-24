@@ -601,7 +601,8 @@ class PaymentMethodOption {
 class ClientConfig {
   ClientConfig({required this.cityLat, required this.cityLng, required this.emergencyEnabled,
       required this.emergencyFee, required this.paymentMethods, required this.minOfferPrice,
-      required this.minWebVersion, this.supportEmail = '', this.supportPhone = ''});
+      required this.minWebVersion, this.supportEmail = '', this.supportPhone = '',
+      this.webPushEnabled = false, this.webPushPublicKey = ''});
   factory ClientConfig.fromJson(Map<String, dynamic> j) {
     final city = asMap(j['city']);
     final em = asMap(j['emergency']);
@@ -615,6 +616,8 @@ class ClientConfig {
       minWebVersion: str(asMap(j['min_supported_version'])['web']),
       supportEmail: str(asMap(j['support'])['email']),
       supportPhone: str(asMap(j['support'])['phone']),
+      webPushEnabled: asMap(j['web_push'])['enabled'] == true,
+      webPushPublicKey: str(asMap(j['web_push'])['public_key']),
     );
   }
   static ClientConfig fallback() => ClientConfig(cityLat: 31.5204, cityLng: 74.3587, emergencyEnabled: false,
@@ -629,4 +632,6 @@ class ClientConfig {
   final String minWebVersion;
   final String supportEmail;
   final String supportPhone;
+  final bool webPushEnabled;
+  final String webPushPublicKey;
 }

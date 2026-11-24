@@ -39,6 +39,15 @@ the page, Chrome's installability audit, that no API response is cached, and the
 cd app/e2e && node pwa.js
 ```
 
+`push.js` checks browser notifications (start the backend with VAPID keys set): the home card turns
+them on, a push message is shown with the server's title, and tapping it opens the right screen.
+Without internet the browser cannot reach Google's push service, so the script then registers a
+stand-in subscription and delivers the message straight to the service worker, and says so:
+
+```bash
+cd app/e2e && node push.js
+```
+
 Against the production Docker stack running locally (see `deploy/README.md`):
 
 ```bash

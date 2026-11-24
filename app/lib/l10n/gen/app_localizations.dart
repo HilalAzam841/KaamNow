@@ -1700,6 +1700,66 @@ abstract class AppLocalizations {
   /// **'Profile updated.'**
   String get profileUpdated;
 
+  /// No description provided for @pushBlockedHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Blocked in your browser. Allow notifications for this site in the browser settings.'**
+  String get pushBlockedHint;
+
+  /// No description provided for @pushHintCustomer.
+  ///
+  /// In en, this message translates to:
+  /// **'Know right away when workers send offers and when your booking changes.'**
+  String get pushHintCustomer;
+
+  /// No description provided for @pushHintWorker.
+  ///
+  /// In en, this message translates to:
+  /// **'Hear about new jobs nearby and customer replies right away.'**
+  String get pushHintWorker;
+
+  /// No description provided for @pushNeedsInstallHint.
+  ///
+  /// In en, this message translates to:
+  /// **'On iPhone, first install KaamNow (Share, then “Add to Home Screen”), then turn this on in the installed app.'**
+  String get pushNeedsInstallHint;
+
+  /// No description provided for @pushNotAllowed.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications were not allowed.'**
+  String get pushNotAllowed;
+
+  /// No description provided for @pushOffHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Off: you will only see alerts inside the app.'**
+  String get pushOffHint;
+
+  /// No description provided for @pushOnHint.
+  ///
+  /// In en, this message translates to:
+  /// **'On: offers, bookings and messages arrive even when KaamNow is closed.'**
+  String get pushOnHint;
+
+  /// No description provided for @pushSetting.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications on this device'**
+  String get pushSetting;
+
+  /// No description provided for @pushTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Get alerts on this device'**
+  String get pushTitle;
+
+  /// No description provided for @pushTurnedOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications are on for this device.'**
+  String get pushTurnedOn;
+
   /// No description provided for @rateThisJob.
   ///
   /// In en, this message translates to:
@@ -2341,6 +2401,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Try again'**
   String get tryAgain;
+
+  /// No description provided for @turnOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn on'**
+  String get turnOn;
 
   /// No description provided for @typeMessage.
   ///
