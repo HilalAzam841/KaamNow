@@ -548,6 +548,7 @@
   },
   "payment": "Payment",
   "paymentConfirmed": "Payment confirmed.",
+  "paymentPageFailed": "The payment page could not be opened. Check your connection and try again.",
   "paymentPending": "{method} payment of {amount} pending",
   "@paymentPending": {
     "placeholders": {
@@ -555,10 +556,12 @@
       "amount": {}
     }
   },
+  "paymentWindowClosed": "This page updates once the gateway confirms the payment.",
   "phoneNumber": "Phone number",
   "photoUpdated": "Photo updated.",
   "photosOptional": "Photos (optional)",
   "pinPlaced": "Pin placed. Tap the map to move it.",
+  "planPaymentWindowClosed": "Your plan activates once the payment is confirmed.",
   "plans": "Plans",
   "postAJob": "Post a job",
   "postJobGetOffers": "Post job and get offers",
@@ -656,6 +659,7 @@
   "saveNewPassword": "Save new password",
   "saveProfile": "Save profile",
   "saving": "Saving…",
+  "securePayment": "Secure payment",
   "send": "Send",
   "sendOffer": "Send offer",
   "sendReport": "Send report",

@@ -923,9 +923,17 @@ class AppLocalizationsUr extends AppLocalizations {
   String get paymentConfirmed => 'ادائیگی کی تصدیق ہو گئی۔';
 
   @override
+  String get paymentPageFailed =>
+      'ادائیگی کا صفحہ نہیں کھل سکا۔ کنکشن چیک کر کے دوبارہ کوشش کریں۔';
+
+  @override
   String paymentPending(Object method, Object amount) {
     return '$amount کی $method ادائیگی زیرِ التوا';
   }
+
+  @override
+  String get paymentWindowClosed =>
+      'گیٹ وے کی تصدیق کے بعد یہ صفحہ اپ ڈیٹ ہو جائے گا۔';
 
   @override
   String get phoneNumber => 'فون نمبر';
@@ -938,6 +946,10 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get pinPlaced => 'پن لگ گیا۔ جگہ بدلنے کے لیے نقشے پر ٹیپ کریں۔';
+
+  @override
+  String get planPaymentWindowClosed =>
+      'ادائیگی کی تصدیق ہوتے ہی آپ کا پلان فعال ہو جائے گا۔';
 
   @override
   String get plans => 'پلان';
@@ -1116,6 +1128,9 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get saving => 'محفوظ ہو رہا ہے…';
+
+  @override
+  String get securePayment => 'محفوظ ادائیگی';
 
   @override
   String get send => 'بھیجیں';
