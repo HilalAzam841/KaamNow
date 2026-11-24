@@ -17,7 +17,24 @@ talks to the Django backend in the repository root through `/api/v1/` and the bo
 | Pay cash (online gateways appear once configured on the server), rate the worker | Confirm cash received; earnings and commission; subscription plans |
 | Chat, alerts, complaints, account | Chat, alerts, complaints, account |
 
-Admins use the backend's admin API and Django admin; an admin who logs in here gets a notice.
+### Admin dashboard
+
+An admin who logs in gets the admin dashboard at `/admin` instead (sidebar on wide screens, a menu on phones):
+
+| Page | What admins can do |
+|---|---|
+| Overview | Pending verifications, open complaints, bookings today, gross value, commission, a 30-day chart, bookings by service, top workers |
+| Verification | Search the queue, open a worker, view their CNIC images and PDFs (each view is audit-logged), verify, or reject with a reason |
+| Users | Search and filter customers, workers, admins and suspended accounts; suspend with a reason (signs them out everywhere) or reactivate |
+| Jobs | All bookings and requests with status filters, search, and each booking's status timeline |
+| Revenue | Revenue for any date range, monthly commission, payments by method, commissions due and collected |
+| Plans | Create and edit subscription and featured plans, activate a subscription paid offline, cancel a featured listing |
+| Complaints | Move complaints through open, in review, resolved or rejected, with a note for the customer |
+| Settings | Commission %, emergency fee, emergency jobs on or off (a commission change asks for confirmation) |
+| Audit log | Every sensitive admin action, filterable by type |
+
+Customers and workers who open an `/admin` link are sent back to their own home screen, and the
+server checks the admin role on every admin endpoint regardless.
 
 ## Run it
 
@@ -53,11 +70,11 @@ On the backend, add the app's origin to `CORS_ALLOWED_ORIGINS` (for example
 
 ```bash
 flutter analyze
-flutter test          # 31 unit and widget tests (API client, models, routing, key screens)
+flutter test          # 42 unit and widget tests (API client, models, routing, key screens, admin dashboard)
 ```
 
 `e2e/` drives the real web build against a running backend in Chromium, through the whole job
-from sign-up to payment, review and earnings. See `e2e/README.md`.
+from sign-up to payment, review and earnings, plus an admin walk-through. See `e2e/README.md`.
 
 ## Structure
 

@@ -12,9 +12,9 @@ later, and talks to the backend only through the REST API and the booking WebSoc
 
 ## 1. Current status
 
-**Stage 1 (Backend MVP) and Stage 2 (Advanced features) are done, and Stage 3 has its Flutter web
-client.** Every backend feature below has its business logic, REST endpoint(s), validation and
-automated tests. All 335 backend tests pass against PostgreSQL 16, and the Flutter app has 31
+**Stage 1 (Backend MVP), Stage 2 (Advanced features) and Stage 3 (Flutter web client) are done,
+and Stage 4 adds the admin dashboard to the web app.** Every backend feature below has its business logic, REST endpoint(s), validation and
+automated tests. All 335 backend tests pass against PostgreSQL 16, and the Flutter app has 42
 unit and widget tests plus a browser end-to-end run (see `app/README.md`).
 
 ### Stage 1: Backend MVP
@@ -68,6 +68,18 @@ unit and widget tests plus a browser end-to-end run (see `app/README.md`).
 | Both: bookings, live tracking over WebSocket, chat, completion code, cash payment, reviews, alerts, complaints | `app/lib/ui/bookings/`, `app/lib/ui/account/` |
 | Backend APIs added for client apps: `GET app/config/` (public bootstrap) and `GET offers/` (worker's own offers) | `apps/common/views.py`, `apps/offers/views.py` |
 | WebSocket origin check that accepts CORS-allowed web origins and native apps (no Origin header) | `apps/chat/origin.py` |
+
+### Stage 4: Admin dashboard (web)
+
+| Feature | Where |
+|---|---|
+| Admin dashboard in the same web app at `/admin`, for admin accounts only (customers and workers are redirected away) | `app/lib/ui/admin/`, `app/lib/app.dart` |
+| Overview with live stats and charts; revenue for any date range with commissions due and collected | `overview_screen.dart`, `revenue_screen.dart` |
+| Worker verification with an in-app CNIC viewer (documents fetched with the admin token, never by public URL) | `workers_screen.dart` |
+| Users (suspend, reactivate), jobs, plans, featured listings, complaints, platform settings, audit log | `app/lib/ui/admin/` |
+| Typed client for every admin endpoint | `app/lib/api/admin_api.dart`, `app/lib/models/admin_models.dart` |
+
+It uses the admin API from Stages 1 and 2, so the backend is unchanged in this stage.
 
 **Before going live with online payments:** the JazzCash and Easypaisa adapters follow each
 gateway's published integration scheme and are covered by tests with simulated gateway responses.

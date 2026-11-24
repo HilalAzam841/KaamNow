@@ -111,17 +111,3 @@ class AccountScreen extends StatelessWidget {
     );
   }
 }
-
-/// Admins manage KaamNow in the admin panel; the customer/worker app is not for them.
-class AdminNoticeScreen extends StatelessWidget {
-  const AdminNoticeScreen({super.key});
-  @override
-  Widget build(BuildContext context) => Scaffold(
-        body: EmptyView(
-          icon: Icons.admin_panel_settings,
-          title: 'This app is for customers and workers',
-          subtitle: 'Admins use the admin API and the Django admin panel at ${AppConfig.apiBaseUrl}/django-admin/.',
-          action: FilledButton(onPressed: () => context.read<Session>().logout(), child: const Text('Log out')),
-        ),
-      );
-}

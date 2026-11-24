@@ -17,5 +17,13 @@ python3 -m http.server 8080 --directory build/web
 cd app/e2e && node step1.js && node step2.js && node step3.js
 ```
 
+`admin.js` logs in as an admin (set `ADMIN_PHONE` and `ADMIN_PASSWORD`, created with
+`python manage.py createsuperuser`), opens a pending worker's CNIC image, visits every admin page
+and reloads to check the page survives:
+
+```bash
+cd app/e2e && ADMIN_PHONE=03009999999 ADMIN_PASSWORD=... node admin.js
+```
+
 Each step prints `OK ...` or `FAIL at <step>` and saves screenshots to `shots/`.
 It creates real users and bookings, so only run it against a development database.

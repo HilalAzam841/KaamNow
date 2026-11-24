@@ -42,10 +42,27 @@ void main() {
     expect(redirectFor(h.session, '/bookings/2'), isNull);
   });
 
-  test('admins are sent to the admin notice', () async {
+  test('admins live in the admin dashboard', () async {
     final h = await signedInAs('admin');
     expect(redirectFor(h.session, '/'), '/admin');
+    expect(redirectFor(h.session, '/login'), '/admin');
+    expect(redirectFor(h.session, '/bookings/2'), '/admin');
     expect(redirectFor(h.session, '/admin'), isNull);
+    expect(redirectFor(h.session, '/admin/workers/4'), isNull);
+    expect(redirectFor(h.session, '/administrator'), '/admin');
+  });
+
+  test('an admin deep link survives the login screen', () async {
+    final h = await signedInAs('admin');
+    expect(redirectFor(h.session, '/login?from=%2Fadmin%2Fcomplaints'), '/admin/complaints');
+  });
+
+  test('customers and workers cannot open the admin dashboard', () async {
+    final customer = await signedInAs('customer');
+    expect(redirectFor(customer.session, '/admin'), '/');
+    expect(redirectFor(customer.session, '/admin/users'), '/');
+    final worker = await signedInAs('worker');
+    expect(redirectFor(worker.session, '/admin/settings'), '/jobs');
   });
 
   test('a stored but rejected token signs the user out', () async {
