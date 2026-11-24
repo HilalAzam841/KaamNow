@@ -1,4 +1,5 @@
-// KaamNow service worker: makes the web app installable and shows a friendly page offline.
+// KaamNow service worker: makes the web app installable, shows a friendly page offline and
+// shows push notifications.
 //
 // Rules:
 // - API, WebSocket, media and Django admin requests are never touched or cached. Bookings,
@@ -8,8 +9,8 @@
 // - Opening the app with no connection at all shows offline.html.
 'use strict';
 
-const CACHE = 'kaamnow-app-v1';
-const PRECACHE = ['offline.html', 'icons/Icon-192.png', 'manifest.json', 'favicon.png'];
+const CACHE = 'kaamnow-app-v2';
+const PRECACHE = ['offline.html', 'icons/Icon-192.png', 'icons/badge-72.png', 'manifest.json', 'favicon.png'];
 const NEVER_CACHE = /^\/(api|ws|media|django-admin|static)\//;
 
 self.addEventListener('install', (event) => {
@@ -49,4 +50,54 @@ self.addEventListener('fetch', (event) => {
       })
       .catch(async () => (await caches.match(request)) || Response.error()),
   );
+});
+
+// --- Push notifications -------------------------------------------------------------------
+// The server sends {title, body, url, tag, type}, already in the user's language.
+self.addEventListener('push', (event) => {
+  let data = {};
+  try {
+    data = event.data ? event.data.json() : {};
+  } catch (e) {
+    data = { body: event.data ? event.data.text() : '' };
+  }
+  const title = data.title || 'KaamNow';
+  const options = {
+    body: data.body || '',
+    icon: 'icons/Icon-192.png',
+    badge: 'icons/badge-72.png',
+    data: { url: data.url || '/#/notifications' },
+    lang: /[؀-ۿ]/.test(title + (data.body || '')) ? 'ur' : 'en',
+    dir: 'auto',
+  };
+  if (data.tag) {
+    options.tag = data.tag; // e.g. one notification per chat, updated as messages arrive
+    options.renotify = true;
+  }
+  event.waitUntil(self.registration.showNotification(title, options));
+});
+
+// Tapping a notification focuses an open KaamNow window on the right screen, or opens one.
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  const target = new URL(event.notification.data && event.notification.data.url || '/#/notifications', self.location.origin).href;
+  event.waitUntil((async () => {
+    const windows = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+    for (const client of windows) {
+      if (new URL(client.url).origin === self.location.origin) {
+        // The page moves itself to the screen (see index.html); this works whether or not
+        // the window is controlled by this worker yet, unlike client.navigate().
+        client.postMessage({ type: 'open', url: target });
+        if ('focus' in client) await client.focus().catch(() => {});
+        return;
+      }
+    }
+    await self.clients.openWindow(target);
+  })());
+});
+
+// The browser replaced the subscription (keys rotated): tell open windows to register again.
+self.addEventListener('pushsubscriptionchange', (event) => {
+  event.waitUntil(self.clients.matchAll({ type: 'window' }).then((windows) =>
+    windows.forEach((w) => w.postMessage({ type: 'resubscribe' }))));
 });

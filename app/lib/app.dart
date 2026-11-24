@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'core/format.dart';
 import 'core/install/install_controller.dart';
 import 'core/locale_controller.dart';
+import 'core/push/push_controller.dart';
 import 'core/session.dart';
 import 'l10n/l10n.dart';
 import 'ui/account/account_screen.dart';
@@ -149,12 +150,15 @@ String? redirectFor(Session session, String location) {
 }
 
 class KaamNowApp extends StatefulWidget {
-  KaamNowApp({super.key, required this.session, LocaleController? locale, InstallController? install})
+  KaamNowApp(
+      {super.key, required this.session, LocaleController? locale, InstallController? install, PushController? push})
       : locale = locale ?? LocaleController(),
-        install = install ?? InstallController();
+        install = install ?? InstallController(),
+        push = push ?? PushController();
   final Session session;
   final LocaleController locale;
   final InstallController install;
+  final PushController push;
   @override
   State<KaamNowApp> createState() => _KaamNowAppState();
 }
@@ -168,6 +172,7 @@ class _KaamNowAppState extends State<KaamNowApp> {
     super.initState();
     widget.locale.addListener(_onLanguageOrSession);
     widget.session.addListener(_onLanguageOrSession);
+    widget.push.attach(widget.session);
     _onLanguageOrSession();
   }
 
@@ -216,6 +221,7 @@ class _KaamNowAppState extends State<KaamNowApp> {
         ChangeNotifierProvider.value(value: widget.session),
         ChangeNotifierProvider.value(value: widget.locale),
         ChangeNotifierProvider.value(value: widget.install),
+        ChangeNotifierProvider.value(value: widget.push),
       ],
       child: ListenableBuilder(
         listenable: Listenable.merge([widget.locale, widget.session]),

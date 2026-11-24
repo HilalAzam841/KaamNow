@@ -52,6 +52,13 @@
       window.addEventListener('load', function () {
         navigator.serviceWorker.register('sw.js').catch(function (e) { console.warn('Service worker:', e); });
       });
+      // A tapped notification asks an already-open window to show its screen.
+      navigator.serviceWorker.onmessage = function (e) {
+        if (e.data && e.data.type === 'open' && typeof e.data.url === 'string') {
+          var target = new URL(e.data.url, location.href);
+          if (target.origin === location.origin) location.href = target.href;
+        }
+      };
     }
   </script>
 </head>

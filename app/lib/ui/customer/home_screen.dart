@@ -7,6 +7,7 @@ import '../../core/session.dart';
 import '../../models/models.dart';
 import '../widgets/common.dart';
 import '../widgets/install_widgets.dart';
+import '../widgets/push_widgets.dart';
 import '../widgets/language_button.dart';
 import '../../l10n/l10n.dart';
 
@@ -49,6 +50,7 @@ class CustomerHomeScreen extends StatelessWidget {
           child: PageBody(
             maxWidth: 960,
             child: ListView(padding: const EdgeInsets.all(16), children: [
+              const PushBanner(),
               const InstallBanner(),
               Text(context.t.whatHelp, style: theme.textTheme.headlineSmall),
               const SizedBox(height: 4),

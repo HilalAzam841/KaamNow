@@ -514,6 +514,22 @@ msgstr "صرف بکنگ کے فریقین منسوخ کر سکتے ہیں۔"
 msgid "Invalid device token."
 msgstr "ڈیوائس ٹوکن درست نہیں۔"
 
+#: apps/notifications/views.py
+msgid "Browser notifications are not set up on this server."
+msgstr "اس سرور پر براؤزر نوٹیفکیشنز ابھی سیٹ اپ نہیں ہوئیں۔"
+
+#: apps/notifications/webpush.py
+msgid "Push endpoint must be an https URL."
+msgstr "پش اینڈ پوائنٹ https یو آر ایل ہونا چاہیے۔"
+
+#: apps/notifications/webpush.py
+msgid "Unknown push service."
+msgstr "نامعلوم پش سروس۔"
+
+#: apps/notifications/webpush.py
+msgid "Invalid subscription keys."
+msgstr "سبسکرپشن کیز درست نہیں۔"
+
 #: apps/offers/serializers.py
 msgid "Nothing to update."
 msgstr "تبدیل کرنے کے لیے کچھ نہیں۔"

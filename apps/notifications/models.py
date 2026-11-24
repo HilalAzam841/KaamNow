@@ -61,3 +61,27 @@ class DeviceToken(models.Model):
 
     def __str__(self):
         return f"{self.platform} token for user {self.user_id}"
+
+
+class WebPushSubscription(models.Model):
+    """A browser's Web Push subscription (standard web push, no Firebase needed).
+
+    The endpoint is a URL at the browser vendor's push service; p256dh and auth are the
+    browser's keys used to encrypt each message so only that browser can read it.
+    """
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="web_push_subscriptions")
+    endpoint = models.URLField(max_length=1000, unique=True)
+    p256dh = models.CharField(max_length=100)
+    auth = models.CharField(max_length=50)
+    user_agent = models.CharField(max_length=255, blank=True)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    last_seen_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-last_seen_at"]
+        indexes = [models.Index(fields=["user", "is_active"])]
+
+    def __str__(self):
+        return f"web push for user {self.user_id}"

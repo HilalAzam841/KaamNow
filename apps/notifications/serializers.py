@@ -1,6 +1,7 @@
 from django.utils.translation import gettext as _
 from rest_framework import serializers
 
+from . import webpush
 from .models import DeviceToken, Notification
 
 
@@ -27,3 +28,26 @@ class DeviceTokenSerializer(serializers.ModelSerializer):
 
 class DeviceTokenDeleteSerializer(serializers.Serializer):
     token = serializers.CharField(max_length=255)
+
+
+class WebPushKeysSerializer(serializers.Serializer):
+    p256dh = serializers.CharField(max_length=100)
+    auth = serializers.CharField(max_length=50)
+
+
+class WebPushSubscribeSerializer(serializers.Serializer):
+    """The browser's PushSubscription.toJSON(), as is."""
+
+    endpoint = serializers.URLField(max_length=1000)
+    keys = WebPushKeysSerializer()
+
+    def validate(self, attrs):
+        try:
+            webpush.validate_subscription(attrs["endpoint"], attrs["keys"]["p256dh"], attrs["keys"]["auth"])
+        except webpush.InvalidSubscription as exc:
+            raise serializers.ValidationError({"endpoint": str(exc)}) from exc
+        return attrs
+
+
+class WebPushUnsubscribeSerializer(serializers.Serializer):
+    endpoint = serializers.URLField(max_length=1000)

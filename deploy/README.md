@@ -126,6 +126,8 @@ are readable only by root.
   The callback URLs default to `https://<domain>/api/v1/payments/callbacks/jazzcash/` and `.../easypaisa/`.
   Register those with each gateway, and do one sandbox payment per gateway before going live
   (see the main README, section 8).
+- **Browser push** is on already: `new-env.sh` generates the VAPID keys. If you made `.env` by hand,
+  run `docker compose exec api python manage.py generate_vapid_keys` and paste the two lines in.
 - **Firebase push:** put the service-account key at `deploy/secrets/firebase.json`, uncomment its line in
   `docker-compose.yml`, set `FCM_PROJECT_ID` and `FCM_CREDENTIALS_FILE=/run/secrets/firebase.json`, then `docker compose up -d`.
 

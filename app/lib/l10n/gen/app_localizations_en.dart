@@ -962,6 +962,41 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileUpdated => 'Profile updated.';
 
   @override
+  String get pushBlockedHint =>
+      'Blocked in your browser. Allow notifications for this site in the browser settings.';
+
+  @override
+  String get pushHintCustomer =>
+      'Know right away when workers send offers and when your booking changes.';
+
+  @override
+  String get pushHintWorker =>
+      'Hear about new jobs nearby and customer replies right away.';
+
+  @override
+  String get pushNeedsInstallHint =>
+      'On iPhone, first install KaamNow (Share, then “Add to Home Screen”), then turn this on in the installed app.';
+
+  @override
+  String get pushNotAllowed => 'Notifications were not allowed.';
+
+  @override
+  String get pushOffHint => 'Off: you will only see alerts inside the app.';
+
+  @override
+  String get pushOnHint =>
+      'On: offers, bookings and messages arrive even when KaamNow is closed.';
+
+  @override
+  String get pushSetting => 'Notifications on this device';
+
+  @override
+  String get pushTitle => 'Get alerts on this device';
+
+  @override
+  String get pushTurnedOn => 'Notifications are on for this device.';
+
+  @override
   String get rateThisJob => 'Rate this job';
 
   @override
@@ -1311,6 +1346,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tryAgain => 'Try again';
+
+  @override
+  String get turnOn => 'Turn on';
 
   @override
   String get typeMessage => 'Type a message';

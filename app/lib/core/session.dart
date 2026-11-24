@@ -60,7 +60,15 @@ class Session extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Run while still signed in, just before signing out (e.g. turning off this browser's alerts).
+  final List<Future<void> Function()> beforeLogout = [];
+
   Future<void> logout() async {
+    for (final hook in beforeLogout) {
+      try {
+        await hook();
+      } catch (_) {}
+    }
     final refresh = tokens.refresh;
     if (refresh != null) {
       try {

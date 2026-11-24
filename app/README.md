@@ -95,7 +95,7 @@ On the backend, add the app's origin to `CORS_ALLOWED_ORIGINS` (for example
 
 ```bash
 flutter analyze
-flutter test          # 56 unit and widget tests (API client, models, routing, key screens, admin dashboard, Urdu, install)
+flutter test          # 62 unit and widget tests (API client, models, routing, key screens, admin dashboard, Urdu, install, notifications)
 ```
 
 `e2e/` drives the real web build against a running backend in Chromium, through the whole job
@@ -119,8 +119,8 @@ e2e/                     Playwright browser run against the real backend
 
 - **Maps** use OpenStreetMap tiles; the spec's Google Maps needs an API key. Swap `MAP_TILE_URL`
   (or `google_maps_flutter`) when you have one.
-- **Push notifications**: the web app polls the unread count every 30 seconds. Firebase push is
-  wired on the server and will be added to the mobile builds.
+- **Push notifications** need the server's VAPID keys and HTTPS. On iPhone they work only after the
+  app is added to the home screen (iOS 16.4+). The in-app alert count still refreshes every 30 seconds.
 - **Online payments** open the gateway's hosted checkout in a new tab. The buttons stay disabled
   until JazzCash or Easypaisa credentials are configured on the server.
 - **Live location** is shared while the worker has the booking page open (browsers do not allow

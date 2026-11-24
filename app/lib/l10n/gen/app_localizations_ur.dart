@@ -963,6 +963,41 @@ class AppLocalizationsUr extends AppLocalizations {
   String get profileUpdated => 'پروفائل اپ ڈیٹ ہو گیا۔';
 
   @override
+  String get pushBlockedHint =>
+      'آپ کے براؤزر میں بند ہیں۔ براؤزر کی سیٹنگز میں اس سائٹ کے لیے نوٹیفکیشنز کی اجازت دیں۔';
+
+  @override
+  String get pushHintCustomer =>
+      'کاریگروں کی پیشکش اور بکنگ میں تبدیلی کا فوراً پتا چلے۔';
+
+  @override
+  String get pushHintWorker =>
+      'قریب نئے کام اور گاہکوں کے جواب کی فوراً اطلاع پائیں۔';
+
+  @override
+  String get pushNeedsInstallHint =>
+      'آئی فون پر پہلے کام ناؤ انسٹال کریں (شیئر، پھر “Add to Home Screen”)، پھر انسٹال شدہ ایپ میں اسے آن کریں۔';
+
+  @override
+  String get pushNotAllowed => 'نوٹیفکیشنز کی اجازت نہیں دی گئی۔';
+
+  @override
+  String get pushOffHint => 'بند: اطلاعات صرف ایپ کے اندر نظر آئیں گی۔';
+
+  @override
+  String get pushOnHint =>
+      'آن: پیشکش، بکنگ اور پیغامات کی اطلاع کام ناؤ بند ہونے پر بھی آئے گی۔';
+
+  @override
+  String get pushSetting => 'اس ڈیوائس پر نوٹیفکیشنز';
+
+  @override
+  String get pushTitle => 'اس ڈیوائس پر اطلاعات حاصل کریں';
+
+  @override
+  String get pushTurnedOn => 'اس ڈیوائس پر نوٹیفکیشنز آن ہو گئیں۔';
+
+  @override
   String get rateThisJob => 'اس کام کو ریٹ کریں';
 
   @override
@@ -1312,6 +1347,9 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get tryAgain => 'دوبارہ کوشش کریں';
+
+  @override
+  String get turnOn => 'آن کریں';
 
   @override
   String get typeMessage => 'پیغام لکھیں';
