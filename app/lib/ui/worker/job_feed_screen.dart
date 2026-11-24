@@ -6,6 +6,7 @@ import '../../core/format.dart';
 import '../../core/session.dart';
 import '../../models/models.dart';
 import '../widgets/common.dart';
+import '../widgets/language_button.dart';
 import '../../l10n/l10n.dart';
 
 /// Open requests near the worker that match their services. Emergencies come first.
@@ -16,7 +17,7 @@ class JobFeedScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final api = context.read<Session>().api;
     return Scaffold(
-      appBar: AppBar(title: Text(context.t.jobsNearYou)),
+      appBar: AppBar(title: Text(context.t.jobsNearYou), actions: const [LanguageButton()]),
       body: Loader<(WorkerProfile, Paged<ServiceRequest>)>(
         load: () async => (await api.myWorkerProfile(), await api.requests(scope: 'feed')),
         builder: (context, data, reload) {

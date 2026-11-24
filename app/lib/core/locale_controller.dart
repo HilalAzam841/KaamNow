@@ -3,7 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 /// The app's language (English or Urdu), remembered on this device.
 ///
-/// The first time, it follows the browser's language. Changing it updates the UI at once,
+/// English by default; Urdu once the user picks it in the language menu. Changing it updates the UI at once,
 /// switches the layout to right-to-left for Urdu, and is sent to the server (see KaamNowApp)
 /// so alerts and server messages come back in the same language.
 class LocaleController extends ChangeNotifier {
@@ -19,12 +19,11 @@ class LocaleController extends ChangeNotifier {
   String get code => _locale.languageCode;
   bool get isUrdu => code == 'ur';
 
-  /// Stored choice, else the browser/system language, else English.
+  /// The language the user picked on this device, else English. The browser's own language
+  /// is ignored on purpose: the app always starts in English and Urdu is an explicit choice.
   static Future<LocaleController> open() async {
     final store = await PrefsLanguageStore.open();
-    final saved = store.read();
-    final system = WidgetsBinding.instance.platformDispatcher.locale.languageCode;
-    return LocaleController(initial: saved ?? system, store: store);
+    return LocaleController(initial: store.read() ?? 'en', store: store);
   }
 
   Future<void> set(String code) async {

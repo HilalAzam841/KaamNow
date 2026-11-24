@@ -35,8 +35,8 @@ An admin who logs in gets the admin dashboard at `/admin` instead (sidebar on wi
 
 ### Urdu
 
-Customers and workers can switch between English and اردو on the login, sign-up and account
-screens. Urdu turns the whole app right to left and uses the bundled Noto Nastaliq Urdu font
+The app always opens in English. A language menu (🌐 English ▾) in the top bar of every screen,
+including login and sign-up, switches to اردو. Urdu turns the whole app right to left and uses the bundled Noto Nastaliq Urdu font
 (`assets/fonts/`, SIL Open Font License). The choice is remembered in the browser, sent to the
 server with every request (`Accept-Language`) and saved on the account, so server messages and
 alerts arrive in the same language. Amounts read "1,800 روپے"; numbers stay in Western digits.
@@ -86,7 +86,7 @@ On the backend, add the app's origin to `CORS_ALLOWED_ORIGINS` (for example
 
 ```bash
 flutter analyze
-flutter test          # 51 unit and widget tests (API client, models, routing, key screens, admin dashboard, Urdu)
+flutter test          # 52 unit and widget tests (API client, models, routing, key screens, admin dashboard, Urdu)
 ```
 
 `e2e/` drives the real web build against a running backend in Chromium, through the whole job

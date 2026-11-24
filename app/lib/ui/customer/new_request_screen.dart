@@ -11,6 +11,7 @@ import '../../core/location.dart';
 import '../../core/session.dart';
 import '../../models/models.dart';
 import '../widgets/common.dart';
+import '../widgets/language_button.dart';
 import '../widgets/map_view.dart';
 import '../../l10n/l10n.dart';
 
@@ -117,7 +118,7 @@ class _NewRequestScreenState extends State<NewRequestScreen> {
     final config = context.watch<Session>().config;
     final center = _pin ?? LatLng(config.cityLat, config.cityLng);
     return Scaffold(
-      appBar: AppBar(title: Text(context.t.postAJob)),
+      appBar: AppBar(title: Text(context.t.postAJob), actions: const [LanguageButton()]),
       body: PageBody(
         child: Form(
           key: _form,

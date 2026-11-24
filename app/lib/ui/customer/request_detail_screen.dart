@@ -9,6 +9,7 @@ import '../../core/format.dart';
 import '../../core/session.dart';
 import '../../models/models.dart';
 import '../widgets/common.dart';
+import '../widgets/language_button.dart';
 import '../widgets/offer_widgets.dart';
 import '../../l10n/l10n.dart';
 
@@ -107,6 +108,7 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
         actions: [
           if (r != null && r.isOpen)
             IconButton(tooltip: context.t.cancelRequest, onPressed: _cancelRequest, icon: const Icon(Icons.cancel_outlined)),
+          const LanguageButton(),
         ],
       ),
       body: r == null

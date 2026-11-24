@@ -10,6 +10,7 @@ import '../../core/location.dart';
 import '../../core/session.dart';
 import '../../models/models.dart';
 import '../widgets/common.dart';
+import '../widgets/language_button.dart';
 import '../widgets/map_view.dart';
 import '../../l10n/l10n.dart';
 
@@ -123,7 +124,7 @@ class _WorkerProfileScreenState extends State<WorkerProfileScreen> {
     final theme = Theme.of(context);
     final config = context.read<Session>().config;
     return Scaffold(
-      appBar: AppBar(title: Text(context.t.myWorkerProfile)),
+      appBar: AppBar(title: Text(context.t.myWorkerProfile), actions: const [LanguageButton()]),
       body: p == null
           ? (_error != null ? ErrorView(error: _error!, onRetry: _load) : const Center(child: CircularProgressIndicator()))
           : PageBody(

@@ -6,6 +6,7 @@ import '../../core/format.dart';
 import '../../core/session.dart';
 import '../../models/models.dart';
 import '../widgets/common.dart';
+import '../widgets/language_button.dart';
 import '../../l10n/l10n.dart';
 
 /// Subscription plans: lower commission and more daily offers.
@@ -18,7 +19,7 @@ class PlansScreen extends StatelessWidget {
     final api = session.api;
     final theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text(context.t.plans)),
+      appBar: AppBar(title: Text(context.t.plans), actions: const [LanguageButton()]),
       body: Loader<(MySubscription, List<SubscriptionPlan>)>(
         load: () async => (await api.mySubscription(), await api.subscriptionPlans()),
         builder: (context, data, reload) {

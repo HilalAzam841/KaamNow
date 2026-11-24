@@ -25,7 +25,7 @@ and reloads to check the page survives:
 cd app/e2e && ADMIN_PHONE=03009999999 ADMIN_PASSWORD=... node admin.js
 ```
 
-`urdu.js` switches the login screen to Urdu and visits the customer's and worker's main screens
+`urdu.js` checks that a browser set to Urdu still opens in English, picks Urdu from the language menu and visits the customer's and worker's main screens
 (run it after step1-3, which create the users it signs in as), then switches back to English:
 
 ```bash

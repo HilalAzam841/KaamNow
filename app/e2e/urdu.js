@@ -1,4 +1,4 @@
-// Urdu walk-through: switches the login screen to Urdu, then visits the customer's and the
+// Urdu walk-through: checks the app opens in English, picks Urdu from the language menu, then visits the customer's and the
 // worker's main screens (right to left, Nastaliq font, Urdu alerts and category names from the
 // server) and switches back to English. Run after step1-3, which create the users it signs in as.
 const fs = require('fs');
@@ -7,6 +7,13 @@ const L = require('./lib');
 
 const state = JSON.parse(fs.readFileSync('state.json', 'utf8'));
 const PASSWORD = 'kaamnow-pass-123';
+
+// Opens the language menu in the top bar and picks a language.
+async function pick(page, name) {
+  await L.tap(page, 'button', 'Language / زبان', { exact: false, wait: 800 });
+  await page.getByRole('menuitemcheckbox', { name, exact: true }).click();
+  await page.waitForTimeout(1500);
+}
 
 async function login(page, phone) {
   // Urdu labels: فون نمبر = phone number, پاس ورڈ = password, لاگ اِن = log in.
@@ -29,10 +36,12 @@ async function visit(page, hash, name, expect) {
   const pages = [];
   try {
     step = 'switch language on the login screen';
-    const page = await L.open(browser);
+    // A browser set to Urdu still opens the app in English: Urdu is only used once picked.
+    const page = await L.open(browser, { locale: 'ur-PK' });
     pages.push(page);
+    await L.see(page, 'Log in');
     await L.shot(page, 'urdu-00-login-english');
-    await L.tap(page, 'button', 'اردو', { exact: true, wait: 1500 });
+    await pick(page, 'اردو');
     await L.see(page, 'لاگ اِن');
     const dir = await page.evaluate(() => getComputedStyle(document.querySelector('flt-semantics-host') || document.body).direction);
     await L.shot(page, 'urdu-01-login');
@@ -67,7 +76,7 @@ async function visit(page, hash, name, expect) {
     step = 'worker screens';
     const ctx2 = await L.open(browser);
     pages.push(ctx2);
-    await L.tap(ctx2, 'button', 'اردو', { exact: true, wait: 1500 });
+    await pick(ctx2, 'اردو');
     await login(ctx2, state.workerPhone);
     await L.shot(ctx2, 'urdu-08-worker-feed');
     await visit(ctx2, '#/offers', 'urdu-09-worker-offers');
@@ -76,7 +85,7 @@ async function visit(page, hash, name, expect) {
 
     step = 'switch back to English';
     await visit(page, '#/account', 'urdu-12-account-before-switch');
-    await L.tap(page, 'button', 'English', { exact: true, wait: 1500 });
+    await pick(page, 'English');
     await L.see(page, 'Account');
     await L.shot(page, 'urdu-13-account-english');
 

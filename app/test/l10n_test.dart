@@ -6,6 +6,7 @@ import 'package:kaamnow/core/format.dart';
 import 'package:kaamnow/core/locale_controller.dart';
 import 'package:kaamnow/l10n/l10n.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'admin_test.dart' show adminHarness;
 import 'helpers.dart';
@@ -31,7 +32,26 @@ void customerRoutes(Harness h, {String language = 'en'}) {
   h.backend.on('GET /notifications/unread-count/', (_) => ok({'unread': 0}));
 }
 
+Future<void> pickLanguage(WidgetTester tester, String code) async {
+  await tester.tap(find.byKey(const Key('language-menu')));
+  await tester.pumpAndSettle();
+  await tester.tap(find.byKey(Key('language-$code')));
+  await tester.pumpAndSettle();
+}
+
 void main() {
+  testWidgets('the app starts in English even when the browser is set to Urdu', (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    tester.platformDispatcher.localeTestValue = const Locale('ur', 'PK');
+    addTearDown(tester.platformDispatcher.clearLocaleTestValue);
+    final locale = await LocaleController.open();
+    expect(locale.code, 'en');
+
+    await locale.set('ur');
+    expect((await LocaleController.open()).code, 'ur', reason: 'a choice the user made is remembered');
+  });
+
+
   tearDown(() => useStrings(lookupAppLocalizations(const Locale('en'))));
 
   testWidgets('the language button on the login screen switches to Urdu, right to left, and remembers it',
@@ -47,8 +67,7 @@ void main() {
     expect(find.text('Log in'), findsWidgets);
     expect(directionOf(tester, find.byKey(const Key('login-phone'))), TextDirection.ltr);
 
-    await tester.tap(find.byKey(const Key('language-toggle')));
-    await tester.pumpAndSettle();
+    await pickLanguage(tester, 'ur');
 
     expect(find.text('لاگ اِن'), findsWidgets);
     expect(find.text('Log in'), findsNothing);
@@ -56,8 +75,7 @@ void main() {
     expect(store.value, 'ur');
     expect(h.client.language, 'ur');
 
-    await tester.tap(find.byKey(const Key('language-toggle')));
-    await tester.pumpAndSettle();
+    await pickLanguage(tester, 'en');
     expect(find.text('Log in'), findsWidgets);
     expect(store.value, 'en');
   });
@@ -71,6 +89,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('السلام علیکم، Ayesha'), findsOneWidget);
+    expect(find.byKey(const Key('language-menu')), findsOneWidget, reason: 'the language menu is in the top bar');
     expect(find.text('برقی کاریگر'), findsOneWidget);
     final categories = h.backend.callsTo('GET /services/categories/').last;
     expect(categories.headers['Accept-Language'], 'ur');

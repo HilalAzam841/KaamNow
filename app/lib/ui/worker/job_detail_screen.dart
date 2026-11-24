@@ -8,6 +8,7 @@ import '../../core/format.dart';
 import '../../core/session.dart';
 import '../../models/models.dart';
 import '../widgets/common.dart';
+import '../widgets/language_button.dart';
 import '../widgets/offer_widgets.dart';
 import '../../l10n/l10n.dart';
 
@@ -99,7 +100,7 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
     final r = _request;
     final theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text(context.t.job)),
+      appBar: AppBar(title: Text(context.t.job), actions: const [LanguageButton()]),
       body: !_loaded
           ? (_error != null ? ErrorView(error: _error!, onRetry: _load) : const Center(child: CircularProgressIndicator()))
           : PageBody(
