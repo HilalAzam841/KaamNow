@@ -2,6 +2,7 @@ import logging
 
 from django.core.exceptions import PermissionDenied, ValidationError as DjangoValidationError
 from django.http import Http404
+from django.utils.translation import gettext_lazy as _
 from rest_framework import exceptions, status
 from rest_framework.response import Response
 from rest_framework.views import exception_handler
@@ -13,7 +14,7 @@ class BusinessRuleError(exceptions.APIException):
     """Raised by service-layer code when a business rule is violated."""
 
     status_code = status.HTTP_400_BAD_REQUEST
-    default_detail = "This action is not allowed."
+    default_detail = _("This action is not allowed.")
     default_code = "business_rule_violation"
 
     def __init__(self, detail=None, code=None, status_code=None):
@@ -49,7 +50,7 @@ def api_exception_handler(exc, context):
     if response is None:
         logger.exception("Unhandled API error", exc_info=exc)
         return Response(
-            {"success": False, "error": {"code": "server_error", "message": "Internal server error.", "details": None}},
+            {"success": False, "error": {"code": "server_error", "message": str(_("Internal server error.")), "details": None}},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
 

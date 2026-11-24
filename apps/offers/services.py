@@ -1,3 +1,4 @@
+from django.utils.translation import gettext as _
 from decimal import Decimal
 
 from django.conf import settings
@@ -8,6 +9,7 @@ from rest_framework import status as http_status
 from apps.common.exceptions import BusinessRuleError, ConflictError
 from apps.jobs.models import Booking, BookingStatusLog, ServiceRequest
 from apps.jobs.services import worker_can_bid_on, worker_distance_to_request
+from apps.common.i18n import money, t
 from apps.notifications.models import Notification
 from apps.notifications.services import notify, notify_many
 
@@ -19,7 +21,7 @@ def validate_price(amount):
     low = Decimal(settings.KAAMNOW["MIN_OFFER_PRICE"])
     high = Decimal(settings.KAAMNOW["MAX_OFFER_PRICE"])
     if amount < low or amount > high:
-        raise BusinessRuleError(f"Price must be between Rs. {low} and Rs. {high}.")
+        raise BusinessRuleError(_("Price must be between Rs. {low} and Rs. {high}.").format(low=low, high=high))
     return amount.quantize(Decimal("0.01"))
 
 
@@ -40,14 +42,14 @@ def create_offer(worker, service_request, *, price, estimated_arrival_minutes, m
     # Lock the request row so offers cannot be created after it is booked.
     service_request = ServiceRequest.objects.select_for_update().get(pk=service_request.pk)
     if not service_request.is_open:
-        raise ConflictError("This request is no longer accepting offers.")
+        raise ConflictError(_("This request is no longer accepting offers."))
     if not worker_can_bid_on(worker, service_request):
         raise BusinessRuleError(
-            "You are not eligible to bid on this request (check verification, availability, category and radius).",
+            _("You are not eligible to bid on this request (check verification, availability, category and radius)."),
             status_code=http_status.HTTP_403_FORBIDDEN,
         )
     if WorkerOffer.objects.filter(request=service_request, worker=worker).exists():
-        raise ConflictError("You have already made an offer on this request. Update it instead.")
+        raise ConflictError(_("You have already made an offer on this request. Update it instead."))
     from apps.billing.services import check_daily_offer_limit
 
     check_daily_offer_limit(worker)
@@ -61,14 +63,15 @@ def create_offer(worker, service_request, *, price, estimated_arrival_minutes, m
                 distance_km=worker_distance_to_request(worker, service_request),
             )
     except IntegrityError as exc:
-        raise ConflictError("You have already made an offer on this request.") from exc
+        raise ConflictError(_("You have already made an offer on this request.")) from exc
     Negotiation.objects.create(
         offer=offer, party=Party.WORKER, author=worker.user, action=Negotiation.Action.OFFER, amount=price,
         message=message,
     )
     notify(
-        service_request.customer, Notification.Type.NEW_OFFER, "New offer received",
-        f"{worker.user.full_name} offered Rs. {price} for '{service_request.title}'.",
+        service_request.customer, Notification.Type.NEW_OFFER, t("New offer received"),
+        t("{name} offered {amount} for '{title}'.", name=worker.user.full_name, amount=money(price),
+          title=service_request.title),
         {"request_id": service_request.pk, "offer_id": offer.pk},
     )
     return offer
@@ -79,9 +82,9 @@ def _lock_pending_offer(offer):
     ServiceRequest.objects.select_for_update().filter(pk=offer.request_id).first()
     offer = WorkerOffer.objects.select_for_update().select_related("request", "worker__user").get(pk=offer.pk)
     if not offer.is_pending:
-        raise ConflictError(f"This offer is {offer.status} and can no longer be changed.")
+        raise ConflictError(_("This offer can no longer be changed."))
     if not offer.request.is_open:
-        raise ConflictError("This request is no longer open.")
+        raise ConflictError(_("This request is no longer open."))
     return offer
 
 
@@ -90,7 +93,7 @@ def update_offer(offer, worker_user, **changes):
     """Worker edits their pending offer. A price change is recorded as a revision."""
     offer = _lock_pending_offer(offer)
     if offer.worker.user_id != worker_user.pk:
-        raise BusinessRuleError("You can only edit your own offers.", status_code=403)
+        raise BusinessRuleError(_("You can only edit your own offers."), status_code=403)
     fields = ["updated_at"]
     for attr in ("estimated_arrival_minutes", "message", "additional_info"):
         if attr in changes:
@@ -98,7 +101,7 @@ def update_offer(offer, worker_user, **changes):
             fields.append(attr)
     if "price" in changes and Decimal(changes["price"]) != offer.current_price:
         if _rounds(offer) >= settings.KAAMNOW["MAX_NEGOTIATION_ROUNDS"]:
-            raise BusinessRuleError("Maximum negotiation rounds reached.")
+            raise BusinessRuleError(_("Maximum negotiation rounds reached."))
         price = validate_price(changes["price"])
         offer.current_price = price
         offer.awaiting = Party.CUSTOMER
@@ -108,8 +111,8 @@ def update_offer(offer, worker_user, **changes):
             message=changes.get("message", ""),
         )
         notify(
-            offer.request.customer, Notification.Type.NEGOTIATION, "Offer updated",
-            f"{offer.worker.user.full_name} updated their price to Rs. {price}.",
+            offer.request.customer, Notification.Type.NEGOTIATION, t("Offer updated"),
+            t("{name} updated their price to {amount}.", name=offer.worker.user.full_name, amount=money(price)),
             {"offer_id": offer.pk, "request_id": offer.request_id},
         )
     offer.save(update_fields=fields)
@@ -129,20 +132,20 @@ def negotiate(offer, user, *, action, amount=None, message=""):
     offer = _lock_pending_offer(offer)
     party = party_for(user, offer)
     if party is None:
-        raise BusinessRuleError("You are not a participant in this negotiation.", status_code=403)
+        raise BusinessRuleError(_("You are not a participant in this negotiation."), status_code=403)
     if offer.awaiting != party:
-        raise ConflictError("Waiting for the other party to respond.")
+        raise ConflictError(_("Waiting for the other party to respond."))
 
     other_user = offer.worker.user if party == Party.CUSTOMER else offer.request.customer
 
     if action == "counter":
         if amount is None:
-            raise BusinessRuleError("Amount is required for a counter proposal.")
+            raise BusinessRuleError(_("Amount is required for a counter proposal."))
         if _rounds(offer) >= settings.KAAMNOW["MAX_NEGOTIATION_ROUNDS"]:
-            raise BusinessRuleError("Maximum negotiation rounds reached. Accept or reject the current price.")
+            raise BusinessRuleError(_("Maximum negotiation rounds reached. Accept or reject the current price."))
         amount = validate_price(amount)
         if amount == offer.current_price:
-            raise BusinessRuleError("Counter amount must differ from the current price. Use 'agree' instead.")
+            raise BusinessRuleError(_("Counter amount must differ from the current price. Use 'agree' instead."))
         offer.current_price = amount
         offer.awaiting = Party.WORKER if party == Party.CUSTOMER else Party.CUSTOMER
         offer.save(update_fields=["current_price", "awaiting", "updated_at"])
@@ -150,8 +153,8 @@ def negotiate(offer, user, *, action, amount=None, message=""):
             offer=offer, party=party, author=user, action=Negotiation.Action.COUNTER, amount=amount, message=message
         )
         notify(
-            other_user, Notification.Type.NEGOTIATION, "New counter offer",
-            f"Counter proposal: Rs. {amount}.", {"offer_id": offer.pk, "request_id": offer.request_id},
+            other_user, Notification.Type.NEGOTIATION, t("New counter offer"),
+            t("Counter proposal: {amount}.", amount=money(amount)), {"offer_id": offer.pk, "request_id": offer.request_id},
         )
         return offer, None
 
@@ -168,13 +171,14 @@ def negotiate(offer, user, *, action, amount=None, message=""):
             message=message,
         )
         notify(
-            other_user, Notification.Type.NEGOTIATION, "Price agreed",
-            f"{offer.worker.user.full_name} agreed to Rs. {offer.current_price}. Confirm to book.",
+            other_user, Notification.Type.NEGOTIATION, t("Price agreed"),
+            t("{name} agreed to {amount}. Confirm to book.", name=offer.worker.user.full_name,
+              amount=money(offer.current_price)),
             {"offer_id": offer.pk, "request_id": offer.request_id},
         )
         return offer, None
 
-    raise BusinessRuleError("Unknown negotiation action.")
+    raise BusinessRuleError(_("Unknown negotiation action."))
 
 
 def accept_offer(offer, customer_user, message=""):
@@ -193,18 +197,18 @@ def accept_offer(offer, customer_user, message=""):
             service_request = ServiceRequest.objects.select_for_update().get(pk=offer.request_id)
             offer = WorkerOffer.objects.select_for_update().select_related("worker__user").get(pk=offer.pk)
             if service_request.customer_id != customer_user.pk:
-                raise BusinessRuleError("Only the customer who posted the request can accept offers.", status_code=403)
+                raise BusinessRuleError(_("Only the customer who posted the request can accept offers."), status_code=403)
             if service_request.status != ServiceRequest.Status.OPEN:
-                raise ConflictError("This request has already been booked or closed.")
+                raise ConflictError(_("This request has already been booked or closed."))
             if not offer.is_pending:
-                raise ConflictError(f"This offer is {offer.status}.")
+                raise ConflictError(_("This offer is no longer available."))
             if offer.awaiting != Party.CUSTOMER:
-                raise ConflictError("You proposed a new price. Wait for the worker to respond before accepting.")
+                raise ConflictError(_("You proposed a new price. Wait for the worker to respond before accepting."))
             worker = offer.worker
             if not (worker.is_verified and worker.user.is_active and not worker.user.is_suspended):
-                raise ConflictError("This worker is no longer available.")
+                raise ConflictError(_("This worker is no longer available."))
             if Booking.objects.filter(worker=worker, status__in=Booking.ACTIVE_STATUSES).count() >= 3:
-                raise ConflictError("This worker has too many active bookings right now.")
+                raise ConflictError(_("This worker has too many active bookings right now."))
 
             booking = Booking.objects.create(
                 request=service_request, offer=offer, customer=customer_user, worker=worker,
@@ -231,19 +235,20 @@ def accept_offer(offer, customer_user, message=""):
                 status=WorkerOffer.Status.CLOSED, updated_at=timezone.now()
             )
             notify(
-                worker.user, Notification.Type.OFFER_ACCEPTED, "Offer accepted",
-                f"Your offer of Rs. {offer.current_price} was accepted. Booking #{booking.pk} is confirmed.",
+                worker.user, Notification.Type.OFFER_ACCEPTED, t("Offer accepted"),
+                t("Your offer of {amount} was accepted. Booking #{id} is confirmed.",
+                  amount=money(offer.current_price), id=booking.pk),
                 {"booking_id": booking.pk, "offer_id": offer.pk},
             )
             if others:
                 notify_many(
-                    [o.worker.user for o in others], Notification.Type.OFFER_CLOSED, "Request booked",
-                    f"'{service_request.title}' was booked with another provider.",
+                    [o.worker.user for o in others], Notification.Type.OFFER_CLOSED, t("Request booked"),
+                    t("'{title}' was booked with another provider.", title=service_request.title),
                     {"request_id": service_request.pk},
                 )
             return booking
     except IntegrityError as exc:
-        raise ConflictError("This request has already been booked.") from exc
+        raise ConflictError(_("This request has already been booked.")) from exc
 
 
 @transaction.atomic
@@ -252,14 +257,14 @@ def reject_offer(offer, user, reason=""):
     offer = _lock_pending_offer(offer)
     party = party_for(user, offer)
     if party is None:
-        raise BusinessRuleError("You are not a participant in this offer.", status_code=403)
+        raise BusinessRuleError(_("You are not a participant in this offer."), status_code=403)
     if party == Party.CUSTOMER:
         offer.status = WorkerOffer.Status.REJECTED
-        action, recipient, title = Negotiation.Action.REJECT, offer.worker.user, "Offer declined"
+        action, recipient, title = Negotiation.Action.REJECT, offer.worker.user, t("Offer declined")
         notification_type = Notification.Type.OFFER_REJECTED
     else:
         offer.status = WorkerOffer.Status.WITHDRAWN
-        action, recipient, title = Negotiation.Action.WITHDRAW, offer.request.customer, "Offer withdrawn"
+        action, recipient, title = Negotiation.Action.WITHDRAW, offer.request.customer, t("Offer withdrawn")
         notification_type = Notification.Type.NEGOTIATION
     offer.save(update_fields=["status", "updated_at"])
     Negotiation.objects.create(offer=offer, party=party, author=user, action=action, message=reason)

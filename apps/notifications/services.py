@@ -8,8 +8,9 @@ skipped and only the in-app history is kept.
 
 import logging
 
+from django.conf import settings
 from django.db import transaction
-from django.utils import timezone
+from django.utils import timezone, translation
 
 from . import fcm
 from .models import Notification
@@ -34,13 +35,26 @@ def get_push_sender():
     return FCMPushSender() if fcm.is_configured() else NullPushSender()
 
 
+def render_for(user, *texts):
+    """Renders lazy (gettext_lazy / format_lazy) texts in the recipient's own language.
+
+    Alerts are written when something happens, often in another user's request or in a
+    background task, so the language comes from the recipient's account, not the request.
+    """
+    language = getattr(user, "language", "") or settings.LANGUAGE_CODE
+    with translation.override(language):
+        return [str(t) for t in texts]
+
+
 def push_only(user, type, title, body, data=None):
     """Push without storing in-app history (used for high-volume events such as chat messages)."""
+    title, body = render_for(user, title, body)
     get_push_sender().send(user, title, body, {**(data or {}), "type": type})
 
 
 def notify(user, type, title, body, data=None):
     data = data or {}
+    title, body = render_for(user, title, body)
     notification = Notification.objects.create(user=user, type=type, title=title, body=body, data=data)
     get_push_sender().send(user, title, body, {**data, "type": type, "notification_id": notification.pk})
     return notification
@@ -48,11 +62,12 @@ def notify(user, type, title, body, data=None):
 
 def notify_many(users, type, title, body, data=None):
     data = data or {}
-    objs = [Notification(user=u, type=type, title=title, body=body, data=data) for u in users]
+    rendered = [(u, *render_for(u, title, body)) for u in users]
+    objs = [Notification(user=u, type=type, title=t, body=b, data=data) for u, t, b in rendered]
     created = Notification.objects.bulk_create(objs)
     sender = get_push_sender()
-    for u in users:
-        sender.send(u, title, body, {**data, "type": type})
+    for u, t, b in rendered:
+        sender.send(u, t, b, {**data, "type": type})
     return created
 
 

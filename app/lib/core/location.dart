@@ -1,5 +1,7 @@
 import 'package:geolocator/geolocator.dart';
 
+import 'format.dart';
+
 class LocationFix {
   LocationFix(this.latitude, this.longitude, {this.accuracy, this.speedKmh, this.heading});
   final double latitude;
@@ -13,11 +15,11 @@ class LocationFix {
 class LocationService {
   Future<(LocationFix?, String?)> current() async {
     try {
-      if (!await Geolocator.isLocationServiceEnabled()) return (null, 'Location services are turned off.');
+      if (!await Geolocator.isLocationServiceEnabled()) return (null, strings.locationOff);
       var permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
-        return (null, 'Location permission was denied. You can still place the pin on the map.');
+        return (null, strings.locationDenied);
       }
       final p = await Geolocator.getCurrentPosition(
           locationSettings: const LocationSettings(accuracy: LocationAccuracy.high, timeLimit: Duration(seconds: 15)));
@@ -27,7 +29,7 @@ class LocationService {
         null
       );
     } catch (e) {
-      return (null, 'Could not get your location.');
+      return (null, strings.couldNotGetLocation);
     }
   }
 }

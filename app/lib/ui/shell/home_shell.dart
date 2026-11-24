@@ -5,6 +5,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/session.dart';
+import '../../l10n/l10n.dart';
 
 class _Tab {
   const _Tab(this.path, this.label, this.icon);
@@ -13,21 +14,21 @@ class _Tab {
   final IconData icon;
 }
 
-const _customerTabs = [
-  _Tab('/', 'Home', Icons.home_rounded),
-  _Tab('/requests', 'My requests', Icons.assignment_rounded),
-  _Tab('/bookings', 'Bookings', Icons.event_available_rounded),
-  _Tab('/notifications', 'Alerts', Icons.notifications_rounded),
-  _Tab('/account', 'Account', Icons.person_rounded),
-];
+List<_Tab> _customerTabs(AppLocalizations t) => [
+      _Tab('/', t.tabHome, Icons.home_rounded),
+      _Tab('/requests', t.tabMyRequests, Icons.assignment_rounded),
+      _Tab('/bookings', t.tabBookings, Icons.event_available_rounded),
+      _Tab('/notifications', t.tabAlerts, Icons.notifications_rounded),
+      _Tab('/account', t.tabAccount, Icons.person_rounded),
+    ];
 
-const _workerTabs = [
-  _Tab('/jobs', 'Jobs', Icons.work_rounded),
-  _Tab('/offers', 'My offers', Icons.local_offer_rounded),
-  _Tab('/bookings', 'Bookings', Icons.event_available_rounded),
-  _Tab('/notifications', 'Alerts', Icons.notifications_rounded),
-  _Tab('/account', 'Account', Icons.person_rounded),
-];
+List<_Tab> _workerTabs(AppLocalizations t) => [
+      _Tab('/jobs', t.tabJobs, Icons.work_rounded),
+      _Tab('/offers', t.tabMyOffers, Icons.local_offer_rounded),
+      _Tab('/bookings', t.tabBookings, Icons.event_available_rounded),
+      _Tab('/notifications', t.tabAlerts, Icons.notifications_rounded),
+      _Tab('/account', t.tabAccount, Icons.person_rounded),
+    ];
 
 /// Bottom navigation on phones, a side rail on wide screens. Polls the unread badge.
 class HomeShell extends StatefulWidget {
@@ -72,7 +73,7 @@ class _HomeShellState extends State<HomeShell> {
   @override
   Widget build(BuildContext context) {
     final user = context.watch<Session>().user;
-    final tabs = user?.isWorker == true ? _workerTabs : _customerTabs;
+    final tabs = user?.isWorker == true ? _workerTabs(context.t) : _customerTabs(context.t);
     var index = tabs.indexWhere((t) => t.path != '/' && widget.location.startsWith(t.path));
     if (index < 0) index = 0;
 

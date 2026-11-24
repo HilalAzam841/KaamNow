@@ -81,6 +81,21 @@ unit and widget tests plus a browser end-to-end run (see `app/README.md`).
 
 It uses the admin API from Stages 1 and 2, so the backend is unchanged in this stage.
 
+### Stage 6: Urdu
+
+| Feature | Where |
+|---|---|
+| Whole customer and worker app in Urdu, right to left, in the Noto Nastaliq Urdu font; switch on the login, sign-up and account screens; remembered on the device | `app/lib/l10n/`, `app/lib/core/locale_controller.dart` |
+| Admin dashboard stays in English for admin accounts | `app/lib/app.dart` |
+| The app sends `Accept-Language`; server error messages come back in Urdu (`LocaleMiddleware`, gettext) | `config/settings.py`, `locale/ur/` |
+| Each user's language is saved on the account (`language`: `en` or `ur`, `PATCH /auth/me/`) and alerts are written in the recipient's language, whoever triggered them | `apps/accounts/models.py`, `apps/notifications/services.py`, `apps/common/i18n.py` |
+| Service names in Urdu (`name_ur`, seeded for the 13 default services, editable by admins); every `category_name` follows the request language | `apps/catalog/` |
+
+Editing server translations: change `locale/ur/LC_MESSAGES/django.po`, then run
+`python scripts/compile_messages.py` (or `python manage.py compilemessages` with GNU gettext) and
+commit both files. A test fails if the `.mo` file is out of date or a translation loses a `{placeholder}`.
+App strings live in `app/lib/l10n/app_en.arb` and `app_ur.arb`; run `flutter gen-l10n` after editing.
+
 **Before going live with online payments:** the JazzCash and Easypaisa adapters follow each
 gateway's published integration scheme and are covered by tests with simulated gateway responses.
 They have **not** been run against the real sandboxes yet, because that needs your merchant
@@ -189,7 +204,7 @@ docker compose up --build
 pytest -q
 ```
 
-The suite has 323 tests and needs a running PostgreSQL (Redis is not needed for tests). It uses the database settings from your
+The suite has 350 tests and needs a running PostgreSQL (Redis is not needed for tests). It uses the database settings from your
 `.env` and creates a separate `test_kaamnow` database. Coverage includes:
 
 - **Authentication**: registration validation, login, suspended accounts, token refresh rotation, logout blacklisting, password reset (single-use token, no account enumeration), throttling.
@@ -205,6 +220,7 @@ The suite has 323 tests and needs a running PostgreSQL (Redis is not needed for 
 - **Emergency fee**: locked at request time, included in the payment, separate ledger entry, commission only on the negotiated price.
 - **Chat and tracking over WebSockets** (real ASGI app): token, suspension, origin and participant checks; chat and read receipts in both directions; REST messages pushed to sockets; location and status events; customers cannot send fake locations; events isolated per booking.
 - **Push**: message format, only active devices, dead tokens deactivated, retries on transient errors.
+- **Urdu**: error messages follow `Accept-Language`, alerts use the recipient's saved language (not the sender's), Urdu service names, the saved-language API, and a check that the compiled catalog matches the `.po` file.
 - **Complaints** and **scheduled tasks** (including a check that every beat entry points to a registered task).
 
 CI (`.github/workflows/tests.yml`) runs lint, checks for missing migrations, validates the

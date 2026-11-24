@@ -6,6 +6,7 @@ import '../../core/format.dart';
 import '../../core/session.dart';
 import '../../models/models.dart';
 import '../widgets/common.dart';
+import '../../l10n/l10n.dart';
 
 /// Where a notification should take the user, or null.
 String? notificationTarget(AppNotification n, {required bool isWorker}) {
@@ -29,13 +30,13 @@ class NotificationsScreen extends StatelessWidget {
     final isWorker = session.user?.isWorker == true;
     final key = GlobalKey<LoaderState<Paged<AppNotification>>>();
     return Scaffold(
-      appBar: AppBar(title: const Text('Alerts'), actions: [
+      appBar: AppBar(title: Text(context.t.tabAlerts), actions: [
         TextButton(
           onPressed: () async {
             await runAction(context, session.api.markAllNotificationsRead);
             key.currentState?.reload();
           },
-          child: const Text('Mark all read'),
+          child: Text(context.t.markAllRead),
         ),
       ]),
       body: Loader<Paged<AppNotification>>(
@@ -43,7 +44,7 @@ class NotificationsScreen extends StatelessWidget {
         load: session.api.notifications,
         builder: (context, page, reload) {
           if (page.results.isEmpty) {
-            return const EmptyView(icon: Icons.notifications_none, title: 'No alerts yet');
+            return EmptyView(icon: Icons.notifications_none, title: context.t.noAlertsYet);
           }
           return RefreshIndicator(
             onRefresh: reload,

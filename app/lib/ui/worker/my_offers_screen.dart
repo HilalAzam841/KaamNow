@@ -6,6 +6,7 @@ import '../../core/format.dart';
 import '../../core/session.dart';
 import '../../models/models.dart';
 import '../widgets/common.dart';
+import '../../l10n/l10n.dart';
 
 class MyOffersScreen extends StatefulWidget {
   const MyOffersScreen({super.key});
@@ -20,15 +21,15 @@ class _MyOffersScreenState extends State<MyOffersScreen> {
   Widget build(BuildContext context) {
     final api = context.read<Session>().api;
     return Scaffold(
-      appBar: AppBar(title: const Text('My offers')),
+      appBar: AppBar(title: Text(context.t.tabMyOffers)),
       body: Column(children: [
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
           child: Row(children: [
-            for (final s in const [('pending', 'Pending'), ('accepted', 'Accepted'), (null, 'All')])
+            for (final s in [('pending', context.t.statusPending), ('accepted', context.t.statusAccepted), (null, context.t.all)])
               Padding(
-                padding: const EdgeInsets.only(right: 8),
+                padding: const EdgeInsetsDirectional.only(end: 8),
                 child: ChoiceChip(
                   label: Text(s.$2),
                   selected: _status == s.$1,
@@ -43,8 +44,8 @@ class _MyOffersScreenState extends State<MyOffersScreen> {
             load: () => api.myOffers(status: _status),
             builder: (context, page, reload) {
               if (page.results.isEmpty) {
-                return const EmptyView(icon: Icons.local_offer_outlined, title: 'No offers here',
-                    subtitle: 'Offers you send on jobs appear here.');
+                return EmptyView(icon: Icons.local_offer_outlined, title: context.t.noOffersHere,
+                    subtitle: context.t.noOffersHereHint);
               }
               return RefreshIndicator(
                 onRefresh: reload,
@@ -53,10 +54,10 @@ class _MyOffersScreenState extends State<MyOffersScreen> {
                     for (final o in page.results)
                       Card(
                         child: ListTile(
-                          title: Text('Job #${o.requestId} · ${rs(o.currentPrice)}'),
+                          title: Text(context.t.jobNumberPrice(o.requestId, rs(o.currentPrice))),
                           subtitle: Text(o.isPending
-                              ? (o.awaiting == 'worker' ? 'Customer countered. Your move.' : 'Waiting for customer')
-                              : 'Sent ${ago(o.createdAt)}'),
+                              ? (o.awaiting == 'worker' ? context.t.customerCounteredShort : context.t.waitingForCustomerShort)
+                              : context.t.sentAgo(ago(o.createdAt))),
                           leading: o.isPending && o.awaiting == 'worker'
                               ? const Icon(Icons.priority_high, color: Colors.orange)
                               : const Icon(Icons.local_offer),

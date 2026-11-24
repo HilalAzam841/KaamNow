@@ -3,12 +3,14 @@ from decimal import Decimal
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils.text import slugify
+from django.utils.translation import get_language
 
 from apps.common.models import TimeStampedModel
 
 
 class ServiceCategory(TimeStampedModel):
     name = models.CharField(max_length=100, unique=True)
+    name_ur = models.CharField("Urdu name", max_length=100, blank=True, help_text="Shown to users who picked Urdu.")
     slug = models.SlugField(max_length=110, unique=True)
     description = models.TextField(blank=True)
     icon = models.CharField(max_length=100, blank=True, help_text="Icon key used by the mobile app.")
@@ -25,6 +27,13 @@ class ServiceCategory(TimeStampedModel):
         super().save(*args, **kwargs)
 
     def __str__(self):
+        return self.name
+
+    @property
+    def display_name(self):
+        """The name in the language of the current request (Urdu when set and asked for)."""
+        if self.name_ur and (get_language() or "").startswith("ur"):
+            return self.name_ur
         return self.name
 
 

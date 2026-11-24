@@ -1,3 +1,4 @@
+from django.utils.translation import gettext as _
 from datetime import timedelta
 from decimal import Decimal
 
@@ -36,13 +37,13 @@ def describe(location, booking):
 
 def record_location(booking, user, latitude, longitude, accuracy_m=None, heading=None, speed_kmh=None):
     if booking.worker.user_id != user.pk:
-        raise BusinessRuleError("Only the assigned worker can share location.", status_code=403)
+        raise BusinessRuleError(_("Only the assigned worker can share location."), status_code=403)
     if not booking.is_active:
-        raise BusinessRuleError("Location sharing is only available during an active booking.",
+        raise BusinessRuleError(_("Location sharing is only available during an active booking."),
                                 status_code=http_status.HTTP_409_CONFLICT)
     lat, lng = Decimal(str(latitude)), Decimal(str(longitude))
     if not (-90 <= lat <= 90 and -180 <= lng <= 180):
-        raise BusinessRuleError("Invalid coordinates.")
+        raise BusinessRuleError(_("Invalid coordinates."))
     location = BookingLocation.objects.create(
         booking=booking, worker=booking.worker, latitude=lat.quantize(Decimal("0.000001")),
         longitude=lng.quantize(Decimal("0.000001")), accuracy_m=accuracy_m, heading=heading, speed_kmh=speed_kmh,
@@ -56,7 +57,7 @@ def latest_location(booking, user, trail=20):
     """Latest point plus a short trail. Customers only see it while the booking is active."""
     is_worker = booking.worker.user_id == user.pk
     if not is_worker and not booking.is_active:
-        raise BusinessRuleError("Live location is only shared during an active booking.",
+        raise BusinessRuleError(_("Live location is only shared during an active booking."),
                                 status_code=http_status.HTTP_409_CONFLICT)
     points = list(BookingLocation.objects.filter(booking=booking)[:trail])
     if not points:
@@ -70,5 +71,5 @@ def latest_location(booking, user, trail=20):
 
 def purge_old_locations():
     cutoff = timezone.now() - timedelta(days=settings.KAAMNOW["LOCATION_RETENTION_DAYS"])
-    deleted, _ = BookingLocation.objects.filter(recorded_at__lt=cutoff).delete()
+    deleted, _count = BookingLocation.objects.filter(recorded_at__lt=cutoff).delete()
     return deleted

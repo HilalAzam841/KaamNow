@@ -5,6 +5,8 @@ import 'package:provider/provider.dart';
 import '../../core/api_exception.dart';
 import '../../core/session.dart';
 import '../../models/models.dart';
+import '../widgets/language_button.dart';
+import '../../l10n/l10n.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -58,7 +60,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Create account'),
+        title: Text(context.t.createAccount),
+        actions: const [LanguageButton()],
         leading: IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => context.go('/login')),
       ),
       body: Center(
@@ -69,12 +72,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
             child: Form(
               key: _form,
               child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-                Text('I want to', style: theme.textTheme.titleMedium),
+                Text(context.t.iWantTo, style: theme.textTheme.titleMedium),
                 const SizedBox(height: 8),
                 SegmentedButton<UserRole>(
-                  segments: const [
-                    ButtonSegment(value: UserRole.customer, label: Text('Hire help'), icon: Icon(Icons.person)),
-                    ButtonSegment(value: UserRole.worker, label: Text('Offer services'), icon: Icon(Icons.handyman)),
+                  segments: [
+                    ButtonSegment(value: UserRole.customer, label: Text(context.t.hireHelp), icon: Icon(Icons.person)),
+                    ButtonSegment(value: UserRole.worker, label: Text(context.t.offerServices), icon: Icon(Icons.handyman)),
                   ],
                   selected: {_role},
                   onSelectionChanged: (s) => setState(() => _role = s.first),
@@ -83,23 +86,25 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 TextFormField(
                   key: const Key('reg-name'),
                   controller: _name,
-                  decoration: const InputDecoration(labelText: 'Full name'),
-                  validator: (v) => (v ?? '').trim().length < 3 ? 'Enter your full name' : _server('full_name'),
+                  decoration: InputDecoration(labelText: context.t.fullName),
+                  validator: (v) => (v ?? '').trim().length < 3 ? context.t.enterFullName : _server('full_name'),
                 ),
                 const SizedBox(height: 12),
                 TextFormField(
                   key: const Key('reg-phone'),
                   controller: _phone,
                   keyboardType: TextInputType.phone,
-                  decoration: const InputDecoration(labelText: 'Phone number', hintText: '03XX XXXXXXX'),
-                  validator: (v) => (v ?? '').trim().length < 10 ? 'Enter a valid phone number' : _server('phone'),
+                  textDirection: TextDirection.ltr,
+                  decoration: InputDecoration(labelText: context.t.phoneNumber, hintText: '03XX XXXXXXX'),
+                  validator: (v) => (v ?? '').trim().length < 10 ? context.t.enterValidPhone : _server('phone'),
                 ),
                 const SizedBox(height: 12),
                 TextFormField(
                   key: const Key('reg-email'),
                   controller: _email,
                   keyboardType: TextInputType.emailAddress,
-                  decoration: const InputDecoration(labelText: 'Email (optional, for password reset)'),
+                  textDirection: TextDirection.ltr,
+                  decoration: InputDecoration(labelText: context.t.emailOptional),
                   validator: (_) => _server('email'),
                 ),
                 if (_role == UserRole.worker) ...[
@@ -107,8 +112,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   TextFormField(
                     key: const Key('reg-cnic'),
                     controller: _cnic,
-                    decoration: const InputDecoration(labelText: 'CNIC number', hintText: '35202-1234567-1'),
-                    validator: (v) => (v ?? '').trim().length < 13 ? 'Enter your CNIC number' : _server('cnic_number'),
+                    textDirection: TextDirection.ltr,
+                    decoration: InputDecoration(labelText: context.t.cnicNumber, hintText: '35202-1234567-1'),
+                    validator: (v) => (v ?? '').trim().length < 13 ? context.t.enterCnic : _server('cnic_number'),
                   ),
                 ],
                 const SizedBox(height: 12),
@@ -116,8 +122,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   key: const Key('reg-password'),
                   controller: _password,
                   obscureText: true,
-                  decoration: const InputDecoration(labelText: 'Password', helperText: 'At least 8 characters'),
-                  validator: (v) => (v ?? '').length < 8 ? 'Use at least 8 characters' : _server('password'),
+                  decoration: InputDecoration(labelText: context.t.password, helperText: context.t.atLeast8),
+                  validator: (v) => (v ?? '').length < 8 ? context.t.useAtLeast8 : _server('password'),
                 ),
                 if (_error != null) ...[
                   const SizedBox(height: 12),
@@ -129,11 +135,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   onPressed: _busy ? null : _submit,
                   child: _busy
                       ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                      : const Text('Create account'),
+                      : Text(context.t.createAccount),
                 ),
                 if (_role == UserRole.worker) ...[
                   const SizedBox(height: 12),
-                  Text('After signing up, upload your CNIC so KaamNow can verify you before you send offers.',
+                  Text(context.t.workerSignupHint,
                       style: theme.textTheme.bodySmall, textAlign: TextAlign.center),
                 ],
               ]),

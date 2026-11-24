@@ -1,3 +1,4 @@
+from django.utils.translation import gettext as _
 from django.contrib.auth import authenticate, password_validation
 from django.core.exceptions import ValidationError as DjangoValidationError
 from rest_framework import serializers
@@ -23,7 +24,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
-            "id", "phone", "email", "full_name", "role", "avatar", "default_address",
+            "id", "phone", "email", "full_name", "role", "avatar", "default_address", "language",
             "worker_profile_id", "date_joined",
         ]
         read_only_fields = ["id", "phone", "role", "date_joined", "worker_profile_id"]
@@ -37,7 +38,7 @@ class UserSerializer(serializers.ModelSerializer):
             return None
         value = value.lower()
         if User.objects.filter(email__iexact=value).exclude(pk=self.instance.pk if self.instance else None).exists():
-            raise serializers.ValidationError("This email is already in use.")
+            raise serializers.ValidationError(_("This email is already in use."))
         return value
 
 
@@ -55,7 +56,7 @@ class RegisterSerializer(serializers.Serializer):
         except DjangoValidationError as exc:
             raise serializers.ValidationError(exc.messages)
         if User.objects.filter(phone=phone).exists():
-            raise serializers.ValidationError("An account with this phone number already exists.")
+            raise serializers.ValidationError(_("An account with this phone number already exists."))
         return phone
 
     def validate_email(self, value):
@@ -63,26 +64,26 @@ class RegisterSerializer(serializers.Serializer):
             return None
         value = value.lower()
         if User.objects.filter(email__iexact=value).exists():
-            raise serializers.ValidationError("An account with this email already exists.")
+            raise serializers.ValidationError(_("An account with this email already exists."))
         return value
 
     def validate_full_name(self, value):
         value = value.strip()
         if len(value) < 2:
-            raise serializers.ValidationError("Enter your full name.")
+            raise serializers.ValidationError(_("Enter your full name."))
         return value
 
     def validate(self, attrs):
         if attrs["role"] == User.Role.WORKER:
             cnic = attrs.get("cnic_number")
             if not cnic:
-                raise serializers.ValidationError({"cnic_number": "CNIC number is required for service providers."})
+                raise serializers.ValidationError({"cnic_number": _("CNIC number is required for service providers.")})
             try:
                 attrs["cnic_number"] = normalize_cnic(cnic)
             except DjangoValidationError as exc:
                 raise serializers.ValidationError({"cnic_number": exc.messages})
             if WorkerProfile.objects.filter(cnic_number=attrs["cnic_number"]).exists():
-                raise serializers.ValidationError({"cnic_number": "This CNIC is already registered."})
+                raise serializers.ValidationError({"cnic_number": _("This CNIC is already registered.")})
         else:
             attrs.pop("cnic_number", None)
         candidate = User(phone=attrs["phone"], full_name=attrs["full_name"], email=attrs.get("email"))
@@ -101,12 +102,12 @@ class LoginSerializer(serializers.Serializer):
         try:
             phone = normalize_pk_phone(attrs["phone"])
         except DjangoValidationError:
-            raise serializers.ValidationError("Invalid phone number or password.", code="invalid_credentials")
+            raise serializers.ValidationError(_("Invalid phone number or password."), code="invalid_credentials")
         user = authenticate(request=self.context.get("request"), phone=phone, password=attrs["password"])
         if user is None:
-            raise serializers.ValidationError("Invalid phone number or password.", code="invalid_credentials")
+            raise serializers.ValidationError(_("Invalid phone number or password."), code="invalid_credentials")
         if user.is_suspended:
-            raise serializers.ValidationError("This account is suspended. Contact support.", code="account_suspended")
+            raise serializers.ValidationError(_("This account is suspended. Contact support."), code="account_suspended")
         attrs["user"] = user
         return attrs
 
@@ -121,7 +122,7 @@ class PasswordResetRequestSerializer(serializers.Serializer):
 
     def validate(self, attrs):
         if not attrs.get("phone") and not attrs.get("email"):
-            raise serializers.ValidationError("Provide your phone number or email.")
+            raise serializers.ValidationError(_("Provide your phone number or email."))
         return attrs
 
 
@@ -137,7 +138,7 @@ class PasswordChangeSerializer(serializers.Serializer):
 
 
 class WorkerServiceInlineSerializer(serializers.ModelSerializer):
-    category_name = serializers.CharField(source="category.name", read_only=True)
+    category_name = serializers.CharField(source="category.display_name", read_only=True)
 
     class Meta:
         model = WorkerService
@@ -174,16 +175,16 @@ class WorkerProfileSerializer(serializers.ModelSerializer):
         except DjangoValidationError as exc:
             raise serializers.ValidationError(exc.messages)
         if self.instance and self.instance.is_verified and value != self.instance.cnic_number:
-            raise serializers.ValidationError("CNIC cannot be changed after verification. Contact support.")
+            raise serializers.ValidationError(_("CNIC cannot be changed after verification. Contact support."))
         if WorkerProfile.objects.filter(cnic_number=value).exclude(pk=self.instance.pk).exists():
-            raise serializers.ValidationError("This CNIC is already registered.")
+            raise serializers.ValidationError(_("This CNIC is already registered."))
         return value
 
     def validate(self, attrs):
         lat = attrs.get("base_latitude", getattr(self.instance, "base_latitude", None))
         lng = attrs.get("base_longitude", getattr(self.instance, "base_longitude", None))
         if (lat is None) != (lng is None):
-            raise serializers.ValidationError("Provide both base_latitude and base_longitude.")
+            raise serializers.ValidationError(_("Provide both base_latitude and base_longitude."))
         return attrs
 
     def update(self, instance, validated_data):

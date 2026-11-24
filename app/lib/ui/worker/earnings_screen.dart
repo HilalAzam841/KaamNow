@@ -5,6 +5,7 @@ import '../../core/format.dart';
 import '../../core/session.dart';
 import '../../models/models.dart';
 import '../widgets/common.dart';
+import '../../l10n/l10n.dart';
 
 class EarningsScreen extends StatelessWidget {
   const EarningsScreen({super.key});
@@ -26,7 +27,7 @@ class EarningsScreen extends StatelessWidget {
           ),
         );
     return Scaffold(
-      appBar: AppBar(title: const Text('Earnings')),
+      appBar: AppBar(title: Text(context.t.earnings)),
       body: Loader<EarningsSummary>(
         load: api.earnings,
         builder: (context, e, reload) => RefreshIndicator(
@@ -34,32 +35,32 @@ class EarningsScreen extends StatelessWidget {
           child: PageBody(
             child: ListView(padding: const EdgeInsets.all(16), children: [
               Row(children: [
-                stat('You earned', rs(e.net), color: theme.colorScheme.primary),
+                stat(context.t.youEarned, rs(e.net), color: theme.colorScheme.primary),
                 const SizedBox(width: 8),
-                stat('Completed jobs', '${e.completedJobs}'),
+                stat(context.t.completedJobs, '${e.completedJobs}'),
               ]),
               Row(children: [
-                stat('Customers paid', rs(e.gross)),
+                stat(context.t.customersPaid, rs(e.gross)),
                 const SizedBox(width: 8),
-                stat('KaamNow commission', rs(e.commission)),
+                stat(context.t.kaamnowCommission, rs(e.commission)),
               ]),
               if ((double.tryParse(e.commissionPending) ?? 0) > 0)
                 Card(
                   color: theme.colorScheme.tertiaryContainer,
                   child: ListTile(
                     leading: const Icon(Icons.info_outline),
-                    title: Text('Commission due: ${rs(e.commissionPending)}'),
-                    subtitle: const Text('From cash jobs. KaamNow will contact you about settling it.'),
+                    title: Text(context.t.commissionDue(rs(e.commissionPending))),
+                    subtitle: Text(context.t.commissionDueHint),
                   ),
                 ),
-              Text('Your current commission rate is ${e.commissionPercent}%.', style: theme.textTheme.bodySmall),
-              const SectionTitle('Recent jobs'),
-              if (e.recent.isEmpty) const Text('No completed jobs yet.'),
+              Text(context.t.commissionRateNow(e.commissionPercent), style: theme.textTheme.bodySmall),
+              SectionTitle(context.t.recentJobs),
+              if (e.recent.isEmpty) Text(context.t.noCompletedJobs),
               for (final c in e.recent)
                 ListTile(
                   contentPadding: EdgeInsets.zero,
-                  title: Text('Booking #${c.bookingId} · ${rs(c.gross)}'),
-                  subtitle: Text('${c.ratePercent}% commission ${rs(c.commission)} · ${day(c.createdAt)}'),
+                  title: Text(context.t.bookingNumberPrice(c.bookingId, rs(c.gross))),
+                  subtitle: Text(context.t.commissionLine(c.ratePercent, rs(c.commission), day(c.createdAt))),
                   trailing: Text(rs(c.earning), style: const TextStyle(fontWeight: FontWeight.bold)),
                 ),
             ]),

@@ -13,7 +13,7 @@ class ReviewCreateSerializer(serializers.Serializer):
 
 class ReviewSerializer(serializers.ModelSerializer):
     customer_name = serializers.SerializerMethodField()
-    category_name = serializers.CharField(source="booking.request.category.name", read_only=True)
+    category_name = serializers.CharField(source="booking.request.category.display_name", read_only=True)
 
     class Meta:
         model = Review

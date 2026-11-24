@@ -48,6 +48,10 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser, PermissionsMixin, TimeStampedModel):
+    class Language(models.TextChoices):
+        ENGLISH = "en", "English"
+        URDU = "ur", "اردو"
+
     class Role(models.TextChoices):
         CUSTOMER = "customer", "Customer"
         WORKER = "worker", "Service provider"
@@ -61,6 +65,10 @@ class User(AbstractBaseUser, PermissionsMixin, TimeStampedModel):
         upload_to=RandomUploadPath("avatars"), null=True, blank=True, validators=[validate_image_upload]
     )
     default_address = models.CharField(max_length=255, blank=True)
+    language = models.CharField(
+        max_length=2, choices=Language.choices, default=Language.ENGLISH,
+        help_text="Language for alerts and server messages. The app keeps it in sync with the user's choice.",
+    )
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_suspended = models.BooleanField(default=False, db_index=True)

@@ -4,7 +4,9 @@ import 'package:provider/provider.dart';
 
 import '../../core/api_exception.dart';
 import '../../core/session.dart';
+import '../../l10n/l10n.dart';
 import '../widgets/common.dart';
+import '../widgets/language_button.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -36,18 +38,21 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _forgot() async {
-    final phone = await promptText(context, 'Reset password',
-        label: 'Your phone number', ok: 'Send reset link', required: true, keyboard: TextInputType.phone,
+    final t = context.t;
+    final phone = await promptText(context, t.resetPassword,
+        label: t.yourPhoneNumber, ok: t.sendResetLink, required: true, keyboard: TextInputType.phone,
         initial: _phone.text);
     if (phone == null || !mounted) return;
     await runAction(context, () => context.read<Session>().api.requestPasswordReset(phone),
-        success: 'If that number has an account with an email, a reset link is on its way.');
+        success: t.resetLinkSent);
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final t = context.t;
     return Scaffold(
+      appBar: AppBar(actions: const [LanguageButton()], backgroundColor: Colors.transparent),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -59,17 +64,18 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
                   Icon(Icons.handyman_rounded, size: 56, color: theme.colorScheme.primary),
                   const SizedBox(height: 8),
-                  Text('KaamNow', textAlign: TextAlign.center, style: theme.textTheme.headlineMedium),
-                  Text('Trusted help in Lahore, at your price', textAlign: TextAlign.center,
+                  Text(t.appName, textAlign: TextAlign.center, style: theme.textTheme.headlineMedium),
+                  Text(t.tagline, textAlign: TextAlign.center,
                       style: theme.textTheme.bodyMedium),
                   const SizedBox(height: 32),
                   TextFormField(
                     key: const Key('login-phone'),
                     controller: _phone,
                     keyboardType: TextInputType.phone,
-                    decoration: const InputDecoration(labelText: 'Phone number', hintText: '03XX XXXXXXX',
-                        prefixIcon: Icon(Icons.phone)),
-                    validator: (v) => (v ?? '').trim().length < 10 ? 'Enter your phone number' : null,
+                    textDirection: TextDirection.ltr,
+                    decoration: InputDecoration(labelText: t.phoneNumber, hintText: '03XX XXXXXXX',
+                        prefixIcon: const Icon(Icons.phone)),
+                    validator: (v) => (v ?? '').trim().length < 10 ? t.enterPhone : null,
                   ),
                   const SizedBox(height: 12),
                   TextFormField(
@@ -77,14 +83,14 @@ class _LoginScreenState extends State<LoginScreen> {
                     controller: _password,
                     obscureText: _obscure,
                     decoration: InputDecoration(
-                      labelText: 'Password',
+                      labelText: t.password,
                       prefixIcon: const Icon(Icons.lock),
                       suffixIcon: IconButton(
                         icon: Icon(_obscure ? Icons.visibility : Icons.visibility_off),
                         onPressed: () => setState(() => _obscure = !_obscure),
                       ),
                     ),
-                    validator: (v) => (v ?? '').isEmpty ? 'Enter your password' : null,
+                    validator: (v) => (v ?? '').isEmpty ? t.enterPassword : null,
                     onFieldSubmitted: (_) => _submit(),
                   ),
                   if (_error != null) ...[
@@ -97,13 +103,13 @@ class _LoginScreenState extends State<LoginScreen> {
                     onPressed: _busy ? null : _submit,
                     child: _busy
                         ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                        : const Text('Log in'),
+                        : Text(t.logIn),
                   ),
-                  TextButton(onPressed: _forgot, child: const Text('Forgot password?')),
+                  TextButton(onPressed: _forgot, child: Text(t.forgotPassword)),
                   const Divider(height: 32),
                   OutlinedButton(
                     onPressed: () => context.go('/register'),
-                    child: const Text('Create an account'),
+                    child: Text(t.createAnAccount),
                   ),
                 ]),
               ),

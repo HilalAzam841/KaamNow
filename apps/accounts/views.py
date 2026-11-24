@@ -1,3 +1,4 @@
+from django.utils.translation import gettext as _
 from django.conf import settings
 from django.contrib.auth import password_validation
 from django.contrib.auth.tokens import default_token_generator
@@ -168,7 +169,7 @@ class PasswordChangeView(APIView):
         serializer.is_valid(raise_exception=True)
         user = request.user
         if not user.check_password(serializer.validated_data["current_password"]):
-            raise serializers.ValidationError({"current_password": "Current password is incorrect."})
+            raise serializers.ValidationError({"current_password": _("Current password is incorrect.")})
         try:
             password_validation.validate_password(serializer.validated_data["new_password"], user)
         except DjangoValidationError as exc:

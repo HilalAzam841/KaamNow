@@ -1,9 +1,11 @@
+import 'format.dart';
+
 /// An error returned by the KaamNow API (or a network failure).
 class ApiException implements Exception {
   ApiException({required this.statusCode, required this.code, required this.message, this.details});
 
   factory ApiException.network(Object error) =>
-      ApiException(statusCode: 0, code: 'network_error', message: 'Could not reach KaamNow. Check your connection.');
+      ApiException(statusCode: 0, code: 'network_error', message: strings.networkError);
 
   final int statusCode;
   final String code;

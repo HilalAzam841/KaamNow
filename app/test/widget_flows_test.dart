@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:kaamnow/l10n/l10n.dart';
 import 'package:kaamnow/app.dart';
 import 'package:kaamnow/core/session.dart';
 import 'package:kaamnow/ui/customer/request_detail_screen.dart';
@@ -16,7 +17,7 @@ Widget host(Session session, String initial, Map<String, Widget Function(GoRoute
   final router = GoRouter(initialLocation: initial, routes: [
     for (final e in routes.entries) GoRoute(path: e.key, builder: (_, s) => e.value(s)),
   ]);
-  return ChangeNotifierProvider.value(value: session, child: MaterialApp.router(routerConfig: router));
+  return ChangeNotifierProvider.value(value: session, child: MaterialApp.router(localizationsDelegates: AppLocalizations.localizationsDelegates, routerConfig: router));
 }
 
 void main() {

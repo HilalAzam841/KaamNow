@@ -1,3 +1,4 @@
+from django.utils.translation import gettext as _
 from rest_framework import serializers
 
 from apps.catalog.models import ServiceCategory
@@ -97,7 +98,7 @@ class SubscriptionPlanSerializer(serializers.ModelSerializer):
 
     def validate_benefits(self, value):
         if not isinstance(value, list) or not all(isinstance(b, str) and len(b) <= 120 for b in value):
-            raise serializers.ValidationError("Benefits must be a list of short strings.")
+            raise serializers.ValidationError(_("Benefits must be a list of short strings."))
         return value
 
     def validate(self, attrs):
@@ -154,7 +155,7 @@ class FeaturedPurchaseSerializer(serializers.Serializer):
 
 class FeaturedListingSerializer(serializers.ModelSerializer):
     plan = FeaturedPlanSerializer(read_only=True)
-    category_name = serializers.CharField(source="category.name", read_only=True)
+    category_name = serializers.CharField(source="category.display_name", read_only=True)
     worker_name = serializers.CharField(source="worker.user.full_name", read_only=True)
     payment = PaymentSerializer(read_only=True)
 

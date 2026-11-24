@@ -3,16 +3,18 @@ import 'package:material_ui/material_ui.dart';
 import '../../core/format.dart';
 import '../../models/models.dart';
 import 'common.dart';
+import '../../l10n/l10n.dart';
 
-const _actionLabels = {
-  'offer': 'offered',
-  'revise': 'revised the price to',
-  'counter': 'countered with',
-  'agree': 'agreed to',
-  'accept': 'accepted at',
-  'reject': 'rejected',
-  'withdraw': 'withdrew',
-};
+String _negotiationLine(AppLocalizations t, String action, String who, String amount) => switch (action) {
+      'offer' => t.negOffer(who, amount),
+      'revise' => t.negRevise(who, amount),
+      'counter' => t.negCounter(who, amount),
+      'agree' => t.negAgree(who, amount),
+      'accept' => t.negAccept(who, amount),
+      'reject' => t.negReject(who),
+      'withdraw' => t.negWithdraw(who),
+      _ => '$who $action $amount',
+    };
 
 /// Price history of one offer, oldest first.
 class NegotiationHistory extends StatelessWidget {
@@ -33,10 +35,16 @@ class NegotiationHistory extends StatelessWidget {
             Expanded(
               child: Text.rich(TextSpan(children: [
                 TextSpan(
-                    text: (n.party == 'customer') == viewerIsCustomer ? 'You' : (n.party == 'customer' ? 'Customer' : offer.worker.fullName.split(' ').first),
-                    style: const TextStyle(fontWeight: FontWeight.w600)),
-                TextSpan(text: ' ${_actionLabels[n.action] ?? n.action}'),
-                if (n.amount != null) TextSpan(text: ' ${rs(n.amount)}', style: const TextStyle(fontWeight: FontWeight.w600)),
+                  text: _negotiationLine(
+                    context.t,
+                    n.action,
+                    (n.party == 'customer') == viewerIsCustomer
+                        ? context.t.you
+                        : (n.party == 'customer' ? context.t.customer : offer.worker.fullName.split(' ').first),
+                    n.amount == null ? '' : rs(n.amount),
+                  ),
+                  style: const TextStyle(fontWeight: FontWeight.w600),
+                ),
                 if (n.message.isNotEmpty) TextSpan(text: ': "${n.message}"'),
               ])),
             ),
@@ -55,37 +63,37 @@ Future<(String, String)?> askCounter(BuildContext context, String current) async
   return showDialog<(String, String)>(
     context: context,
     builder: (c) => AlertDialog(
-      title: const Text('Counter offer'),
+      title: Text(context.t.counterOffer),
       content: Form(
         key: key,
         child: Column(mainAxisSize: MainAxisSize.min, children: [
-          Text('Current price: ${rs(current)}'),
+          Text(context.t.currentPrice(rs(current))),
           const SizedBox(height: 12),
           TextFormField(
             key: const Key('counter-amount'),
             controller: amount,
             autofocus: true,
             keyboardType: TextInputType.number,
-            decoration: const InputDecoration(labelText: 'Your price', prefixText: 'Rs '),
+            decoration: InputDecoration(labelText: context.t.yourPrice, prefixText: context.t.rsPrefix),
             validator: (v) {
               final n = double.tryParse((v ?? '').trim());
-              if (n == null || n <= 0) return 'Enter a price';
-              if (n == double.tryParse(current)) return 'That is the current price. Accept instead.';
+              if (n == null || n <= 0) return context.t.enterPrice;
+              if (n == double.tryParse(current)) return context.t.samePriceAcceptInstead;
               return null;
             },
           ),
           const SizedBox(height: 12),
-          TextField(controller: note, decoration: const InputDecoration(labelText: 'Note (optional)')),
+          TextField(controller: note, decoration: InputDecoration(labelText: context.t.noteOptional)),
         ]),
       ),
       actions: [
-        TextButton(onPressed: () => Navigator.pop(c), child: const Text('Cancel')),
+        TextButton(onPressed: () => Navigator.pop(c), child: Text(context.t.cancel)),
         FilledButton(
           key: const Key('counter-send'),
           onPressed: () {
             if (key.currentState!.validate()) Navigator.pop(c, (amount.text.trim(), note.text.trim()));
           },
-          child: const Text('Send'),
+          child: Text(context.t.send),
         ),
       ],
     ),
@@ -112,7 +120,7 @@ class WorkerSummary extends StatelessWidget {
               Flexible(child: Text(worker.fullName, style: theme.textTheme.titleMedium, overflow: TextOverflow.ellipsis)),
               if (worker.isVerified) ...[
                 const SizedBox(width: 4),
-                Tooltip(message: 'Verified by KaamNow', child: Icon(Icons.verified, size: 18, color: theme.colorScheme.primary)),
+                Tooltip(message: context.t.verifiedByKaamnow, child: Icon(Icons.verified, size: 18, color: theme.colorScheme.primary)),
               ],
               if (worker.planBadge.isNotEmpty) ...[
                 const SizedBox(width: 6),
@@ -122,8 +130,8 @@ class WorkerSummary extends StatelessWidget {
             const SizedBox(height: 2),
             Wrap(spacing: 12, children: [
               RatingLine(rating: worker.averageRating, count: worker.ratingCount),
-              Text('${worker.completedJobs} job${worker.completedJobs == 1 ? '' : 's'}'),
-              Text('${worker.experienceYears} yrs exp'),
+              Text(context.t.jobsCount(worker.completedJobs)),
+              Text(context.t.yearsExp(worker.experienceYears)),
             ]),
           ]),
         ),

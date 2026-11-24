@@ -6,6 +6,7 @@ import '../../core/format.dart';
 import '../../core/session.dart';
 import '../../models/models.dart';
 import '../widgets/common.dart';
+import '../../l10n/l10n.dart';
 
 class BookingsScreen extends StatefulWidget {
   const BookingsScreen({super.key});
@@ -21,15 +22,15 @@ class _BookingsScreenState extends State<BookingsScreen> {
     final session = context.read<Session>();
     final isWorker = session.user?.isWorker == true;
     return Scaffold(
-      appBar: AppBar(title: const Text('Bookings')),
+      appBar: AppBar(title: Text(context.t.tabBookings)),
       body: Column(children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
           child: SegmentedButton<String>(
-            segments: const [
-              ButtonSegment(value: 'active', label: Text('Active')),
-              ButtonSegment(value: 'completed', label: Text('Completed')),
-              ButtonSegment(value: 'cancelled', label: Text('Cancelled')),
+            segments: [
+              ButtonSegment(value: 'active', label: Text(context.t.filterActive)),
+              ButtonSegment(value: 'completed', label: Text(context.t.statusCompleted)),
+              ButtonSegment(value: 'cancelled', label: Text(context.t.statusCancelled)),
             ],
             selected: {_filter},
             onSelectionChanged: (s) => setState(() => _filter = s.first),
@@ -47,10 +48,14 @@ class _BookingsScreenState extends State<BookingsScreen> {
               if (page.results.isEmpty) {
                 return EmptyView(
                   icon: Icons.event_busy,
-                  title: 'No ${_filter == 'active' ? 'active ' : '$_filter '}bookings',
+                  title: switch (_filter) {
+                    'active' => context.t.noActiveBookings,
+                    'completed' => context.t.noCompletedBookings,
+                    _ => context.t.noCancelledBookings,
+                  },
                   subtitle: _filter == 'active'
-                      ? (isWorker ? 'When a customer accepts your offer, the job appears here.'
-                          : 'Accept an offer on one of your requests to book a worker.')
+                      ? (isWorker ? context.t.noBookingsWorkerHint
+                          : context.t.noBookingsCustomerHint)
                       : null,
                 );
               }

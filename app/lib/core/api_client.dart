@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 
 import 'api_exception.dart';
+import 'format.dart';
 import 'token_store.dart';
 
 class UploadFile {
@@ -29,6 +30,9 @@ class ApiClient {
   void Function()? onSessionExpired;
   Future<bool>? _refreshing;
 
+  /// Sent as Accept-Language, so server messages (errors, service names) come back in it.
+  String language = 'en';
+
   Uri uri(String path, [Map<String, dynamic>? query]) {
     final clean = path.startsWith('/') ? path : '/$path';
     final q = <String, String>{};
@@ -49,7 +53,7 @@ class ApiClient {
       return (res.bodyBytes, res.headers['content-type'] ?? 'application/octet-stream');
     }
     _decode(res); // throws the API error
-    throw ApiException(statusCode: res.statusCode, code: 'download_failed', message: 'Download failed.');
+    throw ApiException(statusCode: res.statusCode, code: 'download_failed', message: strings.downloadFailed);
   }
 
   Future<dynamic> post(String path, {Object? body, bool auth = true}) =>
@@ -84,6 +88,7 @@ class ApiClient {
   Future<http.Response> _sendRaw(http.BaseRequest Function() build, {bool auth = true, bool retried = false}) async {
     final req = build();
     req.headers['Accept'] = 'application/json';
+    req.headers['Accept-Language'] = language;
     final access = tokens.access;
     if (auth && access != null) req.headers['Authorization'] = 'Bearer $access';
 
@@ -112,7 +117,7 @@ class ApiClient {
     try {
       final res = await _http.post(
         uri('/auth/token/refresh/'),
-        headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
+        headers: {'Content-Type': 'application/json', 'Accept': 'application/json', 'Accept-Language': language},
         body: jsonEncode({'refresh': refresh}),
       );
       if (res.statusCode != 200) return false;
@@ -143,14 +148,14 @@ class ApiClient {
       throw ApiException(
         statusCode: res.statusCode,
         code: '${err['code'] ?? 'error'}',
-        message: '${err['message'] ?? 'Something went wrong.'}',
+        message: '${err['message'] ?? strings.somethingWrong}',
         details: err['details'],
       );
     }
     throw ApiException(
       statusCode: res.statusCode,
       code: 'http_${res.statusCode}',
-      message: res.statusCode >= 500 ? 'KaamNow is having trouble right now. Please try again.' : 'Request failed.',
+      message: res.statusCode >= 500 ? strings.serverTrouble : strings.requestFailed,
     );
   }
 }

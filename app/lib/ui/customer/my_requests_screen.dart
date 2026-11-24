@@ -6,6 +6,7 @@ import '../../core/format.dart';
 import '../../core/session.dart';
 import '../../models/models.dart';
 import '../widgets/common.dart';
+import '../../l10n/l10n.dart';
 
 class MyRequestsScreen extends StatelessWidget {
   const MyRequestsScreen({super.key});
@@ -14,10 +15,10 @@ class MyRequestsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final api = context.read<Session>().api;
     return Scaffold(
-      appBar: AppBar(title: const Text('My requests')),
+      appBar: AppBar(title: Text(context.t.tabMyRequests)),
       floatingActionButton: FloatingActionButton(
         onPressed: () => context.push('/requests/new'),
-        tooltip: 'Post a job',
+        tooltip: context.t.postAJob,
         child: const Icon(Icons.add),
       ),
       body: Loader<Paged<ServiceRequest>>(
@@ -26,9 +27,9 @@ class MyRequestsScreen extends StatelessWidget {
           if (page.results.isEmpty) {
             return EmptyView(
               icon: Icons.assignment_outlined,
-              title: 'No requests yet',
-              subtitle: 'Post a job to get prices from nearby workers.',
-              action: FilledButton(onPressed: () => context.push('/requests/new'), child: const Text('Post a job')),
+              title: context.t.noRequestsYet,
+              subtitle: context.t.noRequestsHint,
+              action: FilledButton(onPressed: () => context.push('/requests/new'), child: Text(context.t.postAJob)),
             );
           }
           return RefreshIndicator(
@@ -39,8 +40,7 @@ class MyRequestsScreen extends StatelessWidget {
                   Card(
                     child: ListTile(
                       title: Text(r.title),
-                      subtitle: Text('${r.categoryName} · ${when(r.preferredTime)}\n'
-                          '${r.offersCount} offer${r.offersCount == 1 ? '' : 's'}'),
+                      subtitle: Text('${r.categoryName} · ${when(r.preferredTime)}\n${context.t.offersCount(r.offersCount)}'),
                       isThreeLine: true,
                       leading: r.isEmergency ? const Icon(Icons.bolt, color: Colors.red) : const Icon(Icons.assignment),
                       trailing: StatusChip(r.status),

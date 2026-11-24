@@ -3,6 +3,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../../config.dart';
+import '../../l10n/l10n.dart';
 
 class MapPin {
   MapPin(this.point, {required this.icon, required this.color, this.label});
@@ -63,7 +64,7 @@ class KaamMap extends StatelessWidget {
             child: Container(
               color: Colors.white70,
               padding: const EdgeInsets.symmetric(horizontal: 4),
-              child: const Text('© OpenStreetMap contributors', style: TextStyle(fontSize: 10, color: Colors.black87)),
+              child: Text(context.t.osmCredit, style: TextStyle(fontSize: 10, color: Colors.black87)),
             ),
           ),
         ]),

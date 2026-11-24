@@ -8,6 +8,7 @@ import '../../core/format.dart';
 import '../../core/session.dart';
 import '../../models/models.dart';
 import '../widgets/common.dart';
+import '../../l10n/l10n.dart';
 
 /// Booking chat. Live over WebSocket, with REST for history and as a fallback for sending.
 class ChatScreen extends StatefulWidget {
@@ -76,7 +77,7 @@ class _ChatScreenState extends State<ChatScreen> {
       _toBottom();
       if (!m.isMine) socket.send({'type': 'chat.read'});
     } else if (e.type == 'error') {
-      showInfo(context, '${e.data['message'] ?? 'Message not sent.'}');
+      showInfo(context, '${e.data['message'] ?? context.t.messageNotSent}');
     }
   }
 
@@ -106,11 +107,11 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('Chat'), actions: [
+      appBar: AppBar(title: Text(context.t.chat), actions: [
         Padding(
-          padding: const EdgeInsets.only(right: 16),
+          padding: const EdgeInsetsDirectional.only(end: 16),
           child: Tooltip(
-            message: socket.connected ? 'Live' : 'Reconnecting…',
+            message: socket.connected ? context.t.live : context.t.reconnecting,
             child: Icon(Icons.circle, size: 10, color: socket.connected ? Colors.green : Colors.grey),
           ),
         ),
@@ -123,8 +124,8 @@ class _ChatScreenState extends State<ChatScreen> {
                 : _error != null && _messages.isEmpty
                     ? ErrorView(error: _error!, onRetry: _loadHistory)
                     : _messages.isEmpty
-                        ? const EmptyView(icon: Icons.chat_bubble_outline, title: 'No messages yet',
-                            subtitle: 'Messages are private between you and the other person on this booking.')
+                        ? EmptyView(icon: Icons.chat_bubble_outline, title: context.t.noMessagesYet,
+                            subtitle: context.t.messagesPrivate)
                         : ListView.builder(
                             controller: _scroll,
                             padding: const EdgeInsets.all(12),
@@ -132,7 +133,7 @@ class _ChatScreenState extends State<ChatScreen> {
                             itemBuilder: (_, i) {
                               final m = _messages[i];
                               return Align(
-                                alignment: m.isMine ? Alignment.centerRight : Alignment.centerLeft,
+                                alignment: m.isMine ? AlignmentDirectional.centerEnd : AlignmentDirectional.centerStart,
                                 child: Container(
                                   constraints: const BoxConstraints(maxWidth: 480),
                                   margin: const EdgeInsets.symmetric(vertical: 3),
@@ -162,7 +163,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     maxLines: 4,
                     textInputAction: TextInputAction.send,
                     onSubmitted: (_) => _send(),
-                    decoration: const InputDecoration(hintText: 'Type a message', isDense: true),
+                    decoration: InputDecoration(hintText: context.t.typeMessage, isDense: true),
                   ),
                 ),
                 const SizedBox(width: 8),

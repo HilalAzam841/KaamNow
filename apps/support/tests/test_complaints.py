@@ -67,7 +67,7 @@ class TestAdminComplaints:
         assert data(resp)["status"] == "resolved" and data(resp)["resolved_by"] == admin_user.pk
         assert admin.post(f"{ADMIN}{cid}/status/", {"status": "in_review"}).status_code == 409
         assert AuditLog.objects.filter(action="complaint_updated").count() == 2
-        assert Notification.objects.filter(user=customer, type="complaint", title__contains="Resolved").exists()
+        assert Notification.objects.filter(user=customer, type="complaint", title__contains="resolved").exists()
 
     def test_non_admin_forbidden(self, customer, worker):
         for user in (customer, worker.user):

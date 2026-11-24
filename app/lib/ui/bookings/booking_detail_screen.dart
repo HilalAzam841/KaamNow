@@ -15,6 +15,7 @@ import '../../models/models.dart';
 import '../widgets/common.dart';
 import '../widgets/map_view.dart';
 import '../widgets/offer_widgets.dart';
+import '../../l10n/l10n.dart';
 
 /// One booking, for either side: status, contact, live tracking, completion, payment, review.
 class BookingDetailScreen extends StatefulWidget {
@@ -137,7 +138,7 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
         await api.shareLocation(widget.id, fix.latitude, fix.longitude,
             accuracy: fix.accuracy, speedKmh: fix.speedKmh, heading: fix.heading);
       } catch (e) {
-        if (mounted) setState(() => _shareError = 'Could not send your location.');
+        if (mounted) setState(() => _shareError = context.t.couldNotSendLocation);
         return;
       }
     }
@@ -147,7 +148,7 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
   // ---- actions ------------------------------------------------------------
   Future<void> _advance(String next) async {
     final b = await runAction(context, () => api.updateBookingStatus(widget.id, next),
-        success: 'Status updated: ${bookingStatusLabel(next)}');
+        success: context.t.statusUpdated(statusLabel(next)));
     if (b != null) {
       setState(() => _booking = b);
       if (next == 'on_the_way' && !_sharing) _startSharing();
@@ -161,39 +162,39 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
     await showDialog<void>(
       context: context,
       builder: (c) => AlertDialog(
-        title: const Text('Completion code'),
+        title: Text(context.t.completionCode),
         content: Column(mainAxisSize: MainAxisSize.min, children: [
-          const Text('Give this code to the worker only when the job is done to your satisfaction.'),
+          Text(context.t.completionCodeHint),
           const SizedBox(height: 16),
           Text(code, key: const Key('otp-code'),
               style: Theme.of(c).textTheme.displaySmall?.copyWith(letterSpacing: 6, fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
-          if (expires != null) Text('Valid until ${when(expires)}', style: Theme.of(c).textTheme.bodySmall),
+          if (expires != null) Text(c.t.validUntil(when(expires)), style: Theme.of(c).textTheme.bodySmall),
         ]),
-        actions: [FilledButton(onPressed: () => Navigator.pop(c), child: const Text('Done'))],
+        actions: [FilledButton(onPressed: () => Navigator.pop(c), child: Text(context.t.done))],
       ),
     );
   }
 
   Future<void> _confirmDone() async {
-    if (!await confirm(context, 'Mark the job as complete?', 'Only confirm if the work is done.', ok: 'Complete')) return;
+    if (!await confirm(context, context.t.markCompleteQ, context.t.onlyIfDone, ok: context.t.complete)) return;
     if (!mounted) return;
-    final b = await runAction(context, () => api.confirmCompletion(widget.id), success: 'Job completed.');
+    final b = await runAction(context, () => api.confirmCompletion(widget.id), success: context.t.jobCompleted);
     if (b != null) _load();
   }
 
   Future<void> _completeWithCode() async {
-    final code = await promptText(context, 'Enter completion code',
-        label: '6-digit code from the customer', ok: 'Complete job', required: true, keyboard: TextInputType.number);
+    final code = await promptText(context, context.t.enterCompletionCode,
+        label: context.t.sixDigitCode, ok: context.t.completeJob, required: true, keyboard: TextInputType.number);
     if (code == null || !mounted) return;
-    final b = await runAction(context, () => api.completeWithOtp(widget.id, code), success: 'Job completed.');
+    final b = await runAction(context, () => api.completeWithOtp(widget.id, code), success: context.t.jobCompleted);
     if (b != null) _load();
   }
 
   Future<void> _cancel() async {
-    final reason = await promptText(context, 'Cancel this booking?', label: 'Reason', ok: 'Cancel booking', required: true);
+    final reason = await promptText(context, context.t.cancelBookingQ, label: context.t.reason, ok: context.t.cancelBooking, required: true);
     if (reason == null || !mounted) return;
-    final b = await runAction(context, () => api.cancelBooking(widget.id, reason), success: 'Booking cancelled.');
+    final b = await runAction(context, () => api.cancelBooking(widget.id, reason), success: context.t.bookingCancelled);
     if (b != null) _load();
   }
 
@@ -202,27 +203,27 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
     if (p == null || !mounted) return;
     if (p.checkout != null) {
       if (openCheckout(p.checkout!)) {
-        showInfo(context, 'Complete the payment in the new tab. This page updates once the gateway confirms it.');
+        showInfo(context, context.t.completePaymentNewTab);
       } else {
-        showInfo(context, 'Online payment is not available on this device yet.');
+        showInfo(context, context.t.onlinePaymentUnavailable);
       }
     } else {
-      showInfo(context, 'Pay the worker in cash. They will confirm when they receive it.');
+      showInfo(context, context.t.payCash);
     }
     _load();
   }
 
   Future<void> _confirmCash(Payment p) async {
-    if (!await confirm(context, 'Cash received?', 'Confirm you received ${rs(p.amount)} in cash.', ok: 'Confirm')) return;
+    if (!await confirm(context, context.t.cashReceivedQ, context.t.confirmCashAmount(rs(p.amount)), ok: context.t.confirm)) return;
     if (!mounted) return;
-    await runAction(context, () => api.confirmCashPayment(p.id), success: 'Payment confirmed.');
+    await runAction(context, () => api.confirmCashPayment(p.id), success: context.t.paymentConfirmed);
     _load();
   }
 
   Future<void> _review() async {
     final r = await showDialog<(int, String)>(context: context, builder: (_) => const _ReviewDialog());
     if (r == null || !mounted) return;
-    await runAction(context, () => api.createReview(widget.id, r.$1, r.$2), success: 'Thanks for your review!');
+    await runAction(context, () => api.createReview(widget.id, r.$1, r.$2), success: context.t.thanksForReview);
     _load();
   }
 
@@ -231,10 +232,10 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
   Widget build(BuildContext context) {
     final b = _booking;
     return Scaffold(
-      appBar: AppBar(title: Text(b == null ? 'Booking' : 'Booking #${b.id}'), actions: [
+      appBar: AppBar(title: Text(b == null ? context.t.booking : context.t.bookingNumber(b.id)), actions: [
         if (b != null)
           IconButton(
-            tooltip: 'Chat',
+            tooltip: context.t.chat,
             icon: const Icon(Icons.chat_bubble_outline),
             onPressed: () => context.push('/bookings/${b.id}/chat'),
           ),
@@ -243,7 +244,7 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
             onSelected: (v) {
               if (v == 'report') context.push('/complaints/new?booking=${b.id}');
             },
-            itemBuilder: (_) => const [PopupMenuItem(value: 'report', child: Text('Report a problem'))],
+            itemBuilder: (_) => [PopupMenuItem(value: 'report', child: Text(context.t.reportProblem))],
           ),
       ]),
       body: b == null
@@ -263,10 +264,10 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
                       key: const Key('leave-review'),
                       onPressed: _review,
                       icon: const Icon(Icons.star),
-                      label: Text('Rate ${b.worker.fullName.split(' ').first}'),
+                      label: Text(context.t.rateWorker(b.worker.fullName.split(' ').first)),
                     ),
                   ],
-                  const SectionTitle('Timeline'),
+                  SectionTitle(context.t.timeline),
                   for (final log in b.statusHistory.reversed)
                     ListTile(
                       dense: true,
@@ -300,17 +301,16 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
           else
             WorkerSummary(worker: b.worker, onTap: () => context.push('/workers/${b.worker.id}')),
           const Divider(height: 24),
-          _priceRow('Agreed price', rs(b.agreedPrice)),
-          if ((double.tryParse(b.emergencyFee) ?? 0) > 0) _priceRow('Emergency fee', rs(b.emergencyFee)),
-          _priceRow('Total', rs(b.totalAmount), bold: true),
+          _priceRow(context.t.agreedPrice, rs(b.agreedPrice)),
+          if ((double.tryParse(b.emergencyFee) ?? 0) > 0) _priceRow(context.t.emergencyFeeLabel, rs(b.emergencyFee)),
+          _priceRow(context.t.total, rs(b.totalAmount), bold: true),
           if (_isWorker && b.commission != null) ...[
             const SizedBox(height: 6),
-            Text('KaamNow commission ${b.commission!['rate_percent']}%: ${rs('${b.commission!['commission_amount']}')}. '
-                'You keep ${rs('${b.commission!['worker_earning']}')}.', style: theme.textTheme.bodySmall),
+            Text(context.t.commissionKeep('${b.commission!['rate_percent']}', rs('${b.commission!['commission_amount']}'), rs('${b.commission!['worker_earning']}')), style: theme.textTheme.bodySmall),
           ],
           if (b.cancelReason.isNotEmpty) ...[
             const SizedBox(height: 8),
-            Text('Cancelled: ${b.cancelReason}', style: TextStyle(color: theme.colorScheme.error)),
+            Text(context.t.cancelledReason(b.cancelReason), style: TextStyle(color: theme.colorScheme.error)),
           ],
         ]),
       ),
@@ -330,14 +330,14 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
     if (c.isEmpty) return const [];
     final phone = c['customer_phone'] ?? c['worker_phone'];
     return [
-      const SectionTitle('Contact'),
+      SectionTitle(context.t.contact),
       Card(
         child: Column(children: [
           if (phone != null)
-            ListTile(leading: const Icon(Icons.phone), title: Text('$phone'),
-                subtitle: Text(_isWorker ? 'Customer' : 'Worker')),
+            ListTile(leading: const Icon(Icons.phone), title: Text(ltr('$phone')),
+                subtitle: Text(_isWorker ? context.t.customer : context.t.worker)),
           if (c['address'] != null)
-            ListTile(leading: const Icon(Icons.home), title: Text('${c['address']}'), subtitle: const Text('Job address')),
+            ListTile(leading: const Icon(Icons.home), title: Text('${c['address']}'), subtitle: Text(context.t.jobAddress)),
         ]),
       ),
     ];
@@ -356,13 +356,13 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
     final workerPoint = latest == null ? null : LatLng(latest.latitude, latest.longitude);
     final showMap = job != null || workerPoint != null;
     return [
-      SectionTitle(_isWorker ? 'Location' : 'Live tracking'),
+      SectionTitle(_isWorker ? context.t.location : context.t.liveTracking),
       if (!_isWorker)
         Text(
           latest == null
-              ? (b.status == 'confirmed' ? 'Tracking starts when the worker sets off.' : 'Waiting for the worker’s location…')
-              : '${b.worker.fullName.split(' ').first} is ${latest.distanceKm?.toStringAsFixed(1) ?? '?'} km away'
-                  '${latest.etaMinutes != null ? ' · about ${latest.etaMinutes} min' : ''} (updated ${ago(latest.recordedAt)})',
+              ? (b.status == 'confirmed' ? context.t.trackingStarts : context.t.waitingForWorkerLocation)
+              : '${context.t.workerAway(b.worker.fullName.split(' ').first, latest.distanceKm?.toStringAsFixed(1) ?? '?')}'
+                  '${latest.etaMinutes != null ? ' · ${context.t.aboutMinutes(latest.etaMinutes!)}' : ''} (${context.t.updatedAgo(ago(latest.recordedAt))})',
           key: const Key('tracking-text'),
         ),
       if (_isWorker)
@@ -371,8 +371,8 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
           contentPadding: EdgeInsets.zero,
           value: _sharing,
           onChanged: _toggleSharing,
-          title: const Text('Share my live location with the customer'),
-          subtitle: Text(_shareError ?? (_sharing ? 'Sending every 15 seconds while this page is open.' : 'Off')),
+          title: Text(context.t.shareLiveLocation),
+          subtitle: Text(_shareError ?? (_sharing ? context.t.sendingEvery15 : context.t.off)),
         ),
       if (showMap) ...[
         const SizedBox(height: 8),
@@ -382,8 +382,8 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
           zoom: 14,
           trail: [for (final p in _location?.trail ?? <LocationPoint>[]) LatLng(p.latitude, p.longitude)],
           pins: [
-            if (job != null) MapPin(job, icon: Icons.home_rounded, color: Colors.red, label: 'Job location'),
-            if (workerPoint != null) MapPin(workerPoint, icon: Icons.two_wheeler, color: Colors.blue, label: 'Worker'),
+            if (job != null) MapPin(job, icon: Icons.home_rounded, color: Colors.red, label: context.t.jobLocation),
+            if (workerPoint != null) MapPin(workerPoint, icon: Icons.two_wheeler, color: Colors.blue, label: context.t.worker),
           ],
         ),
       ],
@@ -400,9 +400,9 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
           onPressed: () => _advance(next),
           icon: const Icon(Icons.arrow_forward),
           label: Text(switch (next) {
-            'on_the_way' => 'I’m on my way',
-            'arrived' => 'I’ve arrived',
-            _ => 'Start work',
+            'on_the_way' => context.t.imOnMyWay,
+            'arrived' => context.t.iveArrived,
+            _ => context.t.startWork,
           }),
         ));
       }
@@ -411,7 +411,7 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
           key: const Key('complete-otp'),
           onPressed: _completeWithCode,
           icon: const Icon(Icons.task_alt),
-          label: const Text('Complete with customer’s code'),
+          label: Text(context.t.completeWithCode),
         ));
       }
     } else if (b.status == 'in_progress') {
@@ -419,17 +419,17 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
         key: const Key('issue-otp'),
         onPressed: _issueOtp,
         icon: const Icon(Icons.password),
-        label: const Text('Get completion code'),
+        label: Text(context.t.getCompletionCode),
       ));
       buttons.add(OutlinedButton.icon(
         key: const Key('confirm-complete'),
         onPressed: _confirmDone,
         icon: const Icon(Icons.task_alt),
-        label: const Text('Confirm job is done'),
+        label: Text(context.t.confirmJobDone),
       ));
     }
     if (const {'confirmed', 'on_the_way', 'arrived'}.contains(b.status)) {
-      buttons.add(TextButton(key: const Key('cancel-booking'), onPressed: _cancel, child: const Text('Cancel booking')));
+      buttons.add(TextButton(key: const Key('cancel-booking'), onPressed: _cancel, child: Text(context.t.cancelBooking)));
     }
     if (buttons.isEmpty) return const [];
     return [const SizedBox(height: 16), Wrap(spacing: 8, runSpacing: 8, children: buttons)];
@@ -439,44 +439,44 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
     final theme = Theme.of(context);
     final live = _payments.where((p) => p.status == 'pending' || p.status == 'completed').toList();
     final current = live.isEmpty ? null : live.first;
-    final widgets = <Widget>[const SectionTitle('Payment')];
+    final widgets = <Widget>[SectionTitle(context.t.payment)];
     if (current?.status == 'completed') {
       widgets.add(Card(
         child: ListTile(
           leading: const Icon(Icons.check_circle, color: Colors.green),
-          title: Text('Paid ${rs(current!.amount)}', key: const Key('payment-done')),
-          subtitle: Text('${humanize(current.method)} · ref ${current.reference}'),
+          title: Text(context.t.paidAmount(rs(current!.amount)), key: const Key('payment-done')),
+          subtitle: Text(context.t.methodRef(paymentMethodLabel(current.method), current.reference)),
         ),
       ));
     } else if (current != null) {
       widgets.add(Card(
         child: ListTile(
           leading: const Icon(Icons.hourglass_top),
-          title: Text('${humanize(current.method)} payment of ${rs(current.amount)} pending'),
+          title: Text(context.t.paymentPending(paymentMethodLabel(current.method), rs(current.amount))),
           subtitle: Text(current.method == 'cash'
-              ? (_isWorker ? 'Confirm once the customer has paid you.' : 'Waiting for the worker to confirm.')
-              : 'Waiting for the payment gateway to confirm.'),
+              ? (_isWorker ? context.t.confirmOncePaid : context.t.waitingForWorkerConfirm)
+              : context.t.waitingForGateway),
           trailing: _isWorker && current.method == 'cash'
-              ? FilledButton(key: const Key('confirm-cash'), onPressed: () => _confirmCash(current), child: const Text('Received'))
+              ? FilledButton(key: const Key('confirm-cash'), onPressed: () => _confirmCash(current), child: Text(context.t.received))
               : null,
         ),
       ));
     } else if (_isWorker) {
-      widgets.add(const Text('The customer has not paid yet.'));
+      widgets.add(Text(context.t.customerNotPaid));
     } else {
       final failed = _payments.where((p) => p.status == 'failed' || p.status == 'expired' || p.status == 'disputed');
       if (failed.isNotEmpty) {
-        widgets.add(Text('Last attempt: ${humanize(failed.first.status)}. ${failed.first.failureReason}',
+        widgets.add(Text(context.t.lastAttempt(statusLabel(failed.first.status), failed.first.failureReason),
             style: TextStyle(color: theme.colorScheme.error)));
       }
-      widgets.add(Text('Amount due: ${rs(b.totalAmount)}'));
+      widgets.add(Text(context.t.amountDue(rs(b.totalAmount))));
       widgets.add(const SizedBox(height: 8));
       widgets.add(Wrap(spacing: 8, runSpacing: 8, children: [
         for (final m in session.config.paymentMethods)
           OutlinedButton(
             key: Key('pay-${m.code}'),
             onPressed: m.available ? () => _pay(m.code) : null,
-            child: Text(m.available ? 'Pay with ${m.label}' : '${m.label} (coming soon)'),
+            child: Text(m.available ? context.t.payWith(paymentMethodLabel(m.code)) : context.t.comingSoon(paymentMethodLabel(m.code))),
           ),
       ]));
     }
@@ -496,7 +496,7 @@ class _ReviewDialogState extends State<_ReviewDialog> {
 
   @override
   Widget build(BuildContext context) => AlertDialog(
-        title: const Text('Rate this job'),
+        title: Text(context.t.rateThisJob),
         content: Column(mainAxisSize: MainAxisSize.min, children: [
           Row(mainAxisAlignment: MainAxisAlignment.center, children: [
             for (var i = 1; i <= 5; i++)
@@ -506,14 +506,14 @@ class _ReviewDialogState extends State<_ReviewDialog> {
                 icon: Icon(i <= _rating ? Icons.star_rounded : Icons.star_outline_rounded, color: Colors.amber, size: 34),
               ),
           ]),
-          TextField(controller: _comment, maxLines: 3, decoration: const InputDecoration(labelText: 'Comment (optional)')),
+          TextField(controller: _comment, maxLines: 3, decoration: InputDecoration(labelText: context.t.commentOptional)),
         ]),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+          TextButton(onPressed: () => Navigator.pop(context), child: Text(context.t.cancel)),
           FilledButton(
             key: const Key('submit-review'),
             onPressed: () => Navigator.pop(context, (_rating, _comment.text.trim())),
-            child: const Text('Submit'),
+            child: Text(context.t.submit),
           ),
         ],
       );

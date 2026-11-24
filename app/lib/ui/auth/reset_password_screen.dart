@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../../core/api_exception.dart';
 import '../../core/session.dart';
+import '../../l10n/l10n.dart';
 
 /// Opened from the link in the password-reset email: `/#/reset-password?uid=...&token=...`.
 class ResetPasswordScreen extends StatefulWidget {
@@ -47,46 +48,46 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     final Widget body;
     if (!_linkValid) {
       body = Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-        Text('This reset link is incomplete', style: theme.textTheme.headlineSmall),
+        Text(context.t.resetLinkIncomplete, style: theme.textTheme.headlineSmall),
         const SizedBox(height: 8),
-        const Text('Open the link from the email again, or ask for a new one from the login screen.'),
+        Text(context.t.resetLinkIncompleteHint),
         const SizedBox(height: 24),
-        FilledButton(onPressed: () => context.go(signedIn ? '/' : '/login'), child: const Text('Back')),
+        FilledButton(onPressed: () => context.go(signedIn ? '/' : '/login'), child: Text(context.t.back)),
       ]);
     } else if (_done) {
       body = Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
         Icon(Icons.check_circle, size: 56, color: theme.colorScheme.primary),
         const SizedBox(height: 12),
-        Text('Password changed', style: theme.textTheme.headlineSmall, textAlign: TextAlign.center),
+        Text(context.t.passwordChanged, style: theme.textTheme.headlineSmall, textAlign: TextAlign.center),
         const SizedBox(height: 8),
-        const Text('You can log in with your new password now.', textAlign: TextAlign.center),
+        Text(context.t.loginWithNewPassword, textAlign: TextAlign.center),
         const SizedBox(height: 24),
         FilledButton(
           key: const Key('reset-done'),
           onPressed: () => context.go(signedIn ? '/' : '/login'),
-          child: Text(signedIn ? 'Continue' : 'Log in'),
+          child: Text(signedIn ? context.t.continueAction : context.t.logIn),
         ),
       ]);
     } else {
       body = Form(
         key: _form,
         child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-          Text('Choose a new password', style: theme.textTheme.headlineSmall),
+          Text(context.t.chooseNewPassword, style: theme.textTheme.headlineSmall),
           const SizedBox(height: 20),
           TextFormField(
             key: const Key('reset-password'),
             controller: _password,
             obscureText: true,
-            decoration: const InputDecoration(labelText: 'New password'),
-            validator: (v) => (v ?? '').length < 8 ? 'Use at least 8 characters' : null,
+            decoration: InputDecoration(labelText: context.t.newPassword),
+            validator: (v) => (v ?? '').length < 8 ? context.t.useAtLeast8 : null,
           ),
           const SizedBox(height: 12),
           TextFormField(
             key: const Key('reset-confirm'),
             controller: _confirm,
             obscureText: true,
-            decoration: const InputDecoration(labelText: 'Repeat new password'),
-            validator: (v) => v != _password.text ? 'The passwords do not match' : null,
+            decoration: InputDecoration(labelText: context.t.repeatNewPassword),
+            validator: (v) => v != _password.text ? context.t.passwordsDontMatch : null,
             onFieldSubmitted: (_) => _submit(),
           ),
           if (_error != null) ...[
@@ -97,7 +98,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
           FilledButton(
             key: const Key('reset-submit'),
             onPressed: _busy ? null : _submit,
-            child: Text(_busy ? 'Saving…' : 'Save new password'),
+            child: Text(_busy ? context.t.saving : context.t.saveNewPassword),
           ),
         ]),
       );

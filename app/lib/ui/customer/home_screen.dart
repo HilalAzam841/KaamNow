@@ -2,9 +2,11 @@ import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
+import '../../core/format.dart';
 import '../../core/session.dart';
 import '../../models/models.dart';
 import '../widgets/common.dart';
+import '../../l10n/l10n.dart';
 
 IconData categoryIcon(String name) {
   final n = name.toLowerCase();
@@ -31,12 +33,12 @@ class CustomerHomeScreen extends StatelessWidget {
     final session = context.watch<Session>();
     final theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text('Salam, ${session.user?.firstName ?? ''}')),
+      appBar: AppBar(title: Text(context.t.salam(session.user?.firstName ?? ''))),
       floatingActionButton: FloatingActionButton.extended(
         key: const Key('new-request'),
         onPressed: () => context.push('/requests/new'),
         icon: const Icon(Icons.add),
-        label: const Text('Post a job'),
+        label: Text(context.t.postAJob),
       ),
       body: Loader<List<ServiceCategory>>(
         load: session.api.categories,
@@ -45,23 +47,23 @@ class CustomerHomeScreen extends StatelessWidget {
           child: PageBody(
             maxWidth: 960,
             child: ListView(padding: const EdgeInsets.all(16), children: [
-              Text('What do you need help with?', style: theme.textTheme.headlineSmall),
+              Text(context.t.whatHelp, style: theme.textTheme.headlineSmall),
               const SizedBox(height: 4),
-              const Text('Describe the job, get prices from nearby verified workers, and pick the one you like.'),
+              Text(context.t.homeIntro),
               if (session.config.emergencyEnabled) ...[
                 const SizedBox(height: 12),
                 Card(
                   color: theme.colorScheme.errorContainer,
                   child: ListTile(
                     leading: const Icon(Icons.bolt),
-                    title: const Text('Urgent? Mark your job as an emergency'),
-                    subtitle: Text('Shown first to workers. Adds a ${_fee(session.config.emergencyFee)} fee.'),
+                    title: Text(context.t.urgentTitle),
+                    subtitle: Text(context.t.urgentSubtitle(rs(session.config.emergencyFee))),
                   ),
                 ),
               ],
               const SizedBox(height: 16),
               if (cats.isEmpty)
-                const EmptyView(icon: Icons.category, title: 'No services yet')
+                EmptyView(icon: Icons.category, title: context.t.noServicesYet)
               else
                 GridView.extent(
                   maxCrossAxisExtent: 180,
@@ -96,5 +98,4 @@ class CustomerHomeScreen extends StatelessWidget {
     );
   }
 
-  static String _fee(String fee) => 'Rs ${double.tryParse(fee)?.round() ?? fee}';
 }

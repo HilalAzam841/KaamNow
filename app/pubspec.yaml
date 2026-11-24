@@ -9,6 +9,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
   flutter_map: ^8.3.2
   geolocator: ^14.1.2
   go_router: ^18.1.4
@@ -30,3 +32,11 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  generate: true
+  fonts:
+    # Noto Nastaliq Urdu (SIL Open Font License, see assets/fonts/OFL.txt), used when the app is in Urdu.
+    - family: NotoNastaliqUrdu
+      fonts:
+        - asset: assets/fonts/NotoNastaliqUrdu-400.ttf
+        - asset: assets/fonts/NotoNastaliqUrdu-700.ttf
+          weight: 700
