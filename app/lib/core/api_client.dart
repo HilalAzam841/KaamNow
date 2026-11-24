@@ -42,6 +42,16 @@ class ApiClient {
   Future<dynamic> get(String path, {Map<String, dynamic>? query}) =>
       _send(() => http.Request('GET', uri(path, query)));
 
+  /// Downloads a binary file (e.g. a private document). Returns the bytes and content type.
+  Future<(Uint8List, String)> getBytes(String path) async {
+    final res = await _sendRaw(() => http.Request('GET', uri(path)));
+    if (res.statusCode >= 200 && res.statusCode < 300) {
+      return (res.bodyBytes, res.headers['content-type'] ?? 'application/octet-stream');
+    }
+    _decode(res); // throws the API error
+    throw ApiException(statusCode: res.statusCode, code: 'download_failed', message: 'Download failed.');
+  }
+
   Future<dynamic> post(String path, {Object? body, bool auth = true}) =>
       _send(() => _json('POST', path, body), auth: auth);
 
@@ -68,7 +78,10 @@ class ApiClient {
     return req;
   }
 
-  Future<dynamic> _send(http.BaseRequest Function() build, {bool auth = true, bool retried = false}) async {
+  Future<dynamic> _send(http.BaseRequest Function() build, {bool auth = true}) async =>
+      _decode(await _sendRaw(build, auth: auth));
+
+  Future<http.Response> _sendRaw(http.BaseRequest Function() build, {bool auth = true, bool retried = false}) async {
     final req = build();
     req.headers['Accept'] = 'application/json';
     final access = tokens.access;
@@ -82,11 +95,11 @@ class ApiClient {
     }
 
     if (res.statusCode == 401 && auth && access != null && !retried) {
-      if (await _refreshTokens()) return _send(build, auth: auth, retried: true);
+      if (await _refreshTokens()) return _sendRaw(build, auth: auth, retried: true);
       await tokens.clear();
       onSessionExpired?.call();
     }
-    return _decode(res);
+    return res;
   }
 
   Future<bool> _refreshTokens() {

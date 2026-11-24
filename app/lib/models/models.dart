@@ -30,6 +30,7 @@ class User {
 
   bool get isWorker => role == UserRole.worker;
   bool get isCustomer => role == UserRole.customer;
+  bool get isAdmin => role == UserRole.admin;
   String get firstName => fullName.split(' ').first;
 }
 
@@ -518,7 +519,7 @@ class EarningsSummary {
 class SubscriptionPlan {
   SubscriptionPlan({required this.id, required this.name, required this.price, this.description = '',
       this.durationDays = 30, this.commissionPercent, this.dailyOfferLimit, this.benefits = const [],
-      this.badge = '', this.isDefault = false});
+      this.badge = '', this.isDefault = false, this.isActive = true, this.slug = ''});
   factory SubscriptionPlan.fromJson(Map<String, dynamic> j) => SubscriptionPlan(
       id: parseInt(j['id']),
       name: str(j['name']),
@@ -529,7 +530,9 @@ class SubscriptionPlan {
       dailyOfferLimit: j['daily_offer_limit'] as int?,
       benefits: j['benefits'] is List ? (j['benefits'] as List).map((e) => '$e').toList() : const [],
       badge: str(j['badge']),
-      isDefault: j['is_default'] == true);
+      isDefault: j['is_default'] == true,
+      isActive: j['is_active'] != false,
+      slug: str(j['slug']));
   final int id;
   final String name;
   final String price;
@@ -540,6 +543,8 @@ class SubscriptionPlan {
   final List<String> benefits;
   final String badge;
   final bool isDefault;
+  final bool isActive;
+  final String slug;
 }
 
 class MySubscription {

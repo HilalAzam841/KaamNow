@@ -4,6 +4,16 @@ import 'package:provider/provider.dart';
 
 import 'core/session.dart';
 import 'ui/account/account_screen.dart';
+import 'ui/admin/admin_shell.dart';
+import 'ui/admin/audit_screen.dart';
+import 'ui/admin/complaints_screen.dart' as admin;
+import 'ui/admin/jobs_screen.dart';
+import 'ui/admin/overview_screen.dart';
+import 'ui/admin/plans_screen.dart';
+import 'ui/admin/revenue_screen.dart';
+import 'ui/admin/settings_screen.dart';
+import 'ui/admin/users_screen.dart';
+import 'ui/admin/workers_screen.dart';
 import 'ui/account/complaints_screen.dart';
 import 'ui/account/notifications_screen.dart';
 import 'ui/auth/login_screen.dart';
@@ -44,7 +54,24 @@ GoRouter buildRouter(Session session) {
         builder: (_, s) => ResetPasswordScreen(
             uid: s.uri.queryParameters['uid'] ?? '', token: s.uri.queryParameters['token'] ?? ''),
       ),
-      GoRoute(path: '/admin', builder: (_, _) => const AdminNoticeScreen()),
+      ShellRoute(
+        builder: (context, state, child) => AdminShell(location: state.matchedLocation, child: child),
+        routes: [
+          GoRoute(path: '/admin', builder: (_, _) => const AdminOverviewScreen()),
+          GoRoute(path: '/admin/workers', builder: (_, _) => const AdminWorkersScreen()),
+          GoRoute(path: '/admin/users', builder: (_, _) => const AdminUsersScreen()),
+          GoRoute(path: '/admin/bookings', builder: (_, _) => const AdminJobsScreen()),
+          GoRoute(path: '/admin/revenue', builder: (_, _) => const AdminRevenueScreen()),
+          GoRoute(path: '/admin/plans', builder: (_, _) => const AdminPlansScreen()),
+          GoRoute(path: '/admin/complaints', builder: (_, _) => const admin.AdminComplaintsScreen()),
+          GoRoute(path: '/admin/settings', builder: (_, _) => const AdminSettingsScreen()),
+          GoRoute(path: '/admin/audit', builder: (_, _) => const AdminAuditScreen()),
+        ],
+      ),
+      GoRoute(
+        path: '/admin/workers/:id',
+        builder: (_, s) => AdminWorkerReviewScreen(id: int.parse(s.pathParameters['id']!)),
+      ),
       ShellRoute(
         builder: (context, state, child) => HomeShell(location: state.matchedLocation, child: child),
         routes: [
@@ -106,7 +133,9 @@ String? redirectFor(Session session, String location) {
         if (target != null && redirectFor(session, target) == null) return target;
         return home;
       }
-      if (!user.isWorker && !user.isCustomer) return path == '/admin' ? null : '/admin';
+      final isAdminPath = path == '/admin' || path.startsWith('/admin/');
+      if (user.isAdmin) return isAdminPath ? null : '/admin';
+      if (isAdminPath) return home;
       const workerOnly = ['/jobs', '/offers', '/worker'];
       const customerOnly = ['/requests'];
       if (user.isWorker && (path == '/' || customerOnly.any(path.startsWith))) return '/jobs';
