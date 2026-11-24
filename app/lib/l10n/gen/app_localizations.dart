@@ -1010,6 +1010,12 @@ abstract class AppLocalizations {
   /// **'{n} h ago'**
   String hoursAgo(Object n);
 
+  /// No description provided for @howToInstall.
+  ///
+  /// In en, this message translates to:
+  /// **'How to install'**
+  String get howToInstall;
+
   /// No description provided for @iWantTo.
   ///
   /// In en, this message translates to:
@@ -1021,6 +1027,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'I’m on my way'**
   String get imOnMyWay;
+
+  /// No description provided for @install.
+  ///
+  /// In en, this message translates to:
+  /// **'Install'**
+  String get install;
+
+  /// No description provided for @installApp.
+  ///
+  /// In en, this message translates to:
+  /// **'Install app'**
+  String get installApp;
+
+  /// No description provided for @installHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Add it to your home screen and open it like an app.'**
+  String get installHint;
+
+  /// No description provided for @installTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Install KaamNow'**
+  String get installTitle;
+
+  /// No description provided for @installedThanks.
+  ///
+  /// In en, this message translates to:
+  /// **'KaamNow is installed. You can open it from your home screen.'**
+  String get installedThanks;
+
+  /// No description provided for @iosInstallSteps.
+  ///
+  /// In en, this message translates to:
+  /// **'In Safari, tap the Share button, then choose “Add to Home Screen”.'**
+  String get iosInstallSteps;
 
   /// No description provided for @iveArrived.
   ///
@@ -1435,6 +1477,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No services yet'**
   String get noServicesYet;
+
+  /// No description provided for @notNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Not now'**
+  String get notNow;
 
   /// No description provided for @noteOptional.
   ///

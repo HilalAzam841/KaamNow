@@ -43,6 +43,15 @@ alerts arrive in the same language. Amounts read "1,800 روپے"; numbers stay 
 The admin dashboard is always English. Strings are in `lib/l10n/app_en.arb` and `app_ur.arb`
 (`flutter gen-l10n` regenerates `lib/l10n/gen/`).
 
+### Install on the home screen
+
+KaamNow is an installable web app (PWA). On Android and in desktop Chrome or Edge, an
+"Install KaamNow" card on the home screen (and an Install app row on the account screen) installs
+it with one tap; on iPhone it explains Safari's Share, then "Add to Home Screen". The installed
+app opens full screen with its own icon. `web/sw.js` keeps a copy of the app files for poor
+connections and shows `web/offline.html` with no connection; it never stores API, WebSocket or
+media responses. Installing needs HTTPS (or `localhost` while developing).
+
 Customers and workers who open an `/admin` link are sent back to their own home screen, and the
 server checks the admin role on every admin endpoint regardless.
 
@@ -86,11 +95,11 @@ On the backend, add the app's origin to `CORS_ALLOWED_ORIGINS` (for example
 
 ```bash
 flutter analyze
-flutter test          # 52 unit and widget tests (API client, models, routing, key screens, admin dashboard, Urdu)
+flutter test          # 56 unit and widget tests (API client, models, routing, key screens, admin dashboard, Urdu, install)
 ```
 
 `e2e/` drives the real web build against a running backend in Chromium, through the whole job
-from sign-up to payment, review and earnings, plus an admin walk-through and an Urdu walk-through. See `e2e/README.md`.
+from sign-up to payment, review and earnings, plus an admin walk-through, an Urdu walk-through and an installable-app check (`pwa.js`). See `e2e/README.md`.
 
 ## Structure
 

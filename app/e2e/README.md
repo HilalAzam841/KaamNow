@@ -32,6 +32,13 @@ cd app/e2e && ADMIN_PHONE=03009999999 ADMIN_PASSWORD=... node admin.js
 cd app/e2e && node urdu.js
 ```
 
+`pwa.js` checks the installable app: the manifest and icons, that the service worker controls
+the page, Chrome's installability audit, that no API response is cached, and the offline page:
+
+```bash
+cd app/e2e && node pwa.js
+```
+
 Against the production Docker stack running locally (see `deploy/README.md`):
 
 ```bash

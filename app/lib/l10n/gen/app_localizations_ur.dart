@@ -544,10 +544,34 @@ class AppLocalizationsUr extends AppLocalizations {
   }
 
   @override
+  String get howToInstall => 'انسٹال کرنے کا طریقہ';
+
+  @override
   String get iWantTo => 'میں چاہتا/چاہتی ہوں';
 
   @override
   String get imOnMyWay => 'میں راستے میں ہوں';
+
+  @override
+  String get install => 'انسٹال کریں';
+
+  @override
+  String get installApp => 'ایپ انسٹال کریں';
+
+  @override
+  String get installHint =>
+      'اسے اپنی ہوم اسکرین پر لگائیں اور ایپ کی طرح کھولیں۔';
+
+  @override
+  String get installTitle => 'کام ناؤ انسٹال کریں';
+
+  @override
+  String get installedThanks =>
+      'کام ناؤ انسٹال ہو گیا۔ آپ اسے اپنی ہوم اسکرین سے کھول سکتے ہیں۔';
+
+  @override
+  String get iosInstallSteps =>
+      'سفاری میں شیئر بٹن دبائیں، پھر “Add to Home Screen” منتخب کریں۔';
 
   @override
   String get iveArrived => 'میں پہنچ گیا ہوں';
@@ -800,6 +824,9 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get noServicesYet => 'ابھی کوئی سروس دستیاب نہیں';
+
+  @override
+  String get notNow => 'ابھی نہیں';
 
   @override
   String get noteOptional => 'نوٹ (اختیاری)';

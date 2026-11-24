@@ -6,6 +6,7 @@ import '../../config.dart';
 import '../../core/session.dart';
 import '../../core/format.dart';
 import '../widgets/common.dart';
+import '../widgets/install_widgets.dart';
 import '../widgets/language_button.dart';
 import '../../l10n/l10n.dart';
 
@@ -97,6 +98,7 @@ class AccountScreen extends StatelessWidget {
             ListTile(leading: const Icon(Icons.payments), title: Text(context.t.earnings), onTap: () => context.push('/worker/earnings')),
             ListTile(leading: const Icon(Icons.workspace_premium), title: Text(context.t.plans), onTap: () => context.push('/worker/plans')),
           ],
+          const InstallTile(),
           ListTile(leading: const Icon(Icons.support_agent), title: Text(context.t.helpAndComplaints), onTap: () => context.push('/complaints')),
           ListTile(leading: const Icon(Icons.lock), title: Text(context.t.changePassword), onTap: () => _changePassword(context)),
           ListTile(
