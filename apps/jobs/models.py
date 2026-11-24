@@ -29,6 +29,10 @@ class ServiceRequest(TimeStampedModel):
     area = models.CharField(max_length=100, blank=True, help_text="Public area name, e.g. 'DHA Phase 5'.")
     preferred_time = models.DateTimeField()
     budget = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    is_emergency = models.BooleanField(default=False, db_index=True)
+    emergency_fee = models.DecimalField(
+        max_digits=10, decimal_places=2, default=0, help_text="Locked at request creation from platform settings."
+    )
     status = models.CharField(max_length=10, choices=Status.choices, default=Status.OPEN, db_index=True)
     cancelled_at = models.DateTimeField(null=True, blank=True)
     cancel_reason = models.CharField(max_length=255, blank=True)
@@ -75,6 +79,7 @@ class Booking(TimeStampedModel):
     customer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="customer_bookings")
     worker = models.ForeignKey("accounts.WorkerProfile", on_delete=models.PROTECT, related_name="bookings")
     agreed_price = models.DecimalField(max_digits=10, decimal_places=2)
+    emergency_fee = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     status = models.CharField(max_length=12, choices=Status.choices, default=Status.CONFIRMED, db_index=True)
 
     on_the_way_at = models.DateTimeField(null=True, blank=True)
@@ -107,6 +112,11 @@ class Booking(TimeStampedModel):
     @property
     def is_active(self):
         return self.status in self.ACTIVE_STATUSES
+
+    @property
+    def total_amount(self):
+        """What the customer pays: the negotiated price plus any emergency fee."""
+        return self.agreed_price + self.emergency_fee
 
 
 class BookingStatusLog(models.Model):

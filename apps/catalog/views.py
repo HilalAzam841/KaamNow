@@ -1,9 +1,12 @@
 import django_filters
+from django.db.models import Exists, OuterRef
+from django.utils import timezone
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
 from rest_framework import permissions, viewsets
 from rest_framework.exceptions import PermissionDenied
 
 from apps.accounts.models import WorkerProfile
+from apps.billing.models import FeaturedListing
 from apps.common.permissions import IsAdminOrReadOnly, IsPlatformAdmin
 from apps.dashboard.models import AuditLog
 from apps.dashboard.services import audit
@@ -92,13 +95,18 @@ class WorkerServiceViewSet(viewsets.ModelViewSet):
             return qs.none()
         mine = self.request.query_params.get("mine") in ("1", "true", "True")
         if self.action in ("list", "retrieve") and not (mine and self._is_worker()):
+            now = timezone.now()
+            sponsored = FeaturedListing.objects.filter(
+                worker=OuterRef("worker"), category=OuterRef("category"), status=FeaturedListing.Status.ACTIVE,
+                starts_at__lte=now, ends_at__gt=now,
+            )
             return qs.filter(
                 is_active=True,
                 category__is_active=True,
                 worker__verification_status=WorkerProfile.VerificationStatus.VERIFIED,
                 worker__user__is_active=True,
                 worker__user__is_suspended=False,
-            ).order_by("-worker__average_rating", "id")
+            ).annotate(is_sponsored=Exists(sponsored)).order_by("-is_sponsored", "-worker__average_rating", "id")
         if not self._is_worker():
             return qs.none()
         return qs.filter(worker__user=self.request.user)

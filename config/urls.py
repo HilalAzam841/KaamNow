@@ -5,7 +5,10 @@ from django.urls import include, path
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 
 from apps.accounts.urls import auth_urlpatterns, worker_urlpatterns
+from apps.billing.urls import featured_urlpatterns, payment_urlpatterns, subscription_urlpatterns
+from apps.chat.views import BookingMessagesReadView, BookingMessagesView
 from apps.common.views import health
+from apps.tracking.views import BookingLocationView
 from apps.jobs.urls import bookings_router, requests_router
 from apps.offers.urls import offer_urlpatterns, request_offer_urlpatterns
 from apps.reviews.views import ReviewCreateView, WorkerReviewsView
@@ -19,10 +22,16 @@ api_v1 = [
     path("requests/", include(request_offer_urlpatterns)),
     path("requests/", include(requests_router.urls)),
     path("offers/", include(offer_urlpatterns)),
+    path("bookings/<int:booking_id>/messages/", BookingMessagesView.as_view(), name="booking-messages"),
+    path("bookings/<int:booking_id>/messages/read/", BookingMessagesReadView.as_view(), name="booking-messages-read"),
+    path("bookings/<int:booking_id>/location/", BookingLocationView.as_view(), name="booking-location"),
     path("bookings/", include(bookings_router.urls)),
-    path("payments/", include("apps.billing.urls")),
+    path("payments/", include(payment_urlpatterns)),
+    path("subscriptions/", include(subscription_urlpatterns)),
+    path("featured/", include(featured_urlpatterns)),
     path("reviews/", ReviewCreateView.as_view(), name="review-create"),
     path("notifications/", include("apps.notifications.urls")),
+    path("complaints/", include("apps.support.urls")),
     path("admin/", include("apps.dashboard.urls")),
 ]
 

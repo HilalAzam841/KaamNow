@@ -11,56 +11,68 @@ planned for Stage 3 and will talk to this backend only through the REST API.
 
 ## 1. Current status
 
-**Stage 1 (Backend MVP): done.** Every feature below has its business logic, REST endpoint(s),
-validation and automated tests, and the tests pass against PostgreSQL 16.
+**Stage 1 (Backend MVP) and Stage 2 (Advanced features) are done.** Every feature below has its
+business logic, REST endpoint(s), validation and automated tests. All 323 tests pass against
+PostgreSQL 16.
 
-| Feature | Status | Where |
-|---|---|---|
-| JWT authentication (register, login, refresh with rotation, logout with blacklist, password reset/change) | ✅ | `apps/accounts` |
-| Roles (customer, worker, admin) and role-based permissions | ✅ | `apps/common/permissions.py` |
-| Customer and worker profiles | ✅ | `apps/accounts` |
-| Worker verification (private CNIC upload, admin approve/reject, audit log) | ✅ | `apps/accounts`, `apps/dashboard` |
-| Service categories (13 seeded, admin can add, update, activate, deactivate) | ✅ | `apps/catalog` |
-| Worker service listings | ✅ | `apps/catalog` |
-| Service requests with images, GPS and preferred time | ✅ | `apps/jobs` |
-| Nearby worker discovery (Haversine, PostGIS-ready interface) | ✅ | `apps/common/geo.py`, `apps/jobs/services.py` |
-| Price offers and offer comparison (price, rating, jobs, distance, experience, verification) | ✅ | `apps/offers` |
-| Price negotiation with full history | ✅ | `apps/offers/services.py` |
-| Booking with row locking and DB unique constraints (no double booking) | ✅ | `apps/offers/services.py::accept_offer` |
-| Booking status flow (confirmed, on the way, arrived, work started, completed, cancelled) | ✅ | `apps/jobs` |
-| Completion OTP (hashed, expiry, attempt limit, resend cooldown, rate limited) | ✅ | `apps/jobs/services.py` |
-| Commission calculation (default 10%, admin-configurable) | ✅ | `apps/billing` |
-| Cash payment records and a balanced payment ledger | ✅ | `apps/billing` |
-| Ratings and reviews | ✅ | `apps/reviews` |
-| In-app notification history | ✅ | `apps/notifications` |
-| Admin API: dashboard, pending workers, bookings, revenue, commissions, reports, suspensions, audit log | ✅ | `apps/dashboard` |
-| Swagger / ReDoc / OpenAPI schema, Postman collection | ✅ | `/api/docs/`, `docs/` |
+### Stage 1: Backend MVP
 
-**Stage 2 (not started).** Nothing in this list has been built yet, and there are no models or
-endpoints for it:
+| Feature | Where |
+|---|---|
+| JWT authentication (register, login, refresh with rotation, logout with blacklist, password reset/change) | `apps/accounts` |
+| Roles (customer, worker, admin) and role-based permissions | `apps/common/permissions.py` |
+| Customer and worker profiles | `apps/accounts` |
+| Worker verification (private CNIC upload, admin approve/reject, audit log) | `apps/accounts`, `apps/dashboard` |
+| Service categories (13 seeded, admin can add, update, activate, deactivate) | `apps/catalog` |
+| Worker service listings | `apps/catalog` |
+| Service requests with images, GPS and preferred time | `apps/jobs` |
+| Nearby worker discovery (Haversine, PostGIS-ready interface) | `apps/common/geo.py`, `apps/jobs/services.py` |
+| Price offers and comparison (price, rating, jobs, distance, experience, verification) | `apps/offers` |
+| Price negotiation with full history | `apps/offers/services.py` |
+| Booking with row locking and DB unique constraints (no double booking) | `apps/offers/services.py::accept_offer` |
+| Booking status flow (confirmed, on the way, arrived, work started, completed, cancelled) | `apps/jobs` |
+| Completion OTP (hashed, expiry, attempt limit, resend cooldown, rate limited) | `apps/jobs/services.py` |
+| Commission calculation (default 10%, admin-configurable) | `apps/billing` |
+| Cash payment records and a balanced payment ledger | `apps/billing` |
+| Ratings and reviews | `apps/reviews` |
+| In-app notification history | `apps/notifications` |
+| Admin API: dashboard, pending workers, bookings, revenue, commissions, reports, suspensions, audit log | `apps/dashboard` |
 
-- Real-time chat (`/bookings/{id}/messages/`, Django Channels)
-- Live location tracking (`/bookings/{id}/location/`)
-- Firebase push notifications (the `notifications.services.get_push_sender()` hook is ready; today it is a no-op)
-- JazzCash / Easypaisa gateway integration with signed callbacks (today the API refuses these methods)
-- Worker subscriptions (`/subscriptions/...`)
-- Featured listings
-- Emergency service fees
-- Complaints and disputes
-- Redis and Celery (scheduled jobs such as expiring old requests)
+### Stage 2: Advanced features
+
+| Feature | Where |
+|---|---|
+| Real-time chat: REST history + WebSocket delivery, read receipts, participants only | `apps/chat` |
+| Live worker location: REST + WebSocket, distance and ETA to the job, short trail, 30-day retention | `apps/tracking` |
+| WebSocket booking channel (chat, location, status events) with JWT auth and origin check | `apps/chat/consumers.py`, `config/asgi.py` |
+| Firebase push notifications (device tokens, FCM HTTP v1 sender in Celery, dead-token cleanup) | `apps/notifications` |
+| JazzCash hosted checkout with `pp_SecureHash` request signing and callback verification | `apps/billing/gateways/jazzcash.py` |
+| Easypaisa hosted checkout (AES-encrypted request) with server-to-server inquiry before settling | `apps/billing/gateways/easypaisa.py` |
+| Worker subscriptions (Free, Professional, Premium) with enforced benefits: commission rate and daily offer limit | `apps/billing` |
+| Featured (sponsored) listings: paid placement at the top of category search results, clearly flagged `is_sponsored` | `apps/billing`, `apps/catalog`, `apps/jobs` |
+| Emergency requests with an admin-configurable fee, locked at request time and shown in the booking total | `apps/jobs`, `apps/billing` |
+| Complaints and disputes (customers and workers report; admins review, resolve or reject; audited) | `apps/support` |
+| Celery scheduled jobs: expire stale requests, expire unpaid online checkouts, expire plans and listings, purge old GPS points | `*/tasks.py`, `CELERY_BEAT_SCHEDULE` |
+| Admin API for plans, subscriptions, featured listings, complaints, platform settings and extra revenue | `apps/dashboard` |
+
+**Before going live with online payments:** the JazzCash and Easypaisa adapters follow each
+gateway's published integration scheme and are covered by tests with simulated gateway responses.
+They have **not** been run against the real sandboxes yet, because that needs your merchant
+credentials. Run one sandbox payment per gateway before launch (see section 8).
 
 ---
 
 ## 2. Tech stack
 
 Python 3.12+ (tested on 3.13) · Django 5.2 · Django REST Framework 3.18 · PostgreSQL 16 ·
-SimpleJWT · drf-spectacular (OpenAPI 3) · django-filter · Pillow · Argon2 password hashing ·
-pytest + pytest-django · Gunicorn + WhiteNoise for production.
+SimpleJWT · Django Channels 4 + Daphne (WebSockets) · Redis · Celery 5 · Firebase Cloud Messaging
+(HTTP v1) · drf-spectacular (OpenAPI 3) · django-filter · Pillow · Argon2 password hashing ·
+pytest + pytest-django + pytest-asyncio · WhiteNoise for static files.
 
 ## 3. Project layout
 
 ```
-config/                 settings, URLs, WSGI/ASGI
+config/                 settings, URLs, ASGI (HTTP + WebSockets), Celery app
 apps/
   common/               envelope renderer, error handler, pagination, permissions,
                         geo (Haversine), validators, private file storage
@@ -68,10 +80,14 @@ apps/
   catalog/              ServiceCategory, WorkerService
   jobs/                 ServiceRequest, ServiceRequestImage, Booking, BookingStatusLog
   offers/               WorkerOffer, Negotiation (bidding, negotiation, accept)
-  billing/              PlatformSettings, Commission, Payment, LedgerEntry
+  billing/              PlatformSettings, Commission, Payment, LedgerEntry, SubscriptionPlan,
+                        WorkerSubscription, FeaturedPlan, FeaturedListing, gateways/ (JazzCash, Easypaisa)
   reviews/              Review
-  notifications/        Notification (in-app history, push hook)
+  notifications/        Notification, DeviceToken, FCM sender
   dashboard/            AuditLog, admin reporting endpoints
+  chat/                 ChatMessage, WebSocket consumer + JWT middleware
+  tracking/             BookingLocation (live GPS)
+  support/              Complaint
 docs/                   openapi.yaml, Postman collection
 scripts/                generate_postman.py
 ```
@@ -87,6 +103,8 @@ layer), `urls.py`, `admin.py` and `tests/`.
 ### Prerequisites
 - Python 3.12 or newer
 - PostgreSQL 14 or newer
+- Redis 6 or newer (optional locally: without `REDIS_URL` the app uses an in-memory channel layer and
+  runs Celery tasks inline, which is fine for development on a single process)
 
 ### Steps
 
@@ -109,7 +127,11 @@ cp .env.example .env
 
 python manage.py migrate           # creates tables, seeds 13 categories and the 10% commission
 python manage.py seed_demo_data    # optional: demo admin, customer and 4 verified workers in Lahore
-python manage.py runserver
+python manage.py runserver          # serves HTTP and WebSockets (Daphne is installed)
+
+# With Redis, in two more terminals:
+celery -A config worker -l info
+celery -A config beat -l info
 ```
 
 Open:
@@ -140,7 +162,7 @@ docker compose up --build
 pytest -q
 ```
 
-The suite has 213 tests and needs a running PostgreSQL. It uses the database settings from your
+The suite has 323 tests and needs a running PostgreSQL (Redis is not needed for tests). It uses the database settings from your
 `.env` and creates a separate `test_kaamnow` database. Coverage includes:
 
 - **Authentication**: registration validation, login, suspended accounts, token refresh rotation, logout blacklisting, password reset (single-use token, no account enumeration), throttling.
@@ -151,6 +173,12 @@ The suite has 213 tests and needs a running PostgreSQL. It uses the database set
 - **OTP**: hashed storage, never present in responses, expiry, attempt limit and burn, resend cooldown, rate limiting, customer in-app confirmation.
 - **Payments**: amount always taken from the locked booking price, online methods refused, duplicates refused, worker confirmation, ledger balances, commission rate changes apply only to new completions.
 - **Reviews, notifications and admin reports.**
+- **Online payments**: JazzCash hash matches an independent implementation of the documented algorithm; forged or tampered callbacks rejected; amount mismatches flagged as disputed; replayed callbacks are idempotent; late success after expiry is flagged; a "success" redirect is ignored when the Easypaisa inquiry says otherwise; gateway outages leave payments pending.
+- **Subscriptions and featured listings**: activation only after verified payment, renewals extend, plan commission applied at job completion, daily offer limit enforced, sponsored ordering and labelling, slot limits, expiry.
+- **Emergency fee**: locked at request time, included in the payment, separate ledger entry, commission only on the negotiated price.
+- **Chat and tracking over WebSockets** (real ASGI app): token, suspension, origin and participant checks; chat and read receipts in both directions; REST messages pushed to sockets; location and status events; customers cannot send fake locations; events isolated per booking.
+- **Push**: message format, only active devices, dead tokens deactivated, retries on transient errors.
+- **Complaints** and **scheduled tasks** (including a check that every beat entry points to a registered task).
 
 CI (`.github/workflows/tests.yml`) runs lint, checks for missing migrations, validates the
 OpenAPI schema with warnings treated as failures, runs the migrations and runs the full test
@@ -189,17 +217,22 @@ be probed), `409` state conflict (already booked, wrong turn, and so on), `429` 
 | Requests | `POST requests/` · `GET requests/` · `GET/PATCH requests/{id}/` · `POST requests/{id}/cancel/` · `GET requests/{id}/nearby-workers/` |
 | Offers | `GET/POST requests/{id}/offers/` · `GET/PATCH offers/{id}/` · `POST offers/{id}/accept/` · `POST offers/{id}/reject/` · `POST offers/{id}/negotiate/` · `GET offers/{id}/negotiations/` |
 | Bookings | `GET bookings/` · `GET bookings/{id}/` · `POST bookings/{id}/status/` · `POST bookings/{id}/completion-otp/` · `POST bookings/{id}/complete/` · `POST bookings/{id}/cancel/` |
-| Payments | `POST payments/` · `GET payments/` · `GET payments/{id}/` · `POST payments/{id}/confirm/` · `GET payments/earnings/` |
+| Chat | `GET/POST bookings/{id}/messages/` · `POST bookings/{id}/messages/read/` |
+| Tracking | `POST bookings/{id}/location/` (worker) · `GET bookings/{id}/location/` |
+| Payments | `POST payments/` (cash, jazzcash, easypaisa) · `GET payments/` · `GET payments/{id}/` · `POST payments/{id}/confirm/` · `GET payments/earnings/` · `POST/GET payments/callbacks/jazzcash/` · `POST/GET payments/callbacks/easypaisa/` |
+| Subscriptions | `GET subscriptions/plans/` · `POST subscriptions/` · `GET subscriptions/my-subscription/` · `GET subscriptions/history/` |
+| Featured | `GET featured/plans/` · `GET/POST featured/` |
+| Complaints | `POST complaints/` · `GET complaints/` · `GET complaints/{id}/` |
 | Reviews | `POST reviews/` · `GET workers/{id}/reviews/` |
-| Notifications | `GET notifications/` · `POST notifications/{id}/read/` · `POST notifications/read-all/` · `GET notifications/unread-count/` |
-| Admin | `GET admin/dashboard/` · `GET admin/workers/pending/` · `GET admin/workers/{id}/` · `POST admin/workers/{id}/verify/` · `POST admin/workers/{id}/reject/` · `GET admin/documents/{id}/file/` · `GET admin/users/` · `POST admin/users/{id}/suspend/` · `POST admin/users/{id}/reactivate/` · `GET admin/requests/` · `GET admin/bookings/` · `GET admin/revenue/` · `GET admin/commissions/` · `GET/PATCH admin/settings/commission/` · `GET admin/reports/` · `GET admin/audit-logs/` |
+| Notifications | `GET notifications/` · `POST notifications/{id}/read/` · `POST notifications/read-all/` · `GET notifications/unread-count/` · `POST/DELETE notifications/devices/` |
+| Admin | `GET admin/dashboard/` · `GET admin/workers/pending/` · `GET admin/workers/{id}/` · `POST admin/workers/{id}/verify/` · `POST admin/workers/{id}/reject/` · `GET admin/documents/{id}/file/` · `GET admin/users/` · `POST admin/users/{id}/suspend/` · `POST admin/users/{id}/reactivate/` · `GET admin/requests/` · `GET admin/bookings/` · `GET admin/revenue/` · `GET admin/commissions/` · `GET/PATCH admin/settings/commission/` · `GET admin/reports/` · `GET admin/audit-logs/` · `GET/PATCH admin/settings/` · `GET admin/revenue/other/` · `admin/subscription-plans/` (list, create, update) · `admin/featured-plans/` (list, create, update) · `GET admin/subscriptions/` · `POST admin/subscriptions/{id}/activate/` · `GET admin/featured-listings/` · `POST admin/featured-listings/{id}/cancel/` · `GET admin/complaints/` · `POST admin/complaints/{id}/status/` |
 
 Endpoints added beyond the original list, because the flow needs them: `password-reset/confirm`,
 `password-change`, `workers/{id}/` (public card), `offers/{id}/negotiations/`,
 `bookings/{id}/completion-otp/`, `payments/{id}/confirm/`, `payments/earnings/`,
 the notification helpers, and the admin users, suspension, requests, commission settings and audit log endpoints.
 
-Postman: import `docs/KaamNow.postman_collection.json` (62 requests in 7 folders that follow the
+Postman: import `docs/KaamNow.postman_collection.json` (94 requests in 12 folders that follow the
 full flow; test scripts store tokens and ids automatically). Regenerate it with
 `python scripts/generate_postman.py`.
 
@@ -217,6 +250,33 @@ full flow; test scripts store tokens and ids automatically). Regenerate it with
 10. **Customer** `POST /payments/` with `{"booking": id, "method": "cash"}`. **Worker** `POST /payments/{id}/confirm/` writes the ledger entries.
 11. **Customer** `POST /reviews/` updates the worker's average rating.
 
+Stage 2 additions to the flow:
+
+- Steps 7 and 8: both sides open the booking WebSocket to chat and to watch the worker's live location and status changes.
+- Step 1 with `"is_emergency": true` adds the current emergency fee, which is locked on the request. Matching workers get an "URGENT" notification, and emergency requests appear first in their feed.
+- Step 10 with `"method": "jazzcash"` or `"easypaisa"` returns a `checkout` object `{url, method, fields}`. The app POSTs `fields` to `url` in a WebView. The gateway then calls our callback URL, the server verifies it, and the payment becomes `completed` (or `failed` / `disputed`). The app polls `GET /payments/{id}/` or listens for the `payment` push. Watching for the callback page (`#kaamnow-payment[data-status]`) is also possible.
+
+### WebSocket protocol
+
+Connect to `wss://<host>/ws/bookings/<booking_id>/?token=<access token>`. The `Authorization: Bearer`
+header also works. Only the booking's customer and worker can connect. Close codes: `4401` (not
+authenticated or suspended) and `4404` (not a participant).
+
+Client to server:
+
+```json
+{"type": "chat.message", "body": "Gate code is 1234"}
+{"type": "chat.read"}
+{"type": "location.update", "latitude": 31.52, "longitude": 74.34, "speed_kmh": 28, "heading": 90, "accuracy_m": 8}
+{"type": "ping"}
+```
+
+Server to client: `chat.message`, `chat.read`, `location.update` (with `distance_to_customer_km`
+and `eta_minutes`), `booking.status`, `error`, `pong`. Each event is `{"type": ..., "data": {...}}`.
+Every event is also available over REST, so the socket is a convenience rather than the only
+source of data: an app that reconnects can always catch up with `GET /bookings/{id}/messages/` and
+`GET /bookings/{id}/location/`.
+
 ---
 
 ## 7. Security design
@@ -230,23 +290,27 @@ full flow; test scripts store tokens and ids automatically). Regenerate it with
 - **No duplicate bookings**: `SELECT ... FOR UPDATE` on the request row, a re-check inside the lock, and `OneToOne` unique constraints on `Booking.request` and `Booking.offer` as a database-level backstop. Locks are always taken in the same order (request, then offer) to avoid deadlocks.
 - **No duplicate offers**: a unique `(request, worker)` constraint, plus the request lock.
 - **OTP**: generated with `secrets`, stored as an HMAC-SHA256 hash, never serialised, 15-minute expiry, 5 attempts and then the code is burned, 60-second resend cooldown, and a throttled endpoint. Failed attempts are committed even though the request returns an error.
-- **Payments**: the amount always comes from the booking's locked price, never from the client. Cash payments need the worker's confirmation. Online methods are refused until server-side verification of signed gateway callbacks is built (Stage 2). There is at most one live payment per booking (partial unique constraint).
+- **Payments**: the amount always comes from the server (booking total, plan price or featured price), never from the client. Cash payments need the worker's confirmation. Online payments settle only from a verified gateway callback: JazzCash by HMAC-SHA256 `pp_SecureHash` with the merchant integrity salt (constant-time compare, merchant id checked); Easypaisa by a server-to-server inquiry, ignoring whatever the redirect claims. The callback amount must equal the payment amount, otherwise the payment is marked `disputed` and nothing is settled. Callbacks are idempotent. A success that arrives after a checkout expired is flagged as disputed rather than settled automatically. Gateway passwords and hashes are stripped before the callback data is stored. There is at most one live payment per booking (partial unique constraint).
+- **WebSockets**: JWT required (suspended users rejected), `AllowedHostsOriginValidator` blocks foreign origins, and only booking participants can join. Events are scoped to one booking group. Only the assigned worker can publish locations. Chat, location and payment callbacks have their own throttles.
+- **Private conversations**: chat is readable only by the two participants (admins cannot read it through the API; staff can view it read-only in Django admin for disputes). Customers see live location only while the booking is active. Old GPS points are purged after 30 days.
 - **Throttling**: separate scopes for anonymous users, users, auth, password reset, OTP and offers. All limits are configurable through environment variables.
-- **Audit log**: worker verify/reject, document views, user suspend/reactivate, commission changes and category changes. The audit log cannot be edited in Django admin.
+- **Audit log**: worker verify/reject, document views, user suspend/reactivate, commission and platform-settings changes, category and plan changes, manual subscription activation, featured-listing cancellation and complaint decisions. The audit log cannot be edited in Django admin.
 - **Secrets** come only from environment variables. `DEBUG=False` turns on HSTS, SSL redirect and secure cookies, and `manage.py check --deploy` passes.
 
 ---
 
 ## 8. Deployment
 
-### Option A: Docker (recommended)
+Production runs five processes: **PostgreSQL**, **Redis**, the **API** (Daphne, serving HTTP and
+WebSockets), a **Celery worker** (push notifications) and **Celery beat** (scheduled jobs).
 
-1. Provision PostgreSQL (for example a managed database) and set the `POSTGRES_*` variables.
-2. Create a `.env` from `.env.example` with `DJANGO_DEBUG=false`, a strong `DJANGO_SECRET_KEY`, `DJANGO_ALLOWED_HOSTS=api.kaamnow.pk`, SMTP settings and `CORS_ALLOWED_ORIGINS` if a web client needs it.
-3. `docker compose up -d --build`. The container runs `migrate` and then starts Gunicorn on port 8000.
-4. Put Nginx or a load balancer in front, terminate TLS there, and forward `X-Forwarded-Proto`.
-5. Serve `MEDIA_ROOT` (request images, avatars) from Nginx or object storage. **Never** serve `PRIVATE_MEDIA_ROOT`.
-6. Create the first admin: `docker compose exec api python manage.py createsuperuser`.
+### Option A: Docker Compose (recommended)
+
+1. Create a `.env` from `.env.example` with `DJANGO_DEBUG=false`, a strong `DJANGO_SECRET_KEY`, `DJANGO_ALLOWED_HOSTS=api.kaamnow.pk`, the database password, SMTP settings, and the gateway and Firebase values you use.
+2. `docker compose up -d --build` starts `db`, `redis`, `api`, `worker` and `beat`. The API container runs `migrate` and then starts Daphne on port 8000.
+3. Put Nginx or a load balancer in front, terminate TLS there, forward `X-Forwarded-Proto`, and allow WebSocket upgrades on `/ws/`.
+4. Serve `MEDIA_ROOT` (request images, avatars) from Nginx or object storage. **Never** serve `PRIVATE_MEDIA_ROOT`.
+5. Create the first admin: `docker compose exec api python manage.py createsuperuser`.
 
 ### Option B: VM with systemd
 
@@ -255,7 +319,9 @@ pip install -r requirements.txt
 export $(grep -v '^#' .env | xargs)
 python manage.py migrate --noinput
 python manage.py collectstatic --noinput
-gunicorn config.wsgi:application --bind 127.0.0.1:8000 --workers 3
+daphne -b 127.0.0.1 -p 8000 config.asgi:application   # systemd unit 1
+celery -A config worker -l info                        # systemd unit 2
+celery -A config beat -l info                          # systemd unit 3 (run exactly one)
 ```
 
 Example Nginx configuration:
@@ -266,6 +332,14 @@ server {
     client_max_body_size 12m;
     location /media/ { alias /var/lib/kaamnow/media/; }
     # NOTE: no location for private_media on purpose.
+    location /ws/ {
+        proxy_pass http://127.0.0.1:8000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_read_timeout 3600s;
+    }
     location / {
         proxy_pass http://127.0.0.1:8000;
         proxy_set_header Host $host;
@@ -275,21 +349,36 @@ server {
 }
 ```
 
+### Payment gateway go-live
+
+1. Get sandbox merchant credentials from JazzCash and Easypaisa, and put them in `.env`.
+2. Register the callback URLs with each gateway: `https://<host>/api/v1/payments/callbacks/jazzcash/` and `https://<host>/api/v1/payments/callbacks/easypaisa/`.
+3. Make one sandbox payment per gateway from the app's WebView. Check that the payment becomes `completed`, that the ledger entries are written, and that a tampered callback is rejected.
+4. Switch the `*_CHECKOUT_URL` and `*_INQUIRY_URL` values to the production endpoints the gateways give you, along with the production credentials.
+
+### Firebase push go-live
+
+1. In the Firebase console, create a service account with the "Firebase Cloud Messaging API" enabled and download the JSON key.
+2. Put the file on the server outside the repo, then set `FCM_PROJECT_ID` and `FCM_CREDENTIALS_FILE`.
+3. The Android app calls `POST /api/v1/notifications/devices/` after login and whenever FCM gives it a new token, and calls `DELETE` on logout. It should create a notification channel named `kaamnow_default`.
+
 ### Production checklist
 
 - `python manage.py check --deploy` reports no issues
+- `REDIS_URL` set (needed for shared throttling, WebSocket fan-out across processes, and Celery)
+- Exactly one Celery beat process
 - Database backups enabled, and `PRIVATE_MEDIA_ROOT` backed up and encrypted at rest
 - A real SMTP provider is configured for password-reset emails
-- Throttle rates reviewed for expected traffic
-- If you run several Gunicorn workers or hosts, configure a shared cache (Redis) so throttling counts are shared. The default local-memory cache counts per process.
+- Gateway sandbox test done (see above); throttle rates reviewed for expected traffic
 
 ---
 
 ## 9. Design notes and extension points
 
 - **PostGIS**: discovery goes through `apps/common/geo.get_geo_backend()`. To switch, add a `PostGISBackend` that implements `workers_covering_point()` with `ST_DWithin` and set `GEO_BACKEND=postgis`. Callers do not change.
-- **Push notifications**: implement an FCM sender and return it from `notifications.services.get_push_sender()`. Every `notify()` call already goes through it.
-- **Payment gateways**: `billing.services.SUPPORTED_METHODS` controls the methods the API accepts. A gateway adapter should create a `pending` payment, redirect the customer, and mark it `completed` only from a server-verified, signature-checked callback.
-- **Commission collection**: commissions are recorded as `pending` when a job completes, because with cash the worker holds the money. Settlement (marking them `collected`) is an admin or finance process for Stage 2.
+- **New payment gateways**: subclass `billing.gateways.base.PaymentGateway` (`build_checkout`, `verify_callback`), register it in `billing/gateways/__init__.py`, add a method choice and a callback route. Settlement, ledger and fulfilment are shared.
+- **Revenue streams**: booking commission (`platform_commission` ledger entries), subscriptions (`subscription_revenue`), featured listings (`featured_revenue`) and emergency fees (`emergency_fee`). `GET /admin/revenue/` covers commission; `GET /admin/revenue/other/` covers the rest.
+- **Commission collection**: with cash, commission is recorded as `pending` (the worker holds the money). With JazzCash or Easypaisa it is `collected` automatically. Settling cash commissions and paying out online earnings is a finance process that is not built yet.
+- **Plans and pricing**: the seeded plan and featured prices (Free; Professional Rs. 1,500 at 8% commission; Premium Rs. 3,000 at 6%; featured 7 days Rs. 500 and 30 days Rs. 1,500; emergency fee Rs. 300) are placeholders. Admins change them through the admin API or Django admin.
 - **Phone numbers** are normalised to E.164 (`+923XXXXXXXXX`). Users can log in with `0300...`, `92300...` or `+92300...`.
 - **Time zone**: `Asia/Karachi`. Timestamps are returned in ISO 8601 with the offset.

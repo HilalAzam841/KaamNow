@@ -201,22 +201,32 @@ class PublicWorkerSerializer(serializers.ModelSerializer):
     full_name = serializers.CharField(source="user.full_name", read_only=True)
     is_verified = serializers.BooleanField(read_only=True)
     services = WorkerServiceInlineSerializer(many=True, read_only=True)
+    plan_badge = serializers.SerializerMethodField()
 
     class Meta:
         model = WorkerProfile
         fields = [
             "id", "full_name", "profile_picture", "bio", "experience_years", "service_area", "is_verified",
-            "average_rating", "rating_count", "completed_jobs_count", "services",
+            "average_rating", "rating_count", "completed_jobs_count", "plan_badge", "services",
         ]
         read_only_fields = fields
+
+    def get_plan_badge(self, obj) -> str:
+        from apps.billing.services import current_plan
+
+        plan = current_plan(obj)
+        return plan.badge if plan else ""
 
 
 class NearbyWorkerSerializer(PublicWorkerSerializer):
     distance_km = serializers.FloatField(read_only=True)
     is_available = serializers.BooleanField(read_only=True)
+    is_sponsored = serializers.BooleanField(
+        read_only=True, default=False, help_text="Paid featured placement. The app must label it 'Sponsored'."
+    )
 
     class Meta(PublicWorkerSerializer.Meta):
-        fields = PublicWorkerSerializer.Meta.fields + ["distance_km", "is_available"]
+        fields = PublicWorkerSerializer.Meta.fields + ["distance_km", "is_available", "is_sponsored"]
         read_only_fields = fields
 
 

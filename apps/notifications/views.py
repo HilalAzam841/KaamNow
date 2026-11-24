@@ -4,8 +4,11 @@ from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from .models import Notification
-from .serializers import NotificationSerializer
+from rest_framework import status
+from rest_framework.views import APIView
+
+from .models import DeviceToken, Notification
+from .serializers import DeviceTokenDeleteSerializer, DeviceTokenSerializer, NotificationSerializer
 from .services import mark_read
 
 
@@ -35,3 +38,27 @@ class NotificationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     @action(detail=False, methods=["get"], url_path="unread-count")
     def unread_count(self, request):
         return Response({"unread": self.get_queryset().filter(is_read=False).count()})
+
+
+class DeviceTokenView(APIView):
+    """Register (POST) or unregister (DELETE) this device's Firebase token for push notifications."""
+
+    @extend_schema(tags=["notifications"], request=DeviceTokenSerializer, responses={201: DeviceTokenSerializer})
+    def post(self, request):
+        serializer = DeviceTokenSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        token = serializer.validated_data["token"]
+        # A token belongs to one device; if another account used it before, it moves to this user.
+        device, _ = DeviceToken.objects.update_or_create(
+            token=token,
+            defaults={"user": request.user, "platform": serializer.validated_data.get("platform", "android"),
+                      "is_active": True},
+        )
+        return Response(DeviceTokenSerializer(device).data, status=status.HTTP_201_CREATED)
+
+    @extend_schema(tags=["notifications"], request=DeviceTokenDeleteSerializer, responses={200: dict})
+    def delete(self, request):
+        serializer = DeviceTokenDeleteSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        deleted, _ = DeviceToken.objects.filter(user=request.user, token=serializer.validated_data["token"]).delete()
+        return Response({"deleted": deleted})

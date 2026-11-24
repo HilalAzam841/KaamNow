@@ -24,7 +24,7 @@ class TestRecordPayment:
         body = data(resp)
         assert body["amount"] == "2000.00"  # client-sent amount ignored
         assert body["status"] == "pending"
-        assert body["reference"].startswith("KN-")
+        assert body["reference"].startswith("KN") and body["reference"].isalnum()
 
     def test_not_before_completion(self, customer, worker, make_booking):
         booking = make_booking(customer, worker)

@@ -31,7 +31,7 @@ class ServiceRequestCreateSerializer(serializers.ModelSerializer):
         model = ServiceRequest
         fields = [
             "id", "category", "title", "description", "latitude", "longitude", "address", "area",
-            "preferred_time", "budget", "images",
+            "preferred_time", "budget", "is_emergency", "images",
         ]
         read_only_fields = ["id"]
         extra_kwargs = {"budget": {"min_value": Decimal("0")}}
@@ -79,7 +79,8 @@ class ServiceRequestSerializer(serializers.ModelSerializer):
         model = ServiceRequest
         fields = [
             "id", "category", "category_name", "title", "description", "latitude", "longitude", "address", "area",
-            "preferred_time", "budget", "status", "images", "offers_count", "booking_id", "matched_workers_count",
+            "preferred_time", "budget", "is_emergency", "emergency_fee", "status", "images", "offers_count",
+            "booking_id", "matched_workers_count",
             "cancel_reason", "cancelled_at", "created_at", "updated_at",
         ]
         read_only_fields = fields
@@ -115,7 +116,8 @@ class ServiceRequestForWorkerSerializer(serializers.ModelSerializer):
         model = ServiceRequest
         fields = [
             "id", "category", "category_name", "title", "description", "area", "approx_latitude",
-            "approx_longitude", "distance_km", "preferred_time", "budget", "status", "images", "customer_name",
+            "approx_longitude", "distance_km", "preferred_time", "budget", "is_emergency", "emergency_fee", "status",
+            "images", "customer_name",
             "my_offer_id", "created_at",
         ]
         read_only_fields = fields
@@ -155,10 +157,15 @@ class BookingCancelSerializer(serializers.Serializer):
     reason = serializers.CharField(max_length=255)
 
 
+STATUS_CHANGE_CHOICES = [
+    (Booking.Status.ON_THE_WAY.value, "On the way"),
+    (Booking.Status.ARRIVED.value, "Arrived"),
+    (Booking.Status.IN_PROGRESS.value, "Work started"),
+]
+
+
 class BookingStatusSerializer(serializers.Serializer):
-    status = serializers.ChoiceField(
-        choices=[Booking.Status.ON_THE_WAY, Booking.Status.ARRIVED, Booking.Status.IN_PROGRESS]
-    )
+    status = serializers.ChoiceField(choices=STATUS_CHANGE_CHOICES)
     note = serializers.CharField(max_length=255, required=False, allow_blank=True, default="")
 
 
@@ -194,12 +201,14 @@ class BookingSerializer(serializers.ModelSerializer):
     contact = serializers.SerializerMethodField()
     status_history = BookingStatusLogSerializer(source="status_logs", many=True, read_only=True)
     commission = serializers.SerializerMethodField()
+    total_amount = serializers.DecimalField(max_digits=12, decimal_places=2, read_only=True)
     has_review = serializers.SerializerMethodField()
 
     class Meta:
         model = Booking
         fields = [
-            "id", "request_id", "title", "category_name", "preferred_time", "agreed_price", "status",
+            "id", "request_id", "title", "category_name", "preferred_time", "agreed_price", "emergency_fee",
+            "total_amount", "status",
             "worker", "customer_name", "contact", "on_the_way_at", "arrived_at", "started_at", "completed_at",
             "cancelled_at", "cancel_reason", "completed_via", "status_history", "commission", "has_review",
             "created_at", "updated_at",

@@ -123,3 +123,24 @@ class TestReports:
     def test_date_filter_validation(self, admin_user):
         resp = client_for(admin_user).get(A + "revenue/", {"date_from": "2026-12-01", "date_to": "2026-01-01"})
         assert resp.status_code == 400
+
+
+class TestStage2AdminEndpoints:
+    @pytest.mark.parametrize("path", ["settings/", "revenue/other/", "subscription-plans/", "featured-plans/",
+                                      "subscriptions/", "featured-listings/", "complaints/"])
+    def test_admin_only(self, path, admin_user, customer, worker):
+        assert client_for(admin_user).get(A + path).status_code == 200
+        assert client_for(customer).get(A + path).status_code == 403
+        assert client_for(worker.user).get(A + path).status_code == 403
+
+    def test_other_revenue(self, admin_user, api, worker, gateways):
+        from apps.billing.models import Payment, SubscriptionPlan
+        from conftest import jazzcash_callback
+
+        plan = SubscriptionPlan.objects.get(slug="premium")
+        resp = client_for(worker.user).post("/api/v1/subscriptions/", {"plan": plan.pk, "method": "jazzcash"})
+        payment = Payment.objects.get(pk=data(resp)["subscription"]["payment"]["id"])
+        api.post("/api/v1/payments/callbacks/jazzcash/", jazzcash_callback(payment), format="multipart")
+        body = data(client_for(admin_user).get(A + "revenue/other/"))
+        assert body["subscription_revenue"] == "3000.00"
+        assert body["active_subscriptions"] == {"premium": 1}

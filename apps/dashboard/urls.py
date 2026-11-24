@@ -1,6 +1,14 @@
 from django.urls import path
+from rest_framework.routers import DefaultRouter
 
 from . import views
+
+router = DefaultRouter()
+router.register("subscription-plans", views.AdminSubscriptionPlanViewSet, basename="admin-subscription-plan")
+router.register("featured-plans", views.AdminFeaturedPlanViewSet, basename="admin-featured-plan")
+router.register("subscriptions", views.AdminSubscriptionViewSet, basename="admin-subscription")
+router.register("featured-listings", views.AdminFeaturedListingViewSet, basename="admin-featured-listing")
+router.register("complaints", views.AdminComplaintViewSet, basename="admin-complaint")
 
 urlpatterns = [
     path("dashboard/", views.DashboardView.as_view(), name="admin-dashboard"),
@@ -16,7 +24,10 @@ urlpatterns = [
     path("bookings/", views.AdminBookingsView.as_view(), name="admin-bookings"),
     path("revenue/", views.RevenueView.as_view(), name="admin-revenue"),
     path("commissions/", views.CommissionsView.as_view(), name="admin-commissions"),
+    path("settings/", views.CommissionSettingsView.as_view(), name="admin-settings"),
     path("settings/commission/", views.CommissionSettingsView.as_view(), name="admin-commission-settings"),
+    path("revenue/other/", views.OtherRevenueView.as_view(), name="admin-revenue-other"),
     path("reports/", views.ReportsView.as_view(), name="admin-reports"),
     path("audit-logs/", views.AuditLogView.as_view(), name="admin-audit-logs"),
 ]
+urlpatterns += router.urls

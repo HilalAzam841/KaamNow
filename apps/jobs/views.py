@@ -160,7 +160,9 @@ class ServiceRequestViewSet(
         obj = self.get_object()
         if obj.customer_id != request.user.pk and not is_admin(request):
             raise PermissionDenied("Only the request owner can view matching workers.")
-        workers = services.find_nearby_workers(obj.category, obj.latitude, obj.longitude, exclude_user=obj.customer)
+        workers = services.find_nearby_workers(
+            obj.category, obj.latitude, obj.longitude, exclude_user=obj.customer, sponsored_first=True
+        )
         return Response(NearbyWorkerSerializer(workers, many=True).data)
 
 
