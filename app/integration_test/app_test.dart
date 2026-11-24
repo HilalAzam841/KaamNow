@@ -75,10 +75,10 @@ void main() {
     // Account screen, then Urdu and back.
     await tapAndWait(tester, find.text('Account').last, find.text('Log out'));
     expect(find.byKey(const Key('push-switch')), findsNothing);
-    await tapAndWait(tester, find.byKey(const Key('language-menu')).first, find.byKey(const Key('language-ur')));
+    await tapAndWait(tester, find.byKey(const Key('language-menu')).hitTestable().first, find.byKey(const Key('language-ur')));
     await tapAndWait(tester, find.byKey(const Key('language-ur')), find.text('لاگ آؤٹ'));
     await shot(tester, 'android-03-account-urdu');
-    await tapAndWait(tester, find.byKey(const Key('language-menu')).first, find.byKey(const Key('language-en')));
+    await tapAndWait(tester, find.byKey(const Key('language-menu')).hitTestable().first, find.byKey(const Key('language-en')));
     await tapAndWait(tester, find.byKey(const Key('language-en')), find.text('Log out'));
     await logOut(tester);
 
