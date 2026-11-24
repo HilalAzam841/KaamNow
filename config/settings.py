@@ -37,6 +37,7 @@ SECRET_KEY = env("DJANGO_SECRET_KEY", "insecure-dev-key-change-me" if DEBUG else
 ALLOWED_HOSTS = env_list("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1")
 
 INSTALLED_APPS = [
+    "daphne",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -50,6 +51,7 @@ INSTALLED_APPS = [
     "django_filters",
     "drf_spectacular",
     "corsheaders",
+    "channels",
     # KaamNow apps
     "apps.common",
     "apps.accounts",
@@ -60,6 +62,9 @@ INSTALLED_APPS = [
     "apps.reviews",
     "apps.notifications",
     "apps.dashboard",
+    "apps.chat",
+    "apps.tracking",
+    "apps.support",
 ]
 
 MIDDLEWARE = [
@@ -181,6 +186,9 @@ REST_FRAMEWORK = {
         "password_reset": env("THROTTLE_PASSWORD_RESET", "5/hour"),
         "otp": env("THROTTLE_OTP", "10/min"),
         "offers": env("THROTTLE_OFFERS", "60/min"),
+        "chat": env("THROTTLE_CHAT", "60/min"),
+        "location": env("THROTTLE_LOCATION", "120/min"),
+        "payment_callback": env("THROTTLE_PAYMENT_CALLBACK", "120/min"),
     },
     "TEST_REQUEST_DEFAULT_FORMAT": "json",
 }
@@ -210,8 +218,76 @@ SPECTACULAR_SETTINGS = {
     "ENUM_NAME_OVERRIDES": {
         "UserRoleEnum": "apps.accounts.models.User.Role",
         "PartyEnum": "apps.offers.models.Party",
+        "PaymentMethodEnum": "apps.billing.models.Payment.Method",
+        "OnlinePaymentMethodEnum": "apps.billing.serializers.ONLINE_METHOD_CHOICES",
+        "PaymentStatusEnum": "apps.billing.models.Payment.Status",
+        "PurchaseStatusEnum": "apps.billing.models.WorkerSubscription.Status",
+        "ComplaintStatusEnum": "apps.support.models.Complaint.Status",
+        "ComplaintStatusChangeEnum": "apps.support.serializers.STATUS_CHANGE_CHOICES",
+        "BookingStatusEnum": "apps.jobs.models.Booking.Status",
+        "BookingStatusChangeEnum": "apps.jobs.serializers.STATUS_CHANGE_CHOICES",
     },
 }
+
+# --- Redis, cache, Channels, Celery ------------------------------------------
+REDIS_URL = env("REDIS_URL", "")
+
+if REDIS_URL:
+    CACHES = {"default": {"BACKEND": "django.core.cache.backends.redis.RedisCache", "LOCATION": REDIS_URL}}
+    CHANNEL_LAYERS = {
+        "default": {"BACKEND": "channels_redis.core.RedisChannelLayer", "CONFIG": {"hosts": [REDIS_URL]}}
+    }
+else:
+    # Single-process fallback for local development and tests.
+    CACHES = {"default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"}}
+    CHANNEL_LAYERS = {"default": {"BACKEND": "channels.layers.InMemoryChannelLayer"}}
+
+CELERY_BROKER_URL = env("CELERY_BROKER_URL", REDIS_URL or "memory://")
+CELERY_RESULT_BACKEND = None
+CELERY_TASK_ALWAYS_EAGER = env_bool("CELERY_TASK_ALWAYS_EAGER", not bool(REDIS_URL))
+CELERY_TASK_EAGER_PROPAGATES = True
+CELERY_TIMEZONE = "Asia/Karachi"
+CELERY_TASK_ACKS_LATE = True
+CELERY_BEAT_SCHEDULE = {
+    "expire-stale-requests": {"task": "apps.jobs.tasks.expire_stale_requests", "schedule": 15 * 60},
+    "expire-stale-online-payments": {"task": "apps.billing.tasks.expire_stale_online_payments", "schedule": 10 * 60},
+    "expire-subscriptions-and-featured": {"task": "apps.billing.tasks.expire_subscriptions_and_featured", "schedule": 30 * 60},
+    "purge-old-locations": {"task": "apps.tracking.tasks.purge_old_locations", "schedule": 24 * 60 * 60},
+}
+
+# --- Firebase Cloud Messaging -----------------------------------------------
+FCM_PROJECT_ID = env("FCM_PROJECT_ID", "")
+# Path to the Firebase service-account JSON file (keep it outside the repo).
+FCM_CREDENTIALS_FILE = env("FCM_CREDENTIALS_FILE", "")
+
+# --- Payment gateways ---------------------------------------------------------
+# Never commit real credentials. Leave blank to disable a gateway.
+PAYMENT_GATEWAYS = {
+    "jazzcash": {
+        "MERCHANT_ID": env("JAZZCASH_MERCHANT_ID", ""),
+        "PASSWORD": env("JAZZCASH_PASSWORD", ""),
+        "INTEGRITY_SALT": env("JAZZCASH_INTEGRITY_SALT", ""),
+        "CHECKOUT_URL": env(
+            "JAZZCASH_CHECKOUT_URL",
+            "https://sandbox.jazzcash.com.pk/CustomerPortal/transactionmanagement/merchantform/",
+        ),
+        "RETURN_URL": env("JAZZCASH_RETURN_URL", "https://api.kaamnow.pk/api/v1/payments/callbacks/jazzcash/"),
+    },
+    "easypaisa": {
+        "STORE_ID": env("EASYPAISA_STORE_ID", ""),
+        "HASH_KEY": env("EASYPAISA_HASH_KEY", ""),
+        "USERNAME": env("EASYPAISA_USERNAME", ""),
+        "PASSWORD": env("EASYPAISA_PASSWORD", ""),
+        "ACCOUNT_NUM": env("EASYPAISA_ACCOUNT_NUM", ""),
+        "CHECKOUT_URL": env("EASYPAISA_CHECKOUT_URL", "https://easypaystg.easypaisa.com.pk/easypay/Index.jsf"),
+        "INQUIRY_URL": env(
+            "EASYPAISA_INQUIRY_URL",
+            "https://easypaystg.easypaisa.com.pk/easypay-service/rest/v4/inquire-transaction",
+        ),
+        "POSTBACK_URL": env("EASYPAISA_POSTBACK_URL", "https://api.kaamnow.pk/api/v1/payments/callbacks/easypaisa/"),
+    },
+}
+ONLINE_PAYMENT_TTL_MINUTES = int(env("ONLINE_PAYMENT_TTL_MINUTES", "30"))
 
 # --- CORS --------------------------------------------------------------------
 CORS_ALLOWED_ORIGINS = env_list("CORS_ALLOWED_ORIGINS", "")
@@ -228,6 +304,13 @@ KAAMNOW = {
     "MAX_NEGOTIATION_ROUNDS": int(env("MAX_NEGOTIATION_ROUNDS", "10")),
     "MIN_OFFER_PRICE": env("MIN_OFFER_PRICE", "100"),
     "MAX_OFFER_PRICE": env("MAX_OFFER_PRICE", "1000000"),
+    # Live tracking / chat
+    "LOCATION_RETENTION_DAYS": int(env("LOCATION_RETENTION_DAYS", "30")),
+    "AVERAGE_CITY_SPEED_KMH": float(env("AVERAGE_CITY_SPEED_KMH", "25")),
+    "CHAT_OPEN_HOURS_AFTER_COMPLETION": int(env("CHAT_OPEN_HOURS_AFTER_COMPLETION", "48")),
+    # Open requests expire this many hours after their preferred time.
+    "REQUEST_EXPIRY_HOURS": int(env("REQUEST_EXPIRY_HOURS", "24")),
+    "MAX_FEATURED_PER_CATEGORY": int(env("MAX_FEATURED_PER_CATEGORY", "5")),
     # Geographic backend: "haversine" today, "postgis" planned.
     "GEO_BACKEND": env("GEO_BACKEND", "haversine"),
 }

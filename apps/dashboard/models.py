@@ -13,6 +13,12 @@ class AuditLog(models.Model):
         USER_REACTIVATED = "user_reactivated", "User reactivated"
         COMMISSION_CHANGED = "commission_changed", "Commission rate changed"
         CATEGORY_CHANGED = "category_changed", "Service category changed"
+        SETTINGS_CHANGED = "settings_changed", "Platform settings changed"
+        PLAN_CHANGED = "plan_changed", "Subscription or featured plan changed"
+        SUBSCRIPTION_ACTIVATED = "subscription_activated", "Subscription activated manually"
+        FEATURED_CANCELLED = "featured_cancelled", "Featured listing cancelled"
+        COMPLAINT_UPDATED = "complaint_updated", "Complaint status changed"
+        PAYMENT_DISPUTED = "payment_disputed", "Payment flagged as disputed"
 
     actor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, related_name="audit_logs")
     action = models.CharField(max_length=30, choices=Action.choices, db_index=True)

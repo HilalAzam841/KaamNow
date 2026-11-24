@@ -15,6 +15,10 @@ class Notification(models.Model):
         BOOKING_COMPLETED = "booking_completed", "Booking completed"
         REQUEST_CANCELLED = "request_cancelled", "Request cancelled"
         PAYMENT = "payment", "Payment"
+        CHAT_MESSAGE = "chat_message", "New chat message"
+        SUBSCRIPTION = "subscription", "Subscription"
+        FEATURED = "featured", "Featured listing"
+        COMPLAINT = "complaint", "Complaint update"
         REVIEW = "review", "Review"
         VERIFICATION = "verification", "Account verification"
         SYSTEM = "system", "System"
@@ -34,3 +38,26 @@ class Notification(models.Model):
 
     def __str__(self):
         return f"{self.type} -> {self.user_id}"
+
+
+class DeviceToken(models.Model):
+    """Firebase Cloud Messaging registration token for one of the user's devices."""
+
+    class Platform(models.TextChoices):
+        ANDROID = "android", "Android"
+        IOS = "ios", "iOS"
+        WEB = "web", "Web"
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="device_tokens")
+    token = models.CharField(max_length=255, unique=True)
+    platform = models.CharField(max_length=10, choices=Platform.choices, default=Platform.ANDROID)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    last_seen_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-last_seen_at"]
+        indexes = [models.Index(fields=["user", "is_active"])]
+
+    def __str__(self):
+        return f"{self.platform} token for user {self.user_id}"

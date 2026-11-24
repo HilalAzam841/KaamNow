@@ -7,19 +7,41 @@ from django.db.models.functions import TruncDate, TruncMonth
 from django.http import FileResponse
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
+from django.utils import timezone as _tz
 from drf_spectacular.utils import OpenApiParameter, extend_schema
-from rest_framework import generics
+from rest_framework import generics, status, viewsets
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from apps.accounts import services as account_services
 from apps.accounts.models import User, WorkerDocument, WorkerProfile
 from apps.accounts.serializers import AdminWorkerSerializer
-from apps.billing.models import Commission, Payment, PlatformSettings
-from apps.billing.serializers import CommissionSerializer, PlatformSettingsSerializer
+from apps.billing import services as billing_services
+from apps.billing.models import (
+    Commission,
+    FeaturedListing,
+    FeaturedPlan,
+    LedgerEntry,
+    Payment,
+    PlatformSettings,
+    SubscriptionPlan,
+    WorkerSubscription,
+)
+from apps.billing.serializers import (
+    CommissionSerializer,
+    FeaturedListingSerializer,
+    FeaturedPlanSerializer,
+    PlatformSettingsSerializer,
+    SubscriptionPlanSerializer,
+    WorkerSubscriptionSerializer,
+)
 from apps.common.permissions import IsPlatformAdmin
 from apps.jobs.models import Booking, ServiceRequest
 from apps.jobs.serializers import BookingSerializer, ServiceRequestSerializer
+from apps.support import services as support_services
+from apps.support.models import Complaint
+from apps.support.serializers import AdminComplaintSerializer, ComplaintStatusSerializer
 
 from .models import AuditLog
 from .serializers import (
@@ -239,12 +261,16 @@ class CommissionSettingsView(AdminAPIView):
     @extend_schema(tags=["admin"], request=PlatformSettingsSerializer, responses={200: PlatformSettingsSerializer})
     def patch(self, request):
         settings_obj = PlatformSettings.load()
-        old = settings_obj.commission_percent
+        before = PlatformSettingsSerializer(settings_obj).data
         serializer = PlatformSettingsSerializer(settings_obj, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save(updated_by=request.user)
-        audit(request.user, AuditLog.Action.COMMISSION_CHANGED, settings_obj, request,
-              old=str(old), new=str(settings_obj.commission_percent))
+        after = PlatformSettingsSerializer(settings_obj).data
+        changes = {k: {"old": before[k], "new": after[k]} for k in after if k != "updated_at" and before[k] != after[k]}
+        action_type = (AuditLog.Action.COMMISSION_CHANGED if set(changes) == {"commission_percent"}
+                       else AuditLog.Action.SETTINGS_CHANGED)
+        audit(request.user, action_type, settings_obj, request, changes=changes,
+              old=before["commission_percent"], new=after["commission_percent"])
         return Response(PlatformSettingsSerializer(settings_obj).data)
 
 
@@ -296,3 +322,111 @@ class AuditLogView(generics.ListAPIView):
     serializer_class = AuditLogSerializer
     filterset_fields = ["action", "actor", "target_type"]
     queryset = AuditLog.objects.select_related("actor")
+
+
+# ---------------------------------------------------------------------------
+# Stage 2: plans, subscriptions, featured listings, complaints
+# ---------------------------------------------------------------------------
+class _AuditedPlanViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsPlatformAdmin]
+    http_method_names = ["get", "post", "patch"]
+    pagination_class = None
+
+    def perform_create(self, serializer):
+        obj = serializer.save()
+        audit(self.request.user, AuditLog.Action.PLAN_CHANGED, obj, self.request, op="create")
+
+    def perform_update(self, serializer):
+        obj = serializer.save()
+        audit(self.request.user, AuditLog.Action.PLAN_CHANGED, obj, self.request, op="update",
+              changes={k: str(v) for k, v in serializer.validated_data.items()})
+
+
+@extend_schema(tags=["admin"])
+class AdminSubscriptionPlanViewSet(_AuditedPlanViewSet):
+    serializer_class = SubscriptionPlanSerializer
+    queryset = SubscriptionPlan.objects.all()
+
+
+@extend_schema(tags=["admin"])
+class AdminFeaturedPlanViewSet(_AuditedPlanViewSet):
+    serializer_class = FeaturedPlanSerializer
+    queryset = FeaturedPlan.objects.all()
+
+
+@extend_schema(tags=["admin"])
+class AdminSubscriptionViewSet(viewsets.ReadOnlyModelViewSet):
+    permission_classes = [IsPlatformAdmin]
+    serializer_class = WorkerSubscriptionSerializer
+    filterset_fields = ["status", "worker", "plan"]
+    queryset = WorkerSubscription.objects.select_related("plan", "payment", "worker__user")
+
+    @extend_schema(tags=["admin"], request=None, responses={200: WorkerSubscriptionSerializer},
+                   summary="Activate a pending subscription manually (e.g. paid by bank transfer). Audited.")
+    @action(detail=True, methods=["post"])
+    def activate(self, request, pk=None):
+        subscription = billing_services.admin_activate_subscription(self.get_object(), request.user, request)
+        return Response(WorkerSubscriptionSerializer(subscription).data)
+
+
+@extend_schema(tags=["admin"])
+class AdminFeaturedListingViewSet(viewsets.ReadOnlyModelViewSet):
+    permission_classes = [IsPlatformAdmin]
+    serializer_class = FeaturedListingSerializer
+    filterset_fields = ["status", "worker", "category"]
+    queryset = FeaturedListing.objects.select_related("plan", "category", "payment", "worker__user")
+
+    @extend_schema(tags=["admin"], request=SuspendUserSerializer, responses={200: FeaturedListingSerializer},
+                   summary="Cancel a featured listing (e.g. policy violation). Audited.")
+    @action(detail=True, methods=["post"])
+    def cancel(self, request, pk=None):
+        listing = self.get_object()
+        serializer = SuspendUserSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        if listing.status not in (FeaturedListing.Status.ACTIVE, FeaturedListing.Status.PENDING_PAYMENT):
+            return Response({"detail": f"Listing is already {listing.status}."}, status=status.HTTP_409_CONFLICT)
+        listing.status = FeaturedListing.Status.CANCELLED
+        listing.save(update_fields=["status", "updated_at"])
+        audit(request.user, AuditLog.Action.FEATURED_CANCELLED, listing, request,
+              reason=serializer.validated_data["reason"])
+        return Response(FeaturedListingSerializer(listing).data)
+
+
+@extend_schema(tags=["admin"])
+class AdminComplaintViewSet(viewsets.ReadOnlyModelViewSet):
+    permission_classes = [IsPlatformAdmin]
+    serializer_class = AdminComplaintSerializer
+    filterset_fields = ["status", "category", "booking", "raised_by", "against_user"]
+    search_fields = ["subject", "description"]
+    queryset = Complaint.objects.select_related("raised_by", "against_user", "booking")
+
+    @extend_schema(tags=["admin"], request=ComplaintStatusSerializer, responses={200: AdminComplaintSerializer},
+                   summary="Move a complaint to in_review, resolved or rejected. Audited; the reporter is notified.")
+    @action(detail=True, methods=["post"], url_path="status")
+    def set_status(self, request, pk=None):
+        serializer = ComplaintStatusSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        complaint = support_services.update_complaint_status(
+            self.get_object(), request.user, serializer.validated_data["status"],
+            serializer.validated_data["resolution"], request,
+        )
+        return Response(AdminComplaintSerializer(complaint).data)
+
+
+class OtherRevenueView(AdminAPIView):
+    @extend_schema(tags=["admin"], parameters=DATE_PARAMS, responses={200: dict},
+                   summary="Revenue from subscriptions, featured listings and emergency fees (completed payments).")
+    def get(self, request):
+        qs = LedgerEntry.objects.filter(_date_filter(request), payment__status=Payment.Status.COMPLETED)
+        sums = {r["entry_type"]: r["s"] for r in qs.values("entry_type").annotate(s=Sum("amount"))}
+        now = _tz.now()
+        return Response({
+            "subscription_revenue": money(sums.get(LedgerEntry.EntryType.SUBSCRIPTION_REVENUE)),
+            "featured_revenue": money(sums.get(LedgerEntry.EntryType.FEATURED_REVENUE)),
+            "emergency_fee_revenue": money(sums.get(LedgerEntry.EntryType.EMERGENCY_FEE)),
+            "active_subscriptions": _count_by(
+                WorkerSubscription.objects.filter(status="active", ends_at__gt=now), "plan__slug"
+            ),
+            "active_featured_listings": FeaturedListing.objects.filter(status="active", ends_at__gt=now).count(),
+            "open_complaints": Complaint.objects.filter(status__in=["open", "in_review"]).count(),
+        })

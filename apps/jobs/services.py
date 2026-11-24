@@ -38,11 +38,25 @@ def eligible_workers_queryset(category):
     )
 
 
-def find_nearby_workers(category, latitude, longitude, exclude_user=None):
+def find_nearby_workers(category, latitude, longitude, exclude_user=None, sponsored_first=False):
+    """Matching workers sorted by distance.
+
+    With sponsored_first=True (customer-facing search results), workers with an
+    active featured listing in the category come first and are flagged
+    `is_sponsored` so the app can label them clearly.
+    """
+    from apps.billing.services import featured_worker_ids
+
     qs = eligible_workers_queryset(category)
     if exclude_user is not None:
         qs = qs.exclude(user=exclude_user)
-    return get_geo_backend().workers_covering_point(qs, latitude, longitude)
+    workers = get_geo_backend().workers_covering_point(qs, latitude, longitude)
+    sponsored = featured_worker_ids(category)
+    for worker in workers:
+        worker.is_sponsored = worker.pk in sponsored
+    if sponsored_first:
+        workers.sort(key=lambda w: (not w.is_sponsored, w.distance_km))
+    return workers
 
 
 def worker_distance_to_request(worker, service_request):
@@ -90,6 +104,8 @@ def open_requests_for_worker(worker):
         if distance is not None and distance <= float(worker.service_radius_km):
             req.distance_km = distance
             results.append(req)
+    # Emergencies first, then newest.
+    results.sort(key=lambda r: (not r.is_emergency, -r.created_at.timestamp()))
     return results
 
 
@@ -98,20 +114,30 @@ def open_requests_for_worker(worker):
 # --------------------------------------------------------------------------
 @transaction.atomic
 def create_service_request(customer, images=None, **data):
+    from apps.billing.models import PlatformSettings
+
     category = data["category"]
     if not category.is_active:
         raise BusinessRuleError("This service category is not available.")
+    if data.get("is_emergency"):
+        platform = PlatformSettings.load()
+        if not platform.emergency_enabled:
+            raise BusinessRuleError("Emergency service is not available right now.")
+        data["emergency_fee"] = platform.emergency_fee
+    else:
+        data["emergency_fee"] = Decimal("0")
     service_request = ServiceRequest.objects.create(customer=customer, **data)
     for image in images or []:
         ServiceRequestImage.objects.create(request=service_request, image=image)
 
     workers = find_nearby_workers(category, service_request.latitude, service_request.longitude, exclude_user=customer)
     if workers:
+        prefix = "URGENT: " if service_request.is_emergency else ""
         transaction.on_commit(lambda: notify_many(
             [w.user for w in workers], Notification.Type.NEW_REQUEST,
-            f"New {category.name} request nearby",
+            f"{prefix}New {category.name} request nearby",
             service_request.title,
-            {"request_id": service_request.pk},
+            {"request_id": service_request.pk, "is_emergency": service_request.is_emergency},
         ))
     service_request.matched_workers_count = len(workers)
     return service_request
@@ -165,9 +191,13 @@ STATUS_TIMESTAMP = {
 
 
 def _log(booking, from_status, to_status, user, note=""):
+    from apps.common.realtime import broadcast_to_booking
+
     BookingStatusLog.objects.create(
         booking=booking, from_status=from_status, to_status=to_status, changed_by=user, note=note
     )
+    broadcast_to_booking(booking.pk, "booking.status", {"booking": booking.pk, "from": from_status,
+                                                        "to": to_status, "note": note})
 
 
 @transaction.atomic
@@ -328,3 +358,25 @@ def confirm_completion_by_customer(booking, customer_user):
     if booking.status != Booking.Status.IN_PROGRESS:
         raise BusinessRuleError("Booking is not in progress.", status_code=http_status.HTTP_409_CONFLICT)
     return _finalize_completion(booking, customer_user, "customer_confirmation")
+
+
+def expire_stale_requests():
+    """Expires open requests whose preferred time passed long ago and closes their offers."""
+    from apps.offers.models import WorkerOffer
+
+    cutoff = timezone.now() - timedelta(hours=settings.KAAMNOW["REQUEST_EXPIRY_HOURS"])
+    expired = 0
+    for req_id in ServiceRequest.objects.filter(
+        status=ServiceRequest.Status.OPEN, preferred_time__lt=cutoff
+    ).values_list("id", flat=True):
+        with transaction.atomic():
+            req = ServiceRequest.objects.select_for_update().get(pk=req_id)
+            if req.status != ServiceRequest.Status.OPEN:
+                continue
+            req.status = ServiceRequest.Status.EXPIRED
+            req.save(update_fields=["status", "updated_at"])
+            WorkerOffer.objects.filter(request=req, status=WorkerOffer.Status.PENDING).update(
+                status=WorkerOffer.Status.CLOSED, updated_at=timezone.now()
+            )
+            expired += 1
+    return expired

@@ -1,27 +1,43 @@
+import logging
 from decimal import Decimal
 
 from django.db.models import Count, Q, Sum
-from drf_spectacular.utils import extend_schema, extend_schema_view
-from rest_framework import mixins, status, viewsets
+from django.http import HttpResponse
+from drf_spectacular.utils import OpenApiResponse, extend_schema, extend_schema_view
+from rest_framework import generics, mixins, permissions, status, viewsets
 from rest_framework.decorators import action
+from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from apps.common.permissions import IsCustomer, IsPlatformAdmin, IsWorker
 
 from . import services
-from .models import Commission, Payment
+from .gateways import GatewayError, SignatureError
+from .models import Commission, FeaturedListing, FeaturedPlan, Payment, SubscriptionPlan, WorkerSubscription
 from .serializers import (
     EarningsSummarySerializer,
+    FeaturedListingSerializer,
+    FeaturedPlanSerializer,
+    FeaturedPurchaseResponseSerializer,
+    FeaturedPurchaseSerializer,
+    MySubscriptionSerializer,
     PaymentCreateSerializer,
     PaymentSerializer,
+    PaymentWithCheckoutSerializer,
+    SubscribeResponseSerializer,
+    SubscribeSerializer,
+    SubscriptionPlanSerializer,
+    WorkerSubscriptionSerializer,
 )
+
+logger = logging.getLogger(__name__)
 
 
 @extend_schema_view(list=extend_schema(tags=["payments"]), retrieve=extend_schema(tags=["payments"]))
 class PaymentViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     serializer_class = PaymentSerializer
-    filterset_fields = ["status", "method", "booking"]
+    filterset_fields = ["status", "method", "booking", "purpose"]
 
     def get_queryset(self):
         if getattr(self, "swagger_fake_view", False):
@@ -33,19 +49,20 @@ class PaymentViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.
         return qs.filter(Q(payer=user) | Q(booking__worker__user=user))
 
     @extend_schema(
-        tags=["payments"], request=PaymentCreateSerializer, responses={201: PaymentSerializer},
-        summary="Customer records payment for a completed booking (cash only in Stage 1). "
-        "Amount is taken from the booking's locked price.",
+        tags=["payments"], request=PaymentCreateSerializer, responses={201: PaymentWithCheckoutSerializer},
+        summary="Customer pays for a completed booking. Cash: worker confirms receipt. JazzCash/Easypaisa: "
+        "open `checkout` in a WebView; the server confirms only after verifying the gateway callback.",
     )
     def create(self, request):
         if not IsCustomer().has_permission(request, self):
             return Response({"detail": IsCustomer.message}, status=status.HTTP_403_FORBIDDEN)
         serializer = PaymentCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        payment = services.record_payment(
+        payment, checkout = services.record_payment(
             serializer.validated_data["booking"], request.user, serializer.validated_data["method"]
         )
-        return Response(PaymentSerializer(payment).data, status=status.HTTP_201_CREATED)
+        payment.checkout = checkout
+        return Response(PaymentWithCheckoutSerializer(payment).data, status=status.HTTP_201_CREATED)
 
     @extend_schema(tags=["payments"], request=None, responses={200: PaymentSerializer},
                    summary="Worker confirms they received the cash.")
@@ -54,6 +71,58 @@ class PaymentViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.
         payment = self.get_object()
         payment = services.confirm_cash_payment(payment, request.user)
         return Response(PaymentSerializer(payment).data)
+
+
+class GatewayCallbackView(APIView):
+    """
+    Server-side endpoint the payment gateway calls (or redirects the customer's
+    browser to). The payload is verified with the merchant secret / a
+    server-to-server inquiry before anything is settled. No authentication:
+    trust comes from the verification, not from the caller.
+    """
+
+    authentication_classes = []
+    permission_classes = [permissions.AllowAny]
+    parser_classes = [FormParser, MultiPartParser, JSONParser]
+    throttle_scope = "payment_callback"
+    gateway = ""
+
+    def _handle(self, data):
+        try:
+            payment = services.handle_gateway_callback(self.gateway, data)
+        except SignatureError:
+            logger.warning("Rejected %s callback with invalid signature", self.gateway)
+            return Response({"detail": "Invalid signature."}, status=status.HTTP_400_BAD_REQUEST)
+        except GatewayError as exc:
+            logger.warning("Rejected %s callback: %s", self.gateway, exc)
+            return Response({"detail": "Callback could not be verified."}, status=status.HTTP_400_BAD_REQUEST)
+        if self.request.accepted_renderer.format == "json" and "text/html" not in self.request.META.get(
+            "HTTP_ACCEPT", ""
+        ):
+            return Response({"reference": payment.reference, "status": payment.status})
+        # Browser redirect from the hosted page: show a minimal page the app's WebView can detect.
+        html = (
+            f"<!doctype html><title>KaamNow payment</title>"
+            f"<p id='kaamnow-payment' data-reference='{payment.reference}' data-status='{payment.status}'>"
+            f"Payment {payment.get_status_display().lower()}. You can return to the app.</p>"
+        )
+        return HttpResponse(html, content_type="text/html")
+
+    @extend_schema(tags=["payments"], request=None, responses={200: OpenApiResponse(description="Settled status")})
+    def post(self, request):
+        return self._handle(request.data)
+
+    @extend_schema(tags=["payments"], responses={200: OpenApiResponse(description="Settled status")})
+    def get(self, request):
+        return self._handle(request.query_params)
+
+
+class JazzCashCallbackView(GatewayCallbackView):
+    gateway = "jazzcash"
+
+
+class EasypaisaCallbackView(GatewayCallbackView):
+    gateway = "easypaisa"
 
 
 class WorkerEarningsView(APIView):
@@ -76,6 +145,109 @@ class WorkerEarningsView(APIView):
             "commission_amount": agg["commission"] or zero,
             "net_earnings": agg["net"] or zero,
             "commission_pending": agg["pending"] or zero,
+            "current_commission_percent": services.effective_commission_rate(worker),
             "recent": qs.select_related("worker__user")[:20],
         }
         return Response(EarningsSummarySerializer(data).data)
+
+
+# --------------------------------------------------------------------------
+# Subscriptions
+# --------------------------------------------------------------------------
+@extend_schema(tags=["subscriptions"])
+class SubscriptionPlanListView(generics.ListAPIView):
+    serializer_class = SubscriptionPlanSerializer
+    permission_classes = [permissions.AllowAny]
+    pagination_class = None
+    queryset = SubscriptionPlan.objects.filter(is_active=True)
+
+
+class SubscribeView(APIView):
+    permission_classes = [IsWorker]
+
+    @extend_schema(
+        tags=["subscriptions"], request=SubscribeSerializer, responses={201: SubscribeResponseSerializer},
+        summary="Worker subscribes. Free plans activate at once; paid plans return a gateway checkout and "
+        "activate after the payment is verified.",
+    )
+    def post(self, request):
+        serializer = SubscribeSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        subscription, checkout = services.subscribe(
+            request.user.worker_profile, serializer.validated_data["plan"], serializer.validated_data.get("method")
+        )
+        return Response(
+            {"subscription": WorkerSubscriptionSerializer(subscription).data, "checkout": checkout},
+            status=status.HTTP_201_CREATED,
+        )
+
+
+class MySubscriptionView(APIView):
+    permission_classes = [IsWorker]
+
+    @extend_schema(tags=["subscriptions"], responses={200: MySubscriptionSerializer})
+    def get(self, request):
+        worker = request.user.worker_profile
+        sub = services.active_subscription(worker)
+        plan = services.current_plan(worker)
+        used = services.offers_today(worker)
+        limit = plan.daily_offer_limit if plan else None
+        return Response({
+            "plan": SubscriptionPlanSerializer(plan).data if plan else None,
+            "subscription": WorkerSubscriptionSerializer(sub).data if sub else None,
+            "offers_today": used,
+            "offers_remaining_today": max(limit - used, 0) if limit is not None else None,
+            "commission_percent": str(services.effective_commission_rate(worker)),
+        })
+
+
+@extend_schema(tags=["subscriptions"])
+class SubscriptionHistoryView(generics.ListAPIView):
+    permission_classes = [IsWorker]
+    serializer_class = WorkerSubscriptionSerializer
+
+    def get_queryset(self):
+        if getattr(self, "swagger_fake_view", False):
+            return WorkerSubscription.objects.none()
+        return WorkerSubscription.objects.filter(worker__user=self.request.user).select_related("plan", "payment")
+
+
+# --------------------------------------------------------------------------
+# Featured listings
+# --------------------------------------------------------------------------
+@extend_schema(tags=["featured"])
+class FeaturedPlanListView(generics.ListAPIView):
+    serializer_class = FeaturedPlanSerializer
+    permission_classes = [permissions.AllowAny]
+    pagination_class = None
+    queryset = FeaturedPlan.objects.filter(is_active=True)
+
+
+class FeaturedPurchaseView(generics.ListAPIView):
+    """GET: the worker's featured listings. POST: buy featured placement in a category."""
+
+    permission_classes = [IsWorker]
+    serializer_class = FeaturedListingSerializer
+
+    def get_queryset(self):
+        if getattr(self, "swagger_fake_view", False):
+            return FeaturedListing.objects.none()
+        return FeaturedListing.objects.filter(worker__user=self.request.user).select_related(
+            "plan", "category", "payment", "worker__user"
+        )
+
+    @extend_schema(tags=["featured"])
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+
+    @extend_schema(tags=["featured"], request=FeaturedPurchaseSerializer,
+                   responses={201: FeaturedPurchaseResponseSerializer})
+    def post(self, request):
+        serializer = FeaturedPurchaseSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        listing, checkout = services.purchase_featured_listing(
+            request.user.worker_profile, serializer.validated_data["plan"], serializer.validated_data["category"],
+            serializer.validated_data["method"],
+        )
+        return Response({"listing": FeaturedListingSerializer(listing).data, "checkout": checkout},
+                        status=status.HTTP_201_CREATED)

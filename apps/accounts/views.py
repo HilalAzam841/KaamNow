@@ -245,7 +245,8 @@ class NearbyWorkersView(APIView):
         query.is_valid(raise_exception=True)
         category = get_object_or_404(ServiceCategory, pk=query.validated_data["category"], is_active=True)
         workers = find_nearby_workers(
-            category, query.validated_data["latitude"], query.validated_data["longitude"], exclude_user=request.user
+            category, query.validated_data["latitude"], query.validated_data["longitude"], exclude_user=request.user,
+            sponsored_first=True,
         )
         return Response(NearbyWorkerSerializer(workers, many=True).data)
 

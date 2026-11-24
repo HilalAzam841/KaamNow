@@ -3,12 +3,21 @@ from django.contrib import admin
 from apps.dashboard.models import AuditLog
 from apps.dashboard.services import audit
 
-from .models import Commission, LedgerEntry, Payment, PlatformSettings
+from .models import (
+    Commission,
+    FeaturedListing,
+    FeaturedPlan,
+    LedgerEntry,
+    Payment,
+    PlatformSettings,
+    SubscriptionPlan,
+    WorkerSubscription,
+)
 
 
 @admin.register(PlatformSettings)
 class PlatformSettingsAdmin(admin.ModelAdmin):
-    list_display = ["commission_percent", "updated_by", "updated_at"]
+    list_display = ["commission_percent", "emergency_fee", "emergency_enabled", "updated_by", "updated_at"]
     readonly_fields = ["updated_by"]
 
     def has_add_permission(self, request):
@@ -50,3 +59,33 @@ class LedgerEntryAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return False
+
+
+@admin.register(SubscriptionPlan)
+class SubscriptionPlanAdmin(admin.ModelAdmin):
+    list_display = ["name", "price", "duration_days", "commission_percent", "daily_offer_limit", "is_default",
+                    "is_active", "sort_order"]
+    list_editable = ["is_active", "sort_order"]
+    prepopulated_fields = {"slug": ("name",)}
+
+
+@admin.register(WorkerSubscription)
+class WorkerSubscriptionAdmin(admin.ModelAdmin):
+    list_display = ["worker", "plan", "status", "starts_at", "ends_at", "amount"]
+    list_filter = ["status", "plan"]
+    raw_id_fields = ["worker", "payment", "activated_by"]
+    readonly_fields = ["amount", "payment", "activated_by"]
+
+
+@admin.register(FeaturedPlan)
+class FeaturedPlanAdmin(admin.ModelAdmin):
+    list_display = ["name", "duration_days", "price", "is_active"]
+    list_editable = ["is_active"]
+
+
+@admin.register(FeaturedListing)
+class FeaturedListingAdmin(admin.ModelAdmin):
+    list_display = ["worker", "category", "plan", "status", "starts_at", "ends_at"]
+    list_filter = ["status", "category"]
+    raw_id_fields = ["worker", "payment"]
+    readonly_fields = ["amount", "payment"]

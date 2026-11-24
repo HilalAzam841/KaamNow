@@ -48,6 +48,9 @@ def create_offer(worker, service_request, *, price, estimated_arrival_minutes, m
         )
     if WorkerOffer.objects.filter(request=service_request, worker=worker).exists():
         raise ConflictError("You have already made an offer on this request. Update it instead.")
+    from apps.billing.services import check_daily_offer_limit
+
+    check_daily_offer_limit(worker)
     price = validate_price(price)
     try:
         with transaction.atomic():
@@ -205,7 +208,7 @@ def accept_offer(offer, customer_user, message=""):
 
             booking = Booking.objects.create(
                 request=service_request, offer=offer, customer=customer_user, worker=worker,
-                agreed_price=offer.current_price,
+                agreed_price=offer.current_price, emergency_fee=service_request.emergency_fee,
             )
             BookingStatusLog.objects.create(
                 booking=booking, from_status="", to_status=Booking.Status.CONFIRMED, changed_by=customer_user
