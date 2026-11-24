@@ -1628,11 +1628,23 @@ abstract class AppLocalizations {
   /// **'Payment confirmed.'**
   String get paymentConfirmed;
 
+  /// No description provided for @paymentPageFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'The payment page could not be opened. Check your connection and try again.'**
+  String get paymentPageFailed;
+
   /// No description provided for @paymentPending.
   ///
   /// In en, this message translates to:
   /// **'{method} payment of {amount} pending'**
   String paymentPending(Object method, Object amount);
+
+  /// No description provided for @paymentWindowClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'This page updates once the gateway confirms the payment.'**
+  String get paymentWindowClosed;
 
   /// No description provided for @phoneNumber.
   ///
@@ -1657,6 +1669,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Pin placed. Tap the map to move it.'**
   String get pinPlaced;
+
+  /// No description provided for @planPaymentWindowClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'Your plan activates once the payment is confirmed.'**
+  String get planPaymentWindowClosed;
 
   /// No description provided for @plans.
   ///
@@ -1963,6 +1981,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Saving…'**
   String get saving;
+
+  /// No description provided for @securePayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Secure payment'**
+  String get securePayment;
 
   /// No description provided for @send.
   ///

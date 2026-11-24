@@ -52,6 +52,18 @@ void main() {
     expect(redirectFor(h.session, '/administrator'), '/admin');
   });
 
+  test('after "Log out" the next person lands on their own home, not the last screen', () async {
+    final h = await signedInAs('customer');
+    h.backend.on('POST /auth/logout/', (_) => ok(null));
+    await h.session.logout();
+    expect(redirectFor(h.session, '/account'), '/login');
+    // A session that merely expired still returns to where the user was.
+    final expired = Harness();
+    expired.backend.on('GET /app/config/', (_) => ok(configJson()));
+    await expired.session.restore();
+    expect(redirectFor(expired.session, '/account'), '/login?from=%2Faccount');
+  });
+
   test('an admin deep link survives the login screen', () async {
     final h = await signedInAs('admin');
     expect(redirectFor(h.session, '/login?from=%2Fadmin%2Fcomplaints'), '/admin/complaints');

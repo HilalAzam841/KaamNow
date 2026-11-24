@@ -922,9 +922,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get paymentConfirmed => 'Payment confirmed.';
 
   @override
+  String get paymentPageFailed =>
+      'The payment page could not be opened. Check your connection and try again.';
+
+  @override
   String paymentPending(Object method, Object amount) {
     return '$method payment of $amount pending';
   }
+
+  @override
+  String get paymentWindowClosed =>
+      'This page updates once the gateway confirms the payment.';
 
   @override
   String get phoneNumber => 'Phone number';
@@ -937,6 +945,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pinPlaced => 'Pin placed. Tap the map to move it.';
+
+  @override
+  String get planPaymentWindowClosed =>
+      'Your plan activates once the payment is confirmed.';
 
   @override
   String get plans => 'Plans';
@@ -1116,6 +1128,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get saving => 'Saving…';
+
+  @override
+  String get securePayment => 'Secure payment';
 
   @override
   String get send => 'Send';

@@ -14,7 +14,7 @@ later, and talks to the backend only through the REST API and the booking WebSoc
 
 **Stage 1 (Backend MVP), Stage 2 (Advanced features) and Stage 3 (Flutter web client) are done,
 and Stage 4 adds the admin dashboard to the web app.** Every backend feature below has its business logic, REST endpoint(s), validation and
-automated tests. All 369 backend tests pass against PostgreSQL 16, and the Flutter app has 62
+automated tests. All 369 backend tests pass against PostgreSQL 16, and the Flutter app has 65
 unit and widget tests plus a browser end-to-end run (see `app/README.md`).
 
 ### Stage 1: Backend MVP
@@ -122,6 +122,17 @@ Turn it on by generating keys once with `python manage.py generate_vapid_keys` (
 which does it for you) and setting `WEBPUSH_VAPID_PUBLIC_KEY` and `WEBPUSH_VAPID_PRIVATE_KEY`. Without
 them the app hides the push options and keeps showing alerts inside the app. Firebase (FCM) push for
 the future mobile apps still works alongside it when configured.
+
+### Stage 9: Android app
+
+| Feature | Where |
+|---|---|
+| The same Flutter app builds for Android, with the KaamNow name, icon and splash screen, package `pk.kaamnow.app` | `app/android/` |
+| GitHub builds the APK on every pull request and push to `main`; download it from the run's Artifacts | `.github/workflows/android.yml` |
+| The app is run on an Android 14 emulator against a real backend with the demo accounts: customer and worker sign-in, services from the server, Urdu switch, sign-out | `app/integration_test/app_test.dart` |
+| JazzCash / Easypaisa checkout opens inside the app (https only); the server still confirms every payment from the gateway's callback | `app/lib/core/checkout_launcher_mobile.dart` |
+| Release builds use https only; sign-in tokens are excluded from phone backups; only location permission is asked for (no background location) | `AndroidManifest.xml`, `res/xml/data_extraction_rules.xml` |
+| Play Store signing from `android/key.properties` or GitHub secrets | `app/android/app/build.gradle.kts`, `app/README.md` |
 
 **Before going live with online payments:** the JazzCash and Easypaisa adapters follow each
 gateway's published integration scheme and are covered by tests with simulated gateway responses.
