@@ -138,7 +138,7 @@ flutter drive --driver=test_driver/integration_test.dart --target=integration_te
 
 ```bash
 flutter analyze
-flutter test          # 64 unit and widget tests (API client, models, routing, key screens, admin dashboard, Urdu, install, notifications, Android checkout)
+flutter test          # 65 unit and widget tests (API client, models, routing, key screens, admin dashboard, Urdu, install, notifications, Android checkout)
 ```
 
 `e2e/` drives the real web build against a running backend in Chromium, through the whole job

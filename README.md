@@ -14,7 +14,7 @@ later, and talks to the backend only through the REST API and the booking WebSoc
 
 **Stage 1 (Backend MVP), Stage 2 (Advanced features) and Stage 3 (Flutter web client) are done,
 and Stage 4 adds the admin dashboard to the web app.** Every backend feature below has its business logic, REST endpoint(s), validation and
-automated tests. All 369 backend tests pass against PostgreSQL 16, and the Flutter app has 64
+automated tests. All 369 backend tests pass against PostgreSQL 16, and the Flutter app has 65
 unit and widget tests plus a browser end-to-end run (see `app/README.md`).
 
 ### Stage 1: Backend MVP
