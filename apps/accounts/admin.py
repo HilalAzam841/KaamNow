@@ -12,7 +12,7 @@ from .models import User, WorkerDocument, WorkerProfile
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
     ordering = ["-date_joined"]
-    list_display = ["phone", "full_name", "email", "role", "is_active", "is_suspended", "date_joined"]
+    list_display = ["phone", "full_name", "email", "role", "phone_verified_at", "is_active", "is_suspended", "date_joined"]
     list_filter = ["role", "is_active", "is_suspended", "is_staff"]
     search_fields = ["phone", "full_name", "email"]
     readonly_fields = ["date_joined", "last_login", "created_at", "updated_at"]

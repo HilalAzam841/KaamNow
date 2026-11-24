@@ -22,6 +22,15 @@ class Session extends ChangeNotifier {
 
   bool get isSignedIn => status == SessionStatus.signedIn && user != null;
 
+  /// Signed in, but the phone number still has to be confirmed by SMS before using the app.
+  bool get needsPhoneVerification =>
+      isSignedIn && config.phoneVerificationRequired && !user!.isAdmin && !user!.phoneVerified;
+
+  void setUser(User u) {
+    user = u;
+    notifyListeners();
+  }
+
   /// True after the user tapped "Log out" (as opposed to a session that expired).
   bool loggedOutByUser = false;
 

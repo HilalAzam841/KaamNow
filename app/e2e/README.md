@@ -48,6 +48,14 @@ stand-in subscription and delivers the message straight to the service worker, a
 cd app/e2e && node push.js
 ```
 
+`phone.js` checks SMS codes: a new customer confirms their number, then resets the password with a code
+and signs in with the new one. Start the backend with `PHONE_VERIFICATION_REQUIRED=true` and
+`DJANGO_DEBUG=true` (codes are then written to its log) and point the script at that log:
+
+```bash
+cd app/e2e && SMS_LOG=/path/to/backend.log node phone.js
+```
+
 Against the production Docker stack running locally (see `deploy/README.md`):
 
 ```bash

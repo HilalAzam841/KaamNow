@@ -10,6 +10,9 @@ auth_urlpatterns = [
     path("me/", views.MeView.as_view(), name="auth-me"),
     path("password-reset/", views.PasswordResetRequestView.as_view(), name="auth-password-reset"),
     path("password-reset/confirm/", views.PasswordResetConfirmView.as_view(), name="auth-password-reset-confirm"),
+    path("password-reset/sms-confirm/", views.PasswordResetSmsConfirmView.as_view(), name="auth-password-reset-sms"),
+    path("phone/send-code/", views.PhoneSendCodeView.as_view(), name="auth-phone-send-code"),
+    path("phone/verify/", views.PhoneVerifyView.as_view(), name="auth-phone-verify"),
     path("password-change/", views.PasswordChangeView.as_view(), name="auth-password-change"),
 ]
 

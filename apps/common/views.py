@@ -54,6 +54,10 @@ AppConfigSerializer = inline_serializer(
             name="AppConfigWebPush",
             fields={"enabled": serializers.BooleanField(), "public_key": serializers.CharField()},
         ),
+        "phone_verification": inline_serializer(
+            name="AppConfigPhoneVerification",
+            fields={"required": serializers.BooleanField(), "sms_available": serializers.BooleanField()},
+        ),
         "websocket_path": serializers.CharField(),
         "support": inline_serializer(
             name="AppConfigSupport",
@@ -75,6 +79,7 @@ AppConfigSerializer = inline_serializer(
 def app_config(request):
     from apps.billing.models import PlatformSettings
     from apps.notifications import fcm, webpush
+    from apps.common import sms
 
     platform = PlatformSettings.load()
     app = settings.KAAMNOW_APP
@@ -96,6 +101,7 @@ def app_config(request):
             "payment_methods": _payment_methods(),
             "push_enabled": fcm.is_configured(),
             "web_push": {"enabled": webpush.is_configured(), "public_key": webpush.public_key()},
+            "phone_verification": {"required": settings.PHONE_VERIFICATION_REQUIRED, "sms_available": sms.is_available()},
             "websocket_path": "/ws/bookings/{booking_id}/?token={access_token}",
             "support": {"email": app["SUPPORT_EMAIL"], "phone": app["SUPPORT_PHONE"]},
         }

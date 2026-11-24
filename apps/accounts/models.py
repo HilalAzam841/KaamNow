@@ -74,6 +74,9 @@ class User(AbstractBaseUser, PermissionsMixin, TimeStampedModel):
     is_suspended = models.BooleanField(default=False, db_index=True)
     suspended_reason = models.CharField(max_length=255, blank=True)
     date_joined = models.DateTimeField(default=timezone.now)
+    phone_verified_at = models.DateTimeField(
+        null=True, blank=True, help_text="When the user confirmed this phone number with an SMS code."
+    )
 
     objects = UserManager()
 
@@ -87,6 +90,10 @@ class User(AbstractBaseUser, PermissionsMixin, TimeStampedModel):
         return f"{self.full_name} ({self.phone})"
 
     @property
+    def phone_verified(self):
+        return self.phone_verified_at is not None
+
+    @property
     def is_customer(self):
         return self.role == self.Role.CUSTOMER
 
@@ -97,6 +104,29 @@ class User(AbstractBaseUser, PermissionsMixin, TimeStampedModel):
     @property
     def is_platform_admin(self):
         return self.role == self.Role.ADMIN or self.is_staff
+
+
+class PhoneCode(models.Model):
+    """A one-time SMS code. Only an HMAC of the code is stored."""
+
+    class Purpose(models.TextChoices):
+        VERIFY = "verify", "Verify phone number"
+        RESET = "reset", "Reset password"
+
+    phone = models.CharField(max_length=13, db_index=True)
+    purpose = models.CharField(max_length=10, choices=Purpose.choices)
+    code_hash = models.CharField(max_length=64)
+    expires_at = models.DateTimeField()
+    attempts = models.PositiveSmallIntegerField(default=0)
+    used_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(default=timezone.now, db_index=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        indexes = [models.Index(fields=["phone", "purpose", "created_at"])]
+
+    def __str__(self):
+        return f"{self.get_purpose_display()} code for {self.phone}"
 
 
 class WorkerProfile(TimeStampedModel):

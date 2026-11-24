@@ -128,6 +128,12 @@ are readable only by root.
   (see the main README, section 8).
 - **Browser push** is on already: `new-env.sh` generates the VAPID keys. If you made `.env` by hand,
   run `docker compose exec api python manage.py generate_vapid_keys` and paste the two lines in.
+- **SMS codes (phone confirmation and "Forgot password"):** create a [Twilio](https://www.twilio.com) account,
+  then set `SMS_BACKEND=twilio`, `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN` and `TWILIO_FROM` (your Twilio number,
+  or an alphanumeric sender ID such as `KaamNow` if Twilio has approved it for Pakistan) and run `docker compose up -d`.
+  From then on new customers and workers confirm their number by SMS before posting jobs or sending offers
+  (`PHONE_VERIFICATION_REQUIRED=false` turns that off while keeping SMS password reset). Each code costs one SMS;
+  a number can get at most 5 codes a day.
 - **Firebase push:** put the service-account key at `deploy/secrets/firebase.json`, uncomment its line in
   `docker-compose.yml`, set `FCM_PROJECT_ID` and `FCM_CREDENTIALS_FILE=/run/secrets/firebase.json`, then `docker compose up -d`.
 

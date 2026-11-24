@@ -20,14 +20,15 @@ class UserSerializer(serializers.ModelSerializer):
     """The authenticated user's own account (includes private fields)."""
 
     worker_profile_id = serializers.SerializerMethodField()
+    phone_verified = serializers.BooleanField(read_only=True)
 
     class Meta:
         model = User
         fields = [
-            "id", "phone", "email", "full_name", "role", "avatar", "default_address", "language",
+            "id", "phone", "phone_verified", "email", "full_name", "role", "avatar", "default_address", "language",
             "worker_profile_id", "date_joined",
         ]
-        read_only_fields = ["id", "phone", "role", "date_joined", "worker_profile_id"]
+        read_only_fields = ["id", "phone", "phone_verified", "role", "date_joined", "worker_profile_id"]
 
     def get_worker_profile_id(self, obj) -> int | None:
         profile = getattr(obj, "worker_profile", None)
@@ -129,6 +130,16 @@ class PasswordResetRequestSerializer(serializers.Serializer):
 class PasswordResetConfirmSerializer(serializers.Serializer):
     uid = serializers.CharField()
     token = serializers.CharField()
+    new_password = serializers.CharField(write_only=True, min_length=8)
+
+
+class PhoneCodeSerializer(serializers.Serializer):
+    code = serializers.RegexField(r"^\s*\d{4,8}\s*$", max_length=12)
+
+
+class PasswordResetSmsConfirmSerializer(serializers.Serializer):
+    phone = serializers.CharField(max_length=20)
+    code = serializers.RegexField(r"^\s*\d{4,8}\s*$", max_length=12)
     new_password = serializers.CharField(write_only=True, min_length=8)
 
 

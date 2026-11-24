@@ -116,7 +116,10 @@ def open_requests_for_worker(worker):
 # --------------------------------------------------------------------------
 @transaction.atomic
 def create_service_request(customer, images=None, **data):
+    from apps.accounts.phone import require_verified
     from apps.billing.models import PlatformSettings
+
+    require_verified(customer)
 
     category = data["category"]
     if not category.is_active:
