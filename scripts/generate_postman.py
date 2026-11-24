@@ -1,4 +1,6 @@
-"""Generates docs/KaamNow.postman_collection.json covering the full Stage 1 flow.
+"""Generates docs/KaamNow.postman_collection.json covering the Stage 1 and Stage 2 flows.
+
+WebSockets are not covered by Postman collections: see README section "WebSocket protocol".
 
 Run:  python scripts/generate_postman.py
 
@@ -153,12 +155,72 @@ folders = [
         req("Mark notification read", "POST", "/notifications/1/read/"),
         req("Logout", "POST", "/auth/logout/", {"refresh": "{{customer_refresh}}"}),
     ]),
+    ("8. Chat & live tracking (Stage 2)", [
+        req("Send chat message", "POST", "/bookings/{{booking_id}}/messages/", {"body": "Please bring a ladder"}),
+        req("Chat history", "GET", "/bookings/{{booking_id}}/messages/"),
+        req("Mark messages read", "POST", "/bookings/{{booking_id}}/messages/read/", token="worker_access"),
+        req("Worker shares location", "POST", "/bookings/{{booking_id}}/location/",
+            {"latitude": "31.520000", "longitude": "74.344000", "speed_kmh": "25"}, token="worker_access"),
+        req("Customer gets live location + ETA", "GET", "/bookings/{{booking_id}}/location/"),
+    ]),
+    ("9. Online payments (Stage 2)", [
+        req("Pay with JazzCash (returns checkout)", "POST", "/payments/", {"booking": "{{booking_id}}",
+                                                                            "method": "jazzcash"}),
+        req("Pay with Easypaisa (returns checkout)", "POST", "/payments/", {"booking": "{{booking_id}}",
+                                                                             "method": "easypaisa"}),
+        req("JazzCash callback (sent by JazzCash, signed)", "POST", "/payments/callbacks/jazzcash/",
+            {"pp_TxnRefNo": "<reference>", "pp_ResponseCode": "000", "pp_SecureHash": "<hmac>"}, token=None),
+        req("Easypaisa postback (server re-checks via inquiry API)", "GET",
+            "/payments/callbacks/easypaisa/?orderRefNumber=<reference>", token=None),
+    ]),
+    ("10. Subscriptions & featured (Stage 2)", [
+        req("Subscription plans", "GET", "/subscriptions/plans/", token=None),
+        req("Subscribe to Professional", "POST", "/subscriptions/", {"plan": 2, "method": "jazzcash"},
+            token="worker_access"),
+        req("My subscription", "GET", "/subscriptions/my-subscription/", token="worker_access"),
+        req("Subscription history", "GET", "/subscriptions/history/", token="worker_access"),
+        req("Featured plans", "GET", "/featured/plans/", token=None),
+        req("Buy featured placement", "POST", "/featured/", {"plan": 1, "category": 1, "method": "jazzcash"},
+            token="worker_access"),
+        req("My featured listings", "GET", "/featured/", token="worker_access"),
+    ]),
+    ("11. Emergency, push, complaints (Stage 2)", [
+        req("Create emergency request", "POST", "/requests/", {
+            "category": 2, "title": "Water pipe burst", "description": "Main pipe burst in the kitchen, urgent.",
+            "latitude": "31.512000", "longitude": "74.345000", "address": "House 12, Gulberg III",
+            "preferred_time": "2026-12-01T15:00:00+05:00", "is_emergency": True,
+        }),
+        req("Register device for push", "POST", "/notifications/devices/",
+            {"token": "<firebase registration token>", "platform": "android"}),
+        req("Unregister device", "DELETE", "/notifications/devices/", {"token": "<firebase registration token>"}),
+        req("Report a problem", "POST", "/complaints/", {
+            "booking": "{{booking_id}}", "category": "overcharging", "subject": "Charged extra",
+            "description": "Worker asked for more money than the agreed price at the end.",
+        }),
+        req("My complaints", "GET", "/complaints/"),
+    ]),
+    ("12. Admin (Stage 2)", [
+        req("Platform settings (commission, emergency fee)", "PATCH", "/admin/settings/",
+            {"emergency_fee": "300.00", "emergency_enabled": True}, token="admin_access"),
+        req("Subscription plans", "GET", "/admin/subscription-plans/", token="admin_access"),
+        req("Update plan price", "PATCH", "/admin/subscription-plans/2/", {"price": "1500.00"}, token="admin_access"),
+        req("Featured plans", "GET", "/admin/featured-plans/", token="admin_access"),
+        req("Subscriptions", "GET", "/admin/subscriptions/?status=active", token="admin_access"),
+        req("Activate subscription manually", "POST", "/admin/subscriptions/1/activate/", token="admin_access"),
+        req("Featured listings", "GET", "/admin/featured-listings/", token="admin_access"),
+        req("Cancel featured listing", "POST", "/admin/featured-listings/1/cancel/", {"reason": "Policy violation"},
+            token="admin_access"),
+        req("Complaints", "GET", "/admin/complaints/?status=open", token="admin_access"),
+        req("Resolve complaint", "POST", "/admin/complaints/1/status/",
+            {"status": "resolved", "resolution": "Refunded the difference."}, token="admin_access"),
+        req("Other revenue", "GET", "/admin/revenue/other/", token="admin_access"),
+    ]),
 ]
 
 collection = {
     "info": {
         "name": "KaamNow API v1",
-        "description": "Stage 1 backend flow. Set base_url, then run folders in order. "
+        "description": "Full backend flow (Stage 1 + Stage 2). Set base_url, then run folders in order. "
                        "Responses use the envelope {success, data, message}.",
         "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     },

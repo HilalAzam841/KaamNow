@@ -87,6 +87,10 @@ class GatewayCallbackView(APIView):
     throttle_scope = "payment_callback"
     gateway = ""
 
+    def perform_content_negotiation(self, request, force=False):
+        # Gateways and browsers send all sorts of Accept headers; always answer.
+        return super().perform_content_negotiation(request, force=True)
+
     def _handle(self, data):
         try:
             payment = services.handle_gateway_callback(self.gateway, data)
@@ -96,9 +100,7 @@ class GatewayCallbackView(APIView):
         except GatewayError as exc:
             logger.warning("Rejected %s callback: %s", self.gateway, exc)
             return Response({"detail": "Callback could not be verified."}, status=status.HTTP_400_BAD_REQUEST)
-        if self.request.accepted_renderer.format == "json" and "text/html" not in self.request.META.get(
-            "HTTP_ACCEPT", ""
-        ):
+        if "text/html" not in self.request.META.get("HTTP_ACCEPT", ""):
             return Response({"reference": payment.reference, "status": payment.status})
         # Browser redirect from the hosted page: show a minimal page the app's WebView can detect.
         html = (

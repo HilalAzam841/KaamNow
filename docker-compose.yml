@@ -1,4 +1,23 @@
-# Local / staging stack: PostgreSQL + KaamNow API.
+# Full stack: PostgreSQL, Redis, API (HTTP + WebSockets), Celery worker and Celery beat.
+x-app: &app
+  build: .
+  env_file: .env
+  environment:
+    POSTGRES_HOST: db
+    REDIS_URL: redis://redis:6379/0
+    MEDIA_ROOT: /var/lib/kaamnow/media
+    PRIVATE_MEDIA_ROOT: /var/lib/kaamnow/private_media
+  depends_on:
+    db:
+      condition: service_healthy
+    redis:
+      condition: service_started
+  volumes:
+    - media:/var/lib/kaamnow/media
+    - private_media:/var/lib/kaamnow/private_media
+    # Mount the Firebase service-account file read-only if you use push notifications:
+    # - ./secrets/firebase.json:/run/secrets/firebase.json:ro
+
 services:
   db:
     image: postgres:16
@@ -13,23 +32,26 @@ services:
       interval: 5s
       retries: 10
 
+  redis:
+    image: redis:7
+    volumes:
+      - redisdata:/data
+
   api:
-    build: .
-    env_file: .env
-    environment:
-      POSTGRES_HOST: db
-      MEDIA_ROOT: /var/lib/kaamnow/media
-      PRIVATE_MEDIA_ROOT: /var/lib/kaamnow/private_media
+    <<: *app
     ports:
       - "8000:8000"
-    depends_on:
-      db:
-        condition: service_healthy
-    volumes:
-      - media:/var/lib/kaamnow/media
-      - private_media:/var/lib/kaamnow/private_media
+
+  worker:
+    <<: *app
+    command: celery -A config worker -l info
+
+  beat:
+    <<: *app
+    command: celery -A config beat -l info
 
 volumes:
   pgdata:
+  redisdata:
   media:
   private_media:

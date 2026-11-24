@@ -21,6 +21,14 @@ PASSWORD = "Str0ng-Pass!word"
 _counter = {"phone": 0, "cnic": 0}
 
 
+def pytest_configure(config):
+    # Close DB connections after each use so threads used by async WebSocket tests
+    # do not keep the test database open at teardown.
+    from django.conf import settings
+
+    settings.DATABASES["default"]["CONN_MAX_AGE"] = 0
+
+
 @pytest.fixture(autouse=True)
 def _isolated_settings(settings, tmp_path, monkeypatch):
     settings.MEDIA_ROOT = tmp_path / "media"
@@ -203,3 +211,63 @@ def data(response):
 def add_cnic_documents(worker):
     for doc_type in (WorkerDocument.DocumentType.CNIC_FRONT, WorkerDocument.DocumentType.CNIC_BACK):
         WorkerDocument.objects.create(worker=worker, document_type=doc_type, file=make_image(f"{doc_type}.jpg"))
+
+
+# --- Stage 2 helpers -----------------------------------------------------------
+JAZZCASH_TEST_CONFIG = {
+    "MERCHANT_ID": "MC12345",
+    "PASSWORD": "testpass",
+    "INTEGRITY_SALT": "testsalt123",
+    "CHECKOUT_URL": "https://sandbox.jazzcash.com.pk/CustomerPortal/transactionmanagement/merchantform/",
+    "RETURN_URL": "https://api.test/api/v1/payments/callbacks/jazzcash/",
+}
+EASYPAISA_TEST_CONFIG = {
+    "STORE_ID": "12345",
+    "HASH_KEY": "0123456789ABCDEF",
+    "USERNAME": "kaamnow",
+    "PASSWORD": "secret",
+    "ACCOUNT_NUM": "654321",
+    "CHECKOUT_URL": "https://easypaystg.easypaisa.com.pk/easypay/Index.jsf",
+    "INQUIRY_URL": "https://easypaystg.easypaisa.com.pk/easypay-service/rest/v4/inquire-transaction",
+    "POSTBACK_URL": "https://api.test/api/v1/payments/callbacks/easypaisa/",
+}
+
+
+@pytest.fixture
+def gateways(settings):
+    settings.PAYMENT_GATEWAYS = {"jazzcash": dict(JAZZCASH_TEST_CONFIG), "easypaisa": dict(EASYPAISA_TEST_CONFIG)}
+    return settings.PAYMENT_GATEWAYS
+
+
+def jazzcash_callback(payment, code="000", amount=None, salt=JAZZCASH_TEST_CONFIG["INTEGRITY_SALT"]):
+    """Builds a correctly signed JazzCash return payload for `payment`."""
+    from apps.billing.gateways.jazzcash import secure_hash, to_paisa
+
+    data = {
+        "pp_Amount": to_paisa(amount if amount is not None else payment.amount),
+        "pp_BillReference": f"kn{payment.pk}",
+        "pp_Language": "EN",
+        "pp_MerchantID": JAZZCASH_TEST_CONFIG["MERCHANT_ID"],
+        "pp_ResponseCode": code,
+        "pp_ResponseMessage": "Thank you for Using JazzCash" if code == "000" else "Transaction failed",
+        "pp_RetreivalReferenceNo": "123456789012",
+        "pp_TxnCurrency": "PKR",
+        "pp_TxnDateTime": "20261124120000",
+        "pp_TxnRefNo": payment.reference,
+        "pp_TxnType": "MWALLET",
+        "pp_Version": "1.1",
+    }
+    data["pp_SecureHash"] = secure_hash(data, salt)
+    return data
+
+
+@pytest.fixture
+def completed_booking_factory(make_booking):
+    from apps.jobs.models import Booking
+    from apps.jobs.services import confirm_completion_by_customer
+
+    def _make(customer, worker, price="2000"):
+        booking = advance_to(make_booking(customer, worker, price), Booking.Status.IN_PROGRESS)
+        return confirm_completion_by_customer(booking, customer)
+
+    return _make

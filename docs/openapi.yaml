@@ -18,7 +18,13 @@ paths:
           enum:
           - category_changed
           - commission_changed
+          - complaint_updated
           - document_viewed
+          - featured_cancelled
+          - payment_disputed
+          - plan_changed
+          - settings_changed
+          - subscription_activated
           - user_reactivated
           - user_suspended
           - worker_rejected
@@ -31,6 +37,12 @@ paths:
           * `user_reactivated` - User reactivated
           * `commission_changed` - Commission rate changed
           * `category_changed` - Service category changed
+          * `settings_changed` - Platform settings changed
+          * `plan_changed` - Subscription or featured plan changed
+          * `subscription_activated` - Subscription activated manually
+          * `featured_cancelled` - Featured listing cancelled
+          * `complaint_updated` - Complaint status changed
+          * `payment_disputed` - Payment flagged as disputed
       - in: query
         name: actor
         schema:
@@ -206,6 +218,151 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaginatedCommissionList'
           description: ''
+  /api/v1/admin/complaints/:
+    get:
+      operationId: admin_complaints_list
+      parameters:
+      - in: query
+        name: against_user
+        schema:
+          type: integer
+      - in: query
+        name: booking
+        schema:
+          type: integer
+      - in: query
+        name: category
+        schema:
+          type: string
+          enum:
+          - app_issue
+          - behaviour
+          - damage
+          - fraud
+          - no_show
+          - other
+          - overcharging
+          - payment
+          - service_quality
+        description: |-
+          * `service_quality` - Poor service quality
+          * `no_show` - Worker did not arrive
+          * `overcharging` - Overcharging
+          * `behaviour` - Rude or unsafe behaviour
+          * `payment` - Payment issue
+          * `damage` - Property damage
+          * `fraud` - Fraud
+          * `app_issue` - App problem
+          * `other` - Other
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: raised_by
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - in_review
+          - open
+          - rejected
+          - resolved
+        description: |-
+          * `open` - Open
+          * `in_review` - In review
+          * `resolved` - Resolved
+          * `rejected` - Rejected
+      tags:
+      - admin
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAdminComplaintList'
+          description: ''
+  /api/v1/admin/complaints/{id}/:
+    get:
+      operationId: admin_complaints_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this complaint.
+        required: true
+      tags:
+      - admin
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminComplaint'
+          description: ''
+  /api/v1/admin/complaints/{id}/status/:
+    post:
+      operationId: admin_complaints_status_create
+      summary: Move a complaint to in_review, resolved or rejected. Audited; the reporter
+        is notified.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this complaint.
+        required: true
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ComplaintStatusRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ComplaintStatusRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ComplaintStatusRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminComplaint'
+          description: ''
   /api/v1/admin/dashboard/:
     get:
       operationId: admin_dashboard_retrieve
@@ -243,6 +400,228 @@ paths:
               schema:
                 type: string
                 format: binary
+          description: ''
+  /api/v1/admin/featured-listings/:
+    get:
+      operationId: admin_featured_listings_list
+      parameters:
+      - in: query
+        name: category
+        schema:
+          type: integer
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - active
+          - cancelled
+          - expired
+          - pending_payment
+        description: |-
+          * `pending_payment` - Awaiting payment
+          * `active` - Active
+          * `expired` - Expired
+          * `cancelled` - Cancelled
+      - in: query
+        name: worker
+        schema:
+          type: integer
+      tags:
+      - admin
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedFeaturedListingList'
+          description: ''
+  /api/v1/admin/featured-listings/{id}/:
+    get:
+      operationId: admin_featured_listings_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this featured listing.
+        required: true
+      tags:
+      - admin
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeaturedListing'
+          description: ''
+  /api/v1/admin/featured-listings/{id}/cancel/:
+    post:
+      operationId: admin_featured_listings_cancel_create
+      summary: Cancel a featured listing (e.g. policy violation). Audited.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this featured listing.
+        required: true
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SuspendUserRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SuspendUserRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SuspendUserRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeaturedListing'
+          description: ''
+  /api/v1/admin/featured-plans/:
+    get:
+      operationId: admin_featured_plans_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - admin
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FeaturedPlan'
+          description: ''
+    post:
+      operationId: admin_featured_plans_create
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FeaturedPlanRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FeaturedPlanRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/FeaturedPlanRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeaturedPlan'
+          description: ''
+  /api/v1/admin/featured-plans/{id}/:
+    get:
+      operationId: admin_featured_plans_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this featured plan.
+        required: true
+      tags:
+      - admin
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeaturedPlan'
+          description: ''
+    patch:
+      operationId: admin_featured_plans_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this featured plan.
+        required: true
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedFeaturedPlanRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedFeaturedPlanRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedFeaturedPlanRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeaturedPlan'
           description: ''
   /api/v1/admin/reports/:
     get:
@@ -357,6 +736,70 @@ paths:
                 type: object
                 additionalProperties: {}
           description: ''
+  /api/v1/admin/revenue/other/:
+    get:
+      operationId: admin_revenue_other_retrieve
+      summary: Revenue from subscriptions, featured listings and emergency fees (completed
+        payments).
+      parameters:
+      - in: query
+        name: date_from
+        schema:
+          type: string
+      - in: query
+        name: date_to
+        schema:
+          type: string
+      tags:
+      - admin
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/v1/admin/settings/:
+    get:
+      operationId: admin_settings_retrieve
+      tags:
+      - admin
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformSettings'
+          description: ''
+    patch:
+      operationId: admin_settings_partial_update
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedPlatformSettingsRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedPlatformSettingsRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedPlatformSettingsRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformSettings'
+          description: ''
   /api/v1/admin/settings/commission/:
     get:
       operationId: admin_settings_commission_retrieve
@@ -394,6 +837,217 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PlatformSettings'
+          description: ''
+  /api/v1/admin/subscription-plans/:
+    get:
+      operationId: admin_subscription_plans_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - admin
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SubscriptionPlan'
+          description: ''
+    post:
+      operationId: admin_subscription_plans_create
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubscriptionPlanRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SubscriptionPlanRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SubscriptionPlanRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubscriptionPlan'
+          description: ''
+  /api/v1/admin/subscription-plans/{id}/:
+    get:
+      operationId: admin_subscription_plans_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this subscription plan.
+        required: true
+      tags:
+      - admin
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubscriptionPlan'
+          description: ''
+    patch:
+      operationId: admin_subscription_plans_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this subscription plan.
+        required: true
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedSubscriptionPlanRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedSubscriptionPlanRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedSubscriptionPlanRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubscriptionPlan'
+          description: ''
+  /api/v1/admin/subscriptions/:
+    get:
+      operationId: admin_subscriptions_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: plan
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - active
+          - cancelled
+          - expired
+          - pending_payment
+        description: |-
+          * `pending_payment` - Awaiting payment
+          * `active` - Active
+          * `expired` - Expired
+          * `cancelled` - Cancelled
+      - in: query
+        name: worker
+        schema:
+          type: integer
+      tags:
+      - admin
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedWorkerSubscriptionList'
+          description: ''
+  /api/v1/admin/subscriptions/{id}/:
+    get:
+      operationId: admin_subscriptions_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this worker subscription.
+        required: true
+      tags:
+      - admin
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkerSubscription'
+          description: ''
+  /api/v1/admin/subscriptions/{id}/activate/:
+    post:
+      operationId: admin_subscriptions_activate_create
+      summary: Activate a pending subscription manually (e.g. paid by bank transfer).
+        Audited.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this worker subscription.
+        required: true
+      tags:
+      - admin
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkerSubscription'
           description: ''
   /api/v1/admin/users/:
     get:
@@ -868,6 +1522,161 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaginatedBookingList'
           description: ''
+  /api/v1/bookings/{booking_id}/location/:
+    get:
+      operationId: bookings_location_retrieve
+      summary: Latest worker position, distance and ETA to the job, plus a short trail.
+      parameters:
+      - in: path
+        name: booking_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - tracking
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LiveLocation'
+          description: ''
+    post:
+      operationId: bookings_location_create
+      summary: Worker shares current GPS position (active bookings only). Also pushed
+        over WebSocket.
+      parameters:
+      - in: path
+        name: booking_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - tracking
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LocationUpdateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/LocationUpdateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/LocationUpdateRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LocationPoint'
+          description: ''
+  /api/v1/bookings/{booking_id}/messages/:
+    get:
+      operationId: bookings_messages_list
+      description: 'GET: conversation history (newest first). POST: send a message.
+        Participants only.'
+      parameters:
+      - in: path
+        name: booking_id
+        schema:
+          type: integer
+        required: true
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - chat
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedChatMessageList'
+          description: ''
+    post:
+      operationId: bookings_messages_create
+      description: 'GET: conversation history (newest first). POST: send a message.
+        Participants only.'
+      parameters:
+      - in: path
+        name: booking_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - chat
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatMessageCreateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ChatMessageCreateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ChatMessageCreateRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatMessage'
+          description: ''
+  /api/v1/bookings/{booking_id}/messages/read/:
+    post:
+      operationId: bookings_messages_read_create
+      summary: Mark the other party's messages as read
+      parameters:
+      - in: path
+        name: booking_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - chat
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
   /api/v1/bookings/{id}/:
     get:
       operationId: bookings_retrieve
@@ -1011,6 +1820,237 @@ paths:
               schema:
                 $ref: '#/components/schemas/Booking'
           description: ''
+  /api/v1/complaints/:
+    get:
+      operationId: complaints_list
+      description: Customers and workers report problems; they only ever see their
+        own complaints.
+      parameters:
+      - in: query
+        name: booking
+        schema:
+          type: integer
+      - in: query
+        name: category
+        schema:
+          type: string
+          enum:
+          - app_issue
+          - behaviour
+          - damage
+          - fraud
+          - no_show
+          - other
+          - overcharging
+          - payment
+          - service_quality
+        description: |-
+          * `service_quality` - Poor service quality
+          * `no_show` - Worker did not arrive
+          * `overcharging` - Overcharging
+          * `behaviour` - Rude or unsafe behaviour
+          * `payment` - Payment issue
+          * `damage` - Property damage
+          * `fraud` - Fraud
+          * `app_issue` - App problem
+          * `other` - Other
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - in_review
+          - open
+          - rejected
+          - resolved
+        description: |-
+          * `open` - Open
+          * `in_review` - In review
+          * `resolved` - Resolved
+          * `rejected` - Rejected
+      tags:
+      - complaints
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedComplaintList'
+          description: ''
+    post:
+      operationId: complaints_create
+      description: Customers and workers report problems; they only ever see their
+        own complaints.
+      tags:
+      - complaints
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ComplaintCreateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ComplaintCreateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ComplaintCreateRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Complaint'
+          description: ''
+  /api/v1/complaints/{id}/:
+    get:
+      operationId: complaints_retrieve
+      description: Customers and workers report problems; they only ever see their
+        own complaints.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this complaint.
+        required: true
+      tags:
+      - complaints
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Complaint'
+          description: ''
+  /api/v1/featured/:
+    get:
+      operationId: featured_list
+      description: 'GET: the worker''s featured listings. POST: buy featured placement
+        in a category.'
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - featured
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedFeaturedListingList'
+          description: ''
+    post:
+      operationId: featured_create
+      description: 'GET: the worker''s featured listings. POST: buy featured placement
+        in a category.'
+      tags:
+      - featured
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FeaturedPurchaseRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FeaturedPurchaseRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/FeaturedPurchaseRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeaturedPurchaseResponse'
+          description: ''
+  /api/v1/featured/plans/:
+    get:
+      operationId: featured_plans_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - featured
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FeaturedPlan'
+          description: ''
   /api/v1/health/:
     get:
       operationId: health_retrieve
@@ -1067,6 +2107,9 @@ paths:
           - booking_cancelled
           - booking_completed
           - booking_status
+          - chat_message
+          - complaint
+          - featured
           - negotiation
           - new_offer
           - new_request
@@ -1076,6 +2119,7 @@ paths:
           - payment
           - request_cancelled
           - review
+          - subscription
           - system
           - verification
         description: |-
@@ -1090,6 +2134,10 @@ paths:
           * `booking_completed` - Booking completed
           * `request_cancelled` - Request cancelled
           * `payment` - Payment
+          * `chat_message` - New chat message
+          * `subscription` - Subscription
+          * `featured` - Featured listing
+          * `complaint` - Complaint update
           * `review` - Review
           * `verification` - Account verification
           * `system` - System
@@ -1124,6 +2172,50 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Notification'
+          description: ''
+  /api/v1/notifications/devices/:
+    post:
+      operationId: notifications_devices_create
+      description: Register (POST) or unregister (DELETE) this device's Firebase token
+        for push notifications.
+      tags:
+      - notifications
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceTokenRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DeviceTokenRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/DeviceTokenRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeviceToken'
+          description: ''
+    delete:
+      operationId: notifications_devices_destroy
+      description: Register (POST) or unregister (DELETE) this device's Firebase token
+        for push notifications.
+      tags:
+      - notifications
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
           description: ''
   /api/v1/notifications/read-all/:
     post:
@@ -1352,6 +2444,18 @@ paths:
         description: Number of results to return per page.
         schema:
           type: integer
+      - in: query
+        name: purpose
+        schema:
+          type: string
+          enum:
+          - booking
+          - featured_listing
+          - subscription
+        description: |-
+          * `booking` - Booking
+          * `subscription` - Worker subscription
+          * `featured_listing` - Featured listing
       - name: search
         required: false
         in: query
@@ -1365,6 +2469,7 @@ paths:
           enum:
           - completed
           - disputed
+          - expired
           - failed
           - pending
         description: |-
@@ -1372,6 +2477,7 @@ paths:
           * `completed` - Completed
           * `failed` - Failed
           * `disputed` - Disputed
+          * `expired` - Expired
       tags:
       - payments
       security:
@@ -1385,8 +2491,9 @@ paths:
           description: ''
     post:
       operationId: payments_create
-      summary: Customer records payment for a completed booking (cash only in Stage
-        1). Amount is taken from the booking's locked price.
+      summary: 'Customer pays for a completed booking. Cash: worker confirms receipt.
+        JazzCash/Easypaisa: open `checkout` in a WebView; the server confirms only
+        after verifying the gateway callback.'
       tags:
       - payments
       requestBody:
@@ -1408,7 +2515,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Payment'
+                $ref: '#/components/schemas/PaymentWithCheckout'
           description: ''
   /api/v1/payments/{id}/:
     get:
@@ -1453,6 +2560,64 @@ paths:
               schema:
                 $ref: '#/components/schemas/Payment'
           description: ''
+  /api/v1/payments/callbacks/easypaisa/:
+    get:
+      operationId: payments_callbacks_easypaisa_retrieve
+      description: |-
+        Server-side endpoint the payment gateway calls (or redirects the customer's
+        browser to). The payload is verified with the merchant secret / a
+        server-to-server inquiry before anything is settled. No authentication:
+        trust comes from the verification, not from the caller.
+      tags:
+      - payments
+      security:
+      - {}
+      responses:
+        '200':
+          description: Settled status
+    post:
+      operationId: payments_callbacks_easypaisa_create
+      description: |-
+        Server-side endpoint the payment gateway calls (or redirects the customer's
+        browser to). The payload is verified with the merchant secret / a
+        server-to-server inquiry before anything is settled. No authentication:
+        trust comes from the verification, not from the caller.
+      tags:
+      - payments
+      security:
+      - {}
+      responses:
+        '200':
+          description: Settled status
+  /api/v1/payments/callbacks/jazzcash/:
+    get:
+      operationId: payments_callbacks_jazzcash_retrieve
+      description: |-
+        Server-side endpoint the payment gateway calls (or redirects the customer's
+        browser to). The payload is verified with the merchant secret / a
+        server-to-server inquiry before anything is settled. No authentication:
+        trust comes from the verification, not from the caller.
+      tags:
+      - payments
+      security:
+      - {}
+      responses:
+        '200':
+          description: Settled status
+    post:
+      operationId: payments_callbacks_jazzcash_create
+      description: |-
+        Server-side endpoint the payment gateway calls (or redirects the customer's
+        browser to). The payload is verified with the merchant secret / a
+        server-to-server inquiry before anything is settled. No authentication:
+        trust comes from the verification, not from the caller.
+      tags:
+      - payments
+      security:
+      - {}
+      responses:
+        '200':
+          description: Settled status
   /api/v1/payments/earnings/:
     get:
       operationId: payments_earnings_retrieve
@@ -2079,6 +3244,117 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/v1/subscriptions/:
+    post:
+      operationId: subscriptions_create
+      summary: Worker subscribes. Free plans activate at once; paid plans return a
+        gateway checkout and activate after the payment is verified.
+      tags:
+      - subscriptions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubscribeRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SubscribeRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SubscribeRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubscribeResponse'
+          description: ''
+  /api/v1/subscriptions/history/:
+    get:
+      operationId: subscriptions_history_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - subscriptions
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedWorkerSubscriptionList'
+          description: ''
+  /api/v1/subscriptions/my-subscription/:
+    get:
+      operationId: subscriptions_my_subscription_retrieve
+      tags:
+      - subscriptions
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MySubscription'
+          description: ''
+  /api/v1/subscriptions/plans/:
+    get:
+      operationId: subscriptions_plans_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - subscriptions
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SubscriptionPlan'
+          description: ''
   /api/v1/workers/{id}/:
     get:
       operationId: workers_retrieve
@@ -2299,6 +3575,83 @@ paths:
           description: ''
 components:
   schemas:
+    AdminComplaint:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        booking:
+          type: integer
+          readOnly: true
+          nullable: true
+        category:
+          allOf:
+          - $ref: '#/components/schemas/CategoryEnum'
+          readOnly: true
+        subject:
+          type: string
+          readOnly: true
+        description:
+          type: string
+          readOnly: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/ComplaintStatusEnum'
+          readOnly: true
+        resolution:
+          type: string
+          readOnly: true
+        resolved_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        raised_by:
+          type: integer
+          readOnly: true
+        raised_by_name:
+          type: string
+          readOnly: true
+        raised_by_role:
+          type: string
+          readOnly: true
+        against_user:
+          type: integer
+          readOnly: true
+          nullable: true
+        against_user_name:
+          type: string
+          readOnly: true
+        resolved_by:
+          type: integer
+          readOnly: true
+          nullable: true
+      required:
+      - against_user
+      - against_user_name
+      - booking
+      - category
+      - created_at
+      - description
+      - id
+      - raised_by
+      - raised_by_name
+      - raised_by_role
+      - resolution
+      - resolved_at
+      - resolved_by
+      - status
+      - subject
+      - updated_at
     AdminUser:
       type: object
       properties:
@@ -2525,6 +3878,12 @@ components:
       - user_reactivated
       - commission_changed
       - category_changed
+      - settings_changed
+      - plan_changed
+      - subscription_activated
+      - featured_cancelled
+      - complaint_updated
+      - payment_disputed
       type: string
       description: |-
         * `worker_verified` - Worker verified
@@ -2534,6 +3893,12 @@ components:
         * `user_reactivated` - User reactivated
         * `commission_changed` - Commission rate changed
         * `category_changed` - Service category changed
+        * `settings_changed` - Platform settings changed
+        * `plan_changed` - Subscription or featured plan changed
+        * `subscription_activated` - Subscription activated manually
+        * `featured_cancelled` - Featured listing cancelled
+        * `complaint_updated` - Complaint status changed
+        * `payment_disputed` - Payment flagged as disputed
     AuthResponse:
       type: object
       properties:
@@ -2581,6 +3946,16 @@ components:
           type: string
           format: decimal
           pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          readOnly: true
+        emergency_fee:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          readOnly: true
+        total_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
           readOnly: true
         status:
           allOf:
@@ -2662,6 +4037,7 @@ components:
       - contact
       - created_at
       - customer_name
+      - emergency_fee
       - has_review
       - id
       - on_the_way_at
@@ -2671,6 +4047,7 @@ components:
       - status
       - status_history
       - title
+      - total_amount
       - updated_at
       - worker
     BookingCancelRequest:
@@ -2694,6 +4071,16 @@ components:
           type: boolean
           default: false
           description: Customer in-app confirmation.
+    BookingStatusChangeEnum:
+      enum:
+      - on_the_way
+      - arrived
+      - in_progress
+      type: string
+      description: |-
+        * `on_the_way` - On the way
+        * `arrived` - Arrived
+        * `in_progress` - Work started
     BookingStatusEnum:
       enum:
       - confirmed
@@ -2733,23 +4120,13 @@ components:
       type: object
       properties:
         status:
-          $ref: '#/components/schemas/BookingStatusStatusEnum'
+          $ref: '#/components/schemas/BookingStatusChangeEnum'
         note:
           type: string
           default: ''
           maxLength: 255
       required:
       - status
-    BookingStatusStatusEnum:
-      enum:
-      - on_the_way
-      - arrived
-      - in_progress
-      type: string
-      description: |-
-        * `on_the_way` - on_the_way
-        * `arrived` - arrived
-        * `in_progress` - in_progress
     CancelRequest:
       type: object
       properties:
@@ -2757,6 +4134,92 @@ components:
           type: string
           default: ''
           maxLength: 255
+    CategoryEnum:
+      enum:
+      - service_quality
+      - no_show
+      - overcharging
+      - behaviour
+      - payment
+      - damage
+      - fraud
+      - app_issue
+      - other
+      type: string
+      description: |-
+        * `service_quality` - Poor service quality
+        * `no_show` - Worker did not arrive
+        * `overcharging` - Overcharging
+        * `behaviour` - Rude or unsafe behaviour
+        * `payment` - Payment issue
+        * `damage` - Property damage
+        * `fraud` - Fraud
+        * `app_issue` - App problem
+        * `other` - Other
+    ChatMessage:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        booking:
+          type: integer
+          readOnly: true
+        sender:
+          type: integer
+          readOnly: true
+        body:
+          type: string
+          readOnly: true
+        is_read:
+          type: boolean
+          readOnly: true
+        read_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        is_mine:
+          type: boolean
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - body
+      - booking
+      - created_at
+      - id
+      - is_mine
+      - is_read
+      - read_at
+      - sender
+    ChatMessageCreateRequest:
+      type: object
+      properties:
+        body:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      required:
+      - body
+    Checkout:
+      type: object
+      properties:
+        url:
+          type: string
+          format: uri
+        method:
+          type: string
+        fields:
+          type: object
+          additionalProperties:
+            type: string
+      required:
+      - fields
+      - method
+      - url
     Commission:
       type: object
       properties:
@@ -2821,6 +4284,110 @@ components:
         * `pending` - Pending collection
         * `collected` - Collected
         * `waived` - Waived
+    Complaint:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        booking:
+          type: integer
+          readOnly: true
+          nullable: true
+        category:
+          allOf:
+          - $ref: '#/components/schemas/CategoryEnum'
+          readOnly: true
+        subject:
+          type: string
+          readOnly: true
+        description:
+          type: string
+          readOnly: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/ComplaintStatusEnum'
+          readOnly: true
+        resolution:
+          type: string
+          readOnly: true
+        resolved_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - booking
+      - category
+      - created_at
+      - description
+      - id
+      - resolution
+      - resolved_at
+      - status
+      - subject
+      - updated_at
+    ComplaintCreateRequest:
+      type: object
+      properties:
+        booking:
+          type: integer
+          nullable: true
+        category:
+          $ref: '#/components/schemas/CategoryEnum'
+        subject:
+          type: string
+          minLength: 5
+          maxLength: 150
+        description:
+          type: string
+          minLength: 20
+          maxLength: 3000
+      required:
+      - category
+      - description
+      - subject
+    ComplaintStatusChangeEnum:
+      enum:
+      - in_review
+      - resolved
+      - rejected
+      type: string
+      description: |-
+        * `in_review` - In review
+        * `resolved` - Resolved
+        * `rejected` - Rejected
+    ComplaintStatusEnum:
+      enum:
+      - open
+      - in_review
+      - resolved
+      - rejected
+      type: string
+      description: |-
+        * `open` - Open
+        * `in_review` - In review
+        * `resolved` - Resolved
+        * `rejected` - Rejected
+    ComplaintStatusRequest:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/ComplaintStatusChangeEnum'
+        resolution:
+          type: string
+          default: ''
+          maxLength: 3000
+      required:
+      - status
     CompletionOTP:
       type: object
       properties:
@@ -2834,6 +4401,45 @@ components:
       required:
       - expires_at
       - otp
+    DeviceToken:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        token:
+          type: string
+          maxLength: 255
+        platform:
+          $ref: '#/components/schemas/PlatformEnum'
+        is_active:
+          type: boolean
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        last_seen_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - is_active
+      - last_seen_at
+      - token
+    DeviceTokenRequest:
+      type: object
+      properties:
+        token:
+          type: string
+          minLength: 1
+          maxLength: 255
+        platform:
+          $ref: '#/components/schemas/PlatformEnum'
+      required:
+      - token
     DocumentTypeEnum:
       enum:
       - cnic_front
@@ -2867,6 +4473,10 @@ components:
           type: string
           format: decimal
           pattern: ^-?\d{0,12}(?:\.\d{0,2})?$
+        current_commission_percent:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,2})?$
         recent:
           type: array
           items:
@@ -2875,9 +4485,220 @@ components:
       - commission_amount
       - commission_pending
       - completed_jobs
+      - current_commission_percent
       - gross_amount
       - net_earnings
       - recent
+    FeaturedListing:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        worker:
+          type: integer
+          readOnly: true
+        worker_name:
+          type: string
+          readOnly: true
+        category:
+          type: integer
+          readOnly: true
+        category_name:
+          type: string
+          readOnly: true
+        plan:
+          allOf:
+          - $ref: '#/components/schemas/FeaturedPlan'
+          readOnly: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/PurchaseStatusEnum'
+          readOnly: true
+          default: pending_payment
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          readOnly: true
+        starts_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        ends_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        payment:
+          allOf:
+          - $ref: '#/components/schemas/Payment'
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - amount
+      - category
+      - category_name
+      - created_at
+      - ends_at
+      - id
+      - payment
+      - plan
+      - starts_at
+      - status
+      - worker
+      - worker_name
+    FeaturedPlan:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 60
+        duration_days:
+          type: integer
+          maximum: 32767
+          minimum: 1
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        is_active:
+          type: boolean
+      required:
+      - duration_days
+      - id
+      - name
+      - price
+    FeaturedPlanRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 60
+        duration_days:
+          type: integer
+          maximum: 32767
+          minimum: 1
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        is_active:
+          type: boolean
+      required:
+      - duration_days
+      - name
+      - price
+    FeaturedPurchaseRequest:
+      type: object
+      properties:
+        plan:
+          type: integer
+        category:
+          type: integer
+        method:
+          $ref: '#/components/schemas/OnlinePaymentMethodEnum'
+      required:
+      - category
+      - method
+      - plan
+    FeaturedPurchaseResponse:
+      type: object
+      properties:
+        listing:
+          $ref: '#/components/schemas/FeaturedListing'
+        checkout:
+          $ref: '#/components/schemas/Checkout'
+      required:
+      - checkout
+      - listing
+    LiveLocation:
+      type: object
+      properties:
+        latest:
+          allOf:
+          - $ref: '#/components/schemas/LocationPoint'
+          nullable: true
+        trail:
+          type: array
+          items:
+            $ref: '#/components/schemas/TrailPoint'
+      required:
+      - latest
+      - trail
+    LocationPoint:
+      type: object
+      properties:
+        latitude:
+          type: string
+        longitude:
+          type: string
+        accuracy_m:
+          type: string
+          nullable: true
+        heading:
+          type: string
+          nullable: true
+        speed_kmh:
+          type: string
+          nullable: true
+        recorded_at:
+          type: string
+          format: date-time
+        distance_to_customer_km:
+          type: number
+          format: double
+        eta_minutes:
+          type: integer
+        booking_status:
+          type: string
+      required:
+      - accuracy_m
+      - booking_status
+      - distance_to_customer_km
+      - eta_minutes
+      - heading
+      - latitude
+      - longitude
+      - recorded_at
+      - speed_kmh
+    LocationUpdateRequest:
+      type: object
+      properties:
+        latitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+        longitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+        accuracy_m:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,5}(?:\.\d{0,2})?$
+          nullable: true
+        heading:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,2})?$
+          nullable: true
+        speed_kmh:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,2})?$
+          nullable: true
+      required:
+      - latitude
+      - longitude
     LoginRequest:
       type: object
       properties:
@@ -2899,16 +4720,30 @@ components:
           minLength: 1
       required:
       - refresh
-    MethodEnum:
-      enum:
-      - cash
-      - jazzcash
-      - easypaisa
-      type: string
-      description: |-
-        * `cash` - Cash
-        * `jazzcash` - JazzCash
-        * `easypaisa` - Easypaisa
+    MySubscription:
+      type: object
+      properties:
+        plan:
+          $ref: '#/components/schemas/SubscriptionPlan'
+        subscription:
+          allOf:
+          - $ref: '#/components/schemas/WorkerSubscription'
+          nullable: true
+        offers_today:
+          type: integer
+        offers_remaining_today:
+          type: integer
+          nullable: true
+        commission_percent:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,2})?$
+      required:
+      - commission_percent
+      - offers_remaining_today
+      - offers_today
+      - plan
+      - subscription
     NearbyWorker:
       type: object
       description: 'Public worker card: no phone, CNIC, documents or exact home location.'
@@ -2948,6 +4783,9 @@ components:
         completed_jobs_count:
           type: integer
           readOnly: true
+        plan_badge:
+          type: string
+          readOnly: true
         services:
           type: array
           items:
@@ -2960,6 +4798,11 @@ components:
         is_available:
           type: boolean
           readOnly: true
+        is_sponsored:
+          type: boolean
+          readOnly: true
+          default: false
+          description: Paid featured placement. The app must label it 'Sponsored'.
       required:
       - average_rating
       - bio
@@ -2969,7 +4812,9 @@ components:
       - full_name
       - id
       - is_available
+      - is_sponsored
       - is_verified
+      - plan_badge
       - profile_picture
       - rating_count
       - service_area
@@ -3136,6 +4981,33 @@ components:
           type: string
           default: ''
           maxLength: 500
+    OnlinePaymentMethodEnum:
+      enum:
+      - jazzcash
+      - easypaisa
+      type: string
+      description: |-
+        * `jazzcash` - JazzCash
+        * `easypaisa` - Easypaisa
+    PaginatedAdminComplaintList:
+      type: object
+      properties:
+        count:
+          type: integer
+        page:
+          type: integer
+        total_pages:
+          type: integer
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdminComplaint'
     PaginatedAdminUserList:
       type: object
       properties:
@@ -3212,6 +5084,25 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Booking'
+    PaginatedChatMessageList:
+      type: object
+      properties:
+        count:
+          type: integer
+        page:
+          type: integer
+        total_pages:
+          type: integer
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChatMessage'
     PaginatedCommissionList:
       type: object
       properties:
@@ -3231,6 +5122,44 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Commission'
+    PaginatedComplaintList:
+      type: object
+      properties:
+        count:
+          type: integer
+        page:
+          type: integer
+        total_pages:
+          type: integer
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Complaint'
+    PaginatedFeaturedListingList:
+      type: object
+      properties:
+        count:
+          type: integer
+        page:
+          type: integer
+        total_pages:
+          type: integer
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/FeaturedListing'
     PaginatedNearbyWorkerList:
       type: object
       properties:
@@ -3364,6 +5293,25 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/WorkerService'
+    PaginatedWorkerSubscriptionList:
+      type: object
+      properties:
+        count:
+          type: integer
+        page:
+          type: integer
+        total_pages:
+          type: integer
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkerSubscription'
     PartyEnum:
       enum:
       - customer
@@ -3413,6 +5361,23 @@ components:
           type: string
           format: email
           minLength: 1
+    PatchedFeaturedPlanRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 60
+        duration_days:
+          type: integer
+          maximum: 32767
+          minimum: 1
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        is_active:
+          type: boolean
     PatchedOfferUpdateRequest:
       type: object
       properties:
@@ -3437,6 +5402,14 @@ components:
           type: string
           format: decimal
           pattern: ^-?\d{0,3}(?:\.\d{0,2})?$
+        emergency_fee:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          description: Flat fee added to emergency (urgent) bookings. Kept by the
+            platform.
+        emergency_enabled:
+          type: boolean
     PatchedServiceCategoryRequest:
       type: object
       properties:
@@ -3488,6 +5461,55 @@ components:
           format: decimal
           pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
           nullable: true
+    PatchedSubscriptionPlanRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 60
+        slug:
+          type: string
+          minLength: 1
+          maxLength: 60
+          pattern: ^[-a-zA-Z0-9_]+$
+        description:
+          type: string
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        duration_days:
+          type: integer
+          maximum: 32767
+          minimum: 1
+        commission_percent:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,2})?$
+          nullable: true
+          description: Overrides the platform commission for subscribers. Blank =
+            platform default.
+        daily_offer_limit:
+          type: integer
+          maximum: 32767
+          minimum: 0
+          nullable: true
+          description: Max offers per day. Blank = unlimited.
+        benefits: {}
+        badge:
+          type: string
+          description: e.g. 'PRO' shown on the worker card.
+          maxLength: 30
+        is_default:
+          type: boolean
+          description: Plan applied to workers without a subscription.
+        is_active:
+          type: boolean
+        sort_order:
+          type: integer
+          maximum: 32767
+          minimum: 0
     PatchedUserRequest:
       type: object
       description: The authenticated user's own account (includes private fields).
@@ -3569,9 +5591,14 @@ components:
         id:
           type: integer
           readOnly: true
+        purpose:
+          allOf:
+          - $ref: '#/components/schemas/PurposeEnum'
+          readOnly: true
         booking:
           type: integer
           readOnly: true
+          nullable: true
         amount:
           type: string
           format: decimal
@@ -3579,7 +5606,7 @@ components:
           readOnly: true
         method:
           allOf:
-          - $ref: '#/components/schemas/MethodEnum'
+          - $ref: '#/components/schemas/PaymentMethodEnum'
           readOnly: true
         status:
           allOf:
@@ -3589,6 +5616,14 @@ components:
         reference:
           type: string
           readOnly: true
+        failure_reason:
+          type: string
+          readOnly: true
+        expires_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
         confirmed_at:
           type: string
           format: date-time
@@ -3607,8 +5642,11 @@ components:
       - booking
       - confirmed_at
       - created_at
+      - expires_at
+      - failure_reason
       - id
       - method
+      - purpose
       - reference
       - status
       - updated_at
@@ -3619,22 +5657,117 @@ components:
           type: integer
         method:
           allOf:
-          - $ref: '#/components/schemas/MethodEnum'
+          - $ref: '#/components/schemas/PaymentMethodEnum'
           default: cash
       required:
       - booking
+    PaymentMethodEnum:
+      enum:
+      - cash
+      - jazzcash
+      - easypaisa
+      type: string
+      description: |-
+        * `cash` - Cash
+        * `jazzcash` - JazzCash
+        * `easypaisa` - Easypaisa
     PaymentStatusEnum:
       enum:
       - pending
       - completed
       - failed
       - disputed
+      - expired
       type: string
       description: |-
         * `pending` - Awaiting confirmation
         * `completed` - Completed
         * `failed` - Failed
         * `disputed` - Disputed
+        * `expired` - Expired
+    PaymentWithCheckout:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        purpose:
+          allOf:
+          - $ref: '#/components/schemas/PurposeEnum'
+          readOnly: true
+        booking:
+          type: integer
+          readOnly: true
+          nullable: true
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          readOnly: true
+        method:
+          allOf:
+          - $ref: '#/components/schemas/PaymentMethodEnum'
+          readOnly: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/PaymentStatusEnum'
+          readOnly: true
+          default: pending
+        reference:
+          type: string
+          readOnly: true
+        failure_reason:
+          type: string
+          readOnly: true
+        expires_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        confirmed_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        checkout:
+          allOf:
+          - $ref: '#/components/schemas/Checkout'
+          readOnly: true
+          nullable: true
+          description: 'For JazzCash/Easypaisa: POST these fields to `url` (e.g. in
+            a WebView). Null for cash.'
+      required:
+      - amount
+      - booking
+      - checkout
+      - confirmed_at
+      - created_at
+      - expires_at
+      - failure_reason
+      - id
+      - method
+      - purpose
+      - reference
+      - status
+      - updated_at
+    PlatformEnum:
+      enum:
+      - android
+      - ios
+      - web
+      type: string
+      description: |-
+        * `android` - Android
+        * `ios` - iOS
+        * `web` - Web
     PlatformSettings:
       type: object
       properties:
@@ -3642,6 +5775,14 @@ components:
           type: string
           format: decimal
           pattern: ^-?\d{0,3}(?:\.\d{0,2})?$
+        emergency_fee:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          description: Flat fee added to emergency (urgent) bookings. Kept by the
+            platform.
+        emergency_enabled:
+          type: boolean
         updated_at:
           type: string
           format: date-time
@@ -3687,6 +5828,9 @@ components:
         completed_jobs_count:
           type: integer
           readOnly: true
+        plan_badge:
+          type: string
+          readOnly: true
         services:
           type: array
           items:
@@ -3700,10 +5844,33 @@ components:
       - full_name
       - id
       - is_verified
+      - plan_badge
       - profile_picture
       - rating_count
       - service_area
       - services
+    PurchaseStatusEnum:
+      enum:
+      - pending_payment
+      - active
+      - expired
+      - cancelled
+      type: string
+      description: |-
+        * `pending_payment` - Awaiting payment
+        * `active` - Active
+        * `expired` - Expired
+        * `cancelled` - Cancelled
+    PurposeEnum:
+      enum:
+      - booking
+      - subscription
+      - featured_listing
+      type: string
+      description: |-
+        * `booking` - Booking
+        * `subscription` - Worker subscription
+        * `featured_listing` - Featured listing
     RegisterRequest:
       type: object
       properties:
@@ -3917,6 +6084,15 @@ components:
           pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
           readOnly: true
           nullable: true
+        is_emergency:
+          type: boolean
+          readOnly: true
+        emergency_fee:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          readOnly: true
+          description: Locked at request creation from platform settings.
         status:
           allOf:
           - $ref: '#/components/schemas/ServiceStatusEnum'
@@ -3964,8 +6140,10 @@ components:
       - category_name
       - created_at
       - description
+      - emergency_fee
       - id
       - images
+      - is_emergency
       - latitude
       - longitude
       - matched_workers_count
@@ -4011,6 +6189,8 @@ components:
           format: decimal
           pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
           nullable: true
+        is_emergency:
+          type: boolean
         images:
           type: array
           items:
@@ -4055,6 +6235,135 @@ components:
         * `booked` - Booked
         * `cancelled` - Cancelled
         * `expired` - Expired
+    SubscribeRequest:
+      type: object
+      properties:
+        plan:
+          type: integer
+        method:
+          $ref: '#/components/schemas/OnlinePaymentMethodEnum'
+      required:
+      - plan
+    SubscribeResponse:
+      type: object
+      properties:
+        subscription:
+          $ref: '#/components/schemas/WorkerSubscription'
+        checkout:
+          allOf:
+          - $ref: '#/components/schemas/Checkout'
+          nullable: true
+      required:
+      - checkout
+      - subscription
+    SubscriptionPlan:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 60
+        slug:
+          type: string
+          maxLength: 60
+          pattern: ^[-a-zA-Z0-9_]+$
+        description:
+          type: string
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        duration_days:
+          type: integer
+          maximum: 32767
+          minimum: 1
+        commission_percent:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,2})?$
+          nullable: true
+          description: Overrides the platform commission for subscribers. Blank =
+            platform default.
+        daily_offer_limit:
+          type: integer
+          maximum: 32767
+          minimum: 0
+          nullable: true
+          description: Max offers per day. Blank = unlimited.
+        benefits: {}
+        badge:
+          type: string
+          description: e.g. 'PRO' shown on the worker card.
+          maxLength: 30
+        is_default:
+          type: boolean
+          description: Plan applied to workers without a subscription.
+        is_active:
+          type: boolean
+        sort_order:
+          type: integer
+          maximum: 32767
+          minimum: 0
+      required:
+      - id
+      - name
+      - price
+      - slug
+    SubscriptionPlanRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 60
+        slug:
+          type: string
+          minLength: 1
+          maxLength: 60
+          pattern: ^[-a-zA-Z0-9_]+$
+        description:
+          type: string
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        duration_days:
+          type: integer
+          maximum: 32767
+          minimum: 1
+        commission_percent:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,2})?$
+          nullable: true
+          description: Overrides the platform commission for subscribers. Blank =
+            platform default.
+        daily_offer_limit:
+          type: integer
+          maximum: 32767
+          minimum: 0
+          nullable: true
+          description: Max offers per day. Blank = unlimited.
+        benefits: {}
+        badge:
+          type: string
+          description: e.g. 'PRO' shown on the worker card.
+          maxLength: 30
+        is_default:
+          type: boolean
+          description: Plan applied to workers without a subscription.
+        is_active:
+          type: boolean
+        sort_order:
+          type: integer
+          maximum: 32767
+          minimum: 0
+      required:
+      - name
+      - price
+      - slug
     SuspendUserRequest:
       type: object
       properties:
@@ -4083,6 +6392,20 @@ components:
           minLength: 1
       required:
       - refresh
+    TrailPoint:
+      type: object
+      properties:
+        latitude:
+          type: string
+        longitude:
+          type: string
+        recorded_at:
+          type: string
+          format: date-time
+      required:
+      - latitude
+      - longitude
+      - recorded_at
     TypeEnum:
       enum:
       - new_request
@@ -4096,6 +6419,10 @@ components:
       - booking_completed
       - request_cancelled
       - payment
+      - chat_message
+      - subscription
+      - featured
+      - complaint
       - review
       - verification
       - system
@@ -4112,6 +6439,10 @@ components:
         * `booking_completed` - Booking completed
         * `request_cancelled` - Request cancelled
         * `payment` - Payment
+        * `chat_message` - New chat message
+        * `subscription` - Subscription
+        * `featured` - Featured listing
+        * `complaint` - Complaint update
         * `review` - Review
         * `verification` - Account verification
         * `system` - System
@@ -4476,6 +6807,11 @@ components:
         worker_service_area:
           type: string
           readOnly: true
+        is_sponsored:
+          type: boolean
+          readOnly: true
+          default: false
+          description: Paid featured placement. The app must label it 'Sponsored'.
         created_at:
           type: string
           format: date-time
@@ -4485,6 +6821,7 @@ components:
       - category_name
       - created_at
       - id
+      - is_sponsored
       - worker_completed_jobs
       - worker_experience_years
       - worker_id
@@ -4551,6 +6888,61 @@ components:
           type: boolean
       required:
       - category
+    WorkerSubscription:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        worker:
+          type: integer
+          readOnly: true
+        worker_name:
+          type: string
+          readOnly: true
+        plan:
+          allOf:
+          - $ref: '#/components/schemas/SubscriptionPlan'
+          readOnly: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/PurchaseStatusEnum'
+          readOnly: true
+          default: pending_payment
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          readOnly: true
+        starts_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        ends_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        payment:
+          allOf:
+          - $ref: '#/components/schemas/Payment'
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - amount
+      - created_at
+      - ends_at
+      - id
+      - payment
+      - plan
+      - starts_at
+      - status
+      - worker
+      - worker_name
   securitySchemes:
     jwtAuth:
       type: http
