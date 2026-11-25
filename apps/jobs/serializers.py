@@ -26,8 +26,12 @@ class ServiceRequestCreateSerializer(serializers.ModelSerializer):
         child=serializers.ImageField(validators=[validate_image_upload]), required=False, write_only=True,
         max_length=settings.MAX_REQUEST_IMAGES,
     )
-    latitude = serializers.DecimalField(max_digits=9, decimal_places=6, min_value=-90, max_value=90)
-    longitude = serializers.DecimalField(max_digits=9, decimal_places=6, min_value=-180, max_value=180)
+    latitude = serializers.DecimalField(max_digits=9, decimal_places=6, min_value=-90, max_value=90, required=False)
+    longitude = serializers.DecimalField(max_digits=9, decimal_places=6, min_value=-180, max_value=180,
+                                         required=False)
+    saved_address = serializers.IntegerField(
+        required=False, write_only=True,
+        help_text="One of your saved addresses. Fills latitude, longitude, address and area (they can be left out).")
     worker = serializers.PrimaryKeyRelatedField(
         source="invited_worker", required=False, allow_null=True, write_only=True,
         queryset=WorkerProfile.objects.select_related("user").filter(
@@ -40,10 +44,11 @@ class ServiceRequestCreateSerializer(serializers.ModelSerializer):
         model = ServiceRequest
         fields = [
             "id", "category", "title", "description", "latitude", "longitude", "address", "area",
-            "preferred_time", "duration_minutes", "budget", "is_emergency", "images", "worker",
+            "preferred_time", "duration_minutes", "budget", "is_emergency", "images", "worker", "saved_address",
         ]
         read_only_fields = ["id"]
         extra_kwargs = {
+            "address": {"required": False},
             "budget": {"min_value": Decimal("0")},
             "duration_minutes": {"min_value": 30, "max_value": 480, "required": False},
         }
@@ -66,6 +71,24 @@ class ServiceRequestCreateSerializer(serializers.ModelSerializer):
         if len(value) < 10:
             raise serializers.ValidationError(_("Please describe the problem in at least 10 characters."))
         return value
+
+    def validate(self, attrs):
+        saved_id = attrs.pop("saved_address", None)
+        if saved_id is not None:
+            from apps.addresses.models import SavedAddress
+
+            request = self.context.get("request")
+            saved = SavedAddress.objects.filter(pk=saved_id, user=getattr(request, "user", None)).first()
+            if saved is None:
+                raise serializers.ValidationError({"saved_address": _("This saved address was not found.")})
+            attrs.update(latitude=saved.latitude, longitude=saved.longitude, address=saved.address)
+            attrs.setdefault("area", saved.area)
+            if not attrs["area"]:
+                attrs["area"] = saved.area
+        missing = {k: _("This field is required.") for k in ("latitude", "longitude", "address") if not attrs.get(k)}
+        if missing:
+            raise serializers.ValidationError(missing)
+        return attrs
 
 
 class ServiceRequestUpdateSerializer(serializers.ModelSerializer):
