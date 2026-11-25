@@ -19,6 +19,7 @@ String? notificationTarget(AppNotification n, {required bool isWorker}) {
   if (n.type == 'verification' && isWorker) return '/worker/profile';
   if (n.type == 'subscription' && isWorker) return '/worker/plans';
   if (n.type == 'complaint') return '/complaints';
+  if (d['recurring_id'] != null) return '/recurring';
   return null;
 }
 

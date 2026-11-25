@@ -947,3 +947,74 @@ class WorkerSlot {
   final DateTime end;
   final bool free;
 }
+
+/// One visit of a repeating job and the request posted for it.
+class RecurringVisit {
+  RecurringVisit({required this.id, this.scheduledFor, required this.outcome, this.note = '', this.requestId,
+      this.bookingId});
+
+  factory RecurringVisit.fromJson(Map<String, dynamic> j) => RecurringVisit(
+        id: parseInt(j['id']),
+        scheduledFor: parseDate(j['scheduled_for']),
+        outcome: str(j['outcome']),
+        note: str(j['note']),
+        requestId: j['request_id'] == null ? null : parseInt(j['request_id']),
+        bookingId: j['booking_id'] == null ? null : parseInt(j['booking_id']),
+      );
+
+  final int id;
+  final DateTime? scheduledFor;
+
+  /// worker (sent to the usual worker), all (sent to every worker nearby) or failed.
+  final String outcome;
+  final String note;
+  final int? requestId;
+  final int? bookingId;
+}
+
+/// A job that repeats every week, every two weeks or every month, normally with the same worker.
+///
+/// The customer sees everything. The worker sees no address: [customerName] and [area] only.
+class RecurringJob {
+  RecurringJob({required this.id, required this.title, required this.categoryName, this.area = '',
+      this.address = '', this.durationMinutes = 120, this.budget, required this.frequency, this.nextVisit,
+      required this.status, this.workerId, this.workerName, this.customerName = '', this.recentVisits = const []});
+
+  factory RecurringJob.fromJson(Map<String, dynamic> j) {
+    final w = j['worker'] == null ? null : asMap(j['worker']);
+    return RecurringJob(
+      id: parseInt(j['id']),
+      title: str(j['title']),
+      categoryName: str(j['category_name']),
+      area: str(j['area']),
+      address: str(j['address']),
+      durationMinutes: parseInt(j['duration_minutes'], 120),
+      budget: j['budget'] as String?,
+      frequency: str(j['frequency']),
+      nextVisit: parseDate(j['next_visit']),
+      status: str(j['status']),
+      workerId: w == null ? null : parseInt(w['id']),
+      workerName: w == null ? null : str(w['full_name']),
+      customerName: str(j['customer_name']),
+      recentVisits: parseList(j['recent_visits'], RecurringVisit.fromJson),
+    );
+  }
+
+  final int id;
+  final String title;
+  final String categoryName;
+  final String area;
+  final String address;
+  final int durationMinutes;
+  final String? budget;
+  final String frequency;
+  final DateTime? nextVisit;
+  final String status;
+  final int? workerId;
+  final String? workerName;
+  final String customerName;
+  final List<RecurringVisit> recentVisits;
+
+  bool get isActive => status == 'active';
+  bool get isPaused => status == 'paused';
+}

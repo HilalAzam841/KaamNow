@@ -39,6 +39,7 @@
       "amount": {}
     }
   },
+  "anyWorkerNearby": "Any free worker nearby",
   "appName": "KaamNow",
   "appVersion": "KaamNow {version}",
   "@appVersion": {
@@ -152,6 +153,7 @@
   "cannotTakeJobHint": "The customer will be told, and the job goes to other workers nearby.",
   "cannotTakeJobOk": "Pass on it",
   "cannotTakeJobQ": "Pass on this job?",
+  "cantDoThisAnyMore": "I cannot do this any more",
   "cashReceivedQ": "Cash received?",
   "ccAppIssue": "Problem with the app",
   "ccBehaviour": "Behaviour",
@@ -163,6 +165,7 @@
   "ccPayment": "Payment problem",
   "ccServiceQuality": "Poor service quality",
   "change": "Change",
+  "changeHowOften": "Change how often",
   "changePassword": "Change password",
   "changePhoto": "Change photo",
   "chat": "Chat",
@@ -425,6 +428,7 @@
   },
   "filterActive": "Active",
   "finishPayingNewTab": "Finish paying in the new tab. Your plan activates once it is confirmed.",
+  "firstVisit": "First visit",
   "forgotCodeHint": "If {phone} has a KaamNow account, we have sent it a code by SMS.",
   "@forgotCodeHint": {
     "placeholders": {
@@ -446,6 +450,9 @@
       }
     }
   },
+  "freqBiweekly": "Every two weeks",
+  "freqMonthly": "Every month",
+  "freqWeekly": "Every week",
   "fromPrice": "from {price}",
   "@fromPrice": {
     "placeholders": {
@@ -474,6 +481,7 @@
   },
   "howLongJob": "How long will the job take?",
   "howLongJobHelp": "A rough guess. Workers keep this time free for you.",
+  "howOften": "How often?",
   "howToInstall": "How to install",
   "iWantTo": "I want to",
   "iban": "IBAN",
@@ -526,6 +534,7 @@
   "jobCompleted": "Job completed.",
   "jobIsBooked": "This job is booked",
   "jobLocation": "Job location",
+  "jobNowRepeats": "This job now repeats.",
   "jobNumberPrice": "Job #{id} · {price}",
   "@jobNumberPrice": {
     "placeholders": {
@@ -576,6 +585,16 @@
       }
     }
   },
+  "leaveRepeatingBody": "{name} will be told, and future visits will go to other workers nearby.",
+  "@leaveRepeatingBody": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "leaveRepeatingQ": "Stop doing this job?",
+  "leftRepeating": "Done. You will not get these visits any more.",
   "live": "Live",
   "liveTracking": "Live tracking",
   "loadMore": "Load more",
@@ -681,6 +700,14 @@
   },
   "networkError": "Could not reach KaamNow. Check your connection.",
   "newPassword": "New password",
+  "nextVisitOn": "Next visit: {when}",
+  "@nextVisitOn": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
   "no": "No",
   "noActiveBookings": "No active bookings",
   "noAlertsYet": "No alerts yet",
@@ -697,6 +724,9 @@
   "noOffersHereHint": "Offers you send on jobs appear here.",
   "noOpenJobs": "No open jobs right now",
   "noOpenJobsHint": "New jobs in your area and services will show up here, and you will get an alert.",
+  "noRepeatingJobs": "No repeating jobs",
+  "noRepeatingJobsCustomer": "Open a booking and tap Repeat this job to have it done every week or month.",
+  "noRepeatingJobsWorker": "When a customer repeats a job with you, it shows here.",
   "noRequestsHint": "Post a job to get prices from nearby workers.",
   "noRequestsYet": "No requests yet",
   "noReviewsYet": "No reviews yet.",
@@ -775,6 +805,8 @@
   "passwordChanged": "Password changed",
   "passwordChangedShort": "Password changed.",
   "passwordsDontMatch": "The passwords do not match",
+  "pauseRepeating": "Pause",
+  "pausedRepeating": "Paused. No visits until you resume.",
   "payCash": "Pay the worker in cash. They will confirm when they receive it.",
   "payCommission": "Pay commission",
   "payCommissionOffice": "Pay online when available, or hand it to the KaamNow office and they will record it.",
@@ -872,6 +904,7 @@
   "reasonOptional": "Reason (optional)",
   "received": "Received",
   "recentJobs": "Recent jobs",
+  "recentVisits": "Recent visits",
   "reconnecting": "Reconnecting…",
   "refundedToCustomer": "Refunded to the customer: {amount}",
   "@refundedToCustomer": {
@@ -905,6 +938,18 @@
     }
   },
   "repeatNewPassword": "Repeat new password",
+  "repeatSheetHint": "Two days before each visit, {name} gets the job as a book-again request. If they are not free, it goes to other workers nearby. You still accept an offer each time.",
+  "@repeatSheetHint": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "repeatThisJob": "Repeat this job",
+  "repeatingJobs": "Repeating jobs",
+  "repeatingJobsCustomerHint": "Jobs that repeat with the same worker",
+  "repeatingJobsWorkerHint": "Customers who want you every time",
   "reportBooking": "Report booking #{id}",
   "@reportBooking": {
     "placeholders": {
@@ -935,6 +980,8 @@
   "resetLinkIncompleteHint": "Open the link from the email again, or ask for a new one from the login screen.",
   "resetLinkSent": "If that number has an account with an email, a reset link is on its way.",
   "resetPassword": "Reset password",
+  "resumeRepeating": "Resume",
+  "resumedRepeating": "Resumed.",
   "reviewsHeading": "Reviews ({n})",
   "@reviewsHeading": {
     "placeholders": {
@@ -1013,6 +1060,8 @@
   "shareLiveLocation": "Share my live location with the customer",
   "shortBio": "Short bio",
   "sixDigitCode": "6-digit code from the customer",
+  "skipNextVisit": "Skip next visit",
+  "skippedNextVisit": "Next visit skipped.",
   "smsCode": "6-digit code",
   "somethingWentWrong": "Something went wrong.",
   "somethingWrong": "Something went wrong.",
@@ -1022,6 +1071,7 @@
   "sortMostExperience": "Most experience",
   "sortMostJobs": "Most jobs",
   "sortNearest": "Nearest",
+  "startRepeating": "Start repeating",
   "startWork": "Start work",
   "startingPriceOptional": "Starting price (optional)",
   "statusAccepted": "Accepted",
@@ -1041,6 +1091,7 @@
   "statusOnTheWay": "On the way",
   "statusOpen": "Open",
   "statusPaid": "Paid",
+  "statusPaused": "Paused",
   "statusPending": "Pending",
   "statusPendingPayment": "Awaiting payment",
   "statusRefunded": "Refunded",
@@ -1056,6 +1107,10 @@
   "statusVerified": "Verified",
   "statusWithdrawn": "Withdrawn",
   "stopGettingJobs": "You will stop getting these jobs.",
+  "stopRepeating": "Stop repeating",
+  "stopRepeatingBody": "No more visits will be posted. Jobs already posted stay as they are.",
+  "stopRepeatingQ": "Stop repeating this job?",
+  "stoppedRepeating": "Stopped.",
   "subject": "Subject",
   "submit": "Submit",
   "supportEmail": "Support: {email}",
@@ -1152,6 +1207,9 @@
   "verificationDocuments": "Verification documents",
   "verificationRejected": "Verification was rejected",
   "verifiedByKaamnow": "Verified by KaamNow",
+  "visitFailed": "Could not be posted",
+  "visitSentToAll": "Sent to workers nearby",
+  "visitSentToWorker": "Sent to your worker",
   "waitingForCounter": "Waiting for {name} to respond to your counter offer.",
   "@waitingForCounter": {
     "placeholders": {
@@ -1193,6 +1251,14 @@
         "type": "String"
       },
       "day": {
+        "type": "String"
+      }
+    }
+  },
+  "withWorkerName": "With {name}",
+  "@withWorkerName": {
+    "placeholders": {
+      "name": {
         "type": "String"
       }
     }

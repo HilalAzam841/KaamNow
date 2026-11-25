@@ -42,6 +42,7 @@ api_v1 = [
     path("complaints/", include("apps.support.urls")),
     path("promos/", include("apps.promotions.urls")),
     path("favourites/", include("apps.favourites.urls")),
+    path("recurring-jobs/", include("apps.recurring.urls")),
     path("referrals/", include(referral_urlpatterns)),
     path("admin/", include("apps.dashboard.urls")),
 ]

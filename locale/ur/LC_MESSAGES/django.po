@@ -1042,6 +1042,96 @@ msgstr "دعوت کا انعام"
 msgid "You can only check your own bookings."
 msgstr "آپ صرف اپنی بکنگ چیک کر سکتے ہیں۔"
 
+#: apps/recurring/serializers.py
+msgid "The first visit must be at least two hours from now."
+msgstr "پہلی بار کم از کم دو گھنٹے بعد کا وقت ہونا چاہیے۔"
+
+#: apps/recurring/serializers.py
+msgid "The first visit must be within the next 60 days."
+msgstr "پہلی بار اگلے 60 دنوں کے اندر ہونی چاہیے۔"
+
+#: apps/recurring/services.py
+msgid "Only the customer can change this repeating job."
+msgstr "صرف گاہک ہی اس دہرائے جانے والے کام کو بدل سکتا ہے۔"
+
+#: apps/recurring/services.py
+msgid "Only the customer can repeat this job."
+msgstr "صرف گاہک ہی یہ کام دہرا سکتا ہے۔"
+
+#: apps/recurring/services.py
+msgid "A cancelled job cannot be repeated."
+msgstr "منسوخ شدہ کام دہرایا نہیں جا سکتا۔"
+
+#: apps/recurring/services.py
+msgid "This job already repeats."
+msgstr "یہ کام پہلے ہی دہرایا جا رہا ہے۔"
+
+#: apps/recurring/services.py
+msgid "You can have up to 20 repeating jobs. Cancel one first."
+msgstr "آپ زیادہ سے زیادہ 20 دہرائے جانے والے کام رکھ سکتے ہیں۔ پہلے کوئی ایک بند کریں۔"
+
+#: apps/recurring/services.py
+#, python-brace-format
+msgid "{name} wants you every time"
+msgstr "{name} ہر بار آپ کو چاہتے ہیں"
+
+#: apps/recurring/services.py
+#, python-brace-format
+msgid "\"{title}\" now repeats. You will get each visit as a book-again job two days before."
+msgstr "\"{title}\" اب دہرایا جائے گا۔ ہر بار آپ کو یہ کام دو دن پہلے دوبارہ بکنگ کے طور پر ملے گا۔"
+
+#: apps/recurring/services.py
+msgid "Only an active repeating job can be paused."
+msgstr "صرف جاری دہرایا جانے والا کام روکا جا سکتا ہے۔"
+
+#: apps/recurring/services.py
+msgid "Only a paused repeating job can be resumed."
+msgstr "صرف رکا ہوا دہرایا جانے والا کام دوبارہ شروع کیا جا سکتا ہے۔"
+
+#: apps/recurring/services.py
+msgid "This repeating job is already cancelled."
+msgstr "یہ دہرایا جانے والا کام پہلے ہی بند ہو چکا ہے۔"
+
+#: apps/recurring/services.py
+msgid "Only an active repeating job can skip a visit."
+msgstr "صرف جاری دہرائے جانے والے کام میں ایک بار چھوڑی جا سکتی ہے۔"
+
+#: apps/recurring/services.py
+msgid "This repeating job is not yours."
+msgstr "یہ دہرایا جانے والا کام آپ کا نہیں ہے۔"
+
+#: apps/recurring/services.py
+#, python-brace-format
+msgid "{name} stopped your repeating job"
+msgstr "{name} نے آپ کا دہرایا جانے والا کام چھوڑ دیا"
+
+#: apps/recurring/services.py
+#, python-brace-format
+msgid "Future visits of \"{title}\" will go to every free worker nearby."
+msgstr "\"{title}\" کا آئندہ کام قریب کے ہر فارغ ورکر کو جائے گا۔"
+
+#: apps/recurring/services.py
+msgid "Your usual worker is not free"
+msgstr "آپ کا مستقل ورکر فارغ نہیں ہے"
+
+#: apps/recurring/services.py
+#, python-brace-format
+msgid "{name} cannot come for \"{title}\" then, so we sent it to other workers nearby."
+msgstr "{name} اس وقت \"{title}\" کے لیے نہیں آ سکتے، اس لیے ہم نے یہ قریب کے دوسرے ورکرز کو بھیج دیا۔"
+
+#: apps/recurring/services.py
+msgid "A repeating job could not be posted"
+msgstr "ایک دہرایا جانے والا کام پوسٹ نہیں ہو سکا"
+
+#: apps/recurring/services.py
+#, python-brace-format
+msgid "\"{title}\": {reason}"
+msgstr "\"{title}\": {reason}"
+
+#: apps/recurring/services.py
+msgid "This repeating job is cancelled."
+msgstr "یہ دہرایا جانے والا کام بند ہو چکا ہے۔"
+
 #: apps/reminders/services.py
 #, python-brace-format
 msgid "today at {time}"

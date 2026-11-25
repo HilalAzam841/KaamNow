@@ -212,6 +212,12 @@ abstract class AppLocalizations {
   /// **'Amount due: {amount}'**
   String amountDue(Object amount);
 
+  /// No description provided for @anyWorkerNearby.
+  ///
+  /// In en, this message translates to:
+  /// **'Any free worker nearby'**
+  String get anyWorkerNearby;
+
   /// No description provided for @appName.
   ///
   /// In en, this message translates to:
@@ -506,6 +512,12 @@ abstract class AppLocalizations {
   /// **'Pass on this job?'**
   String get cannotTakeJobQ;
 
+  /// No description provided for @cantDoThisAnyMore.
+  ///
+  /// In en, this message translates to:
+  /// **'I cannot do this any more'**
+  String get cantDoThisAnyMore;
+
   /// No description provided for @cashReceivedQ.
   ///
   /// In en, this message translates to:
@@ -571,6 +583,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Change'**
   String get change;
+
+  /// No description provided for @changeHowOften.
+  ///
+  /// In en, this message translates to:
+  /// **'Change how often'**
+  String get changeHowOften;
 
   /// No description provided for @changePassword.
   ///
@@ -1220,6 +1238,12 @@ abstract class AppLocalizations {
   /// **'Finish paying in the new tab. Your plan activates once it is confirmed.'**
   String get finishPayingNewTab;
 
+  /// No description provided for @firstVisit.
+  ///
+  /// In en, this message translates to:
+  /// **'First visit'**
+  String get firstVisit;
+
   /// No description provided for @forgotCodeHint.
   ///
   /// In en, this message translates to:
@@ -1261,6 +1285,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Free workers on {day}'**
   String freeWorkersOn(String day);
+
+  /// No description provided for @freqBiweekly.
+  ///
+  /// In en, this message translates to:
+  /// **'Every two weeks'**
+  String get freqBiweekly;
+
+  /// No description provided for @freqMonthly.
+  ///
+  /// In en, this message translates to:
+  /// **'Every month'**
+  String get freqMonthly;
+
+  /// No description provided for @freqWeekly.
+  ///
+  /// In en, this message translates to:
+  /// **'Every week'**
+  String get freqWeekly;
 
   /// No description provided for @fromPrice.
   ///
@@ -1339,6 +1381,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'A rough guess. Workers keep this time free for you.'**
   String get howLongJobHelp;
+
+  /// No description provided for @howOften.
+  ///
+  /// In en, this message translates to:
+  /// **'How often?'**
+  String get howOften;
 
   /// No description provided for @howToInstall.
   ///
@@ -1484,6 +1532,12 @@ abstract class AppLocalizations {
   /// **'Job location'**
   String get jobLocation;
 
+  /// No description provided for @jobNowRepeats.
+  ///
+  /// In en, this message translates to:
+  /// **'This job now repeats.'**
+  String get jobNowRepeats;
+
   /// No description provided for @jobNumberPrice.
   ///
   /// In en, this message translates to:
@@ -1567,6 +1621,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Last job for you: {date}'**
   String lastBooked(String date);
+
+  /// No description provided for @leaveRepeatingBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} will be told, and future visits will go to other workers nearby.'**
+  String leaveRepeatingBody(String name);
+
+  /// No description provided for @leaveRepeatingQ.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop doing this job?'**
+  String get leaveRepeatingQ;
+
+  /// No description provided for @leftRepeating.
+  ///
+  /// In en, this message translates to:
+  /// **'Done. You will not get these visits any more.'**
+  String get leftRepeating;
 
   /// No description provided for @live.
   ///
@@ -1790,6 +1862,12 @@ abstract class AppLocalizations {
   /// **'New password'**
   String get newPassword;
 
+  /// No description provided for @nextVisitOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Next visit: {when}'**
+  String nextVisitOn(String when);
+
   /// No description provided for @no.
   ///
   /// In en, this message translates to:
@@ -1885,6 +1963,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'New jobs in your area and services will show up here, and you will get an alert.'**
   String get noOpenJobsHint;
+
+  /// No description provided for @noRepeatingJobs.
+  ///
+  /// In en, this message translates to:
+  /// **'No repeating jobs'**
+  String get noRepeatingJobs;
+
+  /// No description provided for @noRepeatingJobsCustomer.
+  ///
+  /// In en, this message translates to:
+  /// **'Open a booking and tap Repeat this job to have it done every week or month.'**
+  String get noRepeatingJobsCustomer;
+
+  /// No description provided for @noRepeatingJobsWorker.
+  ///
+  /// In en, this message translates to:
+  /// **'When a customer repeats a job with you, it shows here.'**
+  String get noRepeatingJobsWorker;
 
   /// No description provided for @noRequestsHint.
   ///
@@ -2119,6 +2215,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The passwords do not match'**
   String get passwordsDontMatch;
+
+  /// No description provided for @pauseRepeating.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause'**
+  String get pauseRepeating;
+
+  /// No description provided for @pausedRepeating.
+  ///
+  /// In en, this message translates to:
+  /// **'Paused. No visits until you resume.'**
+  String get pausedRepeating;
 
   /// No description provided for @payCash.
   ///
@@ -2408,6 +2516,12 @@ abstract class AppLocalizations {
   /// **'Recent jobs'**
   String get recentJobs;
 
+  /// No description provided for @recentVisits.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent visits'**
+  String get recentVisits;
+
   /// No description provided for @reconnecting.
   ///
   /// In en, this message translates to:
@@ -2486,6 +2600,36 @@ abstract class AppLocalizations {
   /// **'Repeat new password'**
   String get repeatNewPassword;
 
+  /// No description provided for @repeatSheetHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Two days before each visit, {name} gets the job as a book-again request. If they are not free, it goes to other workers nearby. You still accept an offer each time.'**
+  String repeatSheetHint(String name);
+
+  /// No description provided for @repeatThisJob.
+  ///
+  /// In en, this message translates to:
+  /// **'Repeat this job'**
+  String get repeatThisJob;
+
+  /// No description provided for @repeatingJobs.
+  ///
+  /// In en, this message translates to:
+  /// **'Repeating jobs'**
+  String get repeatingJobs;
+
+  /// No description provided for @repeatingJobsCustomerHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Jobs that repeat with the same worker'**
+  String get repeatingJobsCustomerHint;
+
+  /// No description provided for @repeatingJobsWorkerHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Customers who want you every time'**
+  String get repeatingJobsWorkerHint;
+
   /// No description provided for @reportBooking.
   ///
   /// In en, this message translates to:
@@ -2563,6 +2707,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Reset password'**
   String get resetPassword;
+
+  /// No description provided for @resumeRepeating.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume'**
+  String get resumeRepeating;
+
+  /// No description provided for @resumedRepeating.
+  ///
+  /// In en, this message translates to:
+  /// **'Resumed.'**
+  String get resumedRepeating;
 
   /// No description provided for @reviewsHeading.
   ///
@@ -2804,6 +2960,18 @@ abstract class AppLocalizations {
   /// **'6-digit code from the customer'**
   String get sixDigitCode;
 
+  /// No description provided for @skipNextVisit.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip next visit'**
+  String get skipNextVisit;
+
+  /// No description provided for @skippedNextVisit.
+  ///
+  /// In en, this message translates to:
+  /// **'Next visit skipped.'**
+  String get skippedNextVisit;
+
   /// No description provided for @smsCode.
   ///
   /// In en, this message translates to:
@@ -2857,6 +3025,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Nearest'**
   String get sortNearest;
+
+  /// No description provided for @startRepeating.
+  ///
+  /// In en, this message translates to:
+  /// **'Start repeating'**
+  String get startRepeating;
 
   /// No description provided for @startWork.
   ///
@@ -2972,6 +3146,12 @@ abstract class AppLocalizations {
   /// **'Paid'**
   String get statusPaid;
 
+  /// No description provided for @statusPaused.
+  ///
+  /// In en, this message translates to:
+  /// **'Paused'**
+  String get statusPaused;
+
   /// No description provided for @statusPending.
   ///
   /// In en, this message translates to:
@@ -3031,6 +3211,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'You will stop getting these jobs.'**
   String get stopGettingJobs;
+
+  /// No description provided for @stopRepeating.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop repeating'**
+  String get stopRepeating;
+
+  /// No description provided for @stopRepeatingBody.
+  ///
+  /// In en, this message translates to:
+  /// **'No more visits will be posted. Jobs already posted stay as they are.'**
+  String get stopRepeatingBody;
+
+  /// No description provided for @stopRepeatingQ.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop repeating this job?'**
+  String get stopRepeatingQ;
+
+  /// No description provided for @stoppedRepeating.
+  ///
+  /// In en, this message translates to:
+  /// **'Stopped.'**
+  String get stoppedRepeating;
 
   /// No description provided for @subject.
   ///
@@ -3308,6 +3512,24 @@ abstract class AppLocalizations {
   /// **'Verified by KaamNow'**
   String get verifiedByKaamnow;
 
+  /// No description provided for @visitFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not be posted'**
+  String get visitFailed;
+
+  /// No description provided for @visitSentToAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent to workers nearby'**
+  String get visitSentToAll;
+
+  /// No description provided for @visitSentToWorker.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent to your worker'**
+  String get visitSentToWorker;
+
   /// No description provided for @waitingForCounter.
   ///
   /// In en, this message translates to:
@@ -3427,6 +3649,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'When {name} is free on {day}'**
   String whenWorkerFree(String name, String day);
+
+  /// No description provided for @withWorkerName.
+  ///
+  /// In en, this message translates to:
+  /// **'With {name}'**
+  String withWorkerName(String name);
 
   /// No description provided for @withdraw.
   ///

@@ -77,6 +77,9 @@ class AppLocalizationsUr extends AppLocalizations {
   }
 
   @override
+  String get anyWorkerNearby => 'قریب کا کوئی بھی فارغ ورکر';
+
+  @override
   String get appName => 'کام ناؤ';
 
   @override
@@ -253,6 +256,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String get cannotTakeJobQ => 'یہ کام چھوڑ دیں؟';
 
   @override
+  String get cantDoThisAnyMore => 'میں اب یہ کام نہیں کر سکتا';
+
+  @override
   String get cashReceivedQ => 'نقد رقم مل گئی؟';
 
   @override
@@ -284,6 +290,9 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get change => 'تبدیل کریں';
+
+  @override
+  String get changeHowOften => 'کتنی بار، بدلیں';
 
   @override
   String get changePassword => 'پاس ورڈ تبدیل کریں';
@@ -676,6 +685,9 @@ class AppLocalizationsUr extends AppLocalizations {
       'نئے ٹیب میں ادائیگی مکمل کریں۔ تصدیق ہوتے ہی آپ کا پلان فعال ہو جائے گا۔';
 
   @override
+  String get firstVisit => 'پہلی بار';
+
+  @override
   String forgotCodeHint(String phone) {
     return 'اگر $phone کا کام ناؤ اکاؤنٹ ہے تو ہم نے اس پر SMS سے کوڈ بھیج دیا ہے۔';
   }
@@ -701,6 +713,15 @@ class AppLocalizationsUr extends AppLocalizations {
   String freeWorkersOn(String day) {
     return '$day کو فارغ ورکر';
   }
+
+  @override
+  String get freqBiweekly => 'ہر دو ہفتے';
+
+  @override
+  String get freqMonthly => 'ہر مہینے';
+
+  @override
+  String get freqWeekly => 'ہر ہفتے';
 
   @override
   String fromPrice(Object price) {
@@ -749,6 +770,9 @@ class AppLocalizationsUr extends AppLocalizations {
   @override
   String get howLongJobHelp =>
       'اندازاً بتائیں۔ ورکر یہ وقت آپ کے لیے خالی رکھیں گے۔';
+
+  @override
+  String get howOften => 'کتنی بار؟';
 
   @override
   String get howToInstall => 'انسٹال کرنے کا طریقہ';
@@ -836,6 +860,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String get jobLocation => 'کام کی جگہ';
 
   @override
+  String get jobNowRepeats => 'یہ کام اب دہرایا جائے گا۔';
+
+  @override
   String jobNumberPrice(Object id, Object price) {
     return 'کام نمبر $id · $price';
   }
@@ -894,6 +921,17 @@ class AppLocalizationsUr extends AppLocalizations {
   String lastBooked(String date) {
     return 'آپ کا آخری کام: $date';
   }
+
+  @override
+  String leaveRepeatingBody(String name) {
+    return '$name کو بتا دیا جائے گا، اور آئندہ کام قریب کے دوسرے ورکرز کو جائے گا۔';
+  }
+
+  @override
+  String get leaveRepeatingQ => 'یہ کام چھوڑ دیں؟';
+
+  @override
+  String get leftRepeating => 'ہو گیا۔ اب آپ کو یہ کام نہیں ملیں گے۔';
 
   @override
   String get live => 'لائیو';
@@ -1036,6 +1074,11 @@ class AppLocalizationsUr extends AppLocalizations {
   String get newPassword => 'نیا پاس ورڈ';
 
   @override
+  String nextVisitOn(String when) {
+    return 'اگلی بار: $when';
+  }
+
+  @override
   String get no => 'نہیں';
 
   @override
@@ -1086,6 +1129,17 @@ class AppLocalizationsUr extends AppLocalizations {
   @override
   String get noOpenJobsHint =>
       'آپ کے علاقے اور خدمات کے نئے کام یہاں نظر آئیں گے، اور آپ کو اطلاع ملے گی۔';
+
+  @override
+  String get noRepeatingJobs => 'کوئی دہرایا جانے والا کام نہیں';
+
+  @override
+  String get noRepeatingJobsCustomer =>
+      'کوئی بکنگ کھولیں اور \"یہ کام دہرائیں\" پر ٹیپ کریں تاکہ یہ ہر ہفتے یا مہینے ہو۔';
+
+  @override
+  String get noRepeatingJobsWorker =>
+      'جب کوئی گاہک آپ کے ساتھ کام دہرائے گا تو یہاں نظر آئے گا۔';
 
   @override
   String get noRequestsHint =>
@@ -1229,6 +1283,13 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get passwordsDontMatch => 'دونوں پاس ورڈ ایک جیسے نہیں ہیں';
+
+  @override
+  String get pauseRepeating => 'روکیں';
+
+  @override
+  String get pausedRepeating =>
+      'روک دیا گیا۔ دوبارہ شروع کرنے تک کوئی کام نہیں ہوگا۔';
 
   @override
   String get payCash =>
@@ -1404,6 +1465,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String get recentJobs => 'حالیہ کام';
 
   @override
+  String get recentVisits => 'حالیہ کام';
+
+  @override
   String get reconnecting => 'دوبارہ جڑ رہا ہے…';
 
   @override
@@ -1451,6 +1515,24 @@ class AppLocalizationsUr extends AppLocalizations {
   String get repeatNewPassword => 'نیا پاس ورڈ دوبارہ لکھیں';
 
   @override
+  String repeatSheetHint(String name) {
+    return 'ہر بار سے دو دن پہلے $name کو یہ کام دوبارہ بکنگ کی درخواست کے طور پر ملے گا۔ اگر وہ فارغ نہ ہوں تو یہ قریب کے دوسرے ورکرز کو جائے گا۔ ہر بار آپ خود آفر قبول کریں گے۔';
+  }
+
+  @override
+  String get repeatThisJob => 'یہ کام دہرائیں';
+
+  @override
+  String get repeatingJobs => 'دہرائے جانے والے کام';
+
+  @override
+  String get repeatingJobsCustomerHint =>
+      'ایک ہی ورکر کے ساتھ دہرائے جانے والے کام';
+
+  @override
+  String get repeatingJobsWorkerHint => 'وہ گاہک جو ہر بار آپ کو چاہتے ہیں';
+
+  @override
   String reportBooking(Object id) {
     return 'بکنگ نمبر $id رپورٹ کریں';
   }
@@ -1496,6 +1578,12 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get resetPassword => 'پاس ورڈ ری سیٹ کریں';
+
+  @override
+  String get resumeRepeating => 'دوبارہ شروع کریں';
+
+  @override
+  String get resumedRepeating => 'دوبارہ شروع ہو گیا۔';
 
   @override
   String reviewsHeading(Object n) {
@@ -1636,6 +1724,12 @@ class AppLocalizationsUr extends AppLocalizations {
   String get sixDigitCode => 'گاہک سے ملا 6 ہندسوں کا کوڈ';
 
   @override
+  String get skipNextVisit => 'اگلی بار چھوڑ دیں';
+
+  @override
+  String get skippedNextVisit => 'اگلی بار چھوڑ دی گئی۔';
+
+  @override
   String get smsCode => '6 ہندسوں کا کوڈ';
 
   @override
@@ -1661,6 +1755,9 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get sortNearest => 'سب سے قریب';
+
+  @override
+  String get startRepeating => 'دہرانا شروع کریں';
 
   @override
   String get startWork => 'کام شروع کریں';
@@ -1720,6 +1817,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String get statusPaid => 'ادا شدہ';
 
   @override
+  String get statusPaused => 'رکا ہوا';
+
+  @override
   String get statusPending => 'زیرِ التوا';
 
   @override
@@ -1750,6 +1850,19 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get stopGettingJobs => 'آپ کو یہ کام ملنا بند ہو جائیں گے۔';
+
+  @override
+  String get stopRepeating => 'دہرانا بند کریں';
+
+  @override
+  String get stopRepeatingBody =>
+      'مزید کوئی کام پوسٹ نہیں ہوگا۔ پہلے سے پوسٹ کیے گئے کام ویسے ہی رہیں گے۔';
+
+  @override
+  String get stopRepeatingQ => 'یہ کام دہرانا بند کریں؟';
+
+  @override
+  String get stoppedRepeating => 'بند کر دیا گیا۔';
 
   @override
   String get subject => 'موضوع';
@@ -1909,6 +2022,15 @@ class AppLocalizationsUr extends AppLocalizations {
   String get verifiedByKaamnow => 'کام ناؤ سے تصدیق شدہ';
 
   @override
+  String get visitFailed => 'پوسٹ نہیں ہو سکا';
+
+  @override
+  String get visitSentToAll => 'قریب کے ورکرز کو بھیجا گیا';
+
+  @override
+  String get visitSentToWorker => 'آپ کے ورکر کو بھیجا گیا';
+
+  @override
   String waitingForCounter(Object name) {
     return '$name کے جواب کا انتظار ہے۔';
   }
@@ -1976,6 +2098,11 @@ class AppLocalizationsUr extends AppLocalizations {
   @override
   String whenWorkerFree(String name, String day) {
     return '$day کو $name کب فارغ ہیں';
+  }
+
+  @override
+  String withWorkerName(String name) {
+    return '$name کے ساتھ';
   }
 
   @override

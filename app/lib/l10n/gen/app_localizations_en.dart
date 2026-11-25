@@ -78,6 +78,9 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get anyWorkerNearby => 'Any free worker nearby';
+
+  @override
   String get appName => 'KaamNow';
 
   @override
@@ -254,6 +257,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cannotTakeJobQ => 'Pass on this job?';
 
   @override
+  String get cantDoThisAnyMore => 'I cannot do this any more';
+
+  @override
   String get cashReceivedQ => 'Cash received?';
 
   @override
@@ -285,6 +291,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get change => 'Change';
+
+  @override
+  String get changeHowOften => 'Change how often';
 
   @override
   String get changePassword => 'Change password';
@@ -678,6 +687,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'Finish paying in the new tab. Your plan activates once it is confirmed.';
 
   @override
+  String get firstVisit => 'First visit';
+
+  @override
   String forgotCodeHint(String phone) {
     return 'If $phone has a KaamNow account, we have sent it a code by SMS.';
   }
@@ -703,6 +715,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String freeWorkersOn(String day) {
     return 'Free workers on $day';
   }
+
+  @override
+  String get freqBiweekly => 'Every two weeks';
+
+  @override
+  String get freqMonthly => 'Every month';
+
+  @override
+  String get freqWeekly => 'Every week';
 
   @override
   String fromPrice(Object price) {
@@ -751,6 +772,9 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get howLongJobHelp =>
       'A rough guess. Workers keep this time free for you.';
+
+  @override
+  String get howOften => 'How often?';
 
   @override
   String get howToInstall => 'How to install';
@@ -837,6 +861,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get jobLocation => 'Job location';
 
   @override
+  String get jobNowRepeats => 'This job now repeats.';
+
+  @override
   String jobNumberPrice(Object id, Object price) {
     return 'Job #$id · $price';
   }
@@ -895,6 +922,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String lastBooked(String date) {
     return 'Last job for you: $date';
   }
+
+  @override
+  String leaveRepeatingBody(String name) {
+    return '$name will be told, and future visits will go to other workers nearby.';
+  }
+
+  @override
+  String get leaveRepeatingQ => 'Stop doing this job?';
+
+  @override
+  String get leftRepeating => 'Done. You will not get these visits any more.';
 
   @override
   String get live => 'Live';
@@ -1035,6 +1073,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get newPassword => 'New password';
 
   @override
+  String nextVisitOn(String when) {
+    return 'Next visit: $when';
+  }
+
+  @override
   String get no => 'No';
 
   @override
@@ -1085,6 +1128,17 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get noOpenJobsHint =>
       'New jobs in your area and services will show up here, and you will get an alert.';
+
+  @override
+  String get noRepeatingJobs => 'No repeating jobs';
+
+  @override
+  String get noRepeatingJobsCustomer =>
+      'Open a booking and tap Repeat this job to have it done every week or month.';
+
+  @override
+  String get noRepeatingJobsWorker =>
+      'When a customer repeats a job with you, it shows here.';
 
   @override
   String get noRequestsHint => 'Post a job to get prices from nearby workers.';
@@ -1228,6 +1282,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get passwordsDontMatch => 'The passwords do not match';
+
+  @override
+  String get pauseRepeating => 'Pause';
+
+  @override
+  String get pausedRepeating => 'Paused. No visits until you resume.';
 
   @override
   String get payCash =>
@@ -1403,6 +1463,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get recentJobs => 'Recent jobs';
 
   @override
+  String get recentVisits => 'Recent visits';
+
+  @override
   String get reconnecting => 'Reconnecting…';
 
   @override
@@ -1451,6 +1514,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get repeatNewPassword => 'Repeat new password';
 
   @override
+  String repeatSheetHint(String name) {
+    return 'Two days before each visit, $name gets the job as a book-again request. If they are not free, it goes to other workers nearby. You still accept an offer each time.';
+  }
+
+  @override
+  String get repeatThisJob => 'Repeat this job';
+
+  @override
+  String get repeatingJobs => 'Repeating jobs';
+
+  @override
+  String get repeatingJobsCustomerHint =>
+      'Jobs that repeat with the same worker';
+
+  @override
+  String get repeatingJobsWorkerHint => 'Customers who want you every time';
+
+  @override
   String reportBooking(Object id) {
     return 'Report booking #$id';
   }
@@ -1496,6 +1577,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get resetPassword => 'Reset password';
+
+  @override
+  String get resumeRepeating => 'Resume';
+
+  @override
+  String get resumedRepeating => 'Resumed.';
 
   @override
   String reviewsHeading(Object n) {
@@ -1637,6 +1724,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sixDigitCode => '6-digit code from the customer';
 
   @override
+  String get skipNextVisit => 'Skip next visit';
+
+  @override
+  String get skippedNextVisit => 'Next visit skipped.';
+
+  @override
   String get smsCode => '6-digit code';
 
   @override
@@ -1662,6 +1755,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sortNearest => 'Nearest';
+
+  @override
+  String get startRepeating => 'Start repeating';
 
   @override
   String get startWork => 'Start work';
@@ -1721,6 +1817,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get statusPaid => 'Paid';
 
   @override
+  String get statusPaused => 'Paused';
+
+  @override
   String get statusPending => 'Pending';
 
   @override
@@ -1751,6 +1850,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get stopGettingJobs => 'You will stop getting these jobs.';
+
+  @override
+  String get stopRepeating => 'Stop repeating';
+
+  @override
+  String get stopRepeatingBody =>
+      'No more visits will be posted. Jobs already posted stay as they are.';
+
+  @override
+  String get stopRepeatingQ => 'Stop repeating this job?';
+
+  @override
+  String get stoppedRepeating => 'Stopped.';
 
   @override
   String get subject => 'Subject';
@@ -1908,6 +2020,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get verifiedByKaamnow => 'Verified by KaamNow';
 
   @override
+  String get visitFailed => 'Could not be posted';
+
+  @override
+  String get visitSentToAll => 'Sent to workers nearby';
+
+  @override
+  String get visitSentToWorker => 'Sent to your worker';
+
+  @override
   String waitingForCounter(Object name) {
     return 'Waiting for $name to respond to your counter offer.';
   }
@@ -1975,6 +2096,11 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String whenWorkerFree(String name, String day) {
     return 'When $name is free on $day';
+  }
+
+  @override
+  String withWorkerName(String name) {
+    return 'With $name';
   }
 
   @override

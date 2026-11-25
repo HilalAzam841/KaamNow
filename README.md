@@ -14,7 +14,7 @@ later, and talks to the backend only through the REST API and the booking WebSoc
 
 **Stage 1 (Backend MVP), Stage 2 (Advanced features) and Stage 3 (Flutter web client) are done,
 and Stage 4 adds the admin dashboard to the web app.** Every backend feature below has its business logic, REST endpoint(s), validation and
-automated tests. All 511 backend tests pass against PostgreSQL 16, and the Flutter app has 119
+automated tests. All 532 backend tests pass against PostgreSQL 16, and the Flutter app has 125
 unit and widget tests plus a browser end-to-end run (see `app/README.md`).
 
 ### Stage 1: Backend MVP
@@ -263,6 +263,17 @@ Fewer missed jobs: both sides are reminded before a job, and a no-show can be re
 | If the worker hasn't come 30 minutes after the start, the customer can report it. If the customer isn't there 30 minutes after the worker arrived, the worker can report it. Reporting cancels the booking, tells the other side and alerts admins. It can only be reported once per booking | `POST bookings/{id}/no-show/`, `no_show` on bookings (`you_can_report`, `opens_at`, `reported`), admin settings `no_show_grace_minutes` |
 | Admins see each report, how many reports the person has in total, and confirm or dismiss it. Dismissed reports don't count. Every review is audited | `GET admin/no-shows/`, `POST admin/no-shows/{id}/review/`, app: admin **No-shows** page |
 
+### Stage 20: repeating jobs
+
+For work that comes back (cleaning, AC service, gardening, tuition): a customer can have a job done every week, every two weeks or every month by the same worker, without posting it again each time.
+
+| Feature | Where |
+|---|---|
+| On any booking that wasn't cancelled, the customer taps **Repeat this job**, chooses how often and the first visit (2 hours to 60 days ahead). The job details and address are copied from the booking, and the worker is told | `POST recurring-jobs/from-booking/`, app: booking page → **Repeat this job** |
+| Two days before each visit, the job is posted as a book-again request for the usual worker, so only they see it. If they can't take it then (off that day, busy, offline, too far), it goes to every free worker nearby and the customer is told. If it can't be posted at all, the customer is told why. Each visit still goes through a normal offer and accept, so the price is agreed every time. A visit is never posted twice, and visits missed while the server was down are skipped, not posted late | Celery beat `create-recurring-visits` (every 15 minutes), `apps/recurring/services.py` |
+| The customer can skip the next visit, pause and resume (visits missed while paused are skipped), change how often or the next date or the budget, and stop repeating. Recent visits show where each one went | `GET recurring-jobs/`, `PATCH recurring-jobs/{id}/`, `POST recurring-jobs/{id}/skip-next/`, `/pause/`, `/resume/`, `/cancel/`, app: Account → **Repeating jobs** |
+| The worker sees the repeating jobs they do (customer's first name and area only, no address) and can step away. Future visits then go to every free worker nearby, and the customer is told | `POST recurring-jobs/{id}/leave/`, app: Account → **Repeating jobs** |
+
 **Before going live with online payments:** the JazzCash and Easypaisa adapters follow each
 gateway's published integration scheme and are covered by tests with simulated gateway responses.
 They have **not** been run against the real sandboxes yet, because that needs your merchant
@@ -302,6 +313,7 @@ apps/
   scheduling/           WorkingHours, TimeOff, free-time checks and time slots
   favourites/           FavouriteWorker, recent workers (book again)
   reminders/            BookingReminder, NoShowReport, reminder task
+  recurring/            RecurringJob, RecurringVisit, task that posts each visit
 docs/                   openapi.yaml, Postman collection
 scripts/                generate_postman.py
 app/                    Flutter client (web, Android, iPhone): lib/, test/, e2e/, integration_test/
@@ -377,7 +389,7 @@ docker compose up --build
 pytest -q
 ```
 
-The suite has 511 tests and needs a running PostgreSQL (Redis is not needed for tests). It uses the database settings from your
+The suite has 532 tests and needs a running PostgreSQL (Redis is not needed for tests). It uses the database settings from your
 `.env` and creates a separate `test_kaamnow` database. Coverage includes:
 
 - **Authentication**: registration validation, login, suspended accounts, token refresh rotation, logout blacklisting, password reset (single-use token, no account enumeration), throttling.
@@ -397,6 +409,7 @@ The suite has 511 tests and needs a running PostgreSQL (Redis is not needed for 
 - **Availability**: working hours, days off and overlapping bookings; alerts and the job feed only reach free workers; offer and accept refusals; emergency jobs; time slot counts; schedule permissions.
 - **Favourites and book again**: save, list, remove and privacy of saved workers; recent workers; only the chosen worker is alerted, sees and can offer on a book-again job; refusals with a reason and nothing saved; decline and open to everyone; one worker's free slots.
 - **Reminders and no-shows**: day and hour reminders to both sides exactly once, skipped cases, opting out, each user's language, optional SMS and SMS failures; no-show timing rules for both sides, one report per booking, admin review and audit.
+- **Repeating jobs**: repeat only your own, not-cancelled booking; first-visit limits; each visit posted once, two days ahead, to the usual worker or to everyone when they are not free (nothing half-made left behind); failures reported; missed visits skipped after downtime or a pause; pause, resume, skip, change and stop; the worker sees no address and can step away; notices in each user's language; monthly dates at month ends.
 - **Complaints** and **scheduled tasks** (including a check that every beat entry points to a registered task).
 
 CI (`.github/workflows/tests.yml`) runs lint, checks for missing migrations, validates the
@@ -436,6 +449,7 @@ be probed), `409` state conflict (already booked, wrong turn, and so on), `429` 
 | Services | `GET services/categories/` · `GET services/categories/{id}/` · admin `POST`/`PATCH` on categories · `GET/POST services/workers/` · `PATCH/DELETE services/workers/{id}/` |
 | Requests | `POST requests/` · `GET requests/` · `GET/PATCH requests/{id}/` · `POST requests/{id}/cancel/` · `GET requests/{id}/nearby-workers/` · `GET requests/slots/?category=&latitude=&longitude=&date=` · `POST requests/{id}/open-to-all/` · `POST requests/{id}/decline/` |
 | Favourites | `GET/POST favourites/` · `DELETE favourites/{worker_id}/` · `GET favourites/recent/` |
+| Repeating jobs | `GET recurring-jobs/` · `GET/PATCH recurring-jobs/{id}/` · `POST recurring-jobs/from-booking/` · `POST recurring-jobs/{id}/pause/` · `POST recurring-jobs/{id}/resume/` · `POST recurring-jobs/{id}/skip-next/` · `POST recurring-jobs/{id}/cancel/` · `POST recurring-jobs/{id}/leave/` (worker) |
 | Offers | `GET/POST requests/{id}/offers/` · `GET offers/` (worker's own, `?status=`) · `GET/PATCH offers/{id}/` · `POST offers/{id}/accept/` · `POST offers/{id}/reject/` · `POST offers/{id}/negotiate/` · `GET offers/{id}/negotiations/` |
 | Bookings | `GET bookings/` · `GET bookings/{id}/` · `POST bookings/{id}/status/` · `POST bookings/{id}/completion-otp/` · `POST bookings/{id}/complete/` · `POST bookings/{id}/cancel/` · `POST bookings/{id}/no-show/` |
 | Chat | `GET/POST bookings/{id}/messages/` · `POST bookings/{id}/messages/read/` |
@@ -454,7 +468,7 @@ Endpoints added beyond the original list, because the flow needs them: `password
 `bookings/{id}/completion-otp/`, `payments/{id}/confirm/`, `payments/earnings/`,
 the notification helpers, and the admin users, suspension, requests, commission settings and audit log endpoints.
 
-Postman: import `docs/KaamNow.postman_collection.json` (120 requests in 12 folders that follow the
+Postman: import `docs/KaamNow.postman_collection.json` (129 requests in 12 folders that follow the
 full flow; test scripts store tokens and ids automatically). Regenerate it with
 `python scripts/generate_postman.py`.
 

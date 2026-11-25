@@ -114,6 +114,13 @@ class AccountScreen extends StatelessWidget {
               onTap: () => context.push('/my-workers'),
             ),
           ListTile(
+            key: const Key('account-recurring'),
+            leading: const Icon(Icons.repeat),
+            title: Text(context.t.repeatingJobs),
+            subtitle: Text(u.isWorker ? context.t.repeatingJobsWorkerHint : context.t.repeatingJobsCustomerHint),
+            onTap: () => context.push('/recurring'),
+          ),
+          ListTile(
             key: const Key('account-invite'),
             leading: const Icon(Icons.card_giftcard),
             title: Text(context.t.inviteFriends),
