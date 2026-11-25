@@ -68,6 +68,7 @@ INSTALLED_APPS = [
     "apps.promotions",
     "apps.favourites",
     "apps.reminders",
+    "apps.recurring",
     "apps.scheduling",
 ]
 
@@ -241,6 +242,7 @@ SPECTACULAR_SETTINGS = {
         "ComplaintStatusChangeEnum": "apps.support.serializers.STATUS_CHANGE_CHOICES",
         "BookingStatusEnum": "apps.jobs.models.Booking.Status",
         "BookingStatusChangeEnum": "apps.jobs.serializers.STATUS_CHANGE_CHOICES",
+        "RecurringStatusEnum": "apps.recurring.models.RecurringJob.Status",
     },
 }
 
@@ -270,6 +272,7 @@ CELERY_BEAT_SCHEDULE = {
     "purge-old-locations": {"task": "apps.tracking.tasks.purge_old_locations", "schedule": 24 * 60 * 60},
     "purge-old-phone-codes": {"task": "apps.accounts.tasks.purge_old_phone_codes", "schedule": 6 * 60 * 60},
     "send-booking-reminders": {"task": "apps.reminders.tasks.send_booking_reminders", "schedule": 5 * 60},
+    "create-recurring-visits": {"task": "apps.recurring.tasks.create_recurring_visits", "schedule": 15 * 60},
 }
 
 # --- Firebase Cloud Messaging -----------------------------------------------
