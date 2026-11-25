@@ -18,6 +18,7 @@ from apps.accounts import services as account_services
 from apps.accounts.models import User, WorkerDocument, WorkerProfile
 from apps.accounts.serializers import AdminWorkerSerializer
 from apps.billing import services as billing_services
+from apps.billing import wallet
 from apps.billing.models import (
     Commission,
     FeaturedListing,
@@ -26,10 +27,16 @@ from apps.billing.models import (
     Payment,
     PlatformSettings,
     SubscriptionPlan,
+    WorkerSettlement,
     WorkerSubscription,
 )
 from apps.billing.serializers import (
     CommissionSerializer,
+    MarkPayoutPaidSerializer,
+    RecordCommissionSerializer,
+    RejectPayoutSerializer,
+    SettlementSerializer,
+    WorkerBalanceSerializer,
     FeaturedListingSerializer,
     FeaturedPlanSerializer,
     PlatformSettingsSerializer,
@@ -430,3 +437,59 @@ class OtherRevenueView(AdminAPIView):
             "active_featured_listings": FeaturedListing.objects.filter(status="active", ends_at__gt=now).count(),
             "open_complaints": Complaint.objects.filter(status__in=["open", "in_review"]).count(),
         })
+
+
+@extend_schema(tags=["admin"])
+class AdminSettlementViewSet(viewsets.ReadOnlyModelViewSet):
+    """Worker payouts and commission payments. Open payout requests: `?kind=payout&status=requested`."""
+
+    permission_classes = [IsPlatformAdmin]
+    serializer_class = SettlementSerializer
+    filterset_fields = ["kind", "status", "worker", "method"]
+    queryset = WorkerSettlement.objects.select_related("worker__user").prefetch_related("commissions")
+
+    @extend_schema(tags=["admin"], request=MarkPayoutPaidSerializer, responses={200: SettlementSerializer},
+                   summary="After sending the money: mark a payout paid with the transfer reference. Audited.")
+    @action(detail=True, methods=["post"], url_path="mark-paid")
+    def mark_paid(self, request, pk=None):
+        serializer = MarkPayoutPaidSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        settlement = wallet.mark_payout_paid(self.get_object(), request.user, serializer.validated_data["reference"])
+        audit(request.user, AuditLog.Action.PAYOUT_PAID, settlement, request, amount=money(settlement.amount),
+              worker_id=settlement.worker_id, reference=settlement.reference)
+        return Response(SettlementSerializer(settlement).data)
+
+    @extend_schema(tags=["admin"], request=RejectPayoutSerializer, responses={200: SettlementSerializer},
+                   summary="Decline a payout request; the balance goes back to the worker's wallet. Audited.")
+    @action(detail=True, methods=["post"])
+    def reject(self, request, pk=None):
+        serializer = RejectPayoutSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        settlement = wallet.reject_payout(self.get_object(), request.user, serializer.validated_data["reason"])
+        audit(request.user, AuditLog.Action.PAYOUT_REJECTED, settlement, request, amount=money(settlement.amount),
+              worker_id=settlement.worker_id, reason=settlement.note)
+        return Response(SettlementSerializer(settlement).data)
+
+
+class WorkerBalancesView(AdminAPIView):
+    @extend_schema(tags=["admin"], responses={200: WorkerBalanceSerializer(many=True)},
+                   parameters=[OpenApiParameter("owing", bool, description="true: workers who owe commission; "
+                                                "false: workers KaamNow owes")],
+                   summary="Unsettled balance per worker, most owed commission first.")
+    def get(self, request):
+        owing = {"true": True, "false": False}.get(request.query_params.get("owing", "").lower())
+        return Response(WorkerBalanceSerializer(wallet.balances(owing), many=True).data)
+
+
+class RecordCommissionView(AdminAPIView):
+    @extend_schema(tags=["admin"], request=RecordCommissionSerializer, responses={201: SettlementSerializer},
+                   summary="Record that a worker paid the commission they owe in cash or by bank transfer. Audited.")
+    def post(self, request, pk):
+        worker = get_object_or_404(WorkerProfile, pk=pk)
+        serializer = RecordCommissionSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        settlement = wallet.record_commission_received(worker, request.user, **serializer.validated_data)
+        audit(request.user, AuditLog.Action.COMMISSION_COLLECTED, settlement, request,
+              amount=money(settlement.amount), worker_id=worker.pk, method=settlement.method,
+              reference=settlement.reference)
+        return Response(SettlementSerializer(settlement).data, status=status.HTTP_201_CREATED)

@@ -110,6 +110,12 @@ abstract class AppLocalizations {
   /// **'About you'**
   String get aboutYou;
 
+  /// No description provided for @accountTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Account holder name'**
+  String get accountTitle;
+
   /// No description provided for @add.
   ///
   /// In en, this message translates to:
@@ -266,6 +272,12 @@ abstract class AppLocalizations {
   /// **'Back to log in'**
   String get backToLogin;
 
+  /// No description provided for @bankTransfer.
+  ///
+  /// In en, this message translates to:
+  /// **'Bank transfer'**
+  String get bankTransfer;
+
   /// No description provided for @baseLocation.
   ///
   /// In en, this message translates to:
@@ -373,6 +385,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Cancel this booking?'**
   String get cancelBookingQ;
+
+  /// No description provided for @cancelPayout.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel request'**
+  String get cancelPayout;
 
   /// No description provided for @cancelRequest.
   ///
@@ -553,6 +571,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{percent}% commission {amount} · {date}'**
   String commissionLine(Object percent, Object amount, Object date);
+
+  /// No description provided for @commissionPaymentOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Commission payment of {amount} in progress'**
+  String commissionPaymentOpen(Object amount);
+
+  /// No description provided for @commissionPaymentWindowClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment window closed. Your wallet updates once JazzCash or Easypaisa confirms it.'**
+  String get commissionPaymentWindowClosed;
 
   /// No description provided for @commissionPercent.
   ///
@@ -1034,6 +1064,12 @@ abstract class AppLocalizations {
   /// **'Get completion code'**
   String get getCompletionCode;
 
+  /// No description provided for @getPaid.
+  ///
+  /// In en, this message translates to:
+  /// **'Get paid'**
+  String get getPaid;
+
   /// No description provided for @getVerified.
   ///
   /// In en, this message translates to:
@@ -1081,6 +1117,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'I want to'**
   String get iWantTo;
+
+  /// No description provided for @iban.
+  ///
+  /// In en, this message translates to:
+  /// **'IBAN'**
+  String get iban;
 
   /// No description provided for @imOnMyWay.
   ///
@@ -1340,6 +1382,12 @@ abstract class AppLocalizations {
   /// **'{method} · ref {ref}'**
   String methodRef(Object method, Object ref);
 
+  /// No description provided for @minPayoutHint.
+  ///
+  /// In en, this message translates to:
+  /// **'You can ask for a payout from {amount}.'**
+  String minPayoutHint(Object amount);
+
   /// No description provided for @minimumIs.
   ///
   /// In en, this message translates to:
@@ -1580,6 +1628,12 @@ abstract class AppLocalizations {
   /// **'{n} offers a day'**
   String offersADay(Object n);
 
+  /// No description provided for @offersBlockedDebt.
+  ///
+  /// In en, this message translates to:
+  /// **'You owe more than {amount} in commission, so you cannot send offers until you pay.'**
+  String offersBlockedDebt(Object amount);
+
   /// No description provided for @offersCount.
   ///
   /// In en, this message translates to:
@@ -1682,6 +1736,18 @@ abstract class AppLocalizations {
   /// **'Pay the worker in cash. They will confirm when they receive it.'**
   String get payCash;
 
+  /// No description provided for @payCommission.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay commission'**
+  String get payCommission;
+
+  /// No description provided for @payCommissionOffice.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay online when available, or hand it to the KaamNow office and they will record it.'**
+  String get payCommissionOffice;
+
   /// No description provided for @payWith.
   ///
   /// In en, this message translates to:
@@ -1717,6 +1783,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This page updates once the gateway confirms the payment.'**
   String get paymentWindowClosed;
+
+  /// No description provided for @payoutCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Payout request cancelled.'**
+  String get payoutCancelled;
+
+  /// No description provided for @payoutOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Payout of {amount} requested'**
+  String payoutOpen(Object amount);
+
+  /// No description provided for @payoutOpenHint.
+  ///
+  /// In en, this message translates to:
+  /// **'To {method} {account}. Jobs in it are not counted in your balance until it is sent or declined.'**
+  String payoutOpenHint(Object method, Object account);
+
+  /// No description provided for @payoutRequested.
+  ///
+  /// In en, this message translates to:
+  /// **'Payout requested. We will send it soon.'**
+  String get payoutRequested;
+
+  /// No description provided for @payoutTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Send it to'**
+  String get payoutTo;
 
   /// No description provided for @phoneNumber.
   ///
@@ -1976,6 +2072,18 @@ abstract class AppLocalizations {
   /// **'Request failed.'**
   String get requestFailed;
 
+  /// No description provided for @requestPayoutOf.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask for {amount}'**
+  String requestPayoutOf(Object amount);
+
+  /// No description provided for @requiredField.
+  ///
+  /// In en, this message translates to:
+  /// **'Required'**
+  String get requiredField;
+
   /// No description provided for @resendIn.
   ///
   /// In en, this message translates to:
@@ -2155,6 +2263,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Set the job location on the map, or use your current location.'**
   String get setLocationFirst;
+
+  /// No description provided for @settlementCollection.
+  ///
+  /// In en, this message translates to:
+  /// **'Commission paid'**
+  String get settlementCollection;
+
+  /// No description provided for @settlementHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Payouts and payments'**
+  String get settlementHistory;
+
+  /// No description provided for @settlementLine.
+  ///
+  /// In en, this message translates to:
+  /// **'{date} · {method}'**
+  String settlementLine(Object date, Object method);
+
+  /// No description provided for @settlementPayout.
+  ///
+  /// In en, this message translates to:
+  /// **'Payout to you'**
+  String get settlementPayout;
 
   /// No description provided for @shareLiveLocation.
   ///
@@ -2359,6 +2491,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Rejected'**
   String get statusRejected;
+
+  /// No description provided for @statusRequested.
+  ///
+  /// In en, this message translates to:
+  /// **'Requested'**
+  String get statusRequested;
 
   /// No description provided for @statusResolved.
   ///
@@ -2659,6 +2797,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Waiting for the worker’s location…'**
   String get waitingForWorkerLocation;
+
+  /// No description provided for @wallet.
+  ///
+  /// In en, this message translates to:
+  /// **'Wallet'**
+  String get wallet;
+
+  /// No description provided for @walletBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'Balance with KaamNow'**
+  String get walletBalance;
+
+  /// No description provided for @walletCommissionOwed.
+  ///
+  /// In en, this message translates to:
+  /// **'Commission on cash jobs: {amount}'**
+  String walletCommissionOwed(Object amount);
+
+  /// No description provided for @walletEarningsHeld.
+  ///
+  /// In en, this message translates to:
+  /// **'From online payments: {amount}'**
+  String walletEarningsHeld(Object amount);
+
+  /// No description provided for @walletExplain.
+  ///
+  /// In en, this message translates to:
+  /// **'Customers who pay online pay KaamNow, so we owe you your share. Customers who pay cash pay you, so you owe our commission. The two are netted here.'**
+  String get walletExplain;
+
+  /// No description provided for @walletNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Mobile account number'**
+  String get walletNumber;
+
+  /// No description provided for @walletOwedToYou.
+  ///
+  /// In en, this message translates to:
+  /// **'KaamNow owes you'**
+  String get walletOwedToYou;
+
+  /// No description provided for @walletSettled.
+  ///
+  /// In en, this message translates to:
+  /// **'All settled'**
+  String get walletSettled;
+
+  /// No description provided for @walletYouOwe.
+  ///
+  /// In en, this message translates to:
+  /// **'You owe KaamNow'**
+  String get walletYouOwe;
 
   /// No description provided for @whatHelp.
   ///

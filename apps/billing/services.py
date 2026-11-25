@@ -152,10 +152,12 @@ def _complete_payment(payment, confirmed_by=None):
     if payment.purpose == Payment.Purpose.BOOKING:
         booking = payment.booking
         commission = record_commission(booking)
+        # Who holds the money decides how it is settled with the worker later (see wallet.py).
+        commission.paid_via = payment.method
         if payment.is_online and commission.status == Commission.Status.PENDING:
             # The platform received the money, so the commission is already collected.
             commission.status = Commission.Status.COLLECTED
-            commission.save(update_fields=["status", "updated_at"])
+        commission.save(update_fields=["status", "paid_via", "updated_at"])
         collected_by = "worker (cash)" if payment.method == Payment.Method.CASH else payment.get_method_display()
         entries = [
             _ledger(payment, LedgerEntry.EntryType.CUSTOMER_PAYMENT, payment.amount,
@@ -197,6 +199,11 @@ def _complete_payment(payment, confirmed_by=None):
             description=f"Featured listing: {payment.featured_listing.category.name}",
         )
         activate_featured_listing(payment.featured_listing)
+
+    elif payment.purpose == Payment.Purpose.COMMISSION:
+        from . import wallet
+
+        wallet.on_payment_completed(payment)
     return payment
 
 
@@ -308,6 +315,10 @@ def handle_gateway_callback(method, data):
             payment.failure_reason = result.message[:255]
             payment.save(update_fields=["status", "failure_reason", "gateway_response", "gateway_transaction_id",
                                         "updated_at"])
+            if payment.purpose == Payment.Purpose.COMMISSION:
+                from . import wallet
+
+                wallet.on_payment_closed(payment)
             notify(payment.payer, Notification.Type.PAYMENT, t("Payment failed"),
                    t("Your {method} payment did not go through. Please try again.",
                      method=t(payment.get_method_display())),
@@ -333,6 +344,10 @@ def expire_stale_online_payments():
                 FeaturedListing.objects.filter(payment=payment, status="pending_payment").update(
                     status=FeaturedListing.Status.CANCELLED, updated_at=timezone.now()
                 )
+                if payment.purpose == Payment.Purpose.COMMISSION:
+                    from . import wallet
+
+                    wallet.on_payment_closed(payment)
     return count
 
 

@@ -18,6 +18,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get aboutYou => 'About you';
 
   @override
+  String get accountTitle => 'Account holder name';
+
+  @override
   String get add => 'Add';
 
   @override
@@ -108,6 +111,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get backToLogin => 'Back to log in';
 
   @override
+  String get bankTransfer => 'Bank transfer';
+
+  @override
   String get baseLocation => 'Base location';
 
   @override
@@ -177,6 +183,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cancelBookingQ => 'Cancel this booking?';
+
+  @override
+  String get cancelPayout => 'Cancel request';
 
   @override
   String get cancelRequest => 'Cancel request';
@@ -281,6 +290,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String commissionLine(Object percent, Object amount, Object date) {
     return '$percent% commission $amount · $date';
   }
+
+  @override
+  String commissionPaymentOpen(Object amount) {
+    return 'Commission payment of $amount in progress';
+  }
+
+  @override
+  String get commissionPaymentWindowClosed =>
+      'Payment window closed. Your wallet updates once JazzCash or Easypaisa confirms it.';
 
   @override
   String commissionPercent(Object percent) {
@@ -561,6 +579,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get getCompletionCode => 'Get completion code';
 
   @override
+  String get getPaid => 'Get paid';
+
+  @override
   String get getVerified => 'Get verified to send offers';
 
   @override
@@ -587,6 +608,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get iWantTo => 'I want to';
+
+  @override
+  String get iban => 'IBAN';
 
   @override
   String get imOnMyWay => 'I’m on my way';
@@ -742,6 +766,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String minPayoutHint(Object amount) {
+    return 'You can ask for a payout from $amount.';
+  }
+
+  @override
   String minimumIs(Object amount) {
     return 'Minimum is $amount';
   }
@@ -886,6 +915,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String offersBlockedDebt(Object amount) {
+    return 'You owe more than $amount in commission, so you cannot send offers until you pay.';
+  }
+
+  @override
   String offersCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -955,6 +989,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'Pay the worker in cash. They will confirm when they receive it.';
 
   @override
+  String get payCommission => 'Pay commission';
+
+  @override
+  String get payCommissionOffice =>
+      'Pay online when available, or hand it to the KaamNow office and they will record it.';
+
+  @override
   String payWith(Object method) {
     return 'Pay with $method';
   }
@@ -977,6 +1018,25 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get paymentWindowClosed =>
       'This page updates once the gateway confirms the payment.';
+
+  @override
+  String get payoutCancelled => 'Payout request cancelled.';
+
+  @override
+  String payoutOpen(Object amount) {
+    return 'Payout of $amount requested';
+  }
+
+  @override
+  String payoutOpenHint(Object method, Object account) {
+    return 'To $method $account. Jobs in it are not counted in your balance until it is sent or declined.';
+  }
+
+  @override
+  String get payoutRequested => 'Payout requested. We will send it soon.';
+
+  @override
+  String get payoutTo => 'Send it to';
 
   @override
   String get phoneNumber => 'Phone number';
@@ -1127,6 +1187,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get requestFailed => 'Request failed.';
 
   @override
+  String requestPayoutOf(Object amount) {
+    return 'Ask for $amount';
+  }
+
+  @override
+  String get requiredField => 'Required';
+
+  @override
   String resendIn(int seconds) {
     return 'Send a new code in ${seconds}s';
   }
@@ -1233,6 +1301,20 @@ class AppLocalizationsEn extends AppLocalizations {
       'Set the job location on the map, or use your current location.';
 
   @override
+  String get settlementCollection => 'Commission paid';
+
+  @override
+  String get settlementHistory => 'Payouts and payments';
+
+  @override
+  String settlementLine(Object date, Object method) {
+    return '$date · $method';
+  }
+
+  @override
+  String get settlementPayout => 'Payout to you';
+
+  @override
   String get shareLiveLocation => 'Share my live location with the customer';
 
   @override
@@ -1333,6 +1415,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get statusRejected => 'Rejected';
+
+  @override
+  String get statusRequested => 'Requested';
 
   @override
   String get statusResolved => 'Resolved';
@@ -1498,6 +1583,38 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get waitingForWorkerLocation => 'Waiting for the worker’s location…';
+
+  @override
+  String get wallet => 'Wallet';
+
+  @override
+  String get walletBalance => 'Balance with KaamNow';
+
+  @override
+  String walletCommissionOwed(Object amount) {
+    return 'Commission on cash jobs: $amount';
+  }
+
+  @override
+  String walletEarningsHeld(Object amount) {
+    return 'From online payments: $amount';
+  }
+
+  @override
+  String get walletExplain =>
+      'Customers who pay online pay KaamNow, so we owe you your share. Customers who pay cash pay you, so you owe our commission. The two are netted here.';
+
+  @override
+  String get walletNumber => 'Mobile account number';
+
+  @override
+  String get walletOwedToYou => 'KaamNow owes you';
+
+  @override
+  String get walletSettled => 'All settled';
+
+  @override
+  String get walletYouOwe => 'You owe KaamNow';
 
   @override
   String get whatHelp => 'What do you need help with?';

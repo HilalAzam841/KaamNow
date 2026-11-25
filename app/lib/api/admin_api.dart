@@ -91,6 +91,20 @@ class AdminApi {
   Future<AdminFeaturedListing> cancelFeaturedListing(int id, String reason) async => AdminFeaturedListing.fromJson(
       asMap(await client.post('/admin/featured-listings/$id/cancel/', body: {'reason': reason})));
 
+  // ---- payouts and commission --------------------------------------------
+  Future<Paged<Settlement>> settlements({String? kind, String? status, int page = 1}) async => Paged.parse(
+      await client.get('/admin/settlements/', query: {'kind': kind, 'status': status, 'page': page}),
+      Settlement.fromJson);
+  Future<Settlement> markPayoutPaid(int id, String reference) async => Settlement.fromJson(
+      asMap(await client.post('/admin/settlements/$id/mark-paid/', body: {'reference': reference})));
+  Future<Settlement> rejectPayout(int id, String reason) async =>
+      Settlement.fromJson(asMap(await client.post('/admin/settlements/$id/reject/', body: {'reason': reason})));
+  Future<List<WorkerBalance>> workerBalances({bool? owing}) async => parseList(
+      await client.get('/admin/worker-balances/', query: {'owing': owing?.toString()}), WorkerBalance.fromJson);
+  Future<Settlement> recordCommission(int workerId, String method, String reference) async => Settlement.fromJson(
+      asMap(await client.post('/admin/workers/$workerId/record-commission/',
+          body: {'method': method, 'reference': reference})));
+
   // ---- complaints & audit ------------------------------------------------
   Future<Paged<AdminComplaint>> complaints({String? status, int page = 1}) async =>
       Paged.parse(await client.get('/admin/complaints/', query: {'status': status, 'page': page}),

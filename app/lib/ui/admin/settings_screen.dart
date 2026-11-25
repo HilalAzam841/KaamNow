@@ -32,6 +32,8 @@ class _SettingsFormState extends State<_SettingsForm> {
   late final _commission = TextEditingController(text: widget.settings.commissionPercent);
   late final _fee = TextEditingController(text: widget.settings.emergencyFee);
   late bool _emergency = widget.settings.emergencyEnabled;
+  late final _minPayout = TextEditingController(text: widget.settings.minPayout);
+  late final _debtLimit = TextEditingController(text: widget.settings.commissionDebtLimit);
   bool _saving = false;
 
   String? _number(String? v, {double max = 1e9}) {
@@ -47,6 +49,8 @@ class _SettingsFormState extends State<_SettingsForm> {
       if (_commission.text.trim() != s.commissionPercent) 'commission_percent': _commission.text.trim(),
       if (_fee.text.trim() != s.emergencyFee) 'emergency_fee': _fee.text.trim(),
       if (_emergency != s.emergencyEnabled) 'emergency_enabled': _emergency,
+      if (_minPayout.text.trim() != s.minPayout) 'min_payout': _minPayout.text.trim(),
+      if (_debtLimit.text.trim() != s.commissionDebtLimit) 'commission_debt_limit': _debtLimit.text.trim(),
     };
     if (changes.isEmpty) return;
     if (changes.containsKey('commission_percent') &&
@@ -93,6 +97,25 @@ class _SettingsFormState extends State<_SettingsForm> {
                 title: const Text('Emergency jobs enabled'),
                 value: _emergency,
                 onChanged: (v) => setState(() => _emergency = v),
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                key: const Key('min-payout'),
+                controller: _minPayout,
+                decoration: const InputDecoration(
+                    labelText: 'Minimum payout (Rs)', helperText: 'Smallest balance a worker can ask to be paid'),
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                validator: _number,
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                key: const Key('commission-debt-limit'),
+                controller: _debtLimit,
+                decoration: const InputDecoration(
+                    labelText: 'Commission debt limit (Rs)',
+                    helperText: 'Workers who owe more cash commission cannot send offers until they pay. 0 = no limit'),
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                validator: _number,
               ),
               const SizedBox(height: 16),
               FilledButton(

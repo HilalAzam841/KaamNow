@@ -172,14 +172,36 @@ class AdminFeaturedListing {
 
 class PlatformSettings {
   PlatformSettings({required this.commissionPercent, required this.emergencyFee, required this.emergencyEnabled,
-      this.updatedAt});
+      this.minPayout = '500.00', this.commissionDebtLimit = '0.00', this.updatedAt});
   factory PlatformSettings.fromJson(Map<String, dynamic> j) => PlatformSettings(
       commissionPercent: str(j['commission_percent']),
       emergencyFee: str(j['emergency_fee']),
       emergencyEnabled: j['emergency_enabled'] == true,
+      minPayout: j['min_payout'] == null ? '500.00' : str(j['min_payout']),
+      commissionDebtLimit: j['commission_debt_limit'] == null ? '0.00' : str(j['commission_debt_limit']),
       updatedAt: parseDate(j['updated_at']));
+  final String minPayout;
+  final String commissionDebtLimit;
   final String commissionPercent;
   final String emergencyFee;
   final bool emergencyEnabled;
   final DateTime? updatedAt;
+}
+
+class WorkerBalance {
+  WorkerBalance({required this.workerId, required this.workerName, required this.workerPhone,
+      required this.earningsHeld, required this.commissionOwed, required this.balance});
+  factory WorkerBalance.fromJson(Map<String, dynamic> j) => WorkerBalance(
+      workerId: parseInt(j['worker']),
+      workerName: str(j['worker_name']),
+      workerPhone: str(j['worker_phone']),
+      earningsHeld: str(j['earnings_held']),
+      commissionOwed: str(j['commission_owed']),
+      balance: str(j['balance']));
+  final int workerId;
+  final String workerName;
+  final String workerPhone;
+  final String earningsHeld;
+  final String commissionOwed;
+  final String balance;
 }

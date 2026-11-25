@@ -8,6 +8,10 @@ router.register("", views.PaymentViewSet, basename="payment")
 
 payment_urlpatterns = [
     path("earnings/", views.WorkerEarningsView.as_view(), name="worker-earnings"),
+    path("wallet/", views.WalletView.as_view(), name="worker-wallet"),
+    path("payouts/", views.PayoutRequestView.as_view(), name="worker-payout"),
+    path("payouts/<int:pk>/cancel/", views.PayoutCancelView.as_view(), name="worker-payout-cancel"),
+    path("commission/pay/", views.CommissionPaymentView.as_view(), name="worker-commission-pay"),
     path("callbacks/jazzcash/", views.JazzCashCallbackView.as_view(), name="callback-jazzcash"),
     path("callbacks/easypaisa/", views.EasypaisaCallbackView.as_view(), name="callback-easypaisa"),
 ] + router.urls

@@ -193,7 +193,7 @@ opens that booking or job. Signing out stops them on that phone.
 
 ```bash
 flutter analyze
-flutter test          # 77 unit and widget tests (API client, models, routing, key screens, admin dashboard, Urdu, install, notifications, Android checkout, phone confirmation, phone push)
+flutter test          # 84 unit and widget tests (API client, models, routing, key screens, admin dashboard, Urdu, install, notifications, Android checkout, phone confirmation, phone push, wallet and payouts)
 ```
 
 `e2e/` drives the real web build against a running backend in Chromium, through the whole job
