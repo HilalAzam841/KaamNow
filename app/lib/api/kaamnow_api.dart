@@ -117,6 +117,18 @@ class KaamNowApi {
   /// Invited worker: cannot take this job. It goes to other workers nearby.
   Future<void> declineRequest(int requestId) => client.post('/requests/$requestId/decline/');
 
+  // ---- Portfolio -----------------------------------------------------------
+  Future<List<PortfolioPhoto>> myPortfolio() async =>
+      parseList(await client.get('/workers/me/portfolio/'), PortfolioPhoto.fromJson);
+  Future<PortfolioPhoto> addPortfolioPhoto(UploadFile image, {String caption = '', int? category}) async =>
+      PortfolioPhoto.fromJson(asMap(await client.multipart('POST', '/workers/me/portfolio/',
+          fields: {'caption': caption, 'category': ?category?.toString()}, files: [image])));
+  Future<PortfolioPhoto> updatePortfolioPhoto(int id, Map<String, dynamic> fields) async =>
+      PortfolioPhoto.fromJson(asMap(await client.patch('/workers/me/portfolio/$id/', body: fields)));
+  Future<void> deletePortfolioPhoto(int id) => client.delete('/workers/me/portfolio/$id/');
+  Future<List<PortfolioPhoto>> reorderPortfolio(List<int> ids) async =>
+      parseList(await client.post('/workers/me/portfolio/reorder/', body: {'ids': ids}), PortfolioPhoto.fromJson);
+
   // ---- Safety --------------------------------------------------------------
   Future<List<EmergencyContact>> emergencyContacts() async =>
       parseList(await client.get('/safety/contacts/'), EmergencyContact.fromJson);

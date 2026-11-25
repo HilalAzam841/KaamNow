@@ -30,6 +30,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addContact => 'Add contact';
 
   @override
+  String get addPhoto => 'Add photo';
+
+  @override
   String get addServicesToSeeJobs =>
       'Add the services you offer to see matching jobs.';
 
@@ -562,6 +565,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get defaultAddress => 'Default address';
 
   @override
+  String get deletePhotoBody => 'Customers will no longer see it.';
+
+  @override
+  String get deletePhotoQ => 'Delete this photo?';
+
+  @override
   String get describeProblem => 'Describe the problem';
 
   @override
@@ -622,6 +631,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get earnings => 'Earnings';
+
+  @override
+  String get editCaption => 'Edit caption';
 
   @override
   String get editProfile => 'Edit profile';
@@ -745,6 +757,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get freqWeekly => 'Every week';
+
+  @override
+  String get fromKaamNowJob => 'From a KaamNow job';
 
   @override
   String fromPrice(Object price) {
@@ -1011,6 +1026,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get maxContactsReached => 'You have 3 contacts, the most allowed.';
 
   @override
+  String get maxPhotosReached =>
+      'You have 12 photos, the most allowed. Delete one to add another.';
+
+  @override
   String get messageNotSent => 'Message not sent.';
 
   @override
@@ -1051,6 +1070,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get moreDetail => 'Please give a bit more detail (20+ characters)';
+
+  @override
+  String get moveEarlier => 'Move earlier';
+
+  @override
+  String get moveLater => 'Move later';
+
+  @override
+  String get myPortfolio => 'My work photos';
+
+  @override
+  String get myPortfolioHint => 'Show customers what you have done';
 
   @override
   String get myScheduleSubtitle => 'Days and times you take jobs, and days off';
@@ -1178,6 +1209,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'New jobs in your area and services will show up here, and you will get an alert.';
 
   @override
+  String get noPortfolioHint =>
+      'Add up to 12 photos of jobs you did. Customers see them on your profile. Location and camera details are removed from each photo.';
+
+  @override
+  String get noPortfolioYet => 'No work photos yet';
+
+  @override
   String get noRepeatingJobs => 'No repeating jobs';
 
   @override
@@ -1196,6 +1234,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noReviewsYet => 'No reviews yet.';
+
+  @override
+  String get noService => 'None';
 
   @override
   String get noServicesYet => 'No services yet';
@@ -1332,6 +1373,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get passwordsDontMatch => 'The passwords do not match';
 
   @override
+  String get pastWork => 'Past work';
+
+  @override
   String get pauseRepeating => 'Pause';
 
   @override
@@ -1400,7 +1444,29 @@ class AppLocalizationsEn extends AppLocalizations {
   String get phoneNumber => 'Phone number';
 
   @override
+  String get photoAdded => 'Photo added.';
+
+  @override
+  String get photoCaptionLabel => 'What is in the photo? (optional)';
+
+  @override
+  String get photoDeleted => 'Photo deleted.';
+
+  @override
+  String photoHiddenBy(String reason) {
+    return 'Hidden by KaamNow: $reason';
+  }
+
+  @override
+  String get photoServiceLabel => 'Service (optional)';
+
+  @override
   String get photoUpdated => 'Photo updated.';
+
+  @override
+  String photosCount(int count, int max) {
+    return '$count of $max photos';
+  }
 
   @override
   String get photosOptional => 'Photos (optional)';
