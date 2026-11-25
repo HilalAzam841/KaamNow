@@ -12,6 +12,15 @@ external JSString _stringify(JSAny? value);
 
 /// Standard Web Push through the page's service worker (web/sw.js).
 class WebPushPlatform implements PushPlatform {
+  @override
+  PushKind get kind => PushKind.web;
+
+  // The service worker shows notifications and opens the screen itself (web/sw.js).
+  @override
+  void onOpen(void Function(String route) callback) {}
+  @override
+  void onForeground(void Function(ForegroundAlert alert) callback) {}
+
   bool _has(JSObject o, String name) => o.has(name);
 
   @override

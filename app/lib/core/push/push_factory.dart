@@ -1,4 +1,5 @@
+import 'push_mobile.dart';
 import 'push_platform.dart';
 
-/// Outside the browser there is no web push. On the web, push_web.dart is used instead.
-PushPlatform createPushPlatform() => const NoPushPlatform();
+/// Android and iPhone apps use Firebase. On the web, push_web.dart is used instead.
+PushPlatform createPushPlatform() => FirebasePushPlatform();

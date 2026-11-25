@@ -2,6 +2,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/push/push_controller.dart';
+import '../../core/push/push_platform.dart';
 import '../../core/session.dart';
 import '../../l10n/l10n.dart';
 import 'common.dart';
@@ -71,7 +72,7 @@ class PushTile extends StatelessWidget {
     final t = context.t;
     final subtitle = switch (state) {
       PushState.on => t.pushOnHint,
-      PushState.blocked => t.pushBlockedHint,
+      PushState.blocked => push.platform.kind == PushKind.firebase ? t.pushBlockedHintPhone : t.pushBlockedHint,
       PushState.needsInstall => t.pushNeedsInstallHint,
       _ => t.pushOffHint,
     };

@@ -14,7 +14,7 @@ later, and talks to the backend only through the REST API and the booking WebSoc
 
 **Stage 1 (Backend MVP), Stage 2 (Advanced features) and Stage 3 (Flutter web client) are done,
 and Stage 4 adds the admin dashboard to the web app.** Every backend feature below has its business logic, REST endpoint(s), validation and
-automated tests. All 390 backend tests pass against PostgreSQL 16, and the Flutter app has 71
+automated tests. All 393 backend tests pass against PostgreSQL 16, and the Flutter app has 77
 unit and widget tests plus a browser end-to-end run (see `app/README.md`).
 
 ### Stage 1: Backend MVP
@@ -156,6 +156,18 @@ Set it up with `SMS_BACKEND=twilio` and the three `TWILIO_*` values (see `deploy
 | JazzCash / Easypaisa checkout opens inside the app on iPhone too | `app/lib/core/checkout_launcher_mobile.dart` |
 
 Publishing needs an Apple Developer account (TestFlight, then the App Store); see `app/README.md`.
+
+### Stage 12: push notifications in the Android and iPhone apps
+
+| Feature | Where |
+|---|---|
+| The phone apps ask permission, register the phone with the server and remove it again on sign-out or when switched off; the token is refreshed automatically | `app/lib/core/push/push_mobile.dart`, `push_controller.dart`, `POST/DELETE notifications/devices/` |
+| Tapping a notification opens the right screen (the booking, its chat, the job); while the app is open, alerts show as a bar with an "Open" button | `app/lib/app.dart` |
+| Offers, chat and booking changes arrive as urgent alerts with sound (Android channel "Bookings and messages", iPhone high priority); messages from one chat are grouped | `apps/notifications/fcm.py`, `tasks.py`, `MainActivity.kt` |
+| Status bar icon and colour on Android; push permission and background delivery on iPhone | `AndroidManifest.xml`, `Runner.entitlements`, `Info.plist` |
+
+It switches on with a free Firebase project: see "Push notifications on phones" in `app/README.md`.
+Until then the apps work as before, with alerts inside the app.
 
 **Before going live with online payments:** the JazzCash and Easypaisa adapters follow each
 gateway's published integration scheme and are covered by tests with simulated gateway responses.

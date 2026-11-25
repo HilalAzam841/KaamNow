@@ -926,6 +926,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String get onlyIfDone => 'صرف تب تصدیق کریں جب کام ہو چکا ہو۔';
 
   @override
+  String get openAction => 'کھولیں';
+
+  @override
   String get openBooking => 'بکنگ کھولیں';
 
   @override
@@ -1018,6 +1021,10 @@ class AppLocalizationsUr extends AppLocalizations {
   @override
   String get pushBlockedHint =>
       'آپ کے براؤزر میں بند ہیں۔ براؤزر کی سیٹنگز میں اس سائٹ کے لیے نوٹیفکیشنز کی اجازت دیں۔';
+
+  @override
+  String get pushBlockedHintPhone =>
+      'آپ کے فون کی سیٹنگز میں بند ہیں۔ سیٹنگز میں کام ناؤ کے لیے نوٹیفکیشنز کی اجازت دیں۔';
 
   @override
   String get pushHintCustomer =>

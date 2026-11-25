@@ -153,11 +153,47 @@ Same as Android: payments open the gateway page inside the app, the browser-only
 and push notifications come with Firebase (which also delivers to iPhones through Apple's service).
 The location, camera and photo permission prompts explain why the app asks.
 
+## Push notifications on phones
+
+The Android and iPhone apps are ready for push; they only need a (free) Firebase project. Until it is
+set up, the notification switch is hidden and alerts show inside the app.
+
+1. Go to the [Firebase console](https://console.firebase.google.com), **Add project** (e.g. "KaamNow").
+   Google Analytics is not needed.
+2. **Add app, Android**: package name `pk.kaamnow.app`. Skip the download and SDK steps.
+3. **Add app, Apple (iOS)**: bundle ID `pk.kaamnow.app`. Skip the download and SDK steps.
+4. **Project settings, General** shows what to copy. In GitHub, **Settings, Secrets and variables,
+   Actions, Variables**, add:
+
+   | Variable | Where in Firebase |
+   |---|---|
+   | `FIREBASE_PROJECT_ID` | Project ID |
+   | `FIREBASE_API_KEY` | Web API key |
+   | `FIREBASE_SENDER_ID` | Cloud Messaging tab, Sender ID (also the "project number") |
+   | `FIREBASE_ANDROID_APP_ID` | Your apps, Android, App ID (`1:…:android:…`) |
+   | `FIREBASE_IOS_APP_ID` | Your apps, Apple, App ID (`1:…:ios:…`) |
+
+   These identify the app and are not secret. The next GitHub build includes them.
+5. The server sends the notifications: **Project settings, Service accounts, Generate new private
+   key**, then follow "Firebase push" in `deploy/README.md` (`FCM_PROJECT_ID` and the key file).
+6. iPhone only, needs the Apple Developer account: in
+   [Apple's Keys page](https://developer.apple.com/account/resources/authkeys/list) create a key with
+   **Apple Push Notifications service (APNs)**, then upload the `.p8` file in Firebase under
+   **Project settings, Cloud Messaging, Apple app configuration** with its Key ID and your Team ID.
+   In Xcode, Signing & Capabilities already lists Push Notifications for the app.
+
+Building on your own computer, pass the same values:
+`flutter build apk --dart-define=API_BASE_URL=https://kaamnow.pk --dart-define=FIREBASE_PROJECT_ID=…`
+(and the other four).
+
+Each signed-in phone gets offers, chat messages and booking changes as notifications; tapping one
+opens that booking or job. Signing out stops them on that phone.
+
 ## Tests
 
 ```bash
 flutter analyze
-flutter test          # 71 unit and widget tests (API client, models, routing, key screens, admin dashboard, Urdu, install, notifications, Android checkout, phone confirmation)
+flutter test          # 77 unit and widget tests (API client, models, routing, key screens, admin dashboard, Urdu, install, notifications, Android checkout, phone confirmation, phone push)
 ```
 
 `e2e/` drives the real web build against a running backend in Chromium, through the whole job
@@ -182,8 +218,8 @@ e2e/                     Playwright browser run against the real backend
 - **Maps** use OpenStreetMap tiles; the spec's Google Maps needs an API key. Swap `MAP_TILE_URL`
   (or `google_maps_flutter`) when you have one.
 - **Push notifications** need the server's VAPID keys and HTTPS. On iPhone they work only after the
-  app is added to the home screen (iOS 16.4+). The Android app gets push once Firebase is set up
-  (the server side is ready); until then it shows alerts inside the app. The in-app alert count
+  app is added to the home screen (iOS 16.4+). The Android and iPhone apps get push once Firebase is set
+  up (see "Push notifications on phones"); until then they show alerts inside the app. The in-app alert count
   refreshes every 30 seconds.
 - **Online payments** open the gateway's hosted checkout in a new tab (inside the app on Android). The buttons stay disabled
   until JazzCash or Easypaisa credentials are configured on the server.

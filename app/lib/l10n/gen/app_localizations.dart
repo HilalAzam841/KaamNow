@@ -1628,6 +1628,12 @@ abstract class AppLocalizations {
   /// **'Only confirm if the work is done.'**
   String get onlyIfDone;
 
+  /// No description provided for @openAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get openAction;
+
   /// No description provided for @openBooking.
   ///
   /// In en, this message translates to:
@@ -1789,6 +1795,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Blocked in your browser. Allow notifications for this site in the browser settings.'**
   String get pushBlockedHint;
+
+  /// No description provided for @pushBlockedHintPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Blocked in your phone settings. Allow notifications for KaamNow in Settings.'**
+  String get pushBlockedHintPhone;
 
   /// No description provided for @pushHintCustomer.
   ///
