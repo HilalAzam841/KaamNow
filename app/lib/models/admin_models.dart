@@ -172,14 +172,24 @@ class AdminFeaturedListing {
 
 class PlatformSettings {
   PlatformSettings({required this.commissionPercent, required this.emergencyFee, required this.emergencyEnabled,
-      this.minPayout = '500.00', this.commissionDebtLimit = '0.00', this.updatedAt});
+      this.minPayout = '500.00', this.commissionDebtLimit = '0.00', this.referralReward = '0.00',
+      this.referralWelcomeCredit = '0.00', this.referralMinBooking = '0.00', this.maxDiscountPercent = '50.00',
+      this.updatedAt});
   factory PlatformSettings.fromJson(Map<String, dynamic> j) => PlatformSettings(
       commissionPercent: str(j['commission_percent']),
       emergencyFee: str(j['emergency_fee']),
       emergencyEnabled: j['emergency_enabled'] == true,
       minPayout: j['min_payout'] == null ? '500.00' : str(j['min_payout']),
       commissionDebtLimit: j['commission_debt_limit'] == null ? '0.00' : str(j['commission_debt_limit']),
+      referralReward: j['referral_reward'] == null ? '0.00' : str(j['referral_reward']),
+      referralWelcomeCredit: j['referral_welcome_credit'] == null ? '0.00' : str(j['referral_welcome_credit']),
+      referralMinBooking: j['referral_min_booking'] == null ? '0.00' : str(j['referral_min_booking']),
+      maxDiscountPercent: j['max_discount_percent'] == null ? '50.00' : str(j['max_discount_percent']),
       updatedAt: parseDate(j['updated_at']));
+  final String referralReward;
+  final String referralWelcomeCredit;
+  final String referralMinBooking;
+  final String maxDiscountPercent;
   final String minPayout;
   final String commissionDebtLimit;
   final String commissionPercent;
@@ -255,4 +265,49 @@ class AdminPayment {
   int get id => payment.id;
   bool get canRefund => (double.tryParse(refundableAmount) ?? 0) > 0;
   bool get isDisputed => payment.status == 'disputed';
+}
+
+class AdminPromoCode {
+  AdminPromoCode({required this.id, required this.code, this.description = '', required this.kind, required this.value,
+      this.maxDiscount, this.minOrder = '0.00', this.categoryId, this.categoryName, this.startsAt, this.endsAt,
+      this.maxUses, this.maxUsesPerUser = 1, this.firstBookingOnly = false, this.isActive = true, this.uses = 0,
+      this.discountGiven = '0.00'});
+  factory AdminPromoCode.fromJson(Map<String, dynamic> j) => AdminPromoCode(
+        id: parseInt(j['id']),
+        code: str(j['code']),
+        description: str(j['description']),
+        kind: str(j['kind']),
+        value: str(j['value']),
+        maxDiscount: j['max_discount'] as String?,
+        minOrder: str(j['min_order']),
+        categoryId: j['category'] as int?,
+        categoryName: j['category_name'] as String?,
+        startsAt: parseDate(j['starts_at']),
+        endsAt: parseDate(j['ends_at']),
+        maxUses: j['max_uses'] as int?,
+        maxUsesPerUser: j['max_uses_per_user'] == null ? 1 : parseInt(j['max_uses_per_user']),
+        firstBookingOnly: j['first_booking_only'] == true,
+        isActive: j['is_active'] != false,
+        uses: j['uses'] == null ? 0 : parseInt(j['uses']),
+        discountGiven: j['discount_given'] == null ? '0.00' : str(j['discount_given']),
+      );
+  final int id;
+  final String code;
+  final String description;
+  final String kind;
+  final String value;
+  final String? maxDiscount;
+  final String minOrder;
+  final int? categoryId;
+  final String? categoryName;
+  final DateTime? startsAt;
+  final DateTime? endsAt;
+  final int? maxUses;
+  final int maxUsesPerUser;
+  final bool firstBookingOnly;
+  final bool isActive;
+  final int uses;
+  final String discountGiven;
+
+  bool get isPercent => kind == 'percent';
 }

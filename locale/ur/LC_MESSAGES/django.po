@@ -34,6 +34,10 @@ msgid "This email is already in use."
 msgstr "یہ ای میل پہلے سے استعمال میں ہے۔"
 
 #: apps/accounts/serializers.py
+msgid "This invite code does not exist."
+msgstr "یہ دعوتی کوڈ موجود نہیں ہے۔"
+
+#: apps/accounts/serializers.py
 msgid "An account with this phone number already exists."
 msgstr "اس فون نمبر سے اکاؤنٹ پہلے سے موجود ہے۔"
 
@@ -873,6 +877,86 @@ msgstr "پیشکش مسترد ہو گئی"
 #: apps/offers/services.py
 msgid "Offer withdrawn"
 msgstr "پیشکش واپس لے لی گئی"
+
+#: apps/promotions/serializers.py
+msgid "Use 3 to 30 letters, digits or dashes."
+msgstr "3 سے 30 حروف، ہندسے یا ڈیش استعمال کریں۔"
+
+#: apps/promotions/serializers.py
+msgid "A promo code with this name already exists."
+msgstr "اس نام کا پرومو کوڈ پہلے سے موجود ہے۔"
+
+#: apps/promotions/serializers.py
+msgid "A percent code can take at most 100% off."
+msgstr "فیصد والا کوڈ زیادہ سے زیادہ 100% رعایت دے سکتا ہے۔"
+
+#: apps/promotions/serializers.py
+msgid "The end must be after the start."
+msgstr "اختتام شروع ہونے کے بعد ہونا چاہیے۔"
+
+#: apps/promotions/serializers.py
+msgid "The end is in the past."
+msgstr "اختتام کی تاریخ گزر چکی ہے۔"
+
+#: apps/promotions/serializers.py
+msgid "Allow at least one use."
+msgstr "کم از کم ایک بار استعمال کی اجازت دیں۔"
+
+#: apps/promotions/services.py
+msgid "This promo code does not exist."
+msgstr "یہ پرومو کوڈ موجود نہیں ہے۔"
+
+#: apps/promotions/services.py
+msgid "This promo code is not active."
+msgstr "یہ پرومو کوڈ فعال نہیں ہے۔"
+
+#: apps/promotions/services.py
+msgid "This promo code has expired."
+msgstr "اس پرومو کوڈ کی مدت ختم ہو چکی ہے۔"
+
+#: apps/promotions/services.py
+#, python-brace-format
+msgid "This promo code is for {service} only."
+msgstr "یہ پرومو کوڈ صرف {service} کے لیے ہے۔"
+
+#: apps/promotions/services.py
+#, python-brace-format
+msgid "This promo code needs a booking of at least {amount}."
+msgstr "اس پرومو کوڈ کے لیے کم از کم {amount} کی بکنگ ضروری ہے۔"
+
+#: apps/promotions/services.py
+msgid "This promo code is for your first booking only."
+msgstr "یہ پرومو کوڈ صرف آپ کی پہلی بکنگ کے لیے ہے۔"
+
+#: apps/promotions/services.py
+msgid "This promo code has been used up."
+msgstr "یہ پرومو کوڈ مکمل استعمال ہو چکا ہے۔"
+
+#: apps/promotions/services.py
+msgid "You have already used this promo code."
+msgstr "آپ یہ پرومو کوڈ پہلے ہی استعمال کر چکے ہیں۔"
+
+#: apps/promotions/services.py
+msgid "Your credit has changed. Please try again."
+msgstr "آپ کا کریڈٹ بدل گیا ہے۔ براہ کرم دوبارہ کوشش کریں۔"
+
+#: apps/promotions/services.py
+#, python-brace-format
+msgid "{name} paid their first booking. {amount} is added to your wallet."
+msgstr "{name} نے اپنی پہلی بکنگ ادا کر دی۔ {amount} آپ کے والٹ میں شامل کر دیے گئے۔"
+
+#: apps/promotions/services.py
+#, python-brace-format
+msgid "{name} paid their first booking. You have {amount} credit for your next booking."
+msgstr "{name} نے اپنی پہلی بکنگ ادا کر دی۔ آپ کی اگلی بکنگ کے لیے {amount} کا کریڈٹ ہے۔"
+
+#: apps/promotions/services.py
+msgid "Invite reward"
+msgstr "دعوت کا انعام"
+
+#: apps/promotions/views.py
+msgid "You can only check your own bookings."
+msgstr "آپ صرف اپنی بکنگ چیک کر سکتے ہیں۔"
 
 #: apps/reviews/services.py
 msgid "You can only review your own bookings."

@@ -79,6 +79,9 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get applyPromo => 'Apply';
+
+  @override
   String get areaHint => 'e.g. DHA Phase 5';
 
   @override
@@ -368,6 +371,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get continueAction => 'Continue';
 
   @override
+  String get copyInvite => 'Copy invite';
+
+  @override
   String get couldNotGetLocation => 'Could not get your location.';
 
   @override
@@ -387,6 +393,34 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get createAnAccount => 'Create an account';
+
+  @override
+  String get creditAdmin => 'From KaamNow';
+
+  @override
+  String creditApplied(Object amount) {
+    return 'Credit: $amount off';
+  }
+
+  @override
+  String creditBalance(Object amount) {
+    return 'Your credit: $amount';
+  }
+
+  @override
+  String get creditHistory => 'Credit history';
+
+  @override
+  String get creditReferral => 'Invite reward';
+
+  @override
+  String get creditReturned => 'Returned';
+
+  @override
+  String get creditSpent => 'Used on a booking';
+
+  @override
+  String get creditWelcome => 'Welcome credit';
 
   @override
   String get currentPassword => 'Current password';
@@ -435,6 +469,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get details => 'Details';
+
+  @override
+  String get discountNote =>
+      'KaamNow pays the discount. Your worker still gets their full share.';
 
   @override
   String distanceKm(Object km) {
@@ -631,6 +669,39 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get installedThanks =>
       'KaamNow is installed. You can open it from your home screen.';
+
+  @override
+  String get inviteCodeHint =>
+      'Got a code from a friend? You get credit off your first booking.';
+
+  @override
+  String get inviteCodeOptional => 'Invite code (optional)';
+
+  @override
+  String get inviteCopied => 'Invite copied. Paste it in WhatsApp or SMS.';
+
+  @override
+  String inviteExplain(Object welcome, Object min, Object reward) {
+    return 'Friends who sign up with your code get $welcome off their first booking. When they pay a booking of $min or more, you get $reward credit.';
+  }
+
+  @override
+  String inviteExplainWorker(Object welcome, Object min, Object reward) {
+    return 'Customers who sign up with your code get $welcome off their first booking. When they pay a booking of $min or more, $reward is added to your wallet.';
+  }
+
+  @override
+  String get inviteFriends => 'Invite friends';
+
+  @override
+  String inviteMessage(Object code, Object amount, Object link) {
+    return 'Book trusted workers in Lahore with KaamNow. Sign up with my code $code and get $amount off your first booking: $link';
+  }
+
+  @override
+  String invitedCount(int count) {
+    return 'Friends who joined: $count';
+  }
 
   @override
   String get iosInstallSteps =>
@@ -1083,6 +1154,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileUpdated => 'Profile updated.';
 
   @override
+  String promoApplied(Object code, Object amount) {
+    return '$code: $amount off';
+  }
+
+  @override
+  String get promoCode => 'Promo code';
+
+  @override
   String get pushBlockedHint =>
       'Blocked in your browser. Allow notifications for this site in the browser settings.';
 
@@ -1172,6 +1251,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get remove => 'Remove';
 
   @override
+  String get removePromo => 'Remove';
+
+  @override
   String removeServiceQ(Object name) {
     return 'Remove $name?';
   }
@@ -1231,6 +1313,11 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String reviewsHeading(Object n) {
     return 'Reviews ($n)';
+  }
+
+  @override
+  String rewardsEarned(Object amount) {
+    return 'Rewards earned: $amount';
   }
 
   @override
@@ -1559,6 +1646,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get useAtLeast8 => 'Use at least 8 characters';
 
   @override
+  String useCredit(Object amount) {
+    return 'Use my credit ($amount)';
+  }
+
+  @override
   String get useMyLocation => 'Use my location';
 
   @override
@@ -1704,6 +1796,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get youEarned => 'You earned';
+
+  @override
+  String youPay(Object amount) {
+    return 'You pay $amount';
+  }
+
+  @override
+  String get yourInviteCode => 'Your invite code';
 
   @override
   String get yourOffer => 'Your offer';

@@ -212,6 +212,12 @@ abstract class AppLocalizations {
   /// **'KaamNow {version}'**
   String appVersion(Object version);
 
+  /// No description provided for @applyPromo.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply'**
+  String get applyPromo;
+
   /// No description provided for @areaHint.
   ///
   /// In en, this message translates to:
@@ -698,6 +704,12 @@ abstract class AppLocalizations {
   /// **'Continue'**
   String get continueAction;
 
+  /// No description provided for @copyInvite.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy invite'**
+  String get copyInvite;
+
   /// No description provided for @couldNotGetLocation.
   ///
   /// In en, this message translates to:
@@ -739,6 +751,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Create an account'**
   String get createAnAccount;
+
+  /// No description provided for @creditAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'From KaamNow'**
+  String get creditAdmin;
+
+  /// No description provided for @creditApplied.
+  ///
+  /// In en, this message translates to:
+  /// **'Credit: {amount} off'**
+  String creditApplied(Object amount);
+
+  /// No description provided for @creditBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'Your credit: {amount}'**
+  String creditBalance(Object amount);
+
+  /// No description provided for @creditHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Credit history'**
+  String get creditHistory;
+
+  /// No description provided for @creditReferral.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite reward'**
+  String get creditReferral;
+
+  /// No description provided for @creditReturned.
+  ///
+  /// In en, this message translates to:
+  /// **'Returned'**
+  String get creditReturned;
+
+  /// No description provided for @creditSpent.
+  ///
+  /// In en, this message translates to:
+  /// **'Used on a booking'**
+  String get creditSpent;
+
+  /// No description provided for @creditWelcome.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome credit'**
+  String get creditWelcome;
 
   /// No description provided for @currentPassword.
   ///
@@ -817,6 +877,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Details'**
   String get details;
+
+  /// No description provided for @discountNote.
+  ///
+  /// In en, this message translates to:
+  /// **'KaamNow pays the discount. Your worker still gets their full share.'**
+  String get discountNote;
 
   /// No description provided for @distanceKm.
   ///
@@ -1159,6 +1225,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'KaamNow is installed. You can open it from your home screen.'**
   String get installedThanks;
+
+  /// No description provided for @inviteCodeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Got a code from a friend? You get credit off your first booking.'**
+  String get inviteCodeHint;
+
+  /// No description provided for @inviteCodeOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite code (optional)'**
+  String get inviteCodeOptional;
+
+  /// No description provided for @inviteCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite copied. Paste it in WhatsApp or SMS.'**
+  String get inviteCopied;
+
+  /// No description provided for @inviteExplain.
+  ///
+  /// In en, this message translates to:
+  /// **'Friends who sign up with your code get {welcome} off their first booking. When they pay a booking of {min} or more, you get {reward} credit.'**
+  String inviteExplain(Object welcome, Object min, Object reward);
+
+  /// No description provided for @inviteExplainWorker.
+  ///
+  /// In en, this message translates to:
+  /// **'Customers who sign up with your code get {welcome} off their first booking. When they pay a booking of {min} or more, {reward} is added to your wallet.'**
+  String inviteExplainWorker(Object welcome, Object min, Object reward);
+
+  /// No description provided for @inviteFriends.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite friends'**
+  String get inviteFriends;
+
+  /// No description provided for @inviteMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Book trusted workers in Lahore with KaamNow. Sign up with my code {code} and get {amount} off your first booking: {link}'**
+  String inviteMessage(Object code, Object amount, Object link);
+
+  /// No description provided for @invitedCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Friends who joined: {count}'**
+  String invitedCount(int count);
 
   /// No description provided for @iosInstallSteps.
   ///
@@ -1892,6 +2006,18 @@ abstract class AppLocalizations {
   /// **'Profile updated.'**
   String get profileUpdated;
 
+  /// No description provided for @promoApplied.
+  ///
+  /// In en, this message translates to:
+  /// **'{code}: {amount} off'**
+  String promoApplied(Object code, Object amount);
+
+  /// No description provided for @promoCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Promo code'**
+  String get promoCode;
+
   /// No description provided for @pushBlockedHint.
   ///
   /// In en, this message translates to:
@@ -2042,6 +2168,12 @@ abstract class AppLocalizations {
   /// **'Remove'**
   String get remove;
 
+  /// No description provided for @removePromo.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get removePromo;
+
   /// No description provided for @removeServiceQ.
   ///
   /// In en, this message translates to:
@@ -2137,6 +2269,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Reviews ({n})'**
   String reviewsHeading(Object n);
+
+  /// No description provided for @rewardsEarned.
+  ///
+  /// In en, this message translates to:
+  /// **'Rewards earned: {amount}'**
+  String rewardsEarned(Object amount);
 
   /// No description provided for @rsPrefix.
   ///
@@ -2744,6 +2882,12 @@ abstract class AppLocalizations {
   /// **'Use at least 8 characters'**
   String get useAtLeast8;
 
+  /// No description provided for @useCredit.
+  ///
+  /// In en, this message translates to:
+  /// **'Use my credit ({amount})'**
+  String useCredit(Object amount);
+
   /// No description provided for @useMyLocation.
   ///
   /// In en, this message translates to:
@@ -3001,6 +3145,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'You earned'**
   String get youEarned;
+
+  /// No description provided for @youPay.
+  ///
+  /// In en, this message translates to:
+  /// **'You pay {amount}'**
+  String youPay(Object amount);
+
+  /// No description provided for @yourInviteCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Your invite code'**
+  String get yourInviteCode;
 
   /// No description provided for @yourOffer.
   ///

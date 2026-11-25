@@ -96,7 +96,7 @@ def _reference():
     return f"KN{timezone.now():%Y%m%d}{secrets.token_hex(5).upper()}"
 
 
-def _create_payment(*, purpose, payer, amount, method, booking=None):
+def _create_payment(*, purpose, payer, amount, method, booking=None, discount_amount=Decimal("0.00")):
     """Creates a pending payment. For online methods also returns the gateway checkout."""
     checkout = None
     expires_at = None
@@ -109,7 +109,7 @@ def _create_payment(*, purpose, payer, amount, method, booking=None):
         with transaction.atomic():
             payment = Payment.objects.create(
                 purpose=purpose, booking=booking, payer=payer, amount=amount, method=method,
-                reference=_reference(), expires_at=expires_at,
+                reference=_reference(), expires_at=expires_at, discount_amount=discount_amount,
             )
     except IntegrityError as exc:
         raise ConflictError(_("A payment for this booking is already in progress.")) from exc
@@ -131,8 +131,17 @@ def _expire_if_stale(payment):
         payment.status = Payment.Status.EXPIRED
         payment.failure_reason = "Checkout expired before payment was confirmed."
         payment.save(update_fields=["status", "failure_reason", "updated_at"])
+        _release_discount(payment)
         return True
     return False
+
+
+def _release_discount(payment):
+    """A booking payment closed without the money: its promo code and credit can be used again."""
+    if payment.purpose == Payment.Purpose.BOOKING and payment.discount_amount > 0:
+        from apps.promotions import services as promotions
+
+        promotions.release(payment)
 
 
 def _ledger(payment, entry_type, amount, description, booking=None, worker=None):
@@ -154,10 +163,11 @@ def _complete_payment(payment, confirmed_by=None):
         commission = record_commission(booking)
         # Who holds the money decides how it is settled with the worker later (see wallet.py).
         commission.paid_via = payment.method
+        commission.discount_amount = payment.discount_amount
         if payment.is_online and commission.status == Commission.Status.PENDING:
             # The platform received the money, so the commission is already collected.
             commission.status = Commission.Status.COLLECTED
-        commission.save(update_fields=["status", "paid_via", "updated_at"])
+        commission.save(update_fields=["status", "paid_via", "discount_amount", "updated_at"])
         collected_by = "worker (cash)" if payment.method == Payment.Method.CASH else payment.get_method_display()
         entries = [
             _ledger(payment, LedgerEntry.EntryType.CUSTOMER_PAYMENT, payment.amount,
@@ -170,7 +180,13 @@ def _complete_payment(payment, confirmed_by=None):
         if booking.emergency_fee > 0:
             entries.append(_ledger(payment, LedgerEntry.EntryType.EMERGENCY_FEE, booking.emergency_fee,
                                    "Emergency service fee", booking, booking.worker))
+        if payment.discount_amount > 0:
+            entries.append(_ledger(payment, LedgerEntry.EntryType.PROMO_DISCOUNT, payment.discount_amount,
+                                   "Promo code / credit discount paid by KaamNow", booking, booking.worker))
         LedgerEntry.objects.bulk_create(entries)
+        from apps.promotions import services as promotions
+
+        promotions.on_completed(payment)
         notify(
             payment.payer, Notification.Type.PAYMENT, t("Payment confirmed"),
             t("Your payment of {amount} for booking #{id} is confirmed.", amount=money(payment.amount), id=booking.pk),
@@ -211,7 +227,7 @@ def _complete_payment(payment, confirmed_by=None):
 # Booking payments
 # --------------------------------------------------------------------------
 @transaction.atomic
-def record_payment(booking, payer, method):
+def record_payment(booking, payer, method, promo_code="", use_credit=False):
     """
     Starts a payment for a completed booking. The amount always comes from the
     booking (negotiated price + emergency fee), never from the client.
@@ -237,11 +253,17 @@ def record_payment(booking, payer, method):
                 existing.status = Payment.Status.FAILED
                 existing.failure_reason = f"Replaced by a {method} payment."
                 existing.save(update_fields=["status", "failure_reason", "updated_at"])
+                _release_discount(existing)
             else:
                 raise ConflictError(_("A payment for this booking is already in progress."))
+    from apps.promotions import services as promotions
+
+    quote = promotions.quote(booking, payer, promo_code=promo_code, use_credit=use_credit)
     payment, checkout = _create_payment(
-        purpose=Payment.Purpose.BOOKING, payer=payer, amount=booking.total_amount, method=method, booking=booking
+        purpose=Payment.Purpose.BOOKING, payer=payer, amount=quote["amount"], method=method, booking=booking,
+        discount_amount=quote["discount"],
     )
+    promotions.hold(payment, quote, payer)
     if method == Payment.Method.CASH:
         notify(
             booking.worker.user, Notification.Type.PAYMENT, t("Confirm cash received"),
@@ -319,6 +341,7 @@ def handle_gateway_callback(method, data):
                 from . import wallet
 
                 wallet.on_payment_closed(payment)
+            _release_discount(payment)
             notify(payment.payer, Notification.Type.PAYMENT, t("Payment failed"),
                    t("Your {method} payment did not go through. Please try again.",
                      method=t(payment.get_method_display())),

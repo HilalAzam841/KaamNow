@@ -31,6 +31,26 @@ class PlatformSettings(TimeStampedModel):
         validators=[MinValueValidator(Decimal("0")), MaxValueValidator(Decimal("1000000"))],
         help_text="Workers who owe more cash commission than this cannot send offers until they pay. 0 = no limit.",
     )
+    referral_reward = models.DecimalField(
+        max_digits=10, decimal_places=2, default=Decimal("200.00"),
+        validators=[MinValueValidator(Decimal("0")), MaxValueValidator(Decimal("10000"))],
+        help_text="Given to the inviter when the person they invited pays their first booking. 0 turns it off.",
+    )
+    referral_welcome_credit = models.DecimalField(
+        max_digits=10, decimal_places=2, default=Decimal("100.00"),
+        validators=[MinValueValidator(Decimal("0")), MaxValueValidator(Decimal("10000"))],
+        help_text="Credit a new customer gets for signing up with an invite code.",
+    )
+    referral_min_booking = models.DecimalField(
+        max_digits=10, decimal_places=2, default=Decimal("500.00"),
+        validators=[MinValueValidator(Decimal("0")), MaxValueValidator(Decimal("1000000"))],
+        help_text="The first booking must be at least this much for the inviter to be rewarded.",
+    )
+    max_discount_percent = models.DecimalField(
+        max_digits=5, decimal_places=2, default=Decimal("50.00"),
+        validators=[MinValueValidator(Decimal("0")), MaxValueValidator(Decimal("90"))],
+        help_text="Promo codes and credit together can take at most this share off a booking.",
+    )
     updated_by = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name="+"
     )
@@ -69,6 +89,11 @@ class Commission(TimeStampedModel):
     commission_amount = models.DecimalField(max_digits=12, decimal_places=2)
     worker_earning = models.DecimalField(max_digits=12, decimal_places=2)
     status = models.CharField(max_length=10, choices=Status.choices, default=Status.PENDING, db_index=True)
+    discount_amount = models.DecimalField(
+        max_digits=12, decimal_places=2, default=Decimal("0.00"),
+        help_text="Discount the customer got (paid by KaamNow). With cash the worker received that much less, "
+        "so it is taken off the commission they owe.",
+    )
     paid_via = models.CharField(
         max_length=10, blank=True, default="",
         help_text="How the customer paid (cash: the worker holds the money; online: the platform does). "
@@ -133,6 +158,10 @@ class Payment(TimeStampedModel):
     refunded_amount = models.DecimalField(
         max_digits=12, decimal_places=2, default=Decimal("0.00"), help_text="Total refunded to the payer so far."
     )
+    discount_amount = models.DecimalField(
+        max_digits=12, decimal_places=2, default=Decimal("0.00"),
+        help_text="Promo code and credit taken off the booking total; KaamNow pays it. amount = total - discount.",
+    )
 
     class Meta:
         ordering = ["-created_at"]
@@ -173,6 +202,7 @@ class LedgerEntry(models.Model):
         WORKER_PAYOUT = "worker_payout", "Payout to worker"
         COMMISSION_SETTLEMENT = "commission_settlement", "Cash commission settled"
         CUSTOMER_REFUND = "customer_refund", "Refund to customer"
+        PROMO_DISCOUNT = "promo_discount", "Promo and credit discount"
 
     payment = models.ForeignKey(
         Payment, on_delete=models.PROTECT, related_name="ledger_entries", null=True, blank=True

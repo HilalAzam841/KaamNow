@@ -50,6 +50,16 @@ class RegisterSerializer(serializers.Serializer):
     email = serializers.EmailField(required=False, allow_blank=True, allow_null=True)
     role = serializers.ChoiceField(choices=[User.Role.CUSTOMER, User.Role.WORKER], default=User.Role.CUSTOMER)
     cnic_number = serializers.CharField(required=False, allow_blank=True, max_length=15)
+    referral_code = serializers.CharField(required=False, allow_blank=True, max_length=12,
+                                          help_text="Invite code from a friend (new customers get welcome credit).")
+
+    def validate_referral_code(self, value):
+        from apps.promotions.models import ReferralCode
+
+        value = (value or "").strip().upper()
+        if value and not ReferralCode.objects.filter(code=value).exists():
+            raise serializers.ValidationError(_("This invite code does not exist."))
+        return value
 
     def validate_phone(self, value):
         try:

@@ -56,7 +56,7 @@ Values go in three places:
 ## 5. Optional server settings (defaults are fine)
 
 You can change these in the server `.env` if you need to. Admins change commission, the emergency fee,
-minimum payout and commission debt limit from the admin dashboard instead.
+minimum payout, commission debt limit, invite rewards and the discount cap from the admin dashboard instead.
 
 | `.env` | Default | What it does |
 |---|---|---|
@@ -64,6 +64,7 @@ minimum payout and commission debt limit from the admin dashboard instead.
 | `DEFAULT_COMMISSION_PERCENT` | `10.00` | Starting commission (then changed in admin settings) |
 | `MIN_OFFER_PRICE`, `MAX_OFFER_PRICE` | `100`, `1000000` | Allowed offer range in rupees |
 | `ONLINE_PAYMENT_TTL_MINUTES` | `30` | How long an online checkout stays open |
+| `INVITE_URL` | `https://<DOMAIN>/#/register?ref={code}` (set by Docker Compose) | The invite link people share; `{code}` is replaced with their invite code |
 | `MIN_ANDROID_VERSION`, `MIN_IOS_VERSION`, `MIN_WEB_VERSION` | `1.0.0` | Older apps are asked to update |
 | `BACKUP_KEEP_DAYS` | `14` | Days of daily database backups to keep |
 | `LOG_LEVEL` | `INFO` | Server log detail |

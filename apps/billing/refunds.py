@@ -88,7 +88,8 @@ def refund_payment(payment, admin_user, *, amount, method, reason, reference, ch
     if charge_worker:
         commission = getattr(booking, "commission", None)
         earning = commission.worker_earning if commission else ZERO
-        worker_share = min(amount, (amount * earning / payment.amount).quantize(CENT, ROUND_HALF_UP))
+        gross = payment.amount + payment.discount_amount  # the booking total, before any promo discount
+        worker_share = min(amount, (amount * earning / gross).quantize(CENT, ROUND_HALF_UP))
     refund = _record(payment, admin_user, amount=amount, worker_share=worker_share, method=method, reason=reason,
                      reference=reference, complaint=complaint)
     payment.save(update_fields=["refunded_amount", "updated_at"])
@@ -106,6 +107,12 @@ def refund_payment(payment, admin_user, *, amount, method, reason, reference, ch
 
 
 RESOLUTIONS = ("accept", "refund", "reject")
+
+
+def _release(payment):
+    from .services import _release_discount
+
+    _release_discount(payment)
 
 
 @transaction.atomic
@@ -134,12 +141,14 @@ def resolve_disputed(payment, admin_user, *, resolution, note, method=None, refe
                          reference=reference, complaint=complaint)
         payment.status = Payment.Status.REFUNDED
         payment.save(update_fields=["status", "refunded_amount", "updated_at"])
+        _release(payment)
         _notify_customer(payment, refund)
         return payment, refund
     if resolution == "reject":
         payment.status = Payment.Status.FAILED
         payment.failure_reason = f"Rejected by admin: {note}"[:255]
         payment.save(update_fields=["status", "failure_reason", "updated_at"])
+        _release(payment)
         notify(payment.payer, Notification.Type.PAYMENT, t("Payment not received"),
                t("We checked payment {reference} and no money reached KaamNow. Contact support if you were charged.",
                  reference=payment.reference),

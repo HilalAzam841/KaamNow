@@ -11,6 +11,7 @@ from apps.common.views import app_config, health
 from apps.tracking.views import BookingLocationView
 from apps.jobs.urls import bookings_router, requests_router
 from apps.offers.urls import offer_urlpatterns, request_offer_urlpatterns
+from apps.promotions.urls import referral_urlpatterns
 from apps.reviews.views import ReviewCreateView, WorkerReviewsView
 
 api_v1 = [
@@ -33,6 +34,8 @@ api_v1 = [
     path("reviews/", ReviewCreateView.as_view(), name="review-create"),
     path("notifications/", include("apps.notifications.urls")),
     path("complaints/", include("apps.support.urls")),
+    path("promos/", include("apps.promotions.urls")),
+    path("referrals/", include(referral_urlpatterns)),
     path("admin/", include("apps.dashboard.urls")),
 ]
 

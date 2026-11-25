@@ -13,12 +13,16 @@ from .models import User, WorkerDocument, WorkerProfile
 
 
 @transaction.atomic
-def register_user(*, phone, password, full_name, role, email=None, cnic_number=None):
+def register_user(*, phone, password, full_name, role, email=None, cnic_number=None, referral_code=""):
     if role not in (User.Role.CUSTOMER, User.Role.WORKER):
         raise BusinessRuleError(_("Only customer and worker accounts can self-register."))
     user = User.objects.create_user(phone=phone, password=password, full_name=full_name, role=role, email=email)
     if role == User.Role.WORKER:
         WorkerProfile.objects.create(user=user, cnic_number=cnic_number)
+    if referral_code:
+        from apps.promotions.services import apply_referral_code
+
+        apply_referral_code(user, referral_code)
     return user
 
 

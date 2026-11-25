@@ -141,6 +141,15 @@ class AdminApi {
         'reference': ?reference,
       })));
 
+  // ---- promo codes ----------------------------------------------------------
+  Future<Paged<AdminPromoCode>> promoCodes({bool? active, int page = 1}) async => Paged.parse(
+      await client.get('/admin/promo-codes/', query: {'is_active': active?.toString(), 'page': page}),
+      AdminPromoCode.fromJson);
+  Future<AdminPromoCode> createPromoCode(Map<String, dynamic> body) async =>
+      AdminPromoCode.fromJson(asMap(await client.post('/admin/promo-codes/', body: body)));
+  Future<AdminPromoCode> updatePromoCode(int id, Map<String, dynamic> body) async =>
+      AdminPromoCode.fromJson(asMap(await client.patch('/admin/promo-codes/$id/', body: body)));
+
   // ---- complaints & audit ------------------------------------------------
   Future<Paged<AdminComplaint>> complaints({String? status, int page = 1}) async =>
       Paged.parse(await client.get('/admin/complaints/', query: {'status': status, 'page': page}),

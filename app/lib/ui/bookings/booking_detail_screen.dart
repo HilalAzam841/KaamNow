@@ -16,6 +16,7 @@ import '../widgets/common.dart';
 import '../widgets/language_button.dart';
 import '../widgets/map_view.dart';
 import '../widgets/offer_widgets.dart';
+import 'promo_box.dart';
 import '../../l10n/l10n.dart';
 
 /// One booking, for either side: status, contact, live tracking, completion, payment, review.
@@ -35,6 +36,7 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
   Booking? _booking;
   ServiceRequest? _request; // customer side: job coordinates for the map
   List<Payment> _payments = [];
+  DiscountChoice _discount = const DiscountChoice();
   LiveLocation? _location;
   Object? _error;
 
@@ -200,7 +202,9 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
   }
 
   Future<void> _pay(String method) async {
-    final p = await runAction(context, () => api.createPayment(widget.id, method));
+    final d = _discount;
+    final p = await runAction(
+        context, () => api.createPayment(widget.id, method, promoCode: d.promoCode, useCredit: d.useCredit));
     if (p == null || !mounted) return;
     if (p.checkout != null) {
       final outcome = await openCheckout(context, p.checkout!);
@@ -448,7 +452,13 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
       widgets.add(Card(
         child: ListTile(
           leading: const Icon(Icons.check_circle, color: Colors.green),
-          title: Text(context.t.paidAmount(rs(current!.amount)), key: const Key('payment-done')),
+          title: Text(
+            [
+              context.t.paidAmount(rs(current!.amount)),
+              if (current.hasDiscount && !_isWorker) '(${context.t.promoApplied(context.t.promoCode, rs(current.discountAmount))})',
+            ].join(' '),
+            key: const Key('payment-done'),
+          ),
           subtitle: Text([
             context.t.methodRef(paymentMethodLabel(current.method), current.reference),
             if (current.hasRefund)
@@ -484,6 +494,7 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
       }
       widgets.add(Text(context.t.amountDue(rs(b.totalAmount))));
       widgets.add(const SizedBox(height: 8));
+      widgets.add(PromoBox(bookingId: b.id, onChanged: (d) => setState(() => _discount = d)));
       widgets.add(Wrap(spacing: 8, runSpacing: 8, children: [
         for (final m in session.config.paymentMethods)
           OutlinedButton(

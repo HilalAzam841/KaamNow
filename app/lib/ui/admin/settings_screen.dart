@@ -34,11 +34,15 @@ class _SettingsFormState extends State<_SettingsForm> {
   late bool _emergency = widget.settings.emergencyEnabled;
   late final _minPayout = TextEditingController(text: widget.settings.minPayout);
   late final _debtLimit = TextEditingController(text: widget.settings.commissionDebtLimit);
+  late final _reward = TextEditingController(text: widget.settings.referralReward);
+  late final _welcome = TextEditingController(text: widget.settings.referralWelcomeCredit);
+  late final _minBooking = TextEditingController(text: widget.settings.referralMinBooking);
+  late final _maxDiscount = TextEditingController(text: widget.settings.maxDiscountPercent);
   bool _saving = false;
 
   String? _number(String? v, {double max = 1e9}) {
     final n = double.tryParse((v ?? '').trim());
-    if (n == null || n < 0 || n > max) return max == 100 ? 'Enter 0 to 100' : 'Enter a positive amount';
+    if (n == null || n < 0 || n > max) return max <= 100 ? 'Enter 0 to ${max.toInt()}' : 'Enter a positive amount';
     return null;
   }
 
@@ -51,6 +55,10 @@ class _SettingsFormState extends State<_SettingsForm> {
       if (_emergency != s.emergencyEnabled) 'emergency_enabled': _emergency,
       if (_minPayout.text.trim() != s.minPayout) 'min_payout': _minPayout.text.trim(),
       if (_debtLimit.text.trim() != s.commissionDebtLimit) 'commission_debt_limit': _debtLimit.text.trim(),
+      if (_reward.text.trim() != s.referralReward) 'referral_reward': _reward.text.trim(),
+      if (_welcome.text.trim() != s.referralWelcomeCredit) 'referral_welcome_credit': _welcome.text.trim(),
+      if (_minBooking.text.trim() != s.referralMinBooking) 'referral_min_booking': _minBooking.text.trim(),
+      if (_maxDiscount.text.trim() != s.maxDiscountPercent) 'max_discount_percent': _maxDiscount.text.trim(),
     };
     if (changes.isEmpty) return;
     if (changes.containsKey('commission_percent') &&
@@ -116,6 +124,40 @@ class _SettingsFormState extends State<_SettingsForm> {
                     helperText: 'Workers who owe more cash commission cannot send offers until they pay. 0 = no limit'),
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
                 validator: _number,
+              ),
+              const SizedBox(height: 24),
+              Text('Invites and discounts', style: Theme.of(context).textTheme.titleMedium),
+              const SizedBox(height: 16),
+              TextFormField(
+                key: const Key('referral-reward'),
+                controller: _reward,
+                decoration: const InputDecoration(labelText: 'Invite reward (Rs)', helperText: 'Given to the inviter when their friend pays a first booking. 0 = off', helperMaxLines: 2),
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                validator: _number,
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                key: const Key('referral-welcome'),
+                controller: _welcome,
+                decoration: const InputDecoration(labelText: 'Welcome credit (Rs)', helperText: 'Credit a new customer gets for signing up with an invite code', helperMaxLines: 2),
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                validator: _number,
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                key: const Key('referral-min-booking'),
+                controller: _minBooking,
+                decoration: const InputDecoration(labelText: 'Smallest first booking for a reward (Rs)', helperText: 'The first booking of the invited friend must be at least this much', helperMaxLines: 2),
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                validator: _number,
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                key: const Key('max-discount'),
+                controller: _maxDiscount,
+                decoration: const InputDecoration(labelText: 'Largest discount (% of a booking)', helperText: 'Promo codes and credit together never take off more than this', helperMaxLines: 2),
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                validator: (v) => _number(v, max: 90),
               ),
               const SizedBox(height: 16),
               FilledButton(

@@ -31,6 +31,7 @@ x-app: &app
     MEDIA_ROOT: /var/lib/kaamnow/media
     PRIVATE_MEDIA_ROOT: /var/lib/kaamnow/private_media
     PASSWORD_RESET_URL: https://${DOMAIN}/#/reset-password?uid={uid}&token={token}
+    INVITE_URL: https://${DOMAIN}/#/register?ref={code}
     JAZZCASH_RETURN_URL: ${JAZZCASH_RETURN_URL:-https://${DOMAIN}/api/v1/payments/callbacks/jazzcash/}
     EASYPAISA_POSTBACK_URL: ${EASYPAISA_POSTBACK_URL:-https://${DOMAIN}/api/v1/payments/callbacks/easypaisa/}
   volumes:

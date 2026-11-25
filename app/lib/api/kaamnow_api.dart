@@ -13,7 +13,7 @@ class KaamNowApi {
       _auth(await client.post('/auth/login/', body: {'phone': phone, 'password': password}, auth: false));
 
   Future<(User, String, String)> register({required String phone, required String password,
-      required String fullName, required UserRole role, String? email, String? cnic}) async {
+      required String fullName, required UserRole role, String? email, String? cnic, String? referralCode}) async {
     final body = {
       'phone': phone,
       'password': password,
@@ -21,6 +21,7 @@ class KaamNowApi {
       'role': role.name,
       if (email != null && email.isNotEmpty) 'email': email,
       if (cnic != null && cnic.isNotEmpty) 'cnic_number': cnic,
+      if (referralCode != null && referralCode.isNotEmpty) 'referral_code': referralCode,
     };
     return _auth(await client.post('/auth/register/', body: body, auth: false));
   }
@@ -186,8 +187,17 @@ class KaamNowApi {
       });
 
   // ---- Payments ----------------------------------------------------------
-  Future<Payment> createPayment(int bookingId, String method) async =>
-      Payment.fromJson(asMap(await client.post('/payments/', body: {'booking': bookingId, 'method': method})));
+  Future<Payment> createPayment(int bookingId, String method, {String promoCode = '', bool useCredit = false}) async =>
+      Payment.fromJson(asMap(await client.post('/payments/', body: {
+        'booking': bookingId,
+        'method': method,
+        if (promoCode.isNotEmpty) 'promo_code': promoCode,
+        if (useCredit) 'use_credit': true,
+      })));
+  Future<PaymentQuote> checkPromo(int bookingId, {String promoCode = '', bool useCredit = false}) async =>
+      PaymentQuote.fromJson(asMap(await client.post('/promos/check/',
+          body: {'booking': bookingId, 'promo_code': promoCode, 'use_credit': useCredit})));
+  Future<ReferralSummary> referralSummary() async => ReferralSummary.fromJson(asMap(await client.get('/referrals/me/')));
   Future<List<Payment>> paymentsForBooking(int bookingId) async =>
       Paged.parse(await client.get('/payments/', query: {'booking': bookingId}), Payment.fromJson).results;
   Future<Payment> confirmCashPayment(int paymentId) async =>

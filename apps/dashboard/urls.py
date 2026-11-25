@@ -1,6 +1,8 @@
 from django.urls import path
 from rest_framework.routers import DefaultRouter
 
+from apps.promotions.views import AdminPromoCodeViewSet
+
 from . import views
 
 router = DefaultRouter()
@@ -9,6 +11,7 @@ router.register("featured-plans", views.AdminFeaturedPlanViewSet, basename="admi
 router.register("subscriptions", views.AdminSubscriptionViewSet, basename="admin-subscription")
 router.register("featured-listings", views.AdminFeaturedListingViewSet, basename="admin-featured-listing")
 router.register("complaints", views.AdminComplaintViewSet, basename="admin-complaint")
+router.register("promo-codes", AdminPromoCodeViewSet, basename="admin-promo-code")
 router.register("payments", views.AdminPaymentViewSet, basename="admin-payment")
 router.register("settlements", views.AdminSettlementViewSet, basename="admin-settlement")
 

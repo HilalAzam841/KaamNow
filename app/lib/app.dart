@@ -16,6 +16,7 @@ import 'ui/admin/complaints_screen.dart' as admin;
 import 'ui/admin/jobs_screen.dart';
 import 'ui/admin/overview_screen.dart';
 import 'ui/admin/payments_screen.dart';
+import 'ui/admin/promo_codes_screen.dart';
 import 'ui/admin/payouts_screen.dart';
 import 'ui/admin/plans_screen.dart';
 import 'ui/admin/revenue_screen.dart';
@@ -37,6 +38,7 @@ import 'ui/customer/my_requests_screen.dart';
 import 'ui/customer/new_request_screen.dart';
 import 'ui/customer/request_detail_screen.dart';
 import 'ui/customer/worker_public_screen.dart';
+import 'ui/account/invite_screen.dart';
 import 'ui/shell/home_shell.dart';
 import 'ui/worker/earnings_screen.dart';
 import 'ui/worker/job_detail_screen.dart';
@@ -58,7 +60,7 @@ GoRouter buildRouter(Session session) {
     routes: [
       GoRoute(path: '/splash', builder: (_, _) => const Scaffold(body: Center(child: CircularProgressIndicator()))),
       GoRoute(path: '/login', builder: (_, _) => const LoginScreen()),
-      GoRoute(path: '/register', builder: (_, _) => const RegisterScreen()),
+      GoRoute(path: '/register', builder: (_, s) => RegisterScreen(referralCode: s.uri.queryParameters['ref'])),
       GoRoute(path: '/forgot-password', builder: (_, _) => const ForgotPasswordScreen()),
       GoRoute(path: '/verify-phone', builder: (_, _) => const VerifyPhoneScreen()),
       GoRoute(
@@ -75,6 +77,7 @@ GoRouter buildRouter(Session session) {
           GoRoute(path: '/admin/bookings', builder: (_, _) => const AdminJobsScreen()),
           GoRoute(path: '/admin/revenue', builder: (_, _) => const AdminRevenueScreen()),
           GoRoute(path: '/admin/payments', builder: (_, _) => const AdminPaymentsScreen()),
+          GoRoute(path: '/admin/promo-codes', builder: (_, _) => const AdminPromoCodesScreen()),
           GoRoute(path: '/admin/payouts', builder: (_, _) => const AdminPayoutsScreen()),
           GoRoute(path: '/admin/plans', builder: (_, _) => const AdminPlansScreen()),
           GoRoute(path: '/admin/complaints', builder: (_, _) => const admin.AdminComplaintsScreen()),
@@ -108,6 +111,7 @@ GoRouter buildRouter(Session session) {
       GoRoute(path: '/bookings/:id', builder: (_, s) => BookingDetailScreen(id: int.parse(s.pathParameters['id']!))),
       GoRoute(path: '/bookings/:id/chat', builder: (_, s) => ChatScreen(bookingId: int.parse(s.pathParameters['id']!))),
       GoRoute(path: '/worker/profile', builder: (_, _) => const WorkerProfileScreen()),
+      GoRoute(path: '/invite', builder: (_, _) => const InviteScreen()),
       GoRoute(path: '/worker/earnings', builder: (_, _) => const EarningsScreen()),
       GoRoute(path: '/worker/plans', builder: (_, _) => const PlansScreen()),
       GoRoute(path: '/complaints', builder: (_, _) => const ComplaintsScreen()),
@@ -129,8 +133,10 @@ String? redirectFor(Session session, String location) {
   final isAuthRoute = _authRoutes.contains(path);
   if (_publicRoutes.contains(path)) return null;
   final from = uri.queryParameters['from'];
+  // An invite link (/register?ref=...) keeps its code through the splash screen.
+  final keep = !isAuthRoute || uri.queryParameters.containsKey('ref');
   String withFrom(String target) =>
-      path == '/' || path == '/splash' || isAuthRoute ? target : Uri(path: target, queryParameters: {'from': location}).toString();
+      path == '/' || path == '/splash' || !keep ? target : Uri(path: target, queryParameters: {'from': location}).toString();
 
   switch (session.status) {
     case SessionStatus.unknown:
@@ -139,7 +145,10 @@ String? redirectFor(Session session, String location) {
       if (isAuthRoute) return null;
       // Tapping "Log out" starts afresh: the next person to sign in lands on their own home.
       if (session.loggedOutByUser) return '/login';
-      if (path == '/splash' && from != null) return Uri(path: '/login', queryParameters: {'from': from}).toString();
+      if (path == '/splash' && from != null) {
+        if (_authRoutes.contains(Uri.parse(from).path)) return from;
+        return Uri(path: '/login', queryParameters: {'from': from}).toString();
+      }
       return withFrom('/login');
     case SessionStatus.signedIn:
       final user = session.user!;
