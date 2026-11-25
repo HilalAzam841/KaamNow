@@ -1,0 +1,103 @@
+name: ios
+
+# Builds the iPhone app on every pull request and push to main, and runs it on an iPhone
+# simulator against a real backend with the demo accounts. No Apple account is needed for this;
+# publishing to the App Store (or TestFlight) needs one, see app/README.md.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: macos-15
+    timeout-minutes: 45
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.50.1"
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - name: Build the iPhone app (unsigned)
+        run: >
+          flutter build ios --release --no-codesign
+          --dart-define=API_BASE_URL=${{ vars.IOS_API_URL || vars.ANDROID_API_URL || 'https://kaamnow.pk' }}
+          --build-number=${{ github.run_number }}
+
+  simulator:
+    runs-on: macos-15
+    timeout-minutes: 60
+    env:
+      DJANGO_DEBUG: "true"
+      DJANGO_SECRET_KEY: ci-only-secret-key
+      POSTGRES_DB: kaamnow
+      POSTGRES_USER: kaamnow
+      POSTGRES_PASSWORD: kaamnow
+      POSTGRES_HOST: localhost
+    steps:
+      - uses: actions/checkout@v4
+      - name: PostgreSQL
+        run: |
+          brew install postgresql@16
+          brew services start postgresql@16
+          export PATH="$(brew --prefix postgresql@16)/bin:$PATH"
+          for i in $(seq 1 30); do pg_isready -h localhost && break; sleep 1; done
+          psql -h localhost -d postgres -c "CREATE ROLE kaamnow LOGIN PASSWORD 'kaamnow' CREATEDB;"
+          createdb -h localhost -O kaamnow kaamnow
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Start the backend with demo accounts
+        run: |
+          pip install -r requirements.txt
+          python manage.py migrate --noinput
+          python manage.py seed_demo_data
+          nohup daphne -b 127.0.0.1 -p 8000 config.asgi:application > "$RUNNER_TEMP/daphne.log" 2>&1 &
+          for i in $(seq 1 30); do curl -sf http://127.0.0.1:8000/api/v1/app/config/ > /dev/null && break; sleep 1; done
+          curl -sf http://127.0.0.1:8000/api/v1/app/config/ > /dev/null
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.50.1"
+          channel: stable
+          cache: true
+      - run: flutter pub get
+        working-directory: app
+      - name: Boot an iPhone simulator
+        run: |
+          UDID=$(xcrun simctl list devices available -j | python3 -c "
+          import json, sys
+          devices = json.load(sys.stdin)['devices']
+          phones = [d for runtime, ds in devices.items() if 'iOS' in runtime for d in ds if d['name'].startswith('iPhone')]
+          print(phones[-1]['udid'])")
+          echo "Using simulator $UDID"
+          xcrun simctl boot "$UDID"
+          xcrun simctl bootstatus "$UDID" -b
+          echo "SIM_UDID=$UDID" >> "$GITHUB_ENV"
+      - name: Run the app on the iPhone simulator
+        timeout-minutes: 35
+        working-directory: app
+        run: |
+          mkdir -p build/android-shots
+          flutter drive -d "$SIM_UDID" --driver=test_driver/integration_test.dart \
+            --target=integration_test/app_test.dart --dart-define=API_BASE_URL=http://localhost:8000 \
+            2>&1 | tee build/android-shots/drive.log
+          exit ${PIPESTATUS[0]}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: iphone-screenshots
+          path: app/build/android-shots/
+          if-no-files-found: ignore
+      - name: Backend log
+        if: failure()
+        run: tail -100 "$RUNNER_TEMP/daphne.log"

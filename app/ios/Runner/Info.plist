@@ -7,7 +7,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Kaamnow</string>
+	<string>KaamNow</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -15,7 +15,27 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>kaamnow</string>
+	<string>KaamNow</string>
+	<key>CFBundleLocalizations</key>
+	<array>
+		<string>en</string>
+		<string>ur</string>
+	</array>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>KaamNow uses your location to set where the job is, and to show customers how far away their worker is while a booking is on its way.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Take photos of the problem for workers, or of your CNIC for verification.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Choose photos of the problem for workers, or of your CNIC for verification.</string>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<!-- Only https to the internet. Plain http is allowed to this computer's own network
+		     (e.g. a development server at http://localhost:8000 from the simulator). -->
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
+	</dict>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -56,8 +76,6 @@
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>

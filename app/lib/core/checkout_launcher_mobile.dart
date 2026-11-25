@@ -8,12 +8,13 @@ import '../l10n/l10n.dart';
 import '../models/models.dart';
 import 'checkout_launcher.dart';
 
-/// Phone app: shows the gateway's hosted checkout full screen inside the app, posting the
+/// Phone app (Android and iPhone): shows the gateway's hosted checkout full screen inside the app, posting the
 /// signed fields from the server exactly as the web form does. Closing the page returns to
 /// the booking or plan, which then reloads the payment state from the server.
 Future<CheckoutOutcome> openCheckout(BuildContext context, Checkout checkout) async {
   final uri = Uri.tryParse(checkout.url);
-  if (uri == null || uri.scheme != 'https' || defaultTargetPlatform != TargetPlatform.android) {
+  const phones = {TargetPlatform.android, TargetPlatform.iOS};
+  if (uri == null || uri.scheme != 'https' || !phones.contains(defaultTargetPlatform)) {
     return CheckoutOutcome.failed;
   }
   final ok = await Navigator.of(context).push<bool>(MaterialPageRoute(
