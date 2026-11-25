@@ -27,6 +27,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String get addAService => 'سروس شامل کریں';
 
   @override
+  String get addAddress => 'پتہ شامل کریں';
+
+  @override
   String get addContact => 'رابطہ شامل کریں';
 
   @override
@@ -46,7 +49,16 @@ class AppLocalizationsUr extends AppLocalizations {
   String get addressAfterBooking => 'بکنگ کے بعد مکمل پتہ بتا دیا جائے گا۔';
 
   @override
+  String get addressDefaultBadge => 'پہلے سے منتخب';
+
+  @override
+  String get addressDeleted => 'پتہ حذف ہو گیا۔';
+
+  @override
   String get addressHelper => 'صرف وہی کاریگر دیکھ سکے گا جسے آپ بک کریں گے';
+
+  @override
+  String get addressSaved => 'پتہ محفوظ ہو گیا۔';
 
   @override
   String get agree => 'راضی ہوں';
@@ -564,6 +576,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String get defaultAddress => 'مستقل پتہ';
 
   @override
+  String get deleteAddressQ => 'یہ پتہ حذف کریں؟';
+
+  @override
   String get deletePhotoBody => 'گاہک اسے مزید نہیں دیکھ سکیں گے۔';
 
   @override
@@ -629,6 +644,9 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get earnings => 'آمدنی';
+
+  @override
+  String get editAddress => 'پتہ بدلیں';
 
   @override
   String get editCaption => 'عنوان بدلیں';
@@ -951,6 +969,15 @@ class AppLocalizationsUr extends AppLocalizations {
   }
 
   @override
+  String get labelHome => 'گھر';
+
+  @override
+  String get labelOther => 'دوسری جگہ';
+
+  @override
+  String get labelWork => 'دفتر';
+
+  @override
   String get language => 'زبان';
 
   @override
@@ -1016,10 +1043,17 @@ class AppLocalizationsUr extends AppLocalizations {
       'اب آپ نئے پاس ورڈ سے لاگ اِن کر سکتے ہیں۔';
 
   @override
+  String get makeDefault => 'پہلے استعمال کریں';
+
+  @override
   String get markAllRead => 'سب پڑھ لیے';
 
   @override
   String get markCompleteQ => 'کام کو مکمل قرار دیں؟';
+
+  @override
+  String get maxAddressesReached =>
+      'آپ کے 10 پتے ہیں، جو زیادہ سے زیادہ حد ہے۔';
 
   @override
   String get maxContactsReached =>
@@ -1237,6 +1271,13 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get noReviewsYet => 'ابھی کوئی ریویو نہیں۔';
+
+  @override
+  String get noSavedAddresses => 'کوئی محفوظ پتہ نہیں';
+
+  @override
+  String get noSavedAddressesHint =>
+      'گھر، دفتر اور دوسری جگہیں (زیادہ سے زیادہ 10) محفوظ کریں تاکہ کام جلدی اور درست مقام کے ساتھ پوسٹ ہو۔';
 
   @override
   String get noService => 'کوئی نہیں';
@@ -1476,6 +1517,12 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get pinPlaced => 'پن لگ گیا۔ جگہ بدلنے کے لیے نقشے پر ٹیپ کریں۔';
+
+  @override
+  String get placeNameHint => 'جیسے امی کا گھر';
+
+  @override
+  String get placeNameLabel => 'اس جگہ کا نام';
 
   @override
   String get planPaymentWindowClosed =>
@@ -1747,7 +1794,20 @@ class AppLocalizationsUr extends AppLocalizations {
   String get saveProfile => 'پروفائل محفوظ کریں';
 
   @override
+  String get saveThisPlace => 'یہ جگہ محفوظ کریں';
+
+  @override
   String get saveToFavourites => 'ورکر محفوظ کریں';
+
+  @override
+  String get savedAddresses => 'محفوظ پتے';
+
+  @override
+  String get savedAddressesHint =>
+      'گھر، دفتر اور دوسری جگہیں جہاں سے آپ بکنگ کرتے ہیں';
+
+  @override
+  String get savedPlaces => 'آپ کی جگہیں';
 
   @override
   String get savedWorkers => 'محفوظ کردہ';
@@ -1822,6 +1882,9 @@ class AppLocalizationsUr extends AppLocalizations {
   @override
   String get setLocationFirst =>
       'نقشے پر کام کی جگہ لگائیں، یا اپنی موجودہ لوکیشن استعمال کریں۔';
+
+  @override
+  String get setPinFirst => 'پہلے نقشے پر پن لگائیں۔';
 
   @override
   String get settlementCollection => 'کمیشن ادا کیا';
@@ -2197,6 +2260,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String useCredit(Object amount) {
     return 'میرا کریڈٹ استعمال کریں ($amount)';
   }
+
+  @override
+  String get useFirstSwitch => 'کام پوسٹ کرتے وقت یہ پتہ پہلے استعمال کریں';
 
   @override
   String get useMyLocation => 'میری لوکیشن استعمال کریں';

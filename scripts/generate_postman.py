@@ -135,6 +135,22 @@ folders = [
         req("Workers who worked for me", "GET", "/favourites/recent/"),
         req("One worker's free slots", "GET", "/workers/{{worker_id}}/slots/?date=2026-12-02"),
         req("Remove a saved worker", "DELETE", "/favourites/{{worker_id}}/"),
+        req("Save my home address", "POST", "/addresses/", {
+            "label": "home", "address": "House 12, Street 4, Gulberg III", "area": "Gulberg III",
+            "latitude": "31.512000", "longitude": "74.345000",
+        }, tests=[save("address_id", ".id")]),
+        req("Save a named place", "POST", "/addresses/", {
+            "label": "other", "name": "Ammi's house", "address": "House 9, Block C, Model Town",
+            "latitude": "31.483000", "longitude": "74.326000", "make_default": True,
+        }),
+        req("My saved addresses", "GET", "/addresses/"),
+        req("Edit a saved address", "PATCH", "/addresses/{{address_id}}/", {"area": "Gulberg III, Lahore"}),
+        req("Use this address first", "POST", "/addresses/{{address_id}}/make-default/"),
+        req("Post a job from a saved address", "POST", "/requests/", {
+            "category": 1, "title": "Kitchen light flickering",
+            "description": "Tube light in the kitchen keeps flickering in the evening.",
+            "saved_address": "{{address_id}}", "preferred_time": "2026-12-03T17:00:00+05:00",
+        }),
         req("Time slots with free workers", "GET",
             "/requests/slots/?category=1&latitude=31.5100&longitude=74.3440&date=2026-12-01"),
         req("Create request", "POST", "/requests/", {

@@ -152,7 +152,7 @@ msgstr "موجودہ پاس ورڈ غلط ہے۔"
 
 #: apps/addresses/serializers.py
 msgid "Write the full address (house, street, block)."
-msgstr "پورا پتا لکھیں (مکان، گلی، بلاک)۔"
+msgstr "پورا پتہ لکھیں (مکان، گلی، بلاک)۔"
 
 #: apps/addresses/serializers.py
 msgid "Give this place a name, e.g. Ammi's house."
@@ -160,11 +160,11 @@ msgstr "اس جگہ کا نام رکھیں، جیسے امی کا گھر۔"
 
 #: apps/addresses/services.py
 msgid "You already saved a Home address. Edit that one instead."
-msgstr "آپ گھر کا پتا پہلے ہی محفوظ کر چکے ہیں۔ اسی میں تبدیلی کریں۔"
+msgstr "آپ گھر کا پتہ پہلے ہی محفوظ کر چکے ہیں۔ اسی میں تبدیلی کریں۔"
 
 #: apps/addresses/services.py
 msgid "You already saved a Work address. Edit that one instead."
-msgstr "آپ دفتر کا پتا پہلے ہی محفوظ کر چکے ہیں۔ اسی میں تبدیلی کریں۔"
+msgstr "آپ دفتر کا پتہ پہلے ہی محفوظ کر چکے ہیں۔ اسی میں تبدیلی کریں۔"
 
 #: apps/addresses/services.py
 msgid "You can save up to 10 addresses. Delete one first."
@@ -588,7 +588,7 @@ msgstr "براہِ کرم مسئلہ کم از کم 10 حروف میں بیان 
 
 #: apps/jobs/serializers.py
 msgid "This saved address was not found."
-msgstr "یہ محفوظ پتا نہیں ملا۔"
+msgstr "یہ محفوظ پتہ نہیں ملا۔"
 
 #: apps/jobs/serializers.py
 msgid "This field is required."

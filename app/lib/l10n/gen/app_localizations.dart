@@ -128,6 +128,12 @@ abstract class AppLocalizations {
   /// **'Add a service'**
   String get addAService;
 
+  /// No description provided for @addAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Add address'**
+  String get addAddress;
+
   /// No description provided for @addContact.
   ///
   /// In en, this message translates to:
@@ -164,11 +170,29 @@ abstract class AppLocalizations {
   /// **'The exact address is shared once you are booked.'**
   String get addressAfterBooking;
 
+  /// No description provided for @addressDefaultBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Default'**
+  String get addressDefaultBadge;
+
+  /// No description provided for @addressDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Address deleted.'**
+  String get addressDeleted;
+
   /// No description provided for @addressHelper.
   ///
   /// In en, this message translates to:
   /// **'Only the worker you book will see it'**
   String get addressHelper;
+
+  /// No description provided for @addressSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Address saved.'**
+  String get addressSaved;
 
   /// No description provided for @agree.
   ///
@@ -1046,6 +1070,12 @@ abstract class AppLocalizations {
   /// **'Default address'**
   String get defaultAddress;
 
+  /// No description provided for @deleteAddressQ.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this address?'**
+  String get deleteAddressQ;
+
   /// No description provided for @deletePhotoBody.
   ///
   /// In en, this message translates to:
@@ -1147,6 +1177,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Earnings'**
   String get earnings;
+
+  /// No description provided for @editAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit address'**
+  String get editAddress;
 
   /// No description provided for @editCaption.
   ///
@@ -1670,6 +1706,24 @@ abstract class AppLocalizations {
   /// **'KaamNow: {text}'**
   String kaamnowReply(Object text);
 
+  /// No description provided for @labelHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get labelHome;
+
+  /// No description provided for @labelOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get labelOther;
+
+  /// No description provided for @labelWork.
+  ///
+  /// In en, this message translates to:
+  /// **'Work'**
+  String get labelWork;
+
   /// No description provided for @language.
   ///
   /// In en, this message translates to:
@@ -1784,6 +1838,12 @@ abstract class AppLocalizations {
   /// **'You can log in with your new password now.'**
   String get loginWithNewPassword;
 
+  /// No description provided for @makeDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Use first'**
+  String get makeDefault;
+
   /// No description provided for @markAllRead.
   ///
   /// In en, this message translates to:
@@ -1795,6 +1855,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Mark the job as complete?'**
   String get markCompleteQ;
+
+  /// No description provided for @maxAddressesReached.
+  ///
+  /// In en, this message translates to:
+  /// **'You have 10 addresses, the most allowed.'**
+  String get maxAddressesReached;
 
   /// No description provided for @maxContactsReached.
   ///
@@ -2149,6 +2215,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No reviews yet.'**
   String get noReviewsYet;
+
+  /// No description provided for @noSavedAddresses.
+  ///
+  /// In en, this message translates to:
+  /// **'No saved addresses'**
+  String get noSavedAddresses;
+
+  /// No description provided for @noSavedAddressesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Home, Work and other places (up to 10) to post jobs faster, with the pin in the right place.'**
+  String get noSavedAddressesHint;
 
   /// No description provided for @noService.
   ///
@@ -2539,6 +2617,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Pin placed. Tap the map to move it.'**
   String get pinPlaced;
+
+  /// No description provided for @placeNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Ammi\'s house'**
+  String get placeNameHint;
+
+  /// No description provided for @placeNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Name of this place'**
+  String get placeNameLabel;
 
   /// No description provided for @planPaymentWindowClosed.
   ///
@@ -2990,11 +3080,35 @@ abstract class AppLocalizations {
   /// **'Save profile'**
   String get saveProfile;
 
+  /// No description provided for @saveThisPlace.
+  ///
+  /// In en, this message translates to:
+  /// **'Save this place'**
+  String get saveThisPlace;
+
   /// No description provided for @saveToFavourites.
   ///
   /// In en, this message translates to:
   /// **'Save worker'**
   String get saveToFavourites;
+
+  /// No description provided for @savedAddresses.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved addresses'**
+  String get savedAddresses;
+
+  /// No description provided for @savedAddressesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Home, work and other places you book from'**
+  String get savedAddressesHint;
+
+  /// No description provided for @savedPlaces.
+  ///
+  /// In en, this message translates to:
+  /// **'Your places'**
+  String get savedPlaces;
 
   /// No description provided for @savedWorkers.
   ///
@@ -3127,6 +3241,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Set the job location on the map, or use your current location.'**
   String get setLocationFirst;
+
+  /// No description provided for @setPinFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Put the pin on the map first.'**
+  String get setPinFirst;
 
   /// No description provided for @settlementCollection.
   ///
@@ -3793,6 +3913,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Use my credit ({amount})'**
   String useCredit(Object amount);
+
+  /// No description provided for @useFirstSwitch.
+  ///
+  /// In en, this message translates to:
+  /// **'Use this address first when posting a job'**
+  String get useFirstSwitch;
 
   /// No description provided for @useMyLocation.
   ///
