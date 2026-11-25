@@ -12,6 +12,7 @@ from apps.tracking.views import BookingLocationView
 from apps.jobs.urls import bookings_router, requests_router
 from apps.offers.urls import offer_urlpatterns, request_offer_urlpatterns
 from apps.promotions.urls import referral_urlpatterns
+from apps.scheduling.views import MyScheduleView, MyTimeOffDetailView, MyTimeOffView, SlotsView
 from apps.reviews.views import ReviewCreateView, WorkerReviewsView
 
 api_v1 = [
@@ -19,8 +20,12 @@ api_v1 = [
     path("app/config/", app_config, name="app-config"),
     path("auth/", include(auth_urlpatterns)),
     path("workers/<int:pk>/reviews/", WorkerReviewsView.as_view(), name="worker-reviews"),
+    path("workers/me/schedule/", MyScheduleView.as_view(), name="worker-schedule"),
+    path("workers/me/time-off/", MyTimeOffView.as_view(), name="worker-time-off"),
+    path("workers/me/time-off/<int:pk>/", MyTimeOffDetailView.as_view(), name="worker-time-off-detail"),
     path("workers/", include(worker_urlpatterns)),
     path("services/", include("apps.catalog.urls")),
+    path("requests/slots/", SlotsView.as_view(), name="request-slots"),
     path("requests/", include(request_offer_urlpatterns)),
     path("requests/", include(requests_router.urls)),
     path("offers/", include(offer_urlpatterns)),

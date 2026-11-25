@@ -40,8 +40,11 @@ def eligible_workers_queryset(category):
     )
 
 
-def find_nearby_workers(category, latitude, longitude, exclude_user=None, sponsored_first=False):
+def find_nearby_workers(category, latitude, longitude, exclude_user=None, sponsored_first=False, window=None):
     """Matching workers sorted by distance.
+
+    With window=(start, end) only workers free then are returned (working hours, time off and
+    other bookings; see apps.scheduling).
 
     With sponsored_first=True (customer-facing search results), workers with an
     active featured listing in the category come first and are flagged
@@ -53,6 +56,10 @@ def find_nearby_workers(category, latitude, longitude, exclude_user=None, sponso
     if exclude_user is not None:
         qs = qs.exclude(user=exclude_user)
     workers = get_geo_backend().workers_covering_point(qs, latitude, longitude)
+    if window is not None:
+        from apps.scheduling.services import free_workers
+
+        workers = free_workers(workers, *window)
     sponsored = featured_worker_ids(category)
     for worker in workers:
         worker.is_sponsored = worker.pk in sponsored
@@ -79,7 +86,11 @@ def worker_can_bid_on(worker, service_request):
     if not worker.services.filter(category_id=service_request.category_id, is_active=True).exists():
         return False
     distance = worker_distance_to_request(worker, service_request)
-    return distance is not None and distance <= float(worker.service_radius_km)
+    if distance is None or distance > float(worker.service_radius_km):
+        return False
+    from apps.scheduling.services import request_fits_worker
+
+    return request_fits_worker(worker, service_request)
 
 
 def open_requests_for_worker(worker):
@@ -106,6 +117,14 @@ def open_requests_for_worker(worker):
         if distance is not None and distance <= float(worker.service_radius_km):
             req.distance_km = distance
             results.append(req)
+    # Only jobs the worker is free for (working hours, time off, other bookings).
+    if results:
+        from apps.scheduling.services import request_fits_worker, schedules_for
+
+        starts = [r.window[0] for r in results]
+        ends = [r.window[1] for r in results]
+        schedule = schedules_for([worker], min(starts), max(ends))[worker.pk]
+        results = [r for r in results if request_fits_worker(worker, r, schedule)]
     # Emergencies first, then newest.
     results.sort(key=lambda r: (not r.is_emergency, -r.created_at.timestamp()))
     return results
@@ -135,7 +154,9 @@ def create_service_request(customer, images=None, **data):
     for image in images or []:
         ServiceRequestImage.objects.create(request=service_request, image=image)
 
-    workers = find_nearby_workers(category, service_request.latitude, service_request.longitude, exclude_user=customer)
+    window = None if service_request.is_emergency else service_request.window
+    workers = find_nearby_workers(category, service_request.latitude, service_request.longitude, exclude_user=customer,
+                                  window=window)
     if workers:
         title = (
             t("URGENT: New {category} request nearby", category=category_name(category))

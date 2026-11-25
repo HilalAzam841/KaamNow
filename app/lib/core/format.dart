@@ -20,6 +20,20 @@ String rs(String? amount) {
 /// Urdu uses the 24-hour clock: the Urdu AM/PM marks are rarely used in apps.
 String when(DateTime? d) =>
     d == null ? '' : DateFormat(_lang == 'ur' ? 'd MMM، HH:mm' : 'd MMM, h:mm a', _lang).format(d);
+String clock(DateTime d) => DateFormat(_lang == 'ur' ? 'HH:mm' : 'h:mm a', _lang).format(d);
+
+/// "3 Dec, 10:00 AM to 12:00 PM": a job's start and expected end.
+String whenWindow(DateTime? start, int minutes) =>
+    start == null ? '' : strings.timeWindow(when(start), clock(start.add(Duration(minutes: minutes))));
+
+/// "2 hours", "1 hour 30 min".
+String durationLabel(int minutes) {
+  final h = minutes ~/ 60, m = minutes % 60;
+  if (h == 0) return strings.durationMinutes(m);
+  if (m == 0) return strings.durationHours(h);
+  return strings.durationHoursMinutes(h, m);
+}
+
 String day(DateTime? d) => d == null ? '' : DateFormat('d MMM yyyy', _lang).format(d);
 
 String ago(DateTime? d) {

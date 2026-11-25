@@ -14,7 +14,7 @@ later, and talks to the backend only through the REST API and the booking WebSoc
 
 **Stage 1 (Backend MVP), Stage 2 (Advanced features) and Stage 3 (Flutter web client) are done,
 and Stage 4 adds the admin dashboard to the web app.** Every backend feature below has its business logic, REST endpoint(s), validation and
-automated tests. All 450 backend tests pass against PostgreSQL 16, and the Flutter app has 101
+automated tests. All 478 backend tests pass against PostgreSQL 16, and the Flutter app has 107
 unit and widget tests plus a browser end-to-end run (see `app/README.md`).
 
 ### Stage 1: Backend MVP
@@ -225,6 +225,20 @@ Discounts are paid by KaamNow: the customer pays less, and the worker still earn
 | Everyone has an invite code and link to share. A new customer who signs up with it gets welcome credit (Rs 100 by default). When their first booking of Rs 500 or more is paid, the inviter is rewarded (Rs 200 by default): customers as credit for their next booking, workers as money in their wallet | `GET referrals/me/`, `referral_code` on `POST auth/register/`, app: Account → **Invite friends**, invite link `/register?ref=CODE` |
 | Admins set the invite reward, welcome credit, smallest qualifying booking and the discount cap | `GET/PATCH admin/settings/`, app: admin **Settings** |
 
+### Stage 17: worker availability and time slots
+
+Workers say when they work, and customers see when workers are free, so nobody gets a job they cannot do.
+
+| Feature | Where |
+|---|---|
+| Workers set their working days and hours for each day of the week (Pakistan time), or leave it as "available any time" (the default, so existing workers are not affected) | `GET/PUT workers/me/schedule/`, app: Account → **My working hours** |
+| Workers add days off (holiday, wedding, leave) up to 90 days at a time and remove them again. The reason stays private | `POST workers/me/time-off/`, `DELETE workers/me/time-off/{id}/` |
+| A request has a start time and an expected length (1 to 8 hours, 2 by default). A worker counts as free only when the whole window is inside their hours, not on a day off, and does not overlap another active booking | `duration_minutes` on `POST requests/`, `apps/scheduling/services.py` |
+| New job alerts and the worker job feed only include workers who are free for the job. Emergency jobs skip hours and days off (a worker who switched on "available" can take them) but still respect other bookings | `find_nearby_workers(window=...)`, `open_requests_for_worker` |
+| A worker cannot send an offer for a time they are not free (`worker_off_hours`, `worker_time_off`, `worker_busy`, HTTP 409). Accepting an offer re-checks under a row lock, so two customers cannot book the same worker for overlapping times | `create_offer`, `accept_offer` |
+| When posting a job, the customer sees the day's 2-hour slots with how many matching workers nearby are free in each, and taps one to choose it. Only counts are shown, never who | `GET requests/slots/?category=&latitude=&longitude=&date=`, app: **Post a job** |
+| Offers, requests and bookings show the time window ("3 Dec, 10:00 AM to 12:00 PM"), and a worker's public profile shows their working hours | app |
+
 **Before going live with online payments:** the JazzCash and Easypaisa adapters follow each
 gateway's published integration scheme and are covered by tests with simulated gateway responses.
 They have **not** been run against the real sandboxes yet, because that needs your merchant
@@ -260,6 +274,8 @@ apps/
   chat/                 ChatMessage, WebSocket consumer + JWT middleware
   tracking/             BookingLocation (live GPS)
   support/              Complaint
+  promotions/           PromoCode, Referral, CreditEntry
+  scheduling/           WorkingHours, TimeOff, free-time checks and time slots
 docs/                   openapi.yaml, Postman collection
 scripts/                generate_postman.py
 app/                    Flutter client (web, Android, iPhone): lib/, test/, e2e/, integration_test/
@@ -335,7 +351,7 @@ docker compose up --build
 pytest -q
 ```
 
-The suite has 416 tests and needs a running PostgreSQL (Redis is not needed for tests). It uses the database settings from your
+The suite has 478 tests and needs a running PostgreSQL (Redis is not needed for tests). It uses the database settings from your
 `.env` and creates a separate `test_kaamnow` database. Coverage includes:
 
 - **Authentication**: registration validation, login, suspended accounts, token refresh rotation, logout blacklisting, password reset (single-use token, no account enumeration), throttling.
@@ -352,6 +368,7 @@ The suite has 416 tests and needs a running PostgreSQL (Redis is not needed for 
 - **Chat and tracking over WebSockets** (real ASGI app): token, suspension, origin and participant checks; chat and read receipts in both directions; REST messages pushed to sockets; location and status events; customers cannot send fake locations; events isolated per booking.
 - **Push**: message format, only active devices, dead tokens deactivated, retries on transient errors.
 - **Urdu**: error messages follow `Accept-Language`, alerts use the recipient's saved language (not the sender's), Urdu service names, the saved-language API, and a check that the compiled catalog matches the `.po` file.
+- **Availability**: working hours, days off and overlapping bookings; alerts and the job feed only reach free workers; offer and accept refusals; emergency jobs; time slot counts; schedule permissions.
 - **Complaints** and **scheduled tasks** (including a check that every beat entry points to a registered task).
 
 CI (`.github/workflows/tests.yml`) runs lint, checks for missing migrations, validates the
@@ -387,9 +404,9 @@ be probed), `409` state conflict (already booked, wrong turn, and so on), `429` 
 |---|---|
 | App | `GET app/config/` (public: minimum app versions, emergency fee, offer price limits, which payment methods are configured, WebSocket path) |
 | Auth | `POST auth/register/` · `POST auth/login/` · `POST auth/token/refresh/` · `POST auth/logout/` · `GET/PATCH auth/me/` · `POST auth/password-reset/` · `POST auth/password-reset/confirm/` · `POST auth/password-reset/sms-confirm/` · `POST auth/phone/send-code/` · `POST auth/phone/verify/` · `POST auth/password-change/` |
-| Workers | `GET/PATCH workers/me/` · `GET/POST workers/documents/` · `GET workers/nearby/?category=&latitude=&longitude=` · `POST workers/availability/` · `GET workers/{id}/` · `GET workers/{id}/reviews/` |
+| Workers | `GET/PATCH workers/me/` · `GET/POST workers/documents/` · `GET workers/nearby/?category=&latitude=&longitude=` · `POST workers/availability/` · `GET/PUT workers/me/schedule/` · `POST workers/me/time-off/` · `DELETE workers/me/time-off/{id}/` · `GET workers/{id}/` · `GET workers/{id}/reviews/` |
 | Services | `GET services/categories/` · `GET services/categories/{id}/` · admin `POST`/`PATCH` on categories · `GET/POST services/workers/` · `PATCH/DELETE services/workers/{id}/` |
-| Requests | `POST requests/` · `GET requests/` · `GET/PATCH requests/{id}/` · `POST requests/{id}/cancel/` · `GET requests/{id}/nearby-workers/` |
+| Requests | `POST requests/` · `GET requests/` · `GET/PATCH requests/{id}/` · `POST requests/{id}/cancel/` · `GET requests/{id}/nearby-workers/` · `GET requests/slots/?category=&latitude=&longitude=&date=` |
 | Offers | `GET/POST requests/{id}/offers/` · `GET offers/` (worker's own, `?status=`) · `GET/PATCH offers/{id}/` · `POST offers/{id}/accept/` · `POST offers/{id}/reject/` · `POST offers/{id}/negotiate/` · `GET offers/{id}/negotiations/` |
 | Bookings | `GET bookings/` · `GET bookings/{id}/` · `POST bookings/{id}/status/` · `POST bookings/{id}/completion-otp/` · `POST bookings/{id}/complete/` · `POST bookings/{id}/cancel/` |
 | Chat | `GET/POST bookings/{id}/messages/` · `POST bookings/{id}/messages/read/` |
@@ -408,7 +425,7 @@ Endpoints added beyond the original list, because the flow needs them: `password
 `bookings/{id}/completion-otp/`, `payments/{id}/confirm/`, `payments/earnings/`,
 the notification helpers, and the admin users, suspension, requests, commission settings and audit log endpoints.
 
-Postman: import `docs/KaamNow.postman_collection.json` (103 requests in 12 folders that follow the
+Postman: import `docs/KaamNow.postman_collection.json` (108 requests in 12 folders that follow the
 full flow; test scripts store tokens and ids automatically). Regenerate it with
 `python scripts/generate_postman.py`.
 

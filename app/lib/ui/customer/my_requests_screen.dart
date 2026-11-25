@@ -41,7 +41,7 @@ class MyRequestsScreen extends StatelessWidget {
                   Card(
                     child: ListTile(
                       title: Text(r.title),
-                      subtitle: Text('${r.categoryName} · ${when(r.preferredTime)}\n${context.t.offersCount(r.offersCount)}'),
+                      subtitle: Text('${r.categoryName} · ${whenWindow(r.preferredTime, r.durationMinutes)}\n${context.t.offersCount(r.offersCount)}'),
                       isThreeLine: true,
                       leading: r.isEmergency ? const Icon(Icons.bolt, color: Colors.red) : const Icon(Icons.assignment),
                       trailing: StatusChip(r.status),

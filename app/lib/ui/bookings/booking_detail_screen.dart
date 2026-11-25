@@ -302,7 +302,7 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
             Expanded(child: Text(b.title, style: theme.textTheme.titleLarge)),
             StatusChip(b.status, key: const Key('booking-status')),
           ]),
-          Text('${b.categoryName} · ${when(b.preferredTime)}'),
+          Text('${b.categoryName} · ${whenWindow(b.preferredTime, b.durationMinutes)}'),
           const Divider(height: 24),
           if (_isWorker)
             Row(children: [const Icon(Icons.person), const SizedBox(width: 8), Text(b.customerName, style: theme.textTheme.titleMedium)])

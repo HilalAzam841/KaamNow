@@ -39,6 +39,7 @@ import 'ui/customer/new_request_screen.dart';
 import 'ui/customer/request_detail_screen.dart';
 import 'ui/customer/worker_public_screen.dart';
 import 'ui/account/invite_screen.dart';
+import 'ui/worker/schedule_screen.dart';
 import 'ui/shell/home_shell.dart';
 import 'ui/worker/earnings_screen.dart';
 import 'ui/worker/job_detail_screen.dart';
@@ -112,6 +113,7 @@ GoRouter buildRouter(Session session) {
       GoRoute(path: '/bookings/:id/chat', builder: (_, s) => ChatScreen(bookingId: int.parse(s.pathParameters['id']!))),
       GoRoute(path: '/worker/profile', builder: (_, _) => const WorkerProfileScreen()),
       GoRoute(path: '/invite', builder: (_, _) => const InviteScreen()),
+      GoRoute(path: '/worker/schedule', builder: (_, _) => const ScheduleScreen()),
       GoRoute(path: '/worker/earnings', builder: (_, _) => const EarningsScreen()),
       GoRoute(path: '/worker/plans', builder: (_, _) => const PlansScreen()),
       GoRoute(path: '/complaints', builder: (_, _) => const ComplaintsScreen()),

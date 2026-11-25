@@ -61,6 +61,8 @@ class ApiClient {
 
   Future<dynamic> patch(String path, {Object? body}) => _send(() => _json('PATCH', path, body));
 
+  Future<dynamic> put(String path, {Object? body}) => _send(() => _json('PUT', path, body));
+
   Future<dynamic> delete(String path, {Object? body}) => _send(() => _json('DELETE', path, body));
 
   Future<dynamic> multipart(String method, String path,

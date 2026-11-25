@@ -7,6 +7,7 @@ import '../../models/models.dart';
 import '../widgets/common.dart';
 import '../widgets/language_button.dart';
 import '../widgets/offer_widgets.dart';
+import '../worker/schedule_screen.dart' show hoursSummary;
 import '../../l10n/l10n.dart';
 
 class WorkerPublicScreen extends StatelessWidget {
@@ -39,6 +40,11 @@ class WorkerPublicScreen extends StatelessWidget {
                   subtitle: s.description.isEmpty ? null : Text(s.description),
                   trailing: s.startingPrice == null ? null : Text(context.t.fromPrice(rs(s.startingPrice))),
                 ),
+              SectionTitle(context.t.workingHours),
+              if (w.workingHours.isEmpty)
+                Text(context.t.availableAnyTime, key: const Key('worker-hours-any'))
+              else
+                for (final line in hoursSummary(context, w.workingHours)) Text(line),
               SectionTitle(context.t.reviewsHeading(reviews.count)),
               if (reviews.results.isEmpty) Text(context.t.noReviewsYet),
               for (final r in reviews.results)

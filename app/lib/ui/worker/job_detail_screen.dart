@@ -113,7 +113,7 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                         Expanded(child: Text(r!.title, style: theme.textTheme.titleLarge)),
                         StatusChip(r.status),
                       ]),
-                      Text('${r.categoryName} · ${when(r.preferredTime)}'),
+                      Text('${r.categoryName} · ${whenWindow(r.preferredTime, r.durationMinutes)}'),
                       if (r.isEmergency)
                         Padding(
                           padding: EdgeInsets.only(top: 6),

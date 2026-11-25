@@ -11,6 +11,7 @@
   "add": "Add",
   "addAService": "Add a service",
   "addServicesToSeeJobs": "Add the services you offer to see matching jobs.",
+  "addTimeOff": "Add days off",
   "address": "Address",
   "addressAfterBooking": "The exact address is shared once you are booked.",
   "addressHelper": "Only the worker you book will see it",
@@ -30,6 +31,7 @@
   },
   "agreedPrice": "Agreed price",
   "all": "All",
+  "allBusyHint": "No matching workers are free on this day. You can still post: workers may free up, or choose another day.",
   "allServicesOffered": "You already offer every service.",
   "amountDue": "Amount due: {amount}",
   "@amountDue": {
@@ -58,6 +60,8 @@
   "arriveInMinutes": "You can arrive in (minutes)",
   "atLeast5": "At least 5 characters",
   "atLeast8": "At least 8 characters",
+  "availableAnyTime": "Available any time",
+  "availableAnyTimeHelp": "Turn off to set the days and hours you work.",
   "back": "Back",
   "backToLogin": "Back to log in",
   "bankTransfer": "Bank transfer",
@@ -145,7 +149,9 @@
   "changePhoto": "Change photo",
   "chat": "Chat",
   "chooseAService": "Choose a service",
+  "chooseDaysOff": "Choose your days off",
   "chooseNewPassword": "Choose a new password",
+  "chooseOneWorkingDay": "Choose at least one working day, or turn on \"Available any time\".",
   "chooseService": "Choose a service.",
   "close": "Close",
   "cnicNumber": "CNIC number",
@@ -286,6 +292,18 @@
   "customerCounteredYourMove": "The customer made a counter offer. Your move.",
   "customerNotPaid": "The customer has not paid yet.",
   "customersPaid": "Customers paid",
+  "dateRange": "{start} to {end}",
+  "@dateRange": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "dayOff": "Day off",
   "daysAgo": "{n} d ago",
   "@daysAgo": {
     "placeholders": {
@@ -314,6 +332,33 @@
   },
   "done": "Done",
   "downloadFailed": "Download failed.",
+  "durationHours": "{hours, plural, =1{1 hour} other{{hours} hours}}",
+  "@durationHours": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "durationHoursMinutes": "{hours} h {minutes} min",
+  "@durationHoursMinutes": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "durationMinutes": "{minutes} min",
+  "@durationMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
   "earnings": "Earnings",
   "editProfile": "Edit profile",
   "email": "Email",
@@ -331,6 +376,14 @@
   "@emergencySubtitle": {
     "placeholders": {
       "fee": {}
+    }
+  },
+  "endAfterStartFor": "On {day}, the end time must be after the start time.",
+  "@endAfterStartFor": {
+    "placeholders": {
+      "day": {
+        "type": "String"
+      }
     }
   },
   "enterAddress": "Enter the address",
@@ -365,6 +418,14 @@
   "forgotPassword": "Forgot password?",
   "forgotTitle": "Forgot your password?",
   "free": "Free",
+  "freeWorkersOn": "Free workers on {day}",
+  "@freeWorkersOn": {
+    "placeholders": {
+      "day": {
+        "type": "String"
+      }
+    }
+  },
   "fromPrice": "from {price}",
   "@fromPrice": {
     "placeholders": {
@@ -391,6 +452,8 @@
       "n": {}
     }
   },
+  "howLongJob": "How long will the job take?",
+  "howLongJobHelp": "A rough guess. Workers keep this time free for you.",
   "howToInstall": "How to install",
   "iWantTo": "I want to",
   "iban": "IBAN",
@@ -527,7 +590,17 @@
     }
   },
   "moreDetail": "Please give a bit more detail (20+ characters)",
+  "myScheduleSubtitle": "Days and times you take jobs, and days off",
+  "myScheduleTitle": "My working hours",
   "myWorkerProfile": "My worker profile",
+  "nFree": "{count} free",
+  "@nFree": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "negAccept": "{who} accepted at {amount}",
   "@negAccept": {
     "placeholders": {
@@ -597,6 +670,9 @@
   "noRequestsYet": "No requests yet",
   "noReviewsYet": "No reviews yet.",
   "noServicesYet": "No services yet",
+  "noSlotsLeft": "No time slots left on this day. Choose another day.",
+  "noTimeOff": "No days off planned.",
+  "noneFree": "none free",
   "notNow": "Not now",
   "noteOptional": "Note (optional)",
   "numberConfirmed": "Phone number confirmed.",
@@ -643,6 +719,7 @@
   "openAction": "Open",
   "openBooking": "Open booking",
   "osmCredit": "© OpenStreetMap contributors",
+  "otherDay": "Other day",
   "paidAmount": "Paid {amount}",
   "@paidAmount": {
     "placeholders": {
@@ -773,6 +850,8 @@
       "name": {}
     }
   },
+  "removeTimeOffBody": "You will get job alerts on these days again.",
+  "removeTimeOffTitle": "Remove these days off?",
   "renewsOrEnds": "Renews or ends {date}",
   "@renewsOrEnds": {
     "placeholders": {
@@ -837,9 +916,12 @@
   },
   "samePriceAcceptInstead": "That is the current price. Accept instead.",
   "save": "Save",
+  "saveHours": "Save hours",
   "saveNewPassword": "Save new password",
   "saveProfile": "Save profile",
   "saving": "Saving…",
+  "scheduleExplain": "You only get job alerts and can only send offers for jobs inside your working hours. Emergency jobs reach you whenever you are switched on as available.",
+  "scheduleSaved": "Working hours saved.",
   "securePayment": "Secure payment",
   "send": "Send",
   "sendCode": "Send code",
@@ -943,9 +1025,37 @@
   "tellUsWhatHappened": "Tell us what happened",
   "thanksForReview": "Thanks for your review!",
   "thanksWillReview": "Thanks. KaamNow will review your report.",
+  "timeOff": "Days off",
+  "timeOffAdded": "Days off added.",
+  "timeOffExplain": "Holiday, wedding or leave. You get no new jobs on these days.",
+  "timeOffReasonLabel": "Reason (optional, only you see it)",
+  "timeOffReasonTitle": "Reason for days off",
+  "timeRange": "{start} to {end}",
+  "@timeRange": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "timeWindow": "{start} to {end}",
+  "@timeWindow": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
   "timeline": "Timeline",
   "titleHint": "e.g. Ceiling fan not working",
   "titleLabel": "Title",
+  "toWord": "to",
   "total": "Total",
   "trackingStarts": "Tracking starts when the worker sets off.",
   "tryAgain": "Try again",
@@ -1033,6 +1143,7 @@
   "workerProfile": "Worker profile",
   "workerProfileServicesDocs": "Worker profile, services and documents",
   "workerSignupHint": "After signing up, upload your CNIC so KaamNow can verify you before you send offers.",
+  "workingHours": "Working hours",
   "worksIn": "Works in {area}",
   "@worksIn": {
     "placeholders": {

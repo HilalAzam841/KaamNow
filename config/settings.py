@@ -66,6 +66,7 @@ INSTALLED_APPS = [
     "apps.tracking",
     "apps.support",
     "apps.promotions",
+    "apps.scheduling",
 ]
 
 MIDDLEWARE = [

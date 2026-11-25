@@ -46,6 +46,10 @@ def create_offer(worker, service_request, *, price, estimated_arrival_minutes, m
     service_request = ServiceRequest.objects.select_for_update().get(pk=service_request.pk)
     if not service_request.is_open:
         raise ConflictError(_("This request is no longer accepting offers."))
+    from apps.scheduling.services import check_worker_free
+
+    if worker.can_receive_jobs:
+        check_worker_free(worker, service_request)  # a clear reason: off hours, time off or another booking
     if not worker_can_bid_on(worker, service_request):
         raise BusinessRuleError(
             _("You are not eligible to bid on this request (check verification, availability, category and radius)."),
@@ -215,6 +219,13 @@ def accept_offer(offer, customer_user, message=""):
                 raise ConflictError(_("This worker is no longer available."))
             if Booking.objects.filter(worker=worker, status__in=Booking.ACTIVE_STATUSES).count() >= 3:
                 raise ConflictError(_("This worker has too many active bookings right now."))
+            from apps.accounts.models import WorkerProfile
+            from apps.scheduling.services import why_not_free
+
+            # Serialise bookings of the same worker so two customers cannot book one time.
+            WorkerProfile.objects.select_for_update().get(pk=worker.pk)
+            if why_not_free(worker, service_request) == "busy":
+                raise ConflictError(_("This worker already has a booking at that time. Choose another offer."))
 
             booking = Booking.objects.create(
                 request=service_request, offer=offer, customer=customer_user, worker=worker,

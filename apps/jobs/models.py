@@ -28,6 +28,9 @@ class ServiceRequest(TimeStampedModel):
     address = models.CharField(max_length=255)
     area = models.CharField(max_length=100, blank=True, help_text="Public area name, e.g. 'DHA Phase 5'.")
     preferred_time = models.DateTimeField()
+    duration_minutes = models.PositiveSmallIntegerField(
+        default=120, help_text="How long the job is expected to take; the worker is booked for this window.",
+    )
     budget = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     is_emergency = models.BooleanField(default=False, db_index=True)
     emergency_fee = models.DecimalField(
@@ -47,6 +50,13 @@ class ServiceRequest(TimeStampedModel):
 
     def __str__(self):
         return f"#{self.pk} {self.title}"
+
+    @property
+    def window(self):
+        """(start, end) the worker is booked for."""
+        from datetime import timedelta
+
+        return self.preferred_time, self.preferred_time + timedelta(minutes=self.duration_minutes)
 
     @property
     def is_open(self):
@@ -112,6 +122,10 @@ class Booking(TimeStampedModel):
     @property
     def is_active(self):
         return self.status in self.ACTIVE_STATUSES
+
+    @property
+    def window(self):
+        return self.request.window
 
     @property
     def total_amount(self):

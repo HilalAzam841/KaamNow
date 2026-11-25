@@ -224,14 +224,20 @@ class PublicWorkerSerializer(serializers.ModelSerializer):
     is_verified = serializers.BooleanField(read_only=True)
     services = WorkerServiceInlineSerializer(many=True, read_only=True)
     plan_badge = serializers.SerializerMethodField()
+    working_hours = serializers.SerializerMethodField()
 
     class Meta:
         model = WorkerProfile
         fields = [
             "id", "full_name", "profile_picture", "bio", "experience_years", "service_area", "is_verified",
-            "average_rating", "rating_count", "completed_jobs_count", "plan_badge", "services",
+            "average_rating", "rating_count", "completed_jobs_count", "plan_badge", "services", "working_hours",
         ]
         read_only_fields = fields
+
+    def get_working_hours(self, obj) -> list[dict]:
+        """Weekly hours (empty when the worker has not set any: available any time)."""
+        return [{"weekday": h.weekday, "start": h.start_time.strftime("%H:%M"), "end": h.end_time.strftime("%H:%M")}
+                for h in obj.working_hours.all()]
 
     def get_plan_badge(self, obj) -> str:
         from apps.billing.services import current_plan

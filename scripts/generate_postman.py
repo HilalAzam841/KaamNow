@@ -81,6 +81,14 @@ folders = [
         req("Add service (Electrician = 1)", "POST", "/services/workers/",
             {"category": 1, "starting_price": "500", "description": "Wiring, fans, DB boards"}, token="worker_access"),
         req("Go online", "POST", "/workers/availability/", {"is_available": True}, token="worker_access"),
+        req("My working hours", "GET", "/workers/me/schedule/", token="worker_access"),
+        req("Set working hours (Mon-Sat 9 to 6)", "PUT", "/workers/me/schedule/", {"hours": [
+            {"weekday": d, "start": "09:00", "end": "18:00"} for d in range(6)
+        ]}, token="worker_access"),
+        req("Add days off", "POST", "/workers/me/time-off/",
+            {"start_date": "2026-12-24", "end_date": "2026-12-26", "reason": "Family wedding"}, token="worker_access",
+            tests=[save("time_off_id", ".id")]),
+        req("Remove days off", "DELETE", "/workers/me/time-off/{{time_off_id}}/", token="worker_access"),
     ]),
     ("3. Admin", [
         req("Pending workers", "GET", "/admin/workers/pending/", token="admin_access"),
@@ -104,11 +112,13 @@ folders = [
     ("4. Customer request", [
         req("List categories", "GET", "/services/categories/", token=None),
         req("Nearby workers", "GET", "/workers/nearby/?category=1&latitude=31.5100&longitude=74.3440"),
+        req("Time slots with free workers", "GET",
+            "/requests/slots/?category=1&latitude=31.5100&longitude=74.3440&date=2026-12-01"),
         req("Create request", "POST", "/requests/", {
             "category": 1, "title": "Ceiling fan not working",
             "description": "Bedroom fan stopped after a power surge, makes a humming sound.",
             "latitude": "31.512000", "longitude": "74.345000", "address": "House 12, Street 4, Gulberg III",
-            "area": "Gulberg III", "preferred_time": "2026-12-01T15:00:00+05:00",
+            "area": "Gulberg III", "preferred_time": "2026-12-01T15:00:00+05:00", "duration_minutes": 120,
         }, tests=[save("request_id", ".id")]),
         req("My requests", "GET", "/requests/"),
         req("Request detail", "GET", "/requests/{{request_id}}/"),

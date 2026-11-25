@@ -76,7 +76,7 @@ class PublicWorker {
   PublicWorker({required this.id, required this.fullName, this.profilePicture, this.bio = '',
       this.experienceYears = 0, this.serviceArea = '', this.isVerified = false, this.averageRating = '0.00',
       this.ratingCount = 0, this.completedJobs = 0, this.planBadge = '', this.services = const [],
-      this.distanceKm, this.isAvailable, this.isSponsored = false});
+      this.distanceKm, this.isAvailable, this.isSponsored = false, this.workingHours = const []});
 
   factory PublicWorker.fromJson(Map<String, dynamic> j) => PublicWorker(
         id: parseInt(j['id']),
@@ -94,6 +94,7 @@ class PublicWorker {
         distanceKm: parseDouble(j['distance_km']),
         isAvailable: j['is_available'] as bool?,
         isSponsored: j['is_sponsored'] == true,
+        workingHours: parseList(j['working_hours'], WorkingHours.fromJson),
       );
 
   final int id;
@@ -111,6 +112,9 @@ class PublicWorker {
   final double? distanceKm;
   final bool? isAvailable;
   final bool isSponsored;
+
+  /// Weekly hours; empty means the worker takes jobs at any time.
+  final List<WorkingHours> workingHours;
 }
 
 class WorkerProfile {
@@ -183,7 +187,7 @@ class ServiceRequest {
       required this.description, required this.latitude, required this.longitude, this.address = '',
       this.area = '', this.preferredTime, this.budget, this.isEmergency = false, this.emergencyFee = '0.00',
       required this.status, this.images = const [], this.offersCount = 0, this.bookingId,
-      this.matchedWorkersCount, this.cancelReason = '', this.createdAt});
+      this.matchedWorkersCount, this.cancelReason = '', this.createdAt, this.durationMinutes = 120});
 
   factory ServiceRequest.fromJson(Map<String, dynamic> j) => ServiceRequest(
         id: parseInt(j['id']),
@@ -196,6 +200,7 @@ class ServiceRequest {
         address: str(j['address']),
         area: str(j['area']),
         preferredTime: parseDate(j['preferred_time']),
+        durationMinutes: parseInt(j['duration_minutes'], 120),
         budget: j['budget'] as String?,
         isEmergency: j['is_emergency'] == true,
         emergencyFee: str(j['emergency_fee']),
@@ -218,6 +223,7 @@ class ServiceRequest {
   final String address;
   final String area;
   final DateTime? preferredTime;
+  final int durationMinutes;
   final String? budget;
   final bool isEmergency;
   final String emergencyFee;
@@ -306,7 +312,7 @@ class Booking {
       this.preferredTime, required this.agreedPrice, required this.emergencyFee, required this.totalAmount,
       required this.status, required this.worker, required this.customerName, this.contact = const {},
       this.cancelReason = '', this.completedAt, this.statusHistory = const [], this.commission,
-      this.hasReview = false, this.createdAt});
+      this.hasReview = false, this.createdAt, this.durationMinutes = 120});
 
   factory Booking.fromJson(Map<String, dynamic> j) => Booking(
         id: parseInt(j['id']),
@@ -314,6 +320,7 @@ class Booking {
         title: str(j['title']),
         categoryName: str(j['category_name']),
         preferredTime: parseDate(j['preferred_time']),
+        durationMinutes: parseInt(j['duration_minutes'], 120),
         agreedPrice: str(j['agreed_price']),
         emergencyFee: str(j['emergency_fee']),
         totalAmount: str(j['total_amount']),
@@ -334,6 +341,7 @@ class Booking {
   final String title;
   final String categoryName;
   final DateTime? preferredTime;
+  final int durationMinutes;
   final String agreedPrice;
   final String emergencyFee;
   final String totalAmount;
@@ -827,4 +835,65 @@ class ReferralSummary {
   final String welcomeCredit;
   final String minBooking;
   final List<CreditEntry> creditHistory;
+}
+
+
+// ---- Availability (Stage 17) -------------------------------------------------
+
+/// One working day: weekday 0 = Monday .. 6 = Sunday, times as "HH:MM" (Pakistan time).
+class WorkingHours {
+  const WorkingHours({required this.weekday, required this.start, required this.end});
+
+  factory WorkingHours.fromJson(Map<String, dynamic> j) =>
+      WorkingHours(weekday: parseInt(j['weekday']), start: str(j['start']), end: str(j['end']));
+
+  final int weekday;
+  final String start;
+  final String end;
+
+  Map<String, dynamic> toJson() => {'weekday': weekday, 'start': start, 'end': end};
+}
+
+class TimeOffEntry {
+  TimeOffEntry({required this.id, required this.startDate, required this.endDate, this.reason = ''});
+
+  factory TimeOffEntry.fromJson(Map<String, dynamic> j) => TimeOffEntry(
+        id: parseInt(j['id']),
+        startDate: DateTime.parse(str(j['start_date'])),
+        endDate: DateTime.parse(str(j['end_date'])),
+        reason: str(j['reason']),
+      );
+
+  final int id;
+  final DateTime startDate;
+  final DateTime endDate;
+  final String reason;
+}
+
+/// The worker's own schedule (`GET workers/me/schedule/`).
+class WorkerSchedule {
+  WorkerSchedule({this.hours = const [], this.timeOff = const []});
+
+  factory WorkerSchedule.fromJson(Map<String, dynamic> j) => WorkerSchedule(
+        hours: parseList(j['hours'], WorkingHours.fromJson),
+        timeOff: parseList(j['time_off'], TimeOffEntry.fromJson),
+      );
+
+  final List<WorkingHours> hours;
+  final List<TimeOffEntry> timeOff;
+}
+
+/// A bookable time slot with how many matching workers nearby are free (`GET requests/slots/`).
+class TimeSlot {
+  TimeSlot({required this.start, required this.end, required this.freeWorkers});
+
+  factory TimeSlot.fromJson(Map<String, dynamic> j) => TimeSlot(
+        start: parseDate(j['start'])!,
+        end: parseDate(j['end'])!,
+        freeWorkers: parseInt(j['free_workers']),
+      );
+
+  final DateTime start;
+  final DateTime end;
+  final int freeWorkers;
 }

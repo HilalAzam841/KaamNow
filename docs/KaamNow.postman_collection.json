@@ -626,6 +626,144 @@
               "raw": "{\n  \"is_available\": true\n}"
             }
           }
+        },
+        {
+          "name": "My working hours",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/workers/me/schedule/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "workers",
+                "me",
+                "schedule"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{worker_access}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Set working hours (Mon-Sat 9 to 6)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/workers/me/schedule/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "workers",
+                "me",
+                "schedule"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{worker_access}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"hours\": [\n    {\n      \"weekday\": 0,\n      \"start\": \"09:00\",\n      \"end\": \"18:00\"\n    },\n    {\n      \"weekday\": 1,\n      \"start\": \"09:00\",\n      \"end\": \"18:00\"\n    },\n    {\n      \"weekday\": 2,\n      \"start\": \"09:00\",\n      \"end\": \"18:00\"\n    },\n    {\n      \"weekday\": 3,\n      \"start\": \"09:00\",\n      \"end\": \"18:00\"\n    },\n    {\n      \"weekday\": 4,\n      \"start\": \"09:00\",\n      \"end\": \"18:00\"\n    },\n    {\n      \"weekday\": 5,\n      \"start\": \"09:00\",\n      \"end\": \"18:00\"\n    }\n  ]\n}"
+            }
+          }
+        },
+        {
+          "name": "Add days off",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/workers/me/time-off/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "workers",
+                "me",
+                "time-off"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{worker_access}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"start_date\": \"2026-12-24\",\n  \"end_date\": \"2026-12-26\",\n  \"reason\": \"Family wedding\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set('time_off_id', pm.response.json().data.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Remove days off",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/workers/me/time-off/{{time_off_id}}/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "workers",
+                "me",
+                "time-off",
+                "{{time_off_id}}"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{worker_access}}"
+                }
+              ]
+            }
+          }
         }
       ]
     },
@@ -1134,6 +1272,33 @@
           }
         },
         {
+          "name": "Time slots with free workers",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/requests/slots/?category=1&latitude=31.5100&longitude=74.3440&date=2026-12-01",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "requests",
+                "slots",
+                "?category=1&latitude=31.5100&longitude=74.3440&date=2026-12-01"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{customer_access}}"
+                }
+              ]
+            }
+          }
+        },
+        {
           "name": "Create request",
           "request": {
             "method": "POST",
@@ -1163,7 +1328,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"category\": 1,\n  \"title\": \"Ceiling fan not working\",\n  \"description\": \"Bedroom fan stopped after a power surge, makes a humming sound.\",\n  \"latitude\": \"31.512000\",\n  \"longitude\": \"74.345000\",\n  \"address\": \"House 12, Street 4, Gulberg III\",\n  \"area\": \"Gulberg III\",\n  \"preferred_time\": \"2026-12-01T15:00:00+05:00\"\n}"
+              "raw": "{\n  \"category\": 1,\n  \"title\": \"Ceiling fan not working\",\n  \"description\": \"Bedroom fan stopped after a power surge, makes a humming sound.\",\n  \"latitude\": \"31.512000\",\n  \"longitude\": \"74.345000\",\n  \"address\": \"House 12, Street 4, Gulberg III\",\n  \"area\": \"Gulberg III\",\n  \"preferred_time\": \"2026-12-01T15:00:00+05:00\",\n  \"duration_minutes\": 120\n}"
             }
           },
           "event": [
@@ -2392,208 +2557,6 @@
             "body": {
               "mode": "raw",
               "raw": "{\n  \"refresh\": \"{{customer_refresh}}\"\n}"
-            }
-          }
-        },
-        {
-          "name": "Admin: disputed payments",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/admin/payments/?status=disputed",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "admin",
-                "payments"
-              ],
-              "query": [
-                {
-                  "key": "status",
-                  "value": "disputed"
-                }
-              ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{admin_access}}"
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "Admin: refund a payment (audited)",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/admin/payments/{{payment_id}}/refund/",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "admin",
-                "payments",
-                "{{payment_id}}",
-                "refund"
-              ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{admin_access}}"
-                }
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"amount\": \"500.00\",\n  \"method\": \"gateway\",\n  \"reason\": \"Leak came back the next day\",\n  \"reference\": \"JC-RF-1001\",\n  \"charge_worker\": true\n}"
-            }
-          }
-        },
-        {
-          "name": "Admin: resolve a disputed payment (audited)",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/admin/payments/{{payment_id}}/resolve/",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "admin",
-                "payments",
-                "{{payment_id}}",
-                "resolve"
-              ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{admin_access}}"
-                }
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"resolution\": \"refund\",\n  \"note\": \"Customer paid twice\",\n  \"method\": \"gateway\",\n  \"reference\": \"JC-RF-2001\"\n}"
-            }
-          }
-        },
-        {
-          "name": "Admin: create a promo code (audited)",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/admin/promo-codes/",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "admin",
-                "promo-codes"
-              ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{admin_access}}"
-                }
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"code\": \"EID20\",\n  \"description\": \"Eid offer\",\n  \"kind\": \"percent\",\n  \"value\": \"20\",\n  \"max_discount\": \"300\",\n  \"max_uses\": 500\n}"
-            }
-          }
-        },
-        {
-          "name": "Customer: check a promo code",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/promos/check/",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "promos",
-                "check"
-              ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{customer_access}}"
-                }
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"booking\": \"{{booking_id}}\",\n  \"promo_code\": \"EID20\",\n  \"use_credit\": true\n}"
-            }
-          }
-        },
-        {
-          "name": "Customer or worker: my invite code and credit",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/referrals/me/",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "referrals",
-                "me"
-              ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{customer_access}}"
-                }
-              ]
             }
           }
         }
