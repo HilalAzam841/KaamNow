@@ -3059,6 +3059,7 @@ paths:
           - offer_closed
           - offer_rejected
           - payment
+          - recurring
           - reminder
           - request_cancelled
           - review
@@ -3085,6 +3086,7 @@ paths:
           * `verification` - Account verification
           * `reminder` - Booking reminder
           * `no_show` - No-show report
+          * `recurring` - Repeating job
           * `system` - System
       tags:
       - notifications
@@ -3812,6 +3814,248 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Quote'
+          description: ''
+  /api/v1/recurring-jobs/:
+    get:
+      operationId: recurring_jobs_list
+      summary: Your repeating jobs. Customers see their own; workers see the ones
+        they are the usual worker for.
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - active
+          - cancelled
+          - paused
+      tags:
+      - recurring
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedRecurringJobList'
+          description: ''
+  /api/v1/recurring-jobs/{id}/:
+    get:
+      operationId: recurring_jobs_retrieve
+      summary: One repeating job.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this recurring job.
+        required: true
+      tags:
+      - recurring
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecurringJob'
+          description: ''
+    patch:
+      operationId: recurring_jobs_partial_update
+      summary: Change how often it repeats, move the next visit, or change the budget.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this recurring job.
+        required: true
+      tags:
+      - recurring
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedRecurringUpdateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedRecurringUpdateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedRecurringUpdateRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecurringJob'
+          description: ''
+  /api/v1/recurring-jobs/{id}/cancel/:
+    post:
+      operationId: recurring_jobs_cancel_create
+      summary: Stop repeating. Jobs already posted are not cancelled.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this recurring job.
+        required: true
+      tags:
+      - recurring
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecurringJob'
+          description: ''
+  /api/v1/recurring-jobs/{id}/leave/:
+    post:
+      operationId: recurring_jobs_leave_create
+      summary: 'Worker: stop being the usual worker. Future visits go to every free
+        worker nearby.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this recurring job.
+        required: true
+      tags:
+      - recurring
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecurringJobForWorker'
+          description: ''
+  /api/v1/recurring-jobs/{id}/pause/:
+    post:
+      operationId: recurring_jobs_pause_create
+      summary: 'Pause: no visits until resumed.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this recurring job.
+        required: true
+      tags:
+      - recurring
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecurringJob'
+          description: ''
+  /api/v1/recurring-jobs/{id}/resume/:
+    post:
+      operationId: recurring_jobs_resume_create
+      summary: Resume. Visits missed while paused are skipped.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this recurring job.
+        required: true
+      tags:
+      - recurring
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecurringJob'
+          description: ''
+  /api/v1/recurring-jobs/{id}/skip-next/:
+    post:
+      operationId: recurring_jobs_skip_next_create
+      summary: Skip the next visit only.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this recurring job.
+        required: true
+      tags:
+      - recurring
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecurringJob'
+          description: ''
+  /api/v1/recurring-jobs/from-booking/:
+    post:
+      operationId: recurring_jobs_from_booking_create
+      summary: Repeat a job with the same worker every week, every two weeks or every
+        month.
+      tags:
+      - recurring
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecurringFromBookingRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RecurringFromBookingRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RecurringFromBookingRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecurringJob'
           description: ''
   /api/v1/referrals/me/:
     get:
@@ -6685,6 +6929,16 @@ components:
       required:
       - checkout
       - listing
+    FrequencyEnum:
+      enum:
+      - weekly
+      - biweekly
+      - monthly
+      type: string
+      description: |-
+        * `weekly` - Every week
+        * `biweekly` - Every two weeks
+        * `monthly` - Every month
     LanguageEnum:
       enum:
       - en
@@ -7388,6 +7642,25 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Payment'
+    PaginatedRecurringJobList:
+      type: object
+      properties:
+        count:
+          type: integer
+        page:
+          type: integer
+        total_pages:
+          type: integer
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/RecurringJob'
     PaginatedReviewList:
       type: object
       properties:
@@ -7721,6 +7994,20 @@ components:
           minimum: 10
           description: How long after the start time (worker) or after arriving (customer)
             a no-show can be reported.
+    PatchedRecurringUpdateRequest:
+      type: object
+      properties:
+        frequency:
+          $ref: '#/components/schemas/FrequencyEnum'
+        next_visit:
+          type: string
+          format: date-time
+          description: Move the next visit (2 hours to 60 days ahead).
+        budget:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          nullable: true
     PatchedServiceCategoryRequest:
       type: object
       properties:
@@ -8485,6 +8772,177 @@ components:
       required:
       - method
       - reference
+    RecurringFromBookingRequest:
+      type: object
+      properties:
+        booking:
+          type: integer
+        frequency:
+          $ref: '#/components/schemas/FrequencyEnum'
+        first_visit:
+          type: string
+          format: date-time
+          description: When the first repeat visit starts (2 hours to 60 days ahead).
+      required:
+      - booking
+      - first_visit
+      - frequency
+    RecurringJob:
+      type: object
+      description: The customer's full view of their repeating job.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          readOnly: true
+        description:
+          type: string
+          readOnly: true
+        category:
+          type: integer
+          readOnly: true
+        category_name:
+          type: string
+          readOnly: true
+        address:
+          type: string
+          readOnly: true
+        area:
+          type: string
+          readOnly: true
+        duration_minutes:
+          type: integer
+          readOnly: true
+        budget:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          readOnly: true
+          nullable: true
+        frequency:
+          allOf:
+          - $ref: '#/components/schemas/FrequencyEnum'
+          readOnly: true
+        next_visit:
+          type: string
+          format: date-time
+          readOnly: true
+          description: When the next visit starts.
+        status:
+          allOf:
+          - $ref: '#/components/schemas/RecurringStatusEnum'
+          readOnly: true
+        worker:
+          type: object
+          additionalProperties: {}
+          nullable: true
+          description: The usual worker, or null when visits go to every worker nearby.
+          readOnly: true
+        source_booking:
+          type: integer
+          readOnly: true
+          nullable: true
+        recent_visits:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - address
+      - area
+      - budget
+      - category
+      - category_name
+      - created_at
+      - description
+      - duration_minutes
+      - frequency
+      - id
+      - next_visit
+      - recent_visits
+      - source_booking
+      - status
+      - title
+      - worker
+    RecurringJobForWorker:
+      type: object
+      description: 'What the usual worker sees: no address or exact location until
+        a visit is booked.'
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          readOnly: true
+        category:
+          type: integer
+          readOnly: true
+        category_name:
+          type: string
+          readOnly: true
+        area:
+          type: string
+          readOnly: true
+        duration_minutes:
+          type: integer
+          readOnly: true
+        budget:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          readOnly: true
+          nullable: true
+        frequency:
+          allOf:
+          - $ref: '#/components/schemas/FrequencyEnum'
+          readOnly: true
+        next_visit:
+          type: string
+          format: date-time
+          readOnly: true
+          description: When the next visit starts.
+        status:
+          allOf:
+          - $ref: '#/components/schemas/RecurringStatusEnum'
+          readOnly: true
+        customer_name:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - area
+      - budget
+      - category
+      - category_name
+      - created_at
+      - customer_name
+      - duration_minutes
+      - frequency
+      - id
+      - next_visit
+      - status
+      - title
+    RecurringStatusEnum:
+      enum:
+      - active
+      - paused
+      - cancelled
+      type: string
+      description: |-
+        * `active` - Active
+        * `paused` - Paused
+        * `cancelled` - Cancelled
     ReferralSummary:
       type: object
       properties:
@@ -9508,6 +9966,7 @@ components:
       - verification
       - reminder
       - no_show
+      - recurring
       - system
       type: string
       description: |-
@@ -9530,6 +9989,7 @@ components:
         * `verification` - Account verification
         * `reminder` - Booking reminder
         * `no_show` - No-show report
+        * `recurring` - Repeating job
         * `system` - System
     User:
       type: object

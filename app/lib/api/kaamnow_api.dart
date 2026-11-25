@@ -117,6 +117,22 @@ class KaamNowApi {
   /// Invited worker: cannot take this job. It goes to other workers nearby.
   Future<void> declineRequest(int requestId) => client.post('/requests/$requestId/decline/');
 
+  // ---- Repeating jobs ------------------------------------------------------
+  Future<List<RecurringJob>> recurringJobs({String? status}) async =>
+      Paged.parse(await client.get('/recurring-jobs/', query: {'status': status}), RecurringJob.fromJson).results;
+  Future<RecurringJob> repeatBooking(int bookingId, String frequency, DateTime firstVisit) async =>
+      RecurringJob.fromJson(asMap(await client.post('/recurring-jobs/from-booking/', body: {
+        'booking': bookingId,
+        'frequency': frequency,
+        'first_visit': firstVisit.toUtc().toIso8601String(),
+      })));
+  Future<RecurringJob> updateRecurring(int id, Map<String, dynamic> fields) async =>
+      RecurringJob.fromJson(asMap(await client.patch('/recurring-jobs/$id/', body: fields)));
+
+  /// pause, resume, cancel, skip-next (customer) or leave (worker).
+  Future<RecurringJob> recurringAction(int id, String action) async =>
+      RecurringJob.fromJson(asMap(await client.post('/recurring-jobs/$id/$action/')));
+
   // ---- Favourite workers -------------------------------------------------
   Future<List<PublicWorker>> favourites() async => parseList(await client.get('/favourites/'), PublicWorker.fromJson);
   Future<List<PublicWorker>> recentWorkers() async =>

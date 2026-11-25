@@ -173,6 +173,18 @@ folders = [
         req("Report a no-show (cancels the booking)", "POST", "/bookings/{{booking_id}}/no-show/",
             {"note": "Waited 45 minutes, no answer on the phone"}),
         req("Turn job reminders off", "PATCH", "/auth/me/", {"booking_reminders": False}),
+        req("Repeat this job every week", "POST", "/recurring-jobs/from-booking/",
+            {"booking": "{{booking_id}}", "frequency": "weekly", "first_visit": "2026-12-08T15:00:00+05:00"},
+            tests=[save("recurring_id", ".id")]),
+        req("My repeating jobs", "GET", "/recurring-jobs/"),
+        req("Change how often", "PATCH", "/recurring-jobs/{{recurring_id}}/", {"frequency": "biweekly"}),
+        req("Skip the next visit", "POST", "/recurring-jobs/{{recurring_id}}/skip-next/"),
+        req("Pause repeating", "POST", "/recurring-jobs/{{recurring_id}}/pause/"),
+        req("Resume repeating", "POST", "/recurring-jobs/{{recurring_id}}/resume/"),
+        req("Worker: repeating jobs I do", "GET", "/recurring-jobs/", token="worker_access"),
+        req("Worker: stop doing a repeating job", "POST", "/recurring-jobs/{{recurring_id}}/leave/",
+            token="worker_access"),
+        req("Stop repeating", "POST", "/recurring-jobs/{{recurring_id}}/cancel/"),
         req("Cancel booking", "POST", "/bookings/{{booking_id}}/cancel/", {"reason": "Plans changed"}),
     ]),
     ("7. Payment, review, notifications", [
@@ -272,7 +284,7 @@ collection = {
     "variable": [{"key": "base_url", "value": "http://localhost:8000/api/v1"}] + [
         {"key": k, "value": ""} for k in (
             "customer_access", "customer_refresh", "worker_access", "admin_access", "worker_id", "request_id",
-            "offer_id", "booking_id", "otp", "payment_id", "time_off_id", "direct_request_id",
+            "offer_id", "booking_id", "recurring_id", "otp", "payment_id", "time_off_id", "direct_request_id",
         )
     ],
     "item": [{"name": name, "item": items} for name, items in folders],

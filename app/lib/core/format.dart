@@ -71,6 +71,7 @@ String statusLabel(String s) => switch (s) {
       'in_review' => strings.statusInReview,
       'resolved' => strings.statusResolved,
       'active' => strings.statusActive,
+      'paused' => strings.statusPaused,
       'pending_payment' => strings.statusPendingPayment,
       'failed' => strings.statusFailed,
       'paid' => strings.statusPaid,

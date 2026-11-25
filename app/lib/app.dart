@@ -42,6 +42,7 @@ import 'ui/account/invite_screen.dart';
 import 'ui/worker/schedule_screen.dart';
 import 'ui/admin/no_shows_screen.dart';
 import 'ui/customer/my_workers_screen.dart';
+import 'ui/recurring/recurring_screen.dart';
 import 'ui/shell/home_shell.dart';
 import 'ui/worker/earnings_screen.dart';
 import 'ui/worker/job_detail_screen.dart';
@@ -121,6 +122,7 @@ GoRouter buildRouter(Session session) {
       GoRoute(path: '/invite', builder: (_, _) => const InviteScreen()),
       GoRoute(path: '/worker/schedule', builder: (_, _) => const ScheduleScreen()),
       GoRoute(path: '/my-workers', builder: (_, _) => const MyWorkersScreen()),
+      GoRoute(path: '/recurring', builder: (_, _) => const RecurringJobsScreen()),
       GoRoute(path: '/worker/earnings', builder: (_, _) => const EarningsScreen()),
       GoRoute(path: '/worker/plans', builder: (_, _) => const PlansScreen()),
       GoRoute(path: '/complaints', builder: (_, _) => const ComplaintsScreen()),

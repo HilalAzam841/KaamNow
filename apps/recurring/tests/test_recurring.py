@@ -220,3 +220,13 @@ class TestAddPeriod:
             2026, 2, 28, 10, tzinfo=PKT)
         assert services.add_period(datetime(2026, 12, 15, 10, tzinfo=PKT), "monthly") == datetime(
             2027, 1, 15, 10, tzinfo=PKT)
+
+
+@pytest.mark.django_db
+def test_notices_follow_the_customers_language(plan, worker, django_capture_on_commit_callbacks):
+    plan.customer.language = "ur"
+    plan.customer.save()
+    resp = client_for(worker.user).post(f"{URL}{plan.pk}/leave/")
+    assert resp.status_code == 200
+    note = Notification.objects.get(user=plan.customer, type=Notification.Type.RECURRING)
+    assert "دہرایا" in note.title and plan.title in note.body

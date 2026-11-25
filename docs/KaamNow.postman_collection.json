@@ -42,6 +42,10 @@
       "value": ""
     },
     {
+      "key": "recurring_id",
+      "value": ""
+    },
+    {
       "key": "otp",
       "value": ""
     },
@@ -2396,6 +2400,272 @@
             "body": {
               "mode": "raw",
               "raw": "{\n  \"booking_reminders\": false\n}"
+            }
+          }
+        },
+        {
+          "name": "Repeat this job every week",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/recurring-jobs/from-booking/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "recurring-jobs",
+                "from-booking"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{customer_access}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"booking\": \"{{booking_id}}\",\n  \"frequency\": \"weekly\",\n  \"first_visit\": \"2026-12-08T15:00:00+05:00\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set('recurring_id', pm.response.json().data.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "My repeating jobs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/recurring-jobs/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "recurring-jobs"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{customer_access}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Change how often",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/recurring-jobs/{{recurring_id}}/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "recurring-jobs",
+                "{{recurring_id}}"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{customer_access}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"frequency\": \"biweekly\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Skip the next visit",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/recurring-jobs/{{recurring_id}}/skip-next/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "recurring-jobs",
+                "{{recurring_id}}",
+                "skip-next"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{customer_access}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Pause repeating",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/recurring-jobs/{{recurring_id}}/pause/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "recurring-jobs",
+                "{{recurring_id}}",
+                "pause"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{customer_access}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Resume repeating",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/recurring-jobs/{{recurring_id}}/resume/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "recurring-jobs",
+                "{{recurring_id}}",
+                "resume"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{customer_access}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Worker: repeating jobs I do",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/recurring-jobs/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "recurring-jobs"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{worker_access}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Worker: stop doing a repeating job",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/recurring-jobs/{{recurring_id}}/leave/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "recurring-jobs",
+                "{{recurring_id}}",
+                "leave"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{worker_access}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Stop repeating",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/recurring-jobs/{{recurring_id}}/cancel/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "recurring-jobs",
+                "{{recurring_id}}",
+                "cancel"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{customer_access}}"
+                }
+              ]
             }
           }
         },

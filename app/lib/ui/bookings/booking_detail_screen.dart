@@ -16,6 +16,7 @@ import '../widgets/common.dart';
 import '../widgets/language_button.dart';
 import '../widgets/map_view.dart';
 import '../widgets/offer_widgets.dart';
+import '../recurring/recurring_screen.dart';
 import 'promo_box.dart';
 import '../../l10n/l10n.dart';
 
@@ -467,6 +468,16 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
     }
     if (const {'confirmed', 'on_the_way', 'arrived'}.contains(b.status)) {
       buttons.add(TextButton(key: const Key('cancel-booking'), onPressed: _cancel, child: Text(context.t.cancelBooking)));
+    }
+    if (!_isWorker && b.status != 'cancelled') {
+      buttons.add(OutlinedButton.icon(
+        key: const Key('repeat-job'),
+        onPressed: () async {
+          if (await showRepeatJobSheet(context, b) && mounted) context.push('/recurring');
+        },
+        icon: const Icon(Icons.repeat),
+        label: Text(context.t.repeatThisJob),
+      ));
     }
     if (buttons.isEmpty) return const [];
     return [const SizedBox(height: 16), Wrap(spacing: 8, runSpacing: 8, children: buttons)];
