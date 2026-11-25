@@ -56,7 +56,9 @@ void main() {
     // On a phone screen the worker's account list is longer than the screen.
     await tester.scrollUntilVisible(find.byKey(const Key('logout')), 200,
         scrollable: find.ancestor(of: find.byKey(const Key('account-invite')), matching: find.byType(Scrollable)).first);
-    await tester.tap(find.byKey(const Key('logout')));
+    await tester.ensureVisible(find.byKey(const Key('logout')));
+    await tester.pump(const Duration(milliseconds: 500));
+    await tester.tap(find.byKey(const Key('logout')).hitTestable());
     await waitFor(tester, find.byKey(const Key('login-phone')));
   }
 
