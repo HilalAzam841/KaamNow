@@ -31,6 +31,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'Add the services you offer to see matching jobs.';
 
   @override
+  String get addTimeOff => 'Add days off';
+
+  @override
   String get address => 'Address';
 
   @override
@@ -61,6 +64,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get all => 'All';
+
+  @override
+  String get allBusyHint =>
+      'No matching workers are free on this day. You can still post: workers may free up, or choose another day.';
 
   @override
   String get allServicesOffered => 'You already offer every service.';
@@ -106,6 +113,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get atLeast8 => 'At least 8 characters';
+
+  @override
+  String get availableAnyTime => 'Available any time';
+
+  @override
+  String get availableAnyTimeHelp =>
+      'Turn off to set the days and hours you work.';
 
   @override
   String get back => 'Back';
@@ -247,7 +261,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get chooseAService => 'Choose a service';
 
   @override
+  String get chooseDaysOff => 'Choose your days off';
+
+  @override
   String get chooseNewPassword => 'Choose a new password';
+
+  @override
+  String get chooseOneWorkingDay =>
+      'Choose at least one working day, or turn on \"Available any time\".';
 
   @override
   String get chooseService => 'Choose a service.';
@@ -457,6 +478,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get customersPaid => 'Customers paid';
 
   @override
+  String dateRange(String start, String end) {
+    return '$start to $end';
+  }
+
+  @override
+  String get dayOff => 'Day off';
+
+  @override
   String daysAgo(Object n) {
     return '$n d ago';
   }
@@ -503,6 +532,27 @@ class AppLocalizationsEn extends AppLocalizations {
   String get downloadFailed => 'Download failed.';
 
   @override
+  String durationHours(int hours) {
+    String _temp0 = intl.Intl.pluralLogic(
+      hours,
+      locale: localeName,
+      other: '$hours hours',
+      one: '1 hour',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String durationHoursMinutes(int hours, int minutes) {
+    return '$hours h $minutes min';
+  }
+
+  @override
+  String durationMinutes(int minutes) {
+    return '$minutes min';
+  }
+
+  @override
   String get earnings => 'Earnings';
 
   @override
@@ -531,6 +581,11 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String emergencySubtitle(Object fee) {
     return 'Shown first to workers. Adds $fee to the total.';
+  }
+
+  @override
+  String endAfterStartFor(String day) {
+    return 'On $day, the end time must be after the start time.';
   }
 
   @override
@@ -601,6 +656,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get free => 'Free';
 
   @override
+  String freeWorkersOn(String day) {
+    return 'Free workers on $day';
+  }
+
+  @override
   String fromPrice(Object price) {
     return 'from $price';
   }
@@ -640,6 +700,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String hoursAgo(Object n) {
     return '$n h ago';
   }
+
+  @override
+  String get howLongJob => 'How long will the job take?';
+
+  @override
+  String get howLongJobHelp =>
+      'A rough guess. Workers keep this time free for you.';
 
   @override
   String get howToInstall => 'How to install';
@@ -855,7 +922,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get moreDetail => 'Please give a bit more detail (20+ characters)';
 
   @override
+  String get myScheduleSubtitle => 'Days and times you take jobs, and days off';
+
+  @override
+  String get myScheduleTitle => 'My working hours';
+
+  @override
   String get myWorkerProfile => 'My worker profile';
+
+  @override
+  String nFree(int count) {
+    return '$count free';
+  }
 
   @override
   String negAccept(Object who, Object amount) {
@@ -963,6 +1041,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noServicesYet => 'No services yet';
 
   @override
+  String get noSlotsLeft =>
+      'No time slots left on this day. Choose another day.';
+
+  @override
+  String get noTimeOff => 'No days off planned.';
+
+  @override
+  String get noneFree => 'none free';
+
+  @override
   String get notNow => 'Not now';
 
   @override
@@ -1037,6 +1125,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get osmCredit => '© OpenStreetMap contributors';
+
+  @override
+  String get otherDay => 'Other day';
 
   @override
   String paidAmount(Object amount) {
@@ -1259,6 +1350,13 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get removeTimeOffBody =>
+      'You will get job alerts on these days again.';
+
+  @override
+  String get removeTimeOffTitle => 'Remove these days off?';
+
+  @override
   String renewsOrEnds(Object date) {
     return 'Renews or ends $date';
   }
@@ -1344,6 +1442,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get save => 'Save';
 
   @override
+  String get saveHours => 'Save hours';
+
+  @override
   String get saveNewPassword => 'Save new password';
 
   @override
@@ -1351,6 +1452,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get saving => 'Saving…';
+
+  @override
+  String get scheduleExplain =>
+      'You only get job alerts and can only send offers for jobs inside your working hours. Emergency jobs reach you whenever you are switched on as available.';
+
+  @override
+  String get scheduleSaved => 'Working hours saved.';
 
   @override
   String get securePayment => 'Secure payment';
@@ -1597,6 +1705,32 @@ class AppLocalizationsEn extends AppLocalizations {
   String get thanksWillReview => 'Thanks. KaamNow will review your report.';
 
   @override
+  String get timeOff => 'Days off';
+
+  @override
+  String get timeOffAdded => 'Days off added.';
+
+  @override
+  String get timeOffExplain =>
+      'Holiday, wedding or leave. You get no new jobs on these days.';
+
+  @override
+  String get timeOffReasonLabel => 'Reason (optional, only you see it)';
+
+  @override
+  String get timeOffReasonTitle => 'Reason for days off';
+
+  @override
+  String timeRange(String start, String end) {
+    return '$start to $end';
+  }
+
+  @override
+  String timeWindow(String start, String end) {
+    return '$start to $end';
+  }
+
+  @override
   String get timeline => 'Timeline';
 
   @override
@@ -1604,6 +1738,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get titleLabel => 'Title';
+
+  @override
+  String get toWord => 'to';
 
   @override
   String get total => 'Total';
@@ -1762,6 +1899,9 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get workerSignupHint =>
       'After signing up, upload your CNIC so KaamNow can verify you before you send offers.';
+
+  @override
+  String get workingHours => 'Working hours';
 
   @override
   String worksIn(Object area) {

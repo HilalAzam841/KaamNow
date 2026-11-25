@@ -76,7 +76,7 @@ class KaamNowApi {
   // ---- Service requests --------------------------------------------------
   Future<ServiceRequest> createRequest({required int category, required String title, required String description,
       required double latitude, required double longitude, required String address, String area = '',
-      required DateTime preferredTime, String? budget, bool isEmergency = false,
+      required DateTime preferredTime, int durationMinutes = 120, String? budget, bool isEmergency = false,
       List<UploadFile> images = const []}) async {
     final fields = {
       'category': '$category',
@@ -87,11 +87,26 @@ class KaamNowApi {
       'address': address,
       'area': area,
       'preferred_time': preferredTime.toUtc().toIso8601String(),
+      'duration_minutes': '$durationMinutes',
       'budget': ?(budget == null || budget.isEmpty ? null : budget),
       'is_emergency': isEmergency ? 'true' : 'false',
     };
     final data = await client.multipart('POST', '/requests/', fields: fields, files: images);
     return ServiceRequest.fromJson(asMap(data));
+  }
+
+  /// Two-hour slots on [date] with how many matching workers nearby are free in each.
+  Future<List<TimeSlot>> timeSlots({required int category, required double lat, required double lng,
+      required DateTime date}) async {
+    final d = '${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-'
+        '${date.day.toString().padLeft(2, '0')}';
+    final data = await client.get('/requests/slots/', query: {
+      'category': category,
+      'latitude': lat.toStringAsFixed(6),
+      'longitude': lng.toStringAsFixed(6),
+      'date': d,
+    });
+    return parseList(data, TimeSlot.fromJson);
   }
 
   /// Customers: own requests. Workers: scope "feed" (open nearby) or "offered".
@@ -273,4 +288,17 @@ class KaamNowApi {
     final m = asMap(await client.post('/subscriptions/', body: {'plan': planId, 'method': ?method}));
     return m['checkout'] == null ? null : Checkout.fromJson(asMap(m['checkout']));
   }
+
+  // ---- Worker schedule ---------------------------------------------------
+  Future<WorkerSchedule> mySchedule() async => WorkerSchedule.fromJson(asMap(await client.get('/workers/me/schedule/')));
+  Future<WorkerSchedule> saveHours(List<WorkingHours> hours) async => WorkerSchedule.fromJson(asMap(
+      await client.put('/workers/me/schedule/', body: {'hours': [for (final h in hours) h.toJson()]})));
+  Future<TimeOffEntry> addTimeOff(DateTime start, DateTime end, {String reason = ''}) async {
+    String d(DateTime x) => '${x.year.toString().padLeft(4, '0')}-${x.month.toString().padLeft(2, '0')}-'
+        '${x.day.toString().padLeft(2, '0')}';
+    return TimeOffEntry.fromJson(asMap(await client.post('/workers/me/time-off/',
+        body: {'start_date': d(start), 'end_date': d(end), 'reason': reason})));
+  }
+
+  Future<void> deleteTimeOff(int id) => client.delete('/workers/me/time-off/$id/');
 }

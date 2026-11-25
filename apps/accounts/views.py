@@ -355,6 +355,6 @@ class NearbyWorkersView(APIView):
 class PublicWorkerDetailView(generics.RetrieveAPIView):
     serializer_class = PublicWorkerSerializer
     permission_classes = [permissions.AllowAny]
-    queryset = WorkerProfile.objects.select_related("user").prefetch_related("services__category").filter(
+    queryset = WorkerProfile.objects.select_related("user").prefetch_related("services__category", "working_hours").filter(
         verification_status=WorkerProfile.VerificationStatus.VERIFIED, user__is_active=True, user__is_suspended=False
     )

@@ -71,7 +71,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
                           leading: const Icon(Icons.event_available),
                           title: Text(b.title),
                           subtitle: Text('${isWorker ? b.customerName : b.worker.fullName} · ${rs(b.totalAmount)}\n'
-                              '${b.categoryName} · ${when(b.preferredTime)}'),
+                              '${b.categoryName} · ${whenWindow(b.preferredTime, b.durationMinutes)}'),
                           isThreeLine: true,
                           trailing: StatusChip(b.status),
                           onTap: () async {

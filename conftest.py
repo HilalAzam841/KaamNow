@@ -157,11 +157,15 @@ def request_payload(category, lat=LAHORE[0], lng=LAHORE[1], **kw):
 def make_request(db, category):
     from apps.jobs.services import create_service_request
 
-    def _make(customer, cat=None, lat=LAHORE[0], lng=LAHORE[1]):
+    made = [0]
+
+    def _make(customer, cat=None, lat=LAHORE[0], lng=LAHORE[1], preferred_time=None):
+        # Each request in a test gets its own 2-hour window, so one worker can be booked for several.
+        made[0] += 1
         return create_service_request(
             customer, category=cat or category, title="Fan repair", description="Fan stopped working suddenly.",
             latitude=lat, longitude=lng, address="House 1, Gulberg, Lahore", area="Gulberg",
-            preferred_time=timezone.now() + timedelta(hours=2),
+            preferred_time=preferred_time or timezone.now() + timedelta(hours=3 * made[0]),
         )
 
     return _make

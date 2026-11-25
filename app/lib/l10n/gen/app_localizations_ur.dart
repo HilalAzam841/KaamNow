@@ -31,6 +31,9 @@ class AppLocalizationsUr extends AppLocalizations {
       'متعلقہ کام دیکھنے کے لیے اپنی خدمات شامل کریں۔';
 
   @override
+  String get addTimeOff => 'چھٹیاں شامل کریں';
+
+  @override
   String get address => 'پتہ';
 
   @override
@@ -60,6 +63,10 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get all => 'سب';
+
+  @override
+  String get allBusyHint =>
+      'اس دن کوئی موزوں ورکر فارغ نہیں۔ آپ پھر بھی کام پوسٹ کر سکتے ہیں، یا دوسرا دن چنیں۔';
 
   @override
   String get allServicesOffered => 'آپ پہلے ہی تمام خدمات پیش کر رہے ہیں۔';
@@ -105,6 +112,13 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get atLeast8 => 'کم از کم 8 حروف';
+
+  @override
+  String get availableAnyTime => 'کسی بھی وقت دستیاب';
+
+  @override
+  String get availableAnyTimeHelp =>
+      'اپنے کام کے دن اور اوقات مقرر کرنے کے لیے بند کریں۔';
 
   @override
   String get back => 'واپس';
@@ -246,7 +260,14 @@ class AppLocalizationsUr extends AppLocalizations {
   String get chooseAService => 'سروس منتخب کریں';
 
   @override
+  String get chooseDaysOff => 'اپنی چھٹی کے دن چنیں';
+
+  @override
   String get chooseNewPassword => 'نیا پاس ورڈ منتخب کریں';
+
+  @override
+  String get chooseOneWorkingDay =>
+      'کم از کم ایک کام کا دن چنیں، یا \"کسی بھی وقت دستیاب\" آن کریں۔';
 
   @override
   String get chooseService => 'سروس منتخب کریں۔';
@@ -456,6 +477,14 @@ class AppLocalizationsUr extends AppLocalizations {
   String get customersPaid => 'گاہکوں نے ادا کیا';
 
   @override
+  String dateRange(String start, String end) {
+    return '$start سے $end تک';
+  }
+
+  @override
+  String get dayOff => 'چھٹی';
+
+  @override
   String daysAgo(Object n) {
     return '$n دن پہلے';
   }
@@ -502,6 +531,26 @@ class AppLocalizationsUr extends AppLocalizations {
   String get downloadFailed => 'ڈاؤن لوڈ نہیں ہو سکا۔';
 
   @override
+  String durationHours(int hours) {
+    String _temp0 = intl.Intl.pluralLogic(
+      hours,
+      locale: localeName,
+      other: '$hours گھنٹے',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String durationHoursMinutes(int hours, int minutes) {
+    return '$hours گھنٹے $minutes منٹ';
+  }
+
+  @override
+  String durationMinutes(int minutes) {
+    return '$minutes منٹ';
+  }
+
+  @override
   String get earnings => 'آمدنی';
 
   @override
@@ -530,6 +579,11 @@ class AppLocalizationsUr extends AppLocalizations {
   @override
   String emergencySubtitle(Object fee) {
     return 'کاریگروں کو سب سے پہلے دکھایا جائے گا۔ کل رقم میں $fee شامل ہوں گے۔';
+  }
+
+  @override
+  String endAfterStartFor(String day) {
+    return '$day کو ختم ہونے کا وقت شروع ہونے کے وقت کے بعد ہونا چاہیے۔';
   }
 
   @override
@@ -600,6 +654,11 @@ class AppLocalizationsUr extends AppLocalizations {
   String get free => 'مفت';
 
   @override
+  String freeWorkersOn(String day) {
+    return '$day کو فارغ ورکر';
+  }
+
+  @override
   String fromPrice(Object price) {
     return '$price سے شروع';
   }
@@ -639,6 +698,13 @@ class AppLocalizationsUr extends AppLocalizations {
   String hoursAgo(Object n) {
     return '$n گھنٹے پہلے';
   }
+
+  @override
+  String get howLongJob => 'کام میں کتنا وقت لگے گا؟';
+
+  @override
+  String get howLongJobHelp =>
+      'اندازاً بتائیں۔ ورکر یہ وقت آپ کے لیے خالی رکھیں گے۔';
 
   @override
   String get howToInstall => 'انسٹال کرنے کا طریقہ';
@@ -855,7 +921,19 @@ class AppLocalizationsUr extends AppLocalizations {
   String get moreDetail => 'براہِ کرم کچھ مزید تفصیل دیں (20 سے زیادہ حروف)';
 
   @override
+  String get myScheduleSubtitle =>
+      'وہ دن اور اوقات جب آپ کام لیتے ہیں، اور چھٹیاں';
+
+  @override
+  String get myScheduleTitle => 'میرے کام کے اوقات';
+
+  @override
   String get myWorkerProfile => 'میرا کاریگر پروفائل';
+
+  @override
+  String nFree(int count) {
+    return '$count فارغ';
+  }
 
   @override
   String negAccept(Object who, Object amount) {
@@ -965,6 +1043,15 @@ class AppLocalizationsUr extends AppLocalizations {
   String get noServicesYet => 'ابھی کوئی سروس دستیاب نہیں';
 
   @override
+  String get noSlotsLeft => 'اس دن کوئی وقت باقی نہیں۔ دوسرا دن چنیں۔';
+
+  @override
+  String get noTimeOff => 'کوئی چھٹی طے نہیں۔';
+
+  @override
+  String get noneFree => 'کوئی فارغ نہیں';
+
+  @override
   String get notNow => 'ابھی نہیں';
 
   @override
@@ -1039,6 +1126,9 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get osmCredit => '© OpenStreetMap contributors';
+
+  @override
+  String get otherDay => 'دوسرا دن';
 
   @override
   String paidAmount(Object amount) {
@@ -1261,6 +1351,12 @@ class AppLocalizationsUr extends AppLocalizations {
   }
 
   @override
+  String get removeTimeOffBody => 'ان دنوں آپ کو دوبارہ کاموں کی اطلاع ملے گی۔';
+
+  @override
+  String get removeTimeOffTitle => 'یہ چھٹیاں ہٹائیں؟';
+
+  @override
   String renewsOrEnds(Object date) {
     return '$date کو تجدید یا ختم';
   }
@@ -1345,6 +1441,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String get save => 'محفوظ کریں';
 
   @override
+  String get saveHours => 'اوقات محفوظ کریں';
+
+  @override
   String get saveNewPassword => 'نیا پاس ورڈ محفوظ کریں';
 
   @override
@@ -1352,6 +1451,13 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get saving => 'محفوظ ہو رہا ہے…';
+
+  @override
+  String get scheduleExplain =>
+      'آپ کو صرف اپنے کام کے اوقات کے اندر والے کاموں کی اطلاع ملتی ہے اور انہی پر آفر بھیج سکتے ہیں۔ ایمرجنسی کام آپ تک تب پہنچتے ہیں جب آپ نے خود کو دستیاب رکھا ہو۔';
+
+  @override
+  String get scheduleSaved => 'کام کے اوقات محفوظ ہو گئے۔';
 
   @override
   String get securePayment => 'محفوظ ادائیگی';
@@ -1598,6 +1704,32 @@ class AppLocalizationsUr extends AppLocalizations {
   String get thanksWillReview => 'شکریہ۔ کام ناؤ آپ کی رپورٹ کا جائزہ لے گا۔';
 
   @override
+  String get timeOff => 'چھٹیاں';
+
+  @override
+  String get timeOffAdded => 'چھٹیاں شامل ہو گئیں۔';
+
+  @override
+  String get timeOffExplain =>
+      'تعطیل، شادی یا رخصت۔ ان دنوں آپ کو نئے کام نہیں ملیں گے۔';
+
+  @override
+  String get timeOffReasonLabel => 'وجہ (اختیاری، صرف آپ دیکھ سکتے ہیں)';
+
+  @override
+  String get timeOffReasonTitle => 'چھٹی کی وجہ';
+
+  @override
+  String timeRange(String start, String end) {
+    return '$start سے $end تک';
+  }
+
+  @override
+  String timeWindow(String start, String end) {
+    return '$start سے $end تک';
+  }
+
+  @override
   String get timeline => 'ٹائم لائن';
 
   @override
@@ -1605,6 +1737,9 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get titleLabel => 'عنوان';
+
+  @override
+  String get toWord => 'سے';
 
   @override
   String get total => 'کل';
@@ -1764,6 +1899,9 @@ class AppLocalizationsUr extends AppLocalizations {
   @override
   String get workerSignupHint =>
       'سائن اپ کے بعد اپنا شناختی کارڈ اپ لوڈ کریں تاکہ پیشکش بھیجنے سے پہلے کام ناؤ آپ کی تصدیق کر سکے۔';
+
+  @override
+  String get workingHours => 'کام کے اوقات';
 
   @override
   String worksIn(Object area) {

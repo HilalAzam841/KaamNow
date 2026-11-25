@@ -48,7 +48,7 @@ class JobFeedScreen extends StatelessWidget {
                           : const Icon(Icons.work),
                       title: Text(r.title),
                       subtitle: Text('${r.categoryName}${r.area.isNotEmpty ? ' · ${r.area}' : ''}\n'
-                          '${when(r.preferredTime)}${r.budget != null ? ' · ${context.t.budgetLower(rs(r.budget))}' : ''}'),
+                          '${whenWindow(r.preferredTime, r.durationMinutes)}${r.budget != null ? ' · ${context.t.budgetLower(rs(r.budget))}' : ''}'),
                       isThreeLine: true,
                       trailing: Text(context.t.offersCount(r.offersCount)),
                       onTap: () async {

@@ -96,6 +96,13 @@ class AccountScreen extends StatelessWidget {
               title: Text(context.t.workerProfileServicesDocs),
               onTap: () => context.push('/worker/profile'),
             ),
+            ListTile(
+              key: const Key('account-schedule'),
+              leading: const Icon(Icons.event_available),
+              title: Text(context.t.myScheduleTitle),
+              subtitle: Text(context.t.myScheduleSubtitle),
+              onTap: () => context.push('/worker/schedule'),
+            ),
             ListTile(leading: const Icon(Icons.payments), title: Text(context.t.earnings), onTap: () => context.push('/worker/earnings')),
             ListTile(leading: const Icon(Icons.workspace_premium), title: Text(context.t.plans), onTap: () => context.push('/worker/plans')),
           ],

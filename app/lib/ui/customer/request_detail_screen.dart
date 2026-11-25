@@ -180,7 +180,7 @@ class _RequestHeader extends StatelessWidget {
             StatusChip(r.status),
           ]),
           const SizedBox(height: 4),
-          Text('${r.categoryName} · ${when(r.preferredTime)}'),
+          Text('${r.categoryName} · ${whenWindow(r.preferredTime, r.durationMinutes)}'),
           if (r.isEmergency) ...[
             const SizedBox(height: 6),
             Row(children: [

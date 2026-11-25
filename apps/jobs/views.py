@@ -182,7 +182,7 @@ class BookingViewSet(viewsets.ReadOnlyModelViewSet):
         user = self.request.user
         qs = Booking.objects.select_related(
             "request__category", "customer", "worker__user", "commission", "review"
-        ).prefetch_related("status_logs", "worker__services__category")
+        ).prefetch_related("status_logs", "worker__services__category", "worker__working_hours")
         if is_admin(self.request):
             return qs
         return qs.filter(Q(customer=user) | Q(worker__user=user))

@@ -32,10 +32,13 @@ class ServiceRequestCreateSerializer(serializers.ModelSerializer):
         model = ServiceRequest
         fields = [
             "id", "category", "title", "description", "latitude", "longitude", "address", "area",
-            "preferred_time", "budget", "is_emergency", "images",
+            "preferred_time", "duration_minutes", "budget", "is_emergency", "images",
         ]
         read_only_fields = ["id"]
-        extra_kwargs = {"budget": {"min_value": Decimal("0")}}
+        extra_kwargs = {
+            "budget": {"min_value": Decimal("0")},
+            "duration_minutes": {"min_value": 30, "max_value": 480, "required": False},
+        }
 
     def validate_preferred_time(self, value):
         if value < timezone.now() - timedelta(minutes=5):
@@ -80,7 +83,8 @@ class ServiceRequestSerializer(serializers.ModelSerializer):
         model = ServiceRequest
         fields = [
             "id", "category", "category_name", "title", "description", "latitude", "longitude", "address", "area",
-            "preferred_time", "budget", "is_emergency", "emergency_fee", "status", "images", "offers_count",
+            "preferred_time", "duration_minutes", "budget", "is_emergency", "emergency_fee", "status", "images",
+            "offers_count",
             "booking_id", "matched_workers_count",
             "cancel_reason", "cancelled_at", "created_at", "updated_at",
         ]
@@ -117,7 +121,8 @@ class ServiceRequestForWorkerSerializer(serializers.ModelSerializer):
         model = ServiceRequest
         fields = [
             "id", "category", "category_name", "title", "description", "area", "approx_latitude",
-            "approx_longitude", "distance_km", "preferred_time", "budget", "is_emergency", "emergency_fee", "status",
+            "approx_longitude", "distance_km", "preferred_time", "duration_minutes", "budget", "is_emergency",
+            "emergency_fee", "status",
             "images", "customer_name",
             "my_offer_id", "created_at",
         ]
@@ -197,6 +202,7 @@ class BookingSerializer(serializers.ModelSerializer):
     title = serializers.CharField(source="request.title", read_only=True)
     category_name = serializers.CharField(source="request.category.display_name", read_only=True)
     preferred_time = serializers.DateTimeField(source="request.preferred_time", read_only=True)
+    duration_minutes = serializers.IntegerField(source="request.duration_minutes", read_only=True)
     worker = PublicWorkerSerializer(read_only=True)
     customer_name = serializers.CharField(source="customer.full_name", read_only=True)
     contact = serializers.SerializerMethodField()
@@ -208,7 +214,8 @@ class BookingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Booking
         fields = [
-            "id", "request_id", "title", "category_name", "preferred_time", "agreed_price", "emergency_fee",
+            "id", "request_id", "title", "category_name", "preferred_time", "duration_minutes", "agreed_price",
+            "emergency_fee",
             "total_amount", "status",
             "worker", "customer_name", "contact", "on_the_way_at", "arrived_at", "started_at", "completed_at",
             "cancelled_at", "cancel_reason", "completed_via", "status_history", "commission", "has_review",

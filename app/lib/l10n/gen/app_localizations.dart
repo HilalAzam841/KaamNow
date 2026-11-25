@@ -134,6 +134,12 @@ abstract class AppLocalizations {
   /// **'Add the services you offer to see matching jobs.'**
   String get addServicesToSeeJobs;
 
+  /// No description provided for @addTimeOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Add days off'**
+  String get addTimeOff;
+
   /// No description provided for @address.
   ///
   /// In en, this message translates to:
@@ -187,6 +193,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'All'**
   String get all;
+
+  /// No description provided for @allBusyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'No matching workers are free on this day. You can still post: workers may free up, or choose another day.'**
+  String get allBusyHint;
 
   /// No description provided for @allServicesOffered.
   ///
@@ -265,6 +277,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'At least 8 characters'**
   String get atLeast8;
+
+  /// No description provided for @availableAnyTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Available any time'**
+  String get availableAnyTime;
+
+  /// No description provided for @availableAnyTimeHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn off to set the days and hours you work.'**
+  String get availableAnyTimeHelp;
 
   /// No description provided for @back.
   ///
@@ -506,11 +530,23 @@ abstract class AppLocalizations {
   /// **'Choose a service'**
   String get chooseAService;
 
+  /// No description provided for @chooseDaysOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose your days off'**
+  String get chooseDaysOff;
+
   /// No description provided for @chooseNewPassword.
   ///
   /// In en, this message translates to:
   /// **'Choose a new password'**
   String get chooseNewPassword;
+
+  /// No description provided for @chooseOneWorkingDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose at least one working day, or turn on \"Available any time\".'**
+  String get chooseOneWorkingDay;
 
   /// No description provided for @chooseService.
   ///
@@ -854,6 +890,18 @@ abstract class AppLocalizations {
   /// **'Customers paid'**
   String get customersPaid;
 
+  /// No description provided for @dateRange.
+  ///
+  /// In en, this message translates to:
+  /// **'{start} to {end}'**
+  String dateRange(String start, String end);
+
+  /// No description provided for @dayOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Day off'**
+  String get dayOff;
+
   /// No description provided for @daysAgo.
   ///
   /// In en, this message translates to:
@@ -932,6 +980,24 @@ abstract class AppLocalizations {
   /// **'Download failed.'**
   String get downloadFailed;
 
+  /// No description provided for @durationHours.
+  ///
+  /// In en, this message translates to:
+  /// **'{hours, plural, =1{1 hour} other{{hours} hours}}'**
+  String durationHours(int hours);
+
+  /// No description provided for @durationHoursMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{hours} h {minutes} min'**
+  String durationHoursMinutes(int hours, int minutes);
+
+  /// No description provided for @durationMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} min'**
+  String durationMinutes(int minutes);
+
   /// No description provided for @earnings.
   ///
   /// In en, this message translates to:
@@ -985,6 +1051,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Shown first to workers. Adds {fee} to the total.'**
   String emergencySubtitle(Object fee);
+
+  /// No description provided for @endAfterStartFor.
+  ///
+  /// In en, this message translates to:
+  /// **'On {day}, the end time must be after the start time.'**
+  String endAfterStartFor(String day);
 
   /// No description provided for @enterAddress.
   ///
@@ -1106,6 +1178,12 @@ abstract class AppLocalizations {
   /// **'Free'**
   String get free;
 
+  /// No description provided for @freeWorkersOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Free workers on {day}'**
+  String freeWorkersOn(String day);
+
   /// No description provided for @fromPrice.
   ///
   /// In en, this message translates to:
@@ -1171,6 +1249,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{n} h ago'**
   String hoursAgo(Object n);
+
+  /// No description provided for @howLongJob.
+  ///
+  /// In en, this message translates to:
+  /// **'How long will the job take?'**
+  String get howLongJob;
+
+  /// No description provided for @howLongJobHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'A rough guess. Workers keep this time free for you.'**
+  String get howLongJobHelp;
 
   /// No description provided for @howToInstall.
   ///
@@ -1520,11 +1610,29 @@ abstract class AppLocalizations {
   /// **'Please give a bit more detail (20+ characters)'**
   String get moreDetail;
 
+  /// No description provided for @myScheduleSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Days and times you take jobs, and days off'**
+  String get myScheduleSubtitle;
+
+  /// No description provided for @myScheduleTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'My working hours'**
+  String get myScheduleTitle;
+
   /// No description provided for @myWorkerProfile.
   ///
   /// In en, this message translates to:
   /// **'My worker profile'**
   String get myWorkerProfile;
+
+  /// No description provided for @nFree.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} free'**
+  String nFree(int count);
 
   /// No description provided for @negAccept.
   ///
@@ -1700,6 +1808,24 @@ abstract class AppLocalizations {
   /// **'No services yet'**
   String get noServicesYet;
 
+  /// No description provided for @noSlotsLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'No time slots left on this day. Choose another day.'**
+  String get noSlotsLeft;
+
+  /// No description provided for @noTimeOff.
+  ///
+  /// In en, this message translates to:
+  /// **'No days off planned.'**
+  String get noTimeOff;
+
+  /// No description provided for @noneFree.
+  ///
+  /// In en, this message translates to:
+  /// **'none free'**
+  String get noneFree;
+
   /// No description provided for @notNow.
   ///
   /// In en, this message translates to:
@@ -1813,6 +1939,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'© OpenStreetMap contributors'**
   String get osmCredit;
+
+  /// No description provided for @otherDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Other day'**
+  String get otherDay;
 
   /// No description provided for @paidAmount.
   ///
@@ -2180,6 +2312,18 @@ abstract class AppLocalizations {
   /// **'Remove {name}?'**
   String removeServiceQ(Object name);
 
+  /// No description provided for @removeTimeOffBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You will get job alerts on these days again.'**
+  String get removeTimeOffBody;
+
+  /// No description provided for @removeTimeOffTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove these days off?'**
+  String get removeTimeOffTitle;
+
   /// No description provided for @renewsOrEnds.
   ///
   /// In en, this message translates to:
@@ -2312,6 +2456,12 @@ abstract class AppLocalizations {
   /// **'Save'**
   String get save;
 
+  /// No description provided for @saveHours.
+  ///
+  /// In en, this message translates to:
+  /// **'Save hours'**
+  String get saveHours;
+
   /// No description provided for @saveNewPassword.
   ///
   /// In en, this message translates to:
@@ -2329,6 +2479,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Saving…'**
   String get saving;
+
+  /// No description provided for @scheduleExplain.
+  ///
+  /// In en, this message translates to:
+  /// **'You only get job alerts and can only send offers for jobs inside your working hours. Emergency jobs reach you whenever you are switched on as available.'**
+  String get scheduleExplain;
+
+  /// No description provided for @scheduleSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Working hours saved.'**
+  String get scheduleSaved;
 
   /// No description provided for @securePayment.
   ///
@@ -2792,6 +2954,48 @@ abstract class AppLocalizations {
   /// **'Thanks. KaamNow will review your report.'**
   String get thanksWillReview;
 
+  /// No description provided for @timeOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Days off'**
+  String get timeOff;
+
+  /// No description provided for @timeOffAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'Days off added.'**
+  String get timeOffAdded;
+
+  /// No description provided for @timeOffExplain.
+  ///
+  /// In en, this message translates to:
+  /// **'Holiday, wedding or leave. You get no new jobs on these days.'**
+  String get timeOffExplain;
+
+  /// No description provided for @timeOffReasonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason (optional, only you see it)'**
+  String get timeOffReasonLabel;
+
+  /// No description provided for @timeOffReasonTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason for days off'**
+  String get timeOffReasonTitle;
+
+  /// No description provided for @timeRange.
+  ///
+  /// In en, this message translates to:
+  /// **'{start} to {end}'**
+  String timeRange(String start, String end);
+
+  /// No description provided for @timeWindow.
+  ///
+  /// In en, this message translates to:
+  /// **'{start} to {end}'**
+  String timeWindow(String start, String end);
+
   /// No description provided for @timeline.
   ///
   /// In en, this message translates to:
@@ -2809,6 +3013,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Title'**
   String get titleLabel;
+
+  /// No description provided for @toWord.
+  ///
+  /// In en, this message translates to:
+  /// **'to'**
+  String get toWord;
 
   /// No description provided for @total.
   ///
@@ -3085,6 +3295,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'After signing up, upload your CNIC so KaamNow can verify you before you send offers.'**
   String get workerSignupHint;
+
+  /// No description provided for @workingHours.
+  ///
+  /// In en, this message translates to:
+  /// **'Working hours'**
+  String get workingHours;
 
   /// No description provided for @worksIn.
   ///

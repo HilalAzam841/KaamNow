@@ -845,6 +845,10 @@ msgid "This worker has too many active bookings right now."
 msgstr "اس کاریگر کے پاس اس وقت بہت سی جاری بکنگز ہیں۔"
 
 #: apps/offers/services.py
+msgid "This worker already has a booking at that time. Choose another offer."
+msgstr "اس ورکر کی اس وقت پہلے سے ایک بکنگ ہے۔ کوئی دوسری آفر چنیں۔"
+
+#: apps/offers/services.py
 msgid "Offer accepted"
 msgstr "پیشکش قبول ہو گئی"
 
@@ -978,6 +982,30 @@ msgstr "نیا ریویو"
 #, python-brace-format
 msgid "You received a {rating}-star review."
 msgstr "آپ کو {rating} اسٹار کا ریویو ملا۔"
+
+#: apps/scheduling/serializers.py
+msgid "Time off can be at most 90 days at once."
+msgstr "ایک بار میں زیادہ سے زیادہ 90 دن کی چھٹی لی جا سکتی ہے۔"
+
+#: apps/scheduling/serializers.py
+msgid "Each day can appear only once."
+msgstr "ہر دن صرف ایک بار آ سکتا ہے۔"
+
+#: apps/scheduling/serializers.py
+msgid "Choose a day within the next 60 days."
+msgstr "اگلے 60 دنوں میں سے کوئی دن چنیں۔"
+
+#: apps/scheduling/services.py
+msgid "This job is outside your working hours. Change your schedule to take it."
+msgstr "یہ کام آپ کے کام کے اوقات سے باہر ہے۔ اسے لینے کے لیے اپنے اوقات بدلیں۔"
+
+#: apps/scheduling/services.py
+msgid "You marked this day as time off."
+msgstr "آپ نے اس دن کو چھٹی کے طور پر رکھا ہے۔"
+
+#: apps/scheduling/services.py
+msgid "You already have a booking at this time."
+msgstr "اس وقت آپ کی پہلے سے ایک بکنگ ہے۔"
 
 #: apps/support/services.py
 msgid "You can only report problems with your own bookings."

@@ -18,11 +18,17 @@ paths:
           enum:
           - category_changed
           - commission_changed
+          - commission_collected
           - complaint_updated
           - document_viewed
           - featured_cancelled
           - payment_disputed
+          - payment_refunded
+          - payment_resolved
+          - payout_paid
+          - payout_rejected
           - plan_changed
+          - promo_saved
           - settings_changed
           - subscription_activated
           - user_reactivated
@@ -43,6 +49,12 @@ paths:
           * `featured_cancelled` - Featured listing cancelled
           * `complaint_updated` - Complaint status changed
           * `payment_disputed` - Payment flagged as disputed
+          * `payout_paid` - Worker payout marked as paid
+          * `payout_rejected` - Worker payout rejected
+          * `commission_collected` - Cash commission received from worker
+          * `payment_resolved` - Disputed payment resolved
+          * `payment_refunded` - Payment refunded to customer
+          * `promo_saved` - Promo code created or changed
       - in: query
         name: actor
         schema:
@@ -623,6 +635,378 @@ paths:
               schema:
                 $ref: '#/components/schemas/FeaturedPlan'
           description: ''
+  /api/v1/admin/payments/:
+    get:
+      operationId: admin_payments_list
+      description: 'All payments. Disputed ones to resolve: `?status=disputed`. Refunded:
+        `?refunded=true`.'
+      parameters:
+      - in: query
+        name: booking
+        schema:
+          type: integer
+      - in: query
+        name: method
+        schema:
+          type: string
+          enum:
+          - cash
+          - easypaisa
+          - jazzcash
+        description: |-
+          * `cash` - Cash
+          * `jazzcash` - JazzCash
+          * `easypaisa` - Easypaisa
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: payer
+        schema:
+          type: integer
+      - in: query
+        name: purpose
+        schema:
+          type: string
+          enum:
+          - booking
+          - commission
+          - featured_listing
+          - subscription
+        description: |-
+          * `booking` - Booking
+          * `subscription` - Worker subscription
+          * `featured_listing` - Featured listing
+          * `commission` - Commission owed by a worker
+      - in: query
+        name: refunded
+        schema:
+          type: boolean
+        description: 'true: only payments with a refund'
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - completed
+          - disputed
+          - expired
+          - failed
+          - pending
+          - refunded
+        description: |-
+          * `pending` - Awaiting confirmation
+          * `completed` - Completed
+          * `failed` - Failed
+          * `disputed` - Disputed
+          * `expired` - Expired
+          * `refunded` - Refunded
+      tags:
+      - admin
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAdminPaymentList'
+          description: ''
+  /api/v1/admin/payments/{id}/:
+    get:
+      operationId: admin_payments_retrieve
+      description: 'All payments. Disputed ones to resolve: `?status=disputed`. Refunded:
+        `?refunded=true`.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this payment.
+        required: true
+      tags:
+      - admin
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminPayment'
+          description: ''
+  /api/v1/admin/payments/{id}/refund/:
+    post:
+      operationId: admin_payments_refund_create
+      description: 'All payments. Disputed ones to resolve: `?status=disputed`. Refunded:
+        `?refunded=true`.'
+      summary: 'After sending money back: record a full or partial refund of a completed
+        booking payment, optionally charging the worker''s share to their wallet.
+        Audited.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this payment.
+        required: true
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefundRequestRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RefundRequestRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RefundRequestRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Refund'
+          description: ''
+  /api/v1/admin/payments/{id}/resolve/:
+    post:
+      operationId: admin_payments_resolve_create
+      description: 'All payments. Disputed ones to resolve: `?status=disputed`. Refunded:
+        `?refunded=true`.'
+      summary: 'Resolve a disputed payment after checking the merchant portal: accept,
+        refund or reject. Audited.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this payment.
+        required: true
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResolvePaymentRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ResolvePaymentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ResolvePaymentRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminPayment'
+          description: ''
+  /api/v1/admin/promo-codes/:
+    get:
+      operationId: admin_promo_codes_list
+      description: 'Promo codes. There is no delete: switch a code off with `is_active:
+        false` (its history stays).'
+      parameters:
+      - in: query
+        name: category
+        schema:
+          type: integer
+      - in: query
+        name: is_active
+        schema:
+          type: boolean
+      - in: query
+        name: kind
+        schema:
+          type: string
+          enum:
+          - fixed
+          - percent
+        description: |-
+          * `percent` - Percent off
+          * `fixed` - Fixed amount off
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - admin
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAdminPromoCodeList'
+          description: ''
+    post:
+      operationId: admin_promo_codes_create
+      description: 'Promo codes. There is no delete: switch a code off with `is_active:
+        false` (its history stays).'
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminPromoCodeRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AdminPromoCodeRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AdminPromoCodeRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminPromoCode'
+          description: ''
+  /api/v1/admin/promo-codes/{id}/:
+    get:
+      operationId: admin_promo_codes_retrieve
+      description: 'Promo codes. There is no delete: switch a code off with `is_active:
+        false` (its history stays).'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this promo code.
+        required: true
+      tags:
+      - admin
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminPromoCode'
+          description: ''
+    put:
+      operationId: admin_promo_codes_update
+      description: 'Promo codes. There is no delete: switch a code off with `is_active:
+        false` (its history stays).'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this promo code.
+        required: true
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminPromoCodeRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AdminPromoCodeRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AdminPromoCodeRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminPromoCode'
+          description: ''
+    patch:
+      operationId: admin_promo_codes_partial_update
+      description: 'Promo codes. There is no delete: switch a code off with `is_active:
+        false` (its history stays).'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this promo code.
+        required: true
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedAdminPromoCodeRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedAdminPromoCodeRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedAdminPromoCodeRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminPromoCode'
+          description: ''
   /api/v1/admin/reports/:
     get:
       operationId: admin_reports_retrieve
@@ -837,6 +1221,188 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PlatformSettings'
+          description: ''
+  /api/v1/admin/settlements/:
+    get:
+      operationId: admin_settlements_list
+      description: 'Worker payouts and commission payments. Open payout requests:
+        `?kind=payout&status=requested`.'
+      parameters:
+      - in: query
+        name: kind
+        schema:
+          type: string
+          enum:
+          - collection
+          - payout
+        description: |-
+          * `payout` - Payout to worker
+          * `collection` - Commission paid by worker
+      - in: query
+        name: method
+        schema:
+          type: string
+          enum:
+          - bank
+          - cash
+          - easypaisa
+          - jazzcash
+        description: |-
+          * `jazzcash` - JazzCash
+          * `easypaisa` - Easypaisa
+          * `bank` - Bank transfer
+          * `cash` - Cash
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - cancelled
+          - completed
+          - failed
+          - rejected
+          - requested
+        description: |-
+          * `requested` - Open
+          * `completed` - Completed
+          * `rejected` - Rejected
+          * `cancelled` - Cancelled
+          * `failed` - Payment failed
+      - in: query
+        name: worker
+        schema:
+          type: integer
+      tags:
+      - admin
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSettlementList'
+          description: ''
+  /api/v1/admin/settlements/{id}/:
+    get:
+      operationId: admin_settlements_retrieve
+      description: 'Worker payouts and commission payments. Open payout requests:
+        `?kind=payout&status=requested`.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this worker settlement.
+        required: true
+      tags:
+      - admin
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Settlement'
+          description: ''
+  /api/v1/admin/settlements/{id}/mark-paid/:
+    post:
+      operationId: admin_settlements_mark_paid_create
+      description: 'Worker payouts and commission payments. Open payout requests:
+        `?kind=payout&status=requested`.'
+      summary: 'After sending the money: mark a payout paid with the transfer reference.
+        Audited.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this worker settlement.
+        required: true
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MarkPayoutPaidRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MarkPayoutPaidRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MarkPayoutPaidRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Settlement'
+          description: ''
+  /api/v1/admin/settlements/{id}/reject/:
+    post:
+      operationId: admin_settlements_reject_create
+      description: 'Worker payouts and commission payments. Open payout requests:
+        `?kind=payout&status=requested`.'
+      summary: Decline a payout request; the balance goes back to the worker's wallet.
+        Audited.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this worker settlement.
+        required: true
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RejectPayoutRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RejectPayoutRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RejectPayoutRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Settlement'
           description: ''
   /api/v1/admin/subscription-plans/:
     get:
@@ -1160,6 +1726,29 @@ paths:
               schema:
                 $ref: '#/components/schemas/AdminUser'
           description: ''
+  /api/v1/admin/worker-balances/:
+    get:
+      operationId: admin_worker_balances_list
+      summary: Unsettled balance per worker, most owed commission first.
+      parameters:
+      - in: query
+        name: owing
+        schema:
+          type: boolean
+        description: 'true: workers who owe commission; false: workers KaamNow owes'
+      tags:
+      - admin
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/WorkerBalance'
+          description: ''
   /api/v1/admin/workers/{id}/:
     get:
       operationId: admin_workers_retrieve
@@ -1179,6 +1768,40 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AdminWorker'
+          description: ''
+  /api/v1/admin/workers/{id}/record-commission/:
+    post:
+      operationId: admin_workers_record_commission_create
+      summary: Record that a worker paid the commission they owe in cash or by bank
+        transfer. Audited.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecordCommissionRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RecordCommissionRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RecordCommissionRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Settlement'
           description: ''
   /api/v1/admin/workers/{id}/reject/:
     post:
@@ -1444,6 +2067,68 @@ paths:
       responses:
         '200':
           description: No response body
+  /api/v1/auth/password-reset/sms-confirm/:
+    post:
+      operationId: auth_password_reset_sms_confirm_create
+      description: Resets a forgotten password with the code sent by SMS. Signs the
+        account out everywhere.
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordResetSmsConfirmRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PasswordResetSmsConfirmRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PasswordResetSmsConfirmRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/auth/phone/send-code/:
+    post:
+      operationId: auth_phone_send_code_create
+      description: Sends a code by SMS to the signed-in user's own phone number.
+      tags:
+      - auth
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/auth/phone/verify/:
+    post:
+      operationId: auth_phone_verify_create
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PhoneCodeRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PhoneCodeRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PhoneCodeRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
   /api/v1/auth/register/:
     post:
       operationId: auth_register_create
@@ -2256,6 +2941,63 @@ paths:
       responses:
         '200':
           description: No response body
+  /api/v1/notifications/web-push/subscribe/:
+    post:
+      operationId: notifications_web_push_subscribe_create
+      description: Turn on browser notifications for this browser (send PushSubscription.toJSON()).
+      tags:
+      - notifications
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebPushSubscribeRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/WebPushSubscribeRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/WebPushSubscribeRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/v1/notifications/web-push/unsubscribe/:
+    post:
+      operationId: notifications_web_push_unsubscribe_create
+      description: Turn off browser notifications for this browser (also called on
+        log out).
+      tags:
+      - notifications
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebPushUnsubscribeRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/WebPushUnsubscribeRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/WebPushUnsubscribeRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
   /api/v1/offers/:
     get:
       operationId: offers_list
@@ -2521,12 +3263,14 @@ paths:
           type: string
           enum:
           - booking
+          - commission
           - featured_listing
           - subscription
         description: |-
           * `booking` - Booking
           * `subscription` - Worker subscription
           * `featured_listing` - Featured listing
+          * `commission` - Commission owed by a worker
       - name: search
         required: false
         in: query
@@ -2543,12 +3287,14 @@ paths:
           - expired
           - failed
           - pending
+          - refunded
         description: |-
           * `pending` - Awaiting confirmation
           * `completed` - Completed
           * `failed` - Failed
           * `disputed` - Disputed
           * `expired` - Expired
+          * `refunded` - Refunded
       tags:
       - payments
       security:
@@ -2564,7 +3310,8 @@ paths:
       operationId: payments_create
       summary: 'Customer pays for a completed booking. Cash: worker confirms receipt.
         JazzCash/Easypaisa: open `checkout` in a WebView; the server confirms only
-        after verifying the gateway callback.'
+        after verifying the gateway callback. Optional `promo_code` and `use_credit`
+        lower the amount (check first with `POST promos/check/`).'
       tags:
       - payments
       requestBody:
@@ -2689,6 +3436,34 @@ paths:
       responses:
         '200':
           description: Settled status
+  /api/v1/payments/commission/pay/:
+    post:
+      operationId: payments_commission_pay_create
+      summary: 'Worker: pay the commission owed with JazzCash or Easypaisa. Settled
+        only after the server verifies the gateway callback.'
+      tags:
+      - payments
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommissionPaymentRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CommissionPaymentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CommissionPaymentRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommissionPaymentResponse'
+          description: ''
   /api/v1/payments/earnings/:
     get:
       operationId: payments_earnings_retrieve
@@ -2703,6 +3478,114 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/EarningsSummary'
+          description: ''
+  /api/v1/payments/payouts/:
+    post:
+      operationId: payments_payouts_create
+      summary: 'Worker: ask to be paid the whole balance. An admin sends it and marks
+        it paid.'
+      tags:
+      - payments
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PayoutRequestRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PayoutRequestRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PayoutRequestRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Settlement'
+          description: ''
+  /api/v1/payments/payouts/{id}/cancel/:
+    post:
+      operationId: payments_payouts_cancel_create
+      summary: 'Worker: cancel an open payout request'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - payments
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Settlement'
+          description: ''
+  /api/v1/payments/wallet/:
+    get:
+      operationId: payments_wallet_retrieve
+      summary: 'Worker: balance with KaamNow (online earnings held minus cash commission
+        owed)'
+      tags:
+      - payments
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Wallet'
+          description: ''
+  /api/v1/promos/check/:
+    post:
+      operationId: promos_check_create
+      summary: Shows what the customer would pay for a booking with a promo code and/or
+        their credit. Errors with code `promo_invalid` say why a code cannot be used.
+      tags:
+      - promotions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PromoCheckRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PromoCheckRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PromoCheckRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Quote'
+          description: ''
+  /api/v1/referrals/me/:
+    get:
+      operationId: referrals_me_retrieve
+      summary: Your invite code, credit balance and invite rewards.
+      tags:
+      - promotions
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReferralSummary'
           description: ''
   /api/v1/requests/:
     get:
@@ -3020,6 +3903,48 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/WorkerOffer'
+          description: ''
+  /api/v1/requests/slots/:
+    get:
+      operationId: requests_slots_list
+      summary: Two-hour time slots on a day, with how many matching workers nearby
+        are free in each. Counts only, never who.
+      parameters:
+      - in: query
+        name: category
+        schema:
+          type: integer
+        required: true
+      - in: query
+        name: date
+        schema:
+          type: string
+        description: YYYY-MM-DD
+        required: true
+      - in: query
+        name: latitude
+        schema:
+          type: number
+          format: double
+        required: true
+      - in: query
+        name: longitude
+        schema:
+          type: number
+          format: double
+        required: true
+      tags:
+      - requests
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Slot'
           description: ''
   /api/v1/reviews/:
     post:
@@ -3608,6 +4533,93 @@ paths:
               schema:
                 $ref: '#/components/schemas/WorkerProfile'
           description: ''
+  /api/v1/workers/me/schedule/:
+    get:
+      operationId: workers_me_schedule_retrieve
+      summary: Your weekly working hours and upcoming time off.
+      tags:
+      - workers
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Schedule'
+          description: ''
+    put:
+      operationId: workers_me_schedule_update
+      summary: Replace your weekly working hours. You are only matched with jobs inside
+        them.
+      tags:
+      - workers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScheduleRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ScheduleRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ScheduleRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Schedule'
+          description: ''
+  /api/v1/workers/me/time-off/:
+    post:
+      operationId: workers_me_time_off_create
+      summary: Mark days off (holiday, leave). You are not matched with jobs on those
+        days.
+      tags:
+      - workers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TimeOffRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TimeOffRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TimeOffRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimeOff'
+          description: ''
+  /api/v1/workers/me/time-off/{id}/:
+    delete:
+      operationId: workers_me_time_off_destroy
+      summary: Remove a time off entry.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - workers
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
   /api/v1/workers/nearby/:
     get:
       operationId: workers_nearby_list
@@ -3723,6 +4735,270 @@ components:
       - status
       - subject
       - updated_at
+    AdminPayment:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        purpose:
+          allOf:
+          - $ref: '#/components/schemas/PurposeEnum'
+          readOnly: true
+        booking:
+          type: integer
+          readOnly: true
+          nullable: true
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          readOnly: true
+        method:
+          allOf:
+          - $ref: '#/components/schemas/PaymentMethodEnum'
+          readOnly: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/PaymentStatusEnum'
+          readOnly: true
+          default: pending
+        reference:
+          type: string
+          readOnly: true
+        failure_reason:
+          type: string
+          readOnly: true
+        expires_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        confirmed_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        refunded_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          readOnly: true
+          description: Total refunded to the payer so far.
+        discount_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          readOnly: true
+          description: Promo code and credit taken off the booking total; KaamNow
+            pays it. amount = total - discount.
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        payer:
+          type: integer
+          readOnly: true
+        payer_name:
+          type: string
+          readOnly: true
+        payer_phone:
+          type: string
+          readOnly: true
+        worker_name:
+          type: string
+          readOnly: true
+        gateway_transaction_id:
+          type: string
+          readOnly: true
+        refundable_amount:
+          type: string
+          readOnly: true
+        refunds:
+          type: array
+          items:
+            $ref: '#/components/schemas/Refund'
+          readOnly: true
+      required:
+      - amount
+      - booking
+      - confirmed_at
+      - created_at
+      - discount_amount
+      - expires_at
+      - failure_reason
+      - gateway_transaction_id
+      - id
+      - method
+      - payer
+      - payer_name
+      - payer_phone
+      - purpose
+      - reference
+      - refundable_amount
+      - refunded_amount
+      - refunds
+      - status
+      - updated_at
+      - worker_name
+    AdminPromoCode:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        code:
+          type: string
+          description: Stored in capitals; customers can type any case.
+          maxLength: 30
+        description:
+          type: string
+          description: Shown to customers, e.g. 'Eid offer'.
+          maxLength: 200
+        kind:
+          $ref: '#/components/schemas/AdminPromoCodeKindEnum'
+        value:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          description: Percent (1-100) or rupees.
+        max_discount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          nullable: true
+          description: Upper limit in rupees for percent codes.
+        min_order:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          description: Smallest booking total the code works on.
+        category:
+          type: integer
+          nullable: true
+          description: Only for this service, if set.
+        category_name:
+          type: string
+          readOnly: true
+        starts_at:
+          type: string
+          format: date-time
+          nullable: true
+        ends_at:
+          type: string
+          format: date-time
+          nullable: true
+        max_uses:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          nullable: true
+          description: 'Total uses for everyone. Empty: no limit.'
+        max_uses_per_user:
+          type: integer
+          maximum: 32767
+          minimum: 0
+        first_booking_only:
+          type: boolean
+          description: Only for customers who have never paid a booking.
+        is_active:
+          type: boolean
+        uses:
+          type: integer
+          readOnly: true
+          default: 0
+        discount_given:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          readOnly: true
+          default: '0.00'
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - category_name
+      - code
+      - created_at
+      - discount_given
+      - id
+      - kind
+      - uses
+      - value
+    AdminPromoCodeKindEnum:
+      enum:
+      - percent
+      - fixed
+      type: string
+      description: |-
+        * `percent` - Percent off
+        * `fixed` - Fixed amount off
+    AdminPromoCodeRequest:
+      type: object
+      properties:
+        code:
+          type: string
+          minLength: 1
+          description: Stored in capitals; customers can type any case.
+          maxLength: 30
+        description:
+          type: string
+          description: Shown to customers, e.g. 'Eid offer'.
+          maxLength: 200
+        kind:
+          $ref: '#/components/schemas/AdminPromoCodeKindEnum'
+        value:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          description: Percent (1-100) or rupees.
+        max_discount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          nullable: true
+          description: Upper limit in rupees for percent codes.
+        min_order:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          description: Smallest booking total the code works on.
+        category:
+          type: integer
+          nullable: true
+          description: Only for this service, if set.
+        starts_at:
+          type: string
+          format: date-time
+          nullable: true
+        ends_at:
+          type: string
+          format: date-time
+          nullable: true
+        max_uses:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          nullable: true
+          description: 'Total uses for everyone. Empty: no limit.'
+        max_uses_per_user:
+          type: integer
+          maximum: 32767
+          minimum: 0
+        first_booking_only:
+          type: boolean
+          description: Only for customers who have never paid a booking.
+        is_active:
+          type: boolean
+      required:
+      - code
+      - kind
+      - value
     AdminUser:
       type: object
       properties:
@@ -3921,6 +5197,12 @@ components:
             additionalProperties: {}
         push_enabled:
           type: boolean
+        web_push:
+          $ref: '#/components/schemas/AppConfigWebPush'
+        phone_verification:
+          $ref: '#/components/schemas/AppConfigPhoneVerification'
+        maps:
+          $ref: '#/components/schemas/AppConfigMaps'
         websocket_path:
           type: string
         support:
@@ -3930,11 +5212,14 @@ components:
       - city
       - currency
       - emergency
+      - maps
       - min_supported_version
       - offer_price
       - payment_methods
+      - phone_verification
       - push_enabled
       - support
+      - web_push
       - websocket_path
     AppConfigCity:
       type: object
@@ -3961,6 +5246,18 @@ components:
       required:
       - enabled
       - fee
+    AppConfigMaps:
+      type: object
+      properties:
+        provider:
+          $ref: '#/components/schemas/ProviderEnum'
+        google_browser_key:
+          type: string
+          description: 'Google Maps key for the web app. Public by design: restrict
+            it to your site''s address in Google Cloud. Empty when not set up.'
+      required:
+      - google_browser_key
+      - provider
     AppConfigOfferPrice:
       type: object
       properties:
@@ -3971,6 +5268,16 @@ components:
       required:
       - max
       - min
+    AppConfigPhoneVerification:
+      type: object
+      properties:
+        required:
+          type: boolean
+        sms_available:
+          type: boolean
+      required:
+      - required
+      - sms_available
     AppConfigSupport:
       type: object
       properties:
@@ -3981,6 +5288,16 @@ components:
       required:
       - email
       - phone
+    AppConfigWebPush:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+        public_key:
+          type: string
+      required:
+      - enabled
+      - public_key
     AuditLog:
       type: object
       properties:
@@ -4039,6 +5356,12 @@ components:
       - featured_cancelled
       - complaint_updated
       - payment_disputed
+      - payout_paid
+      - payout_rejected
+      - commission_collected
+      - payment_resolved
+      - payment_refunded
+      - promo_saved
       type: string
       description: |-
         * `worker_verified` - Worker verified
@@ -4054,6 +5377,12 @@ components:
         * `featured_cancelled` - Featured listing cancelled
         * `complaint_updated` - Complaint status changed
         * `payment_disputed` - Payment flagged as disputed
+        * `payout_paid` - Worker payout marked as paid
+        * `payout_rejected` - Worker payout rejected
+        * `commission_collected` - Cash commission received from worker
+        * `payment_resolved` - Disputed payment resolved
+        * `payment_refunded` - Payment refunded to customer
+        * `promo_saved` - Promo code created or changed
     AuthResponse:
       type: object
       properties:
@@ -4096,6 +5425,9 @@ components:
         preferred_time:
           type: string
           format: date-time
+          readOnly: true
+        duration_minutes:
+          type: integer
           readOnly: true
         agreed_price:
           type: string
@@ -4192,6 +5524,7 @@ components:
       - contact
       - created_at
       - customer_name
+      - duration_minutes
       - emergency_fee
       - has_review
       - id
@@ -4429,6 +5762,31 @@ components:
       - worker
       - worker_earning
       - worker_name
+    CommissionPaymentRequest:
+      type: object
+      properties:
+        method:
+          $ref: '#/components/schemas/OnlinePaymentMethodEnum'
+      required:
+      - method
+    CommissionPaymentResponse:
+      type: object
+      properties:
+        settlement:
+          $ref: '#/components/schemas/Settlement'
+        payment:
+          $ref: '#/components/schemas/PaymentWithCheckout'
+      required:
+      - payment
+      - settlement
+    CommissionReceivedMethodEnum:
+      enum:
+      - cash
+      - bank
+      type: string
+      description: |-
+        * `cash` - Cash
+        * `bank` - Bank transfer
     CommissionStatusEnum:
       enum:
       - pending
@@ -4556,6 +5914,53 @@ components:
       required:
       - expires_at
       - otp
+    CreditEntry:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          readOnly: true
+        kind:
+          allOf:
+          - $ref: '#/components/schemas/CreditEntryKindEnum'
+          readOnly: true
+        note:
+          type: string
+          readOnly: true
+        payment:
+          type: integer
+          readOnly: true
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - amount
+      - created_at
+      - id
+      - kind
+      - note
+      - payment
+    CreditEntryKindEnum:
+      enum:
+      - welcome
+      - referral
+      - spent
+      - returned
+      - admin
+      type: string
+      description: |-
+        * `welcome` - Welcome credit
+        * `referral` - Invite reward
+        * `spent` - Used on a booking
+        * `returned` - Returned (payment did not go through)
+        * `admin` - Added by KaamNow
     DeviceToken:
       type: object
       properties:
@@ -4775,6 +6180,29 @@ components:
       required:
       - checkout
       - listing
+    LanguageEnum:
+      enum:
+      - en
+      - ur
+      type: string
+      description: |-
+        * `en` - English
+        * `ur` - اردو
+    LastPayoutAccount:
+      type: object
+      properties:
+        method:
+          $ref: '#/components/schemas/PayoutMethodEnum'
+        account_title:
+          type: string
+          maxLength: 100
+        account_number:
+          type: string
+          maxLength: 34
+      required:
+      - account_number
+      - account_title
+      - method
     LiveLocation:
       type: object
       properties:
@@ -4875,6 +6303,16 @@ components:
           minLength: 1
       required:
       - refresh
+    MarkPayoutPaidRequest:
+      type: object
+      properties:
+        reference:
+          type: string
+          minLength: 1
+          description: The transfer's transaction ID.
+          maxLength: 100
+      required:
+      - reference
     MySubscription:
       type: object
       properties:
@@ -4946,6 +6384,14 @@ components:
           items:
             $ref: '#/components/schemas/WorkerServiceInline'
           readOnly: true
+        working_hours:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+          description: 'Weekly hours (empty when the worker has not set any: available
+            any time).'
+          readOnly: true
         distance_km:
           type: number
           format: double
@@ -4974,6 +6420,7 @@ components:
       - rating_count
       - service_area
       - services
+      - working_hours
     NegotiateActionEnum:
       enum:
       - counter
@@ -5163,6 +6610,44 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/AdminComplaint'
+    PaginatedAdminPaymentList:
+      type: object
+      properties:
+        count:
+          type: integer
+        page:
+          type: integer
+        total_pages:
+          type: integer
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdminPayment'
+    PaginatedAdminPromoCodeList:
+      type: object
+      properties:
+        count:
+          type: integer
+        page:
+          type: integer
+        total_pages:
+          type: integer
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdminPromoCode'
     PaginatedAdminUserList:
       type: object
       properties:
@@ -5410,6 +6895,25 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ServiceRequest'
+    PaginatedSettlementList:
+      type: object
+      properties:
+        count:
+          type: integer
+        page:
+          type: integer
+        total_pages:
+          type: integer
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Settlement'
     PaginatedWorkerOfferList:
       type: object
       properties:
@@ -5516,6 +7020,83 @@ components:
           type: string
           format: email
           minLength: 1
+    PasswordResetSmsConfirmRequest:
+      type: object
+      properties:
+        phone:
+          type: string
+          minLength: 1
+          maxLength: 20
+        code:
+          type: string
+          minLength: 1
+          maxLength: 12
+          pattern: ^\s*\d{4,8}\s*$
+        new_password:
+          type: string
+          writeOnly: true
+          minLength: 8
+      required:
+      - code
+      - new_password
+      - phone
+    PatchedAdminPromoCodeRequest:
+      type: object
+      properties:
+        code:
+          type: string
+          minLength: 1
+          description: Stored in capitals; customers can type any case.
+          maxLength: 30
+        description:
+          type: string
+          description: Shown to customers, e.g. 'Eid offer'.
+          maxLength: 200
+        kind:
+          $ref: '#/components/schemas/AdminPromoCodeKindEnum'
+        value:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          description: Percent (1-100) or rupees.
+        max_discount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          nullable: true
+          description: Upper limit in rupees for percent codes.
+        min_order:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          description: Smallest booking total the code works on.
+        category:
+          type: integer
+          nullable: true
+          description: Only for this service, if set.
+        starts_at:
+          type: string
+          format: date-time
+          nullable: true
+        ends_at:
+          type: string
+          format: date-time
+          nullable: true
+        max_uses:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          nullable: true
+          description: 'Total uses for everyone. Empty: no limit.'
+        max_uses_per_user:
+          type: integer
+          maximum: 32767
+          minimum: 0
+        first_booking_only:
+          type: boolean
+          description: Only for customers who have never paid a booking.
+        is_active:
+          type: boolean
     PatchedFeaturedPlanRequest:
       type: object
       properties:
@@ -5565,12 +7146,51 @@ components:
             platform.
         emergency_enabled:
           type: boolean
+        min_payout:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          description: Smallest balance a worker can ask to be paid out.
+        commission_debt_limit:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          description: Workers who owe more cash commission than this cannot send
+            offers until they pay. 0 = no limit.
+        referral_reward:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          description: Given to the inviter when the person they invited pays their
+            first booking. 0 turns it off.
+        referral_welcome_credit:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          description: Credit a new customer gets for signing up with an invite code.
+        referral_min_booking:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          description: The first booking must be at least this much for the inviter
+            to be rewarded.
+        max_discount_percent:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,2})?$
+          description: Promo codes and credit together can take at most this share
+            off a booking.
     PatchedServiceCategoryRequest:
       type: object
       properties:
         name:
           type: string
           minLength: 1
+          maxLength: 100
+        name_ur:
+          type: string
+          title: Urdu name
+          description: Shown to users who picked Urdu.
           maxLength: 100
         slug:
           type: string
@@ -5688,6 +7308,14 @@ components:
         default_address:
           type: string
           maxLength: 255
+        language:
+          allOf:
+          - $ref: '#/components/schemas/LanguageEnum'
+          description: |-
+            Language for alerts and server messages. The app keeps it in sync with the user's choice.
+
+            * `en` - English
+            * `ur` - اردو
     PatchedWorkerProfileRequest:
       type: object
       description: The worker's own profile (private view).
@@ -5784,6 +7412,19 @@ components:
           format: date-time
           readOnly: true
           nullable: true
+        refunded_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          readOnly: true
+          description: Total refunded to the payer so far.
+        discount_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          readOnly: true
+          description: Promo code and credit taken off the booking total; KaamNow
+            pays it. amount = total - discount.
         created_at:
           type: string
           format: date-time
@@ -5797,12 +7438,14 @@ components:
       - booking
       - confirmed_at
       - created_at
+      - discount_amount
       - expires_at
       - failure_reason
       - id
       - method
       - purpose
       - reference
+      - refunded_amount
       - status
       - updated_at
     PaymentCreateRequest:
@@ -5814,6 +7457,14 @@ components:
           allOf:
           - $ref: '#/components/schemas/PaymentMethodEnum'
           default: cash
+        promo_code:
+          type: string
+          default: ''
+          maxLength: 30
+        use_credit:
+          type: boolean
+          default: false
+          description: Take the customer's credit off the total.
       required:
       - booking
     PaymentMethodEnum:
@@ -5833,6 +7484,7 @@ components:
       - failed
       - disputed
       - expired
+      - refunded
       type: string
       description: |-
         * `pending` - Awaiting confirmation
@@ -5840,6 +7492,7 @@ components:
         * `failed` - Failed
         * `disputed` - Disputed
         * `expired` - Expired
+        * `refunded` - Refunded
     PaymentWithCheckout:
       type: object
       properties:
@@ -5884,6 +7537,19 @@ components:
           format: date-time
           readOnly: true
           nullable: true
+        refunded_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          readOnly: true
+          description: Total refunded to the payer so far.
+        discount_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          readOnly: true
+          description: Promo code and credit taken off the booking total; KaamNow
+            pays it. amount = total - discount.
         created_at:
           type: string
           format: date-time
@@ -5905,14 +7571,53 @@ components:
       - checkout
       - confirmed_at
       - created_at
+      - discount_amount
       - expires_at
       - failure_reason
       - id
       - method
       - purpose
       - reference
+      - refunded_amount
       - status
       - updated_at
+    PayoutMethodEnum:
+      enum:
+      - jazzcash
+      - easypaisa
+      - bank
+      type: string
+      description: |-
+        * `jazzcash` - JazzCash
+        * `easypaisa` - Easypaisa
+        * `bank` - Bank transfer
+    PayoutRequestRequest:
+      type: object
+      properties:
+        method:
+          $ref: '#/components/schemas/PayoutMethodEnum'
+        account_title:
+          type: string
+          minLength: 1
+          maxLength: 100
+        account_number:
+          type: string
+          minLength: 1
+          maxLength: 34
+      required:
+      - account_number
+      - account_title
+      - method
+    PhoneCodeRequest:
+      type: object
+      properties:
+        code:
+          type: string
+          minLength: 1
+          maxLength: 12
+          pattern: ^\s*\d{4,8}\s*$
+      required:
+      - code
     PlatformEnum:
       enum:
       - android
@@ -5938,12 +7643,68 @@ components:
             platform.
         emergency_enabled:
           type: boolean
+        min_payout:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          description: Smallest balance a worker can ask to be paid out.
+        commission_debt_limit:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          description: Workers who owe more cash commission than this cannot send
+            offers until they pay. 0 = no limit.
+        referral_reward:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          description: Given to the inviter when the person they invited pays their
+            first booking. 0 turns it off.
+        referral_welcome_credit:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          description: Credit a new customer gets for signing up with an invite code.
+        referral_min_booking:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          description: The first booking must be at least this much for the inviter
+            to be rewarded.
+        max_discount_percent:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,2})?$
+          description: Promo codes and credit together can take at most this share
+            off a booking.
         updated_at:
           type: string
           format: date-time
           readOnly: true
       required:
       - updated_at
+    PromoCheckRequest:
+      type: object
+      properties:
+        booking:
+          type: integer
+        promo_code:
+          type: string
+          default: ''
+          maxLength: 30
+        use_credit:
+          type: boolean
+          default: false
+      required:
+      - booking
+    ProviderEnum:
+      enum:
+      - google
+      - openstreetmap
+      type: string
+      description: |-
+        * `google` - google
+        * `openstreetmap` - openstreetmap
     PublicWorker:
       type: object
       description: 'Public worker card: no phone, CNIC, documents or exact home location.'
@@ -5991,6 +7752,14 @@ components:
           items:
             $ref: '#/components/schemas/WorkerServiceInline'
           readOnly: true
+        working_hours:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+          description: 'Weekly hours (empty when the worker has not set any: available
+            any time).'
+          readOnly: true
       required:
       - average_rating
       - bio
@@ -6004,6 +7773,7 @@ components:
       - rating_count
       - service_area
       - services
+      - working_hours
     PurchaseStatusEnum:
       enum:
       - pending_payment
@@ -6021,11 +7791,213 @@ components:
       - booking
       - subscription
       - featured_listing
+      - commission
       type: string
       description: |-
         * `booking` - Booking
         * `subscription` - Worker subscription
         * `featured_listing` - Featured listing
+        * `commission` - Commission owed by a worker
+    Quote:
+      type: object
+      properties:
+        total:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        promo_code:
+          type: string
+        promo_description:
+          type: string
+        promo_discount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        credit_balance:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        credit_used:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        discount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          description: What the customer pays.
+        max_discount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+      required:
+      - amount
+      - credit_balance
+      - credit_used
+      - discount
+      - max_discount
+      - promo_code
+      - promo_description
+      - promo_discount
+      - total
+    RecordCommissionRequest:
+      type: object
+      properties:
+        method:
+          $ref: '#/components/schemas/CommissionReceivedMethodEnum'
+        reference:
+          type: string
+          minLength: 1
+          description: Receipt number or transfer ID.
+          maxLength: 100
+      required:
+      - method
+      - reference
+    ReferralSummary:
+      type: object
+      properties:
+        code:
+          type: string
+        invite_link:
+          type: string
+        credit_balance:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        invited:
+          type: integer
+        rewarded:
+          type: integer
+        rewards_earned:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        referral_reward:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        welcome_credit:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        min_booking:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        credit_history:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreditEntry'
+      required:
+      - code
+      - credit_balance
+      - credit_history
+      - invite_link
+      - invited
+      - min_booking
+      - referral_reward
+      - rewarded
+      - rewards_earned
+      - welcome_credit
+    Refund:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        payment:
+          type: integer
+          readOnly: true
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          readOnly: true
+        worker_share:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          readOnly: true
+          description: Part of the refund taken from the worker's earnings; KaamNow
+            pays the rest.
+        method:
+          allOf:
+          - $ref: '#/components/schemas/RefundMethodEnum'
+          readOnly: true
+        reason:
+          type: string
+          readOnly: true
+        reference:
+          type: string
+          readOnly: true
+          description: Refund transaction ID or receipt number.
+        complaint:
+          type: integer
+          readOnly: true
+          nullable: true
+        created_by_name:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - amount
+      - complaint
+      - created_at
+      - created_by_name
+      - id
+      - method
+      - payment
+      - reason
+      - reference
+      - worker_share
+    RefundMethodEnum:
+      enum:
+      - gateway
+      - bank
+      - cash
+      type: string
+      description: |-
+        * `gateway` - Back through JazzCash / Easypaisa
+        * `bank` - Bank transfer
+        * `cash` - Cash
+    RefundRequestRequest:
+      type: object
+      properties:
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        method:
+          $ref: '#/components/schemas/RefundMethodEnum'
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 255
+        reference:
+          type: string
+          minLength: 1
+          description: Refund transaction ID or receipt number.
+          maxLength: 100
+        charge_worker:
+          type: boolean
+          default: false
+          description: Take the worker's share of the refund (their earning's part)
+            from their wallet.
+        complaint:
+          type: integer
+          nullable: true
+      required:
+      - amount
+      - method
+      - reason
+      - reference
     RegisterRequest:
       type: object
       properties:
@@ -6055,6 +8027,10 @@ components:
         cnic_number:
           type: string
           maxLength: 15
+        referral_code:
+          type: string
+          description: Invite code from a friend (new customers get welcome credit).
+          maxLength: 12
       required:
       - full_name
       - password
@@ -6067,6 +8043,15 @@ components:
       description: |-
         * `customer` - customer
         * `worker` - worker
+    RejectPayoutRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 255
+      required:
+      - reason
     RejectWorkerRequest:
       type: object
       properties:
@@ -6076,6 +8061,44 @@ components:
           maxLength: 500
       required:
       - reason
+    ResolutionEnum:
+      enum:
+      - accept
+      - refund
+      - reject
+      type: string
+      description: |-
+        * `accept` - Accept
+        * `refund` - Refund
+        * `reject` - Reject
+    ResolvePaymentRequest:
+      type: object
+      properties:
+        resolution:
+          allOf:
+          - $ref: '#/components/schemas/ResolutionEnum'
+          description: |-
+            accept: the money counts as the booking's payment. refund: you sent it back. reject: no money arrived.
+
+            * `accept` - Accept
+            * `refund` - Refund
+            * `reject` - Reject
+        note:
+          type: string
+          minLength: 1
+          maxLength: 255
+        method:
+          $ref: '#/components/schemas/RefundMethodEnum'
+        reference:
+          type: string
+          default: ''
+          maxLength: 100
+        complaint:
+          type: integer
+          nullable: true
+      required:
+      - note
+      - resolution
     Review:
       type: object
       properties:
@@ -6129,6 +8152,34 @@ components:
       required:
       - booking
       - rating
+    Schedule:
+      type: object
+      properties:
+        hours:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkingHours'
+          description: One row per working day; leave a day out for a day off. An
+            empty list means available any time.
+        time_off:
+          type: array
+          items:
+            $ref: '#/components/schemas/TimeOff'
+          readOnly: true
+      required:
+      - hours
+      - time_off
+    ScheduleRequest:
+      type: object
+      properties:
+        hours:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkingHoursRequest'
+          description: One row per working day; leave a day out for a day off. An
+            empty list means available any time.
+      required:
+      - hours
     ServiceCategory:
       type: object
       properties:
@@ -6137,6 +8188,11 @@ components:
           readOnly: true
         name:
           type: string
+          maxLength: 100
+        name_ur:
+          type: string
+          title: Urdu name
+          description: Shown to users who picked Urdu.
           maxLength: 100
         slug:
           type: string
@@ -6173,6 +8229,11 @@ components:
         name:
           type: string
           minLength: 1
+          maxLength: 100
+        name_ur:
+          type: string
+          title: Urdu name
+          description: Shown to users who picked Urdu.
           maxLength: 100
         slug:
           type: string
@@ -6233,6 +8294,11 @@ components:
           type: string
           format: date-time
           readOnly: true
+        duration_minutes:
+          type: integer
+          readOnly: true
+          description: How long the job is expected to take; the worker is booked
+            for this window.
         budget:
           type: string
           format: decimal
@@ -6295,6 +8361,7 @@ components:
       - category_name
       - created_at
       - description
+      - duration_minutes
       - emergency_fee
       - id
       - images
@@ -6339,6 +8406,12 @@ components:
         preferred_time:
           type: string
           format: date-time
+        duration_minutes:
+          type: integer
+          maximum: 480
+          minimum: 30
+          description: How long the job is expected to take; the worker is booked
+            for this window.
         budget:
           type: string
           format: decimal
@@ -6390,6 +8463,155 @@ components:
         * `booked` - Booked
         * `cancelled` - Cancelled
         * `expired` - Expired
+    Settlement:
+      type: object
+      description: Shown only to the worker it belongs to and to admins (it holds
+        their account number).
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        worker:
+          type: integer
+          readOnly: true
+        worker_name:
+          type: string
+          readOnly: true
+        worker_phone:
+          type: string
+          readOnly: true
+        kind:
+          allOf:
+          - $ref: '#/components/schemas/SettlementKindEnum'
+          readOnly: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/SettlementStatusEnum'
+          readOnly: true
+          default: requested
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          readOnly: true
+          description: The money that moves.
+        earnings_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          readOnly: true
+          description: Worker's share of online payments included.
+        commission_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          readOnly: true
+          description: Cash commission included.
+        method:
+          allOf:
+          - $ref: '#/components/schemas/SettlementMethodEnum'
+          readOnly: true
+        account_title:
+          type: string
+          readOnly: true
+        account_number:
+          type: string
+          readOnly: true
+          description: Mobile wallet number or IBAN.
+        reference:
+          type: string
+          readOnly: true
+          description: Transfer or receipt reference.
+        note:
+          type: string
+          readOnly: true
+          description: Reason when rejected; admin note.
+        payment:
+          type: integer
+          readOnly: true
+          nullable: true
+        bookings:
+          type: array
+          items:
+            type: integer
+          readOnly: true
+        processed_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - account_number
+      - account_title
+      - amount
+      - bookings
+      - commission_amount
+      - created_at
+      - earnings_amount
+      - id
+      - kind
+      - method
+      - note
+      - payment
+      - processed_at
+      - reference
+      - status
+      - worker
+      - worker_name
+      - worker_phone
+    SettlementKindEnum:
+      enum:
+      - payout
+      - collection
+      type: string
+      description: |-
+        * `payout` - Payout to worker
+        * `collection` - Commission paid by worker
+    SettlementMethodEnum:
+      enum:
+      - jazzcash
+      - easypaisa
+      - bank
+      - cash
+      type: string
+      description: |-
+        * `jazzcash` - JazzCash
+        * `easypaisa` - Easypaisa
+        * `bank` - Bank transfer
+        * `cash` - Cash
+    SettlementStatusEnum:
+      enum:
+      - requested
+      - completed
+      - rejected
+      - cancelled
+      - failed
+      type: string
+      description: |-
+        * `requested` - Open
+        * `completed` - Completed
+        * `rejected` - Rejected
+        * `cancelled` - Cancelled
+        * `failed` - Payment failed
+    Slot:
+      type: object
+      properties:
+        start:
+          type: string
+          format: date-time
+        end:
+          type: string
+          format: date-time
+        free_workers:
+          type: integer
+      required:
+      - end
+      - free_workers
+      - start
     SubscribeRequest:
       type: object
       properties:
@@ -6528,6 +8750,40 @@ components:
           maxLength: 255
       required:
       - reason
+    TimeOff:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        reason:
+          type: string
+          maxLength: 120
+      required:
+      - end_date
+      - id
+      - start_date
+    TimeOffRequest:
+      type: object
+      properties:
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        reason:
+          type: string
+          maxLength: 120
+      required:
+      - end_date
+      - start_date
     TokenRefresh:
       type: object
       properties:
@@ -6611,6 +8867,9 @@ components:
         phone:
           type: string
           readOnly: true
+        phone_verified:
+          type: boolean
+          readOnly: true
         email:
           nullable: true
           oneOf:
@@ -6633,6 +8892,14 @@ components:
         default_address:
           type: string
           maxLength: 255
+        language:
+          allOf:
+          - $ref: '#/components/schemas/LanguageEnum'
+          description: |-
+            Language for alerts and server messages. The app keeps it in sync with the user's choice.
+
+            * `en` - English
+            * `ur` - اردو
         worker_profile_id:
           type: integer
           nullable: true
@@ -6646,6 +8913,7 @@ components:
       - full_name
       - id
       - phone
+      - phone_verified
       - role
       - worker_profile_id
     UserRoleEnum:
@@ -6668,6 +8936,146 @@ components:
         * `pending` - Pending review
         * `verified` - Verified
         * `rejected` - Rejected
+    Wallet:
+      type: object
+      properties:
+        earnings_held:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,2})?$
+          description: Your share of online payments, held by KaamNow.
+        commission_owed:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,2})?$
+          description: Commission on jobs paid to you in cash.
+        balance:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,2})?$
+          description: 'Positive: KaamNow owes you. Negative: you owe KaamNow.'
+        min_payout:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        commission_debt_limit:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        can_request_payout:
+          type: boolean
+        must_pay_commission:
+          type: boolean
+        offers_blocked:
+          type: boolean
+        open_settlement:
+          allOf:
+          - $ref: '#/components/schemas/Settlement'
+          nullable: true
+        last_payout_account:
+          allOf:
+          - $ref: '#/components/schemas/LastPayoutAccount'
+          nullable: true
+        settlements:
+          type: array
+          items:
+            $ref: '#/components/schemas/Settlement'
+      required:
+      - balance
+      - can_request_payout
+      - commission_debt_limit
+      - commission_owed
+      - earnings_held
+      - last_payout_account
+      - min_payout
+      - must_pay_commission
+      - offers_blocked
+      - open_settlement
+      - settlements
+    WebPushKeysRequest:
+      type: object
+      properties:
+        p256dh:
+          type: string
+          minLength: 1
+          maxLength: 100
+        auth:
+          type: string
+          minLength: 1
+          maxLength: 50
+      required:
+      - auth
+      - p256dh
+    WebPushSubscribeRequest:
+      type: object
+      description: The browser's PushSubscription.toJSON(), as is.
+      properties:
+        endpoint:
+          type: string
+          format: uri
+          minLength: 1
+          maxLength: 1000
+        keys:
+          $ref: '#/components/schemas/WebPushKeysRequest'
+      required:
+      - endpoint
+      - keys
+    WebPushUnsubscribeRequest:
+      type: object
+      properties:
+        endpoint:
+          type: string
+          format: uri
+          minLength: 1
+          maxLength: 1000
+      required:
+      - endpoint
+    WeekdayEnum:
+      enum:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      type: integer
+      description: |-
+        * `0` - Monday
+        * `1` - Tuesday
+        * `2` - Wednesday
+        * `3` - Thursday
+        * `4` - Friday
+        * `5` - Saturday
+        * `6` - Sunday
+    WorkerBalance:
+      type: object
+      properties:
+        worker:
+          type: integer
+        worker_name:
+          type: string
+        worker_phone:
+          type: string
+        earnings_held:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,2})?$
+        commission_owed:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,2})?$
+        balance:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,2})?$
+      required:
+      - balance
+      - commission_owed
+      - earnings_held
+      - worker
+      - worker_name
+      - worker_phone
     WorkerDocument:
       type: object
       description: Metadata only. The file itself is private and never returned as
@@ -7098,6 +9506,42 @@ components:
       - status
       - worker
       - worker_name
+    WorkingHours:
+      type: object
+      properties:
+        weekday:
+          allOf:
+          - $ref: '#/components/schemas/WeekdayEnum'
+          minimum: 0
+          maximum: 32767
+        start:
+          type: string
+          format: time
+        end:
+          type: string
+          format: time
+      required:
+      - end
+      - start
+      - weekday
+    WorkingHoursRequest:
+      type: object
+      properties:
+        weekday:
+          allOf:
+          - $ref: '#/components/schemas/WeekdayEnum'
+          minimum: 0
+          maximum: 32767
+        start:
+          type: string
+          format: time
+        end:
+          type: string
+          format: time
+      required:
+      - end
+      - start
+      - weekday
   securitySchemes:
     jwtAuth:
       type: http

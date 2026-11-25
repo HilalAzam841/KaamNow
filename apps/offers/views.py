@@ -36,7 +36,7 @@ ORDERINGS = {
 
 def offer_queryset():
     return WorkerOffer.objects.select_related("request", "worker__user", "booking").prefetch_related(
-        "negotiations", "worker__services__category"
+        "negotiations", "worker__services__category", "worker__working_hours"
     )
 
 
