@@ -29,6 +29,7 @@ paths:
           - payout_paid
           - payout_rejected
           - plan_changed
+          - portfolio_moderated
           - promo_saved
           - settings_changed
           - sos_handled
@@ -59,6 +60,7 @@ paths:
           * `promo_saved` - Promo code created or changed
           * `no_show_reviewed` - No-show report reviewed
           * `sos_handled` - SOS alert handled
+          * `portfolio_moderated` - Portfolio photo hidden or shown
       - in: query
         name: actor
         schema:
@@ -957,6 +959,113 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AdminPayment'
+          description: ''
+  /api/v1/admin/portfolio-photos/:
+    get:
+      operationId: admin_portfolio_photos_list
+      description: Every portfolio photo, newest first, to check and hide anything
+        unsuitable.
+      parameters:
+      - in: query
+        name: is_hidden
+        schema:
+          type: boolean
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: worker
+        schema:
+          type: integer
+      tags:
+      - admin
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAdminPortfolioPhotoList'
+          description: ''
+  /api/v1/admin/portfolio-photos/{id}/hide/:
+    post:
+      operationId: admin_portfolio_photos_hide_create
+      description: Every portfolio photo, newest first, to check and hide anything
+        unsuitable.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this portfolio photo.
+        required: true
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HideRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/HideRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/HideRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminPortfolioPhoto'
+          description: ''
+  /api/v1/admin/portfolio-photos/{id}/unhide/:
+    post:
+      operationId: admin_portfolio_photos_unhide_create
+      description: Every portfolio photo, newest first, to check and hide anything
+        unsuitable.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this portfolio photo.
+        required: true
+      tags:
+      - admin
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminPortfolioPhoto'
           description: ''
   /api/v1/admin/promo-codes/:
     get:
@@ -5189,6 +5298,30 @@ paths:
               schema:
                 $ref: '#/components/schemas/PublicWorkerDetail'
           description: ''
+  /api/v1/workers/{id}/portfolio/:
+    get:
+      operationId: workers_portfolio_list
+      summary: A verified worker's work photos (hidden ones are left out).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - portfolio
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PortfolioPhoto'
+          description: ''
   /api/v1/workers/{id}/reviews/:
     get:
       operationId: workers_reviews_list
@@ -5379,6 +5512,120 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/WorkerProfile'
+          description: ''
+  /api/v1/workers/me/portfolio/:
+    get:
+      operationId: workers_me_portfolio_list
+      summary: Your work photos in order, including any an admin hid.
+      tags:
+      - portfolio
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MyPortfolioPhoto'
+          description: ''
+    post:
+      operationId: workers_me_portfolio_create
+      summary: Add a photo of your work (up to 12). Location and camera data are removed.
+      tags:
+      - portfolio
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PortfolioUploadRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MyPortfolioPhoto'
+          description: ''
+  /api/v1/workers/me/portfolio/{id}/:
+    patch:
+      operationId: workers_me_portfolio_partial_update
+      summary: Change a photo's caption or service.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - portfolio
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedPortfolioUpdateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedPortfolioUpdateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedPortfolioUpdateRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MyPortfolioPhoto'
+          description: ''
+    delete:
+      operationId: workers_me_portfolio_destroy
+      summary: Delete a photo (the file too).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - portfolio
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/workers/me/portfolio/reorder/:
+    post:
+      operationId: workers_me_portfolio_reorder_create
+      summary: Put your photos in a new order. Send every photo id once.
+      tags:
+      - portfolio
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReorderRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ReorderRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ReorderRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MyPortfolioPhoto'
           description: ''
   /api/v1/workers/me/schedule/:
     get:
@@ -5789,6 +6036,83 @@ components:
       - refunds
       - status
       - updated_at
+      - worker_name
+    AdminPortfolioPhoto:
+      type: object
+      description: The worker's own view, with whether an admin hid it and why.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        image:
+          type: string
+          format: uri
+          nullable: true
+          readOnly: true
+        caption:
+          type: string
+          readOnly: true
+        category:
+          type: integer
+          readOnly: true
+          nullable: true
+        category_name:
+          type: string
+          readOnly: true
+        from_job:
+          type: boolean
+          description: True when the photo is linked to a job the worker finished
+            on KaamNow.
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        booking:
+          type: integer
+          readOnly: true
+          nullable: true
+          description: A finished KaamNow job this photo is from. Shown as 'From a
+            KaamNow job'.
+        position:
+          type: integer
+          readOnly: true
+        is_hidden:
+          type: boolean
+          readOnly: true
+          description: Hidden by an admin.
+        hidden_reason:
+          type: string
+          readOnly: true
+        worker:
+          type: integer
+          readOnly: true
+        worker_name:
+          type: string
+          readOnly: true
+        hidden_by_name:
+          type: string
+          readOnly: true
+        hidden_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+      required:
+      - booking
+      - caption
+      - category
+      - category_name
+      - created_at
+      - from_job
+      - hidden_at
+      - hidden_by_name
+      - hidden_reason
+      - id
+      - image
+      - is_hidden
+      - position
+      - worker
       - worker_name
     AdminPromoCode:
       type: object
@@ -6409,6 +6733,7 @@ components:
       - promo_saved
       - no_show_reviewed
       - sos_handled
+      - portfolio_moderated
       type: string
       description: |-
         * `worker_verified` - Worker verified
@@ -6432,6 +6757,7 @@ components:
         * `promo_saved` - Promo code created or changed
         * `no_show_reviewed` - No-show report reviewed
         * `sos_handled` - SOS alert handled
+        * `portfolio_moderated` - Portfolio photo hidden or shown
     AuthResponse:
       type: object
       properties:
@@ -7394,6 +7720,15 @@ components:
       description: |-
         * `acknowledged` - acknowledged
         * `resolved` - resolved
+    HideRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 255
+      required:
+      - reason
     LanguageEnum:
       enum:
       - en
@@ -7527,6 +7862,65 @@ components:
           maxLength: 100
       required:
       - reference
+    MyPortfolioPhoto:
+      type: object
+      description: The worker's own view, with whether an admin hid it and why.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        image:
+          type: string
+          format: uri
+          nullable: true
+          readOnly: true
+        caption:
+          type: string
+          readOnly: true
+        category:
+          type: integer
+          readOnly: true
+          nullable: true
+        category_name:
+          type: string
+          readOnly: true
+        from_job:
+          type: boolean
+          description: True when the photo is linked to a job the worker finished
+            on KaamNow.
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        booking:
+          type: integer
+          readOnly: true
+          nullable: true
+          description: A finished KaamNow job this photo is from. Shown as 'From a
+            KaamNow job'.
+        position:
+          type: integer
+          readOnly: true
+        is_hidden:
+          type: boolean
+          readOnly: true
+          description: Hidden by an admin.
+        hidden_reason:
+          type: string
+          readOnly: true
+      required:
+      - booking
+      - caption
+      - category
+      - category_name
+      - created_at
+      - from_job
+      - hidden_reason
+      - id
+      - image
+      - is_hidden
+      - position
     MySubscription:
       type: object
       properties:
@@ -7869,6 +8263,25 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/AdminPayment'
+    PaginatedAdminPortfolioPhotoList:
+      type: object
+      properties:
+        count:
+          type: integer
+        page:
+          type: integer
+        total_pages:
+          type: integer
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdminPortfolioPhoto'
     PaginatedAdminPromoCodeList:
       type: object
       properties:
@@ -8468,6 +8881,15 @@ components:
           minimum: 10
           description: How long after the start time (worker) or after arriving (customer)
             a no-show can be reported.
+    PatchedPortfolioUpdateRequest:
+      type: object
+      properties:
+        caption:
+          type: string
+          maxLength: 150
+        category:
+          type: integer
+          nullable: true
     PatchedRecurringUpdateRequest:
       type: object
       properties:
@@ -8998,6 +9420,66 @@ components:
           readOnly: true
       required:
       - updated_at
+    PortfolioPhoto:
+      type: object
+      description: A photo as everyone sees it.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        image:
+          type: string
+          format: uri
+          nullable: true
+          readOnly: true
+        caption:
+          type: string
+          readOnly: true
+        category:
+          type: integer
+          readOnly: true
+          nullable: true
+        category_name:
+          type: string
+          readOnly: true
+        from_job:
+          type: boolean
+          description: True when the photo is linked to a job the worker finished
+            on KaamNow.
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - caption
+      - category
+      - category_name
+      - created_at
+      - from_job
+      - id
+      - image
+    PortfolioUploadRequest:
+      type: object
+      properties:
+        image:
+          type: string
+          format: binary
+          description: JPEG, PNG or WEBP, up to 5 MB. Location and camera data are
+            removed.
+        caption:
+          type: string
+          default: ''
+          maxLength: 150
+        category:
+          type: integer
+          nullable: true
+        booking:
+          type: integer
+          nullable: true
+          description: A job you finished on KaamNow that this photo is from.
+      required:
+      - image
     PromoCheckRequest:
       type: object
       properties:
@@ -9148,6 +9630,14 @@ components:
           type: boolean
           description: Whether the signed-in customer saved this worker.
           readOnly: true
+        portfolio:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+          description: Photos of past work, in the worker's order. Hidden ones are
+            left out.
+          readOnly: true
       required:
       - average_rating
       - bio
@@ -9158,6 +9648,7 @@ components:
       - is_favourite
       - is_verified
       - plan_badge
+      - portfolio
       - profile_picture
       - rating_count
       - service_area
@@ -9621,6 +10112,16 @@ components:
           maxLength: 500
       required:
       - reason
+    ReorderRequest:
+      type: object
+      properties:
+        ids:
+          type: array
+          items:
+            type: integer
+          maxItems: 50
+      required:
+      - ids
     ResolutionEnum:
       enum:
       - accept

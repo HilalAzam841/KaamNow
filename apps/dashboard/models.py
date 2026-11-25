@@ -27,6 +27,7 @@ class AuditLog(models.Model):
         PROMO_SAVED = "promo_saved", "Promo code created or changed"
         NO_SHOW_REVIEWED = "no_show_reviewed", "No-show report reviewed"
         SOS_HANDLED = "sos_handled", "SOS alert handled"
+        PORTFOLIO_MODERATED = "portfolio_moderated", "Portfolio photo hidden or shown"
 
     actor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, related_name="audit_logs")
     action = models.CharField(max_length=30, choices=Action.choices, db_index=True)
