@@ -538,6 +538,18 @@ msgstr "درست PDF فائل اپ لوڈ کریں۔"
 msgid "date_from must be before date_to."
 msgstr "date_from کی تاریخ date_to سے پہلے ہونی چاہیے۔"
 
+#: apps/favourites/serializers.py
+msgid "Worker not found."
+msgstr "ورکر نہیں ملا۔"
+
+#: apps/favourites/views.py
+msgid "You cannot save yourself."
+msgstr "آپ خود کو محفوظ نہیں کر سکتے۔"
+
+#: apps/favourites/views.py
+msgid "You can save up to 100 workers. Remove one first."
+msgstr "آپ زیادہ سے زیادہ 100 ورکر محفوظ کر سکتے ہیں۔ پہلے کوئی ایک ہٹائیں۔"
+
 #: apps/jobs/serializers.py
 msgid "Preferred time cannot be in the past."
 msgstr "وقت گزرا ہوا نہیں ہو سکتا۔"
@@ -563,6 +575,15 @@ msgid "Emergency service is not available right now."
 msgstr "ایمرجنسی سروس ابھی دستیاب نہیں۔"
 
 #: apps/jobs/services.py
+msgid "Emergency jobs go to every worker nearby. Turn off emergency to book one worker."
+msgstr "ایمرجنسی کام قریبی تمام ورکرز کو جاتے ہیں۔ ایک ورکر کو بک کرنے کے لیے ایمرجنسی بند کریں۔"
+
+#: apps/jobs/services.py
+#, python-brace-format
+msgid "{name} wants to book you again"
+msgstr "{name} آپ کو دوبارہ بک کرنا چاہتے ہیں"
+
+#: apps/jobs/services.py
 #, python-brace-format
 msgid "URGENT: New {category} request nearby"
 msgstr "فوری: قریب {category} کی نئی درخواست"
@@ -571,6 +592,57 @@ msgstr "فوری: قریب {category} کی نئی درخواست"
 #, python-brace-format
 msgid "New {category} request nearby"
 msgstr "قریب {category} کی نئی درخواست"
+
+#: apps/jobs/services.py
+msgid "This worker does not work at that time. Choose one of their free times."
+msgstr "یہ ورکر اس وقت کام نہیں کرتے۔ ان کے فارغ اوقات میں سے کوئی وقت چنیں۔"
+
+#: apps/jobs/services.py
+msgid "This worker is off on that day. Choose another day."
+msgstr "اس دن اس ورکر کی چھٹی ہے۔ دوسرا دن چنیں۔"
+
+#: apps/jobs/services.py
+msgid "This worker already has a job at that time. Choose another time."
+msgstr "اس وقت اس ورکر کے پاس پہلے سے کام ہے۔ کوئی اور وقت چنیں۔"
+
+#: apps/jobs/services.py
+msgid "You cannot book yourself."
+msgstr "آپ خود کو بک نہیں کر سکتے۔"
+
+#: apps/jobs/services.py
+#, python-brace-format
+msgid "This worker is not taking {category} jobs right now. Post your job to everyone instead."
+msgstr "یہ ورکر ابھی {category} کے کام نہیں لے رہے۔ اس کی بجائے اپنا کام سب کے لیے پوسٹ کریں۔"
+
+#: apps/jobs/services.py
+msgid "This address is outside the area this worker covers. Post your job to everyone instead."
+msgstr "یہ پتہ اس ورکر کے علاقے سے باہر ہے۔ اس کی بجائے اپنا کام سب کے لیے پوسٹ کریں۔"
+
+#: apps/jobs/services.py
+msgid "This job is no longer open."
+msgstr "یہ کام اب کھلا نہیں ہے۔"
+
+#: apps/jobs/services.py
+msgid "This job is already open to every worker nearby."
+msgstr "یہ کام پہلے ہی قریبی تمام ورکرز کے لیے کھلا ہے۔"
+
+#: apps/jobs/services.py
+msgid "This job was not sent to you."
+msgstr "یہ کام آپ کو نہیں بھیجا گیا تھا۔"
+
+#: apps/jobs/services.py
+msgid "Withdraw your offer first."
+msgstr "پہلے اپنی آفر واپس لیں۔"
+
+#: apps/jobs/services.py
+#, python-brace-format
+msgid "{name} cannot take this job"
+msgstr "{name} یہ کام نہیں لے سکتے"
+
+#: apps/jobs/services.py
+#, python-brace-format
+msgid "We sent \"{title}\" to {count} other workers nearby."
+msgstr "ہم نے \"{title}\" قریبی {count} دوسرے ورکرز کو بھیج دیا ہے۔"
 
 #: apps/jobs/services.py
 msgid "Only open requests can be cancelled. Cancel the booking instead."
@@ -682,6 +754,10 @@ msgstr "صرف کھلی درخواستوں میں ترمیم ہو سکتی ہے�
 #: apps/jobs/views.py
 msgid "You can only cancel your own requests."
 msgstr "آپ صرف اپنی درخواستیں منسوخ کر سکتے ہیں۔"
+
+#: apps/jobs/views.py
+msgid "You can only change your own requests."
+msgstr "آپ صرف اپنی درخواستیں بدل سکتے ہیں۔"
 
 #: apps/jobs/views.py
 msgid "Only the request owner can view matching workers."

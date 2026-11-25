@@ -48,6 +48,14 @@
     {
       "key": "payment_id",
       "value": ""
+    },
+    {
+      "key": "time_off_id",
+      "value": ""
+    },
+    {
+      "key": "direct_request_id",
+      "value": ""
     }
   ],
   "item": [
@@ -1272,6 +1280,145 @@
           }
         },
         {
+          "name": "Save a worker",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/favourites/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "favourites"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{customer_access}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"worker\": \"{{worker_id}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "My saved workers",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/favourites/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "favourites"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{customer_access}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Workers who worked for me",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/favourites/recent/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "favourites",
+                "recent"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{customer_access}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "One worker's free slots",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/workers/{{worker_id}}/slots/?date=2026-12-02",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "workers",
+                "{{worker_id}}",
+                "slots",
+                "?date=2026-12-02"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{customer_access}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Remove a saved worker",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/favourites/{{worker_id}}/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "favourites",
+                "{{worker_id}}"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{customer_access}}"
+                }
+              ]
+            }
+          }
+        },
+        {
           "name": "Time slots with free workers",
           "request": {
             "method": "GET",
@@ -1342,6 +1489,105 @@
               }
             }
           ]
+        },
+        {
+          "name": "Book again: one worker only",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/requests/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "requests"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{customer_access}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"category\": 1,\n  \"title\": \"Fan making noise again\",\n  \"description\": \"The fan you fixed last month is humming again.\",\n  \"latitude\": \"31.512000\",\n  \"longitude\": \"74.345000\",\n  \"address\": \"House 12, Street 4, Gulberg III\",\n  \"preferred_time\": \"2026-12-02T12:00:00+05:00\",\n  \"worker\": \"{{worker_id}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set('direct_request_id', pm.response.json().data.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Send book-again job to everyone",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/requests/{{direct_request_id}}/open-to-all/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "requests",
+                "{{direct_request_id}}",
+                "open-to-all"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{customer_access}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Worker: cannot take a book-again job",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/requests/{{direct_request_id}}/decline/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "requests",
+                "{{direct_request_id}}",
+                "decline"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{worker_access}}"
+                }
+              ]
+            }
+          }
         },
         {
           "name": "My requests",

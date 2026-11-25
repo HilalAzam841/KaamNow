@@ -40,6 +40,7 @@ import 'ui/customer/request_detail_screen.dart';
 import 'ui/customer/worker_public_screen.dart';
 import 'ui/account/invite_screen.dart';
 import 'ui/worker/schedule_screen.dart';
+import 'ui/customer/my_workers_screen.dart';
 import 'ui/shell/home_shell.dart';
 import 'ui/worker/earnings_screen.dart';
 import 'ui/worker/job_detail_screen.dart';
@@ -104,7 +105,10 @@ GoRouter buildRouter(Session session) {
       ),
       GoRoute(
         path: '/requests/new',
-        builder: (_, s) => NewRequestScreen(categoryId: int.tryParse(s.uri.queryParameters['category'] ?? '')),
+        builder: (_, s) => NewRequestScreen(
+          categoryId: int.tryParse(s.uri.queryParameters['category'] ?? ''),
+          workerId: int.tryParse(s.uri.queryParameters['worker'] ?? ''),
+        ),
       ),
       GoRoute(path: '/requests/:id', builder: (_, s) => RequestDetailScreen(id: int.parse(s.pathParameters['id']!))),
       GoRoute(path: '/workers/:id', builder: (_, s) => WorkerPublicScreen(id: int.parse(s.pathParameters['id']!))),
@@ -114,6 +118,7 @@ GoRouter buildRouter(Session session) {
       GoRoute(path: '/worker/profile', builder: (_, _) => const WorkerProfileScreen()),
       GoRoute(path: '/invite', builder: (_, _) => const InviteScreen()),
       GoRoute(path: '/worker/schedule', builder: (_, _) => const ScheduleScreen()),
+      GoRoute(path: '/my-workers', builder: (_, _) => const MyWorkersScreen()),
       GoRoute(path: '/worker/earnings', builder: (_, _) => const EarningsScreen()),
       GoRoute(path: '/worker/plans', builder: (_, _) => const PlansScreen()),
       GoRoute(path: '/complaints', builder: (_, _) => const ComplaintsScreen()),

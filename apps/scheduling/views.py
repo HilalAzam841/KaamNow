@@ -5,11 +5,18 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from apps.common.permissions import IsWorker
+from apps.common.permissions import IsCustomer, IsWorker
 
 from . import services
 from .models import TimeOff
-from .serializers import ScheduleSerializer, SlotQuerySerializer, SlotSerializer, TimeOffSerializer
+from .serializers import (
+    ScheduleSerializer,
+    SlotQuerySerializer,
+    SlotSerializer,
+    TimeOffSerializer,
+    WorkerSlotQuerySerializer,
+    WorkerSlotSerializer,
+)
 
 
 def _worker(request):
@@ -58,6 +65,24 @@ class MyTimeOffDetailView(APIView):
     def delete(self, request, pk):
         get_object_or_404(TimeOff, pk=pk, worker=_worker(request)).delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class WorkerSlotsView(APIView):
+    permission_classes = [IsCustomer]
+
+    @extend_schema(
+        tags=["workers"], responses={200: WorkerSlotSerializer(many=True)},
+        parameters=[OpenApiParameter("date", str, required=True, description="YYYY-MM-DD")],
+        summary="One worker's two-hour slots on a day and whether they are free, to book them again.",
+    )
+    def get(self, request, pk):
+        from apps.favourites.services import public_workers
+
+        worker = get_object_or_404(public_workers(), pk=pk)
+        q = WorkerSlotQuerySerializer(data=request.query_params)
+        q.is_valid(raise_exception=True)
+        slots = services.worker_day_slots(worker, q.validated_data["date"])
+        return Response(WorkerSlotSerializer([{"start": s, "end": e, "free": f} for s, e, f in slots], many=True).data)
 
 
 class SlotsView(APIView):

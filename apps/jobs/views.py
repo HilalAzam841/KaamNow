@@ -9,7 +9,7 @@ from rest_framework.response import Response
 
 from apps.accounts.serializers import NearbyWorkerSerializer
 from apps.common.exceptions import BusinessRuleError
-from apps.common.permissions import IsCustomer, IsPlatformAdmin
+from apps.common.permissions import IsCustomer, IsPlatformAdmin, IsWorker
 
 from . import services
 from .models import Booking, ServiceRequest
@@ -62,8 +62,10 @@ class ServiceRequestViewSet(
     ordering_fields = ["created_at", "preferred_time"]
 
     def get_permissions(self):
-        if self.action in ("create", "partial_update", "cancel"):
+        if self.action in ("create", "partial_update", "cancel", "open_to_all"):
             return [IsCustomer()]
+        if self.action == "decline":
+            return [IsWorker()]
         return super().get_permissions()
 
     def get_serializer_class(self):
@@ -84,7 +86,8 @@ class ServiceRequestViewSet(
         return ctx
 
     def base_queryset(self):
-        return ServiceRequest.objects.select_related("category", "customer").prefetch_related("images")
+        return ServiceRequest.objects.select_related("category", "customer", "invited_worker__user").prefetch_related(
+            "images")
 
     def get_queryset(self):
         if getattr(self, "swagger_fake_view", False):
@@ -154,6 +157,24 @@ class ServiceRequestViewSet(
         serializer.is_valid(raise_exception=True)
         obj = services.cancel_service_request(obj, request.user, serializer.validated_data["reason"])
         return Response(ServiceRequestSerializer(obj, context=self.get_serializer_context()).data)
+
+    @extend_schema(tags=["requests"], request=None, responses={200: ServiceRequestSerializer},
+                   summary="Send a book-again job to every free matching worker nearby.")
+    @action(detail=True, methods=["post"], url_path="open-to-all")
+    def open_to_all(self, request, pk=None):
+        obj = self.get_object()
+        if obj.customer_id != request.user.pk:
+            raise PermissionDenied(_("You can only change your own requests."))
+        obj = services.open_to_everyone(obj)
+        return Response(ServiceRequestSerializer(obj, context=self.get_serializer_context()).data)
+
+    @extend_schema(tags=["requests"], request=None, responses={204: None},
+                   summary="Invited worker: say you cannot take this job. It goes to other workers nearby.")
+    @action(detail=True, methods=["post"])
+    def decline(self, request, pk=None):
+        obj = get_object_or_404(self.base_queryset(), pk=pk, invited_worker__user=request.user)
+        services.open_to_everyone(obj, declined_by=request.user.worker_profile)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     @extend_schema(tags=["requests"], responses={200: NearbyWorkerSerializer(many=True)})
     @action(detail=True, methods=["get"], url_path="nearby-workers")

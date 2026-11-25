@@ -266,6 +266,12 @@ abstract class AppLocalizations {
   /// **'You can arrive in (minutes)'**
   String get arriveInMinutes;
 
+  /// No description provided for @askedForYou.
+  ///
+  /// In en, this message translates to:
+  /// **'The customer asked for you'**
+  String get askedForYou;
+
   /// No description provided for @atLeast5.
   ///
   /// In en, this message translates to:
@@ -326,6 +332,12 @@ abstract class AppLocalizations {
   /// **'Book'**
   String get book;
 
+  /// No description provided for @bookAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Book again'**
+  String get bookAgain;
+
   /// No description provided for @bookAgree.
   ///
   /// In en, this message translates to:
@@ -343,6 +355,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Book for {price}'**
   String bookFor(Object price);
+
+  /// No description provided for @bookThisWorker.
+  ///
+  /// In en, this message translates to:
+  /// **'Book this worker'**
+  String get bookThisWorker;
 
   /// No description provided for @bookWorkerQ.
   ///
@@ -379,6 +397,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Booking #{id} · {price}'**
   String bookingNumberPrice(Object id, Object price);
+
+  /// No description provided for @bookingWorkerDirectly.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking {name}'**
+  String bookingWorkerDirectly(String name);
+
+  /// No description provided for @bookingWorkerDirectlyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Only this worker sees your job. If they cannot make it, you can send it to everyone.'**
+  String get bookingWorkerDirectlyHint;
 
   /// No description provided for @budget.
   ///
@@ -439,6 +469,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Cancelled: {reason}'**
   String cancelledReason(Object reason);
+
+  /// No description provided for @cannotTakeJob.
+  ///
+  /// In en, this message translates to:
+  /// **'I cannot take this job'**
+  String get cannotTakeJob;
+
+  /// No description provided for @cannotTakeJobHint.
+  ///
+  /// In en, this message translates to:
+  /// **'The customer will be told, and the job goes to other workers nearby.'**
+  String get cannotTakeJobHint;
+
+  /// No description provided for @cannotTakeJobOk.
+  ///
+  /// In en, this message translates to:
+  /// **'Pass on it'**
+  String get cannotTakeJobOk;
+
+  /// No description provided for @cannotTakeJobQ.
+  ///
+  /// In en, this message translates to:
+  /// **'Pass on this job?'**
+  String get cannotTakeJobQ;
 
   /// No description provided for @cashReceivedQ.
   ///
@@ -1412,6 +1466,12 @@ abstract class AppLocalizations {
   /// **'Job #{id} · {price}'**
   String jobNumberPrice(Object id, Object price);
 
+  /// No description provided for @jobPassedOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Done. The job went to other workers.'**
+  String get jobPassedOn;
+
   /// No description provided for @jobPosted.
   ///
   /// In en, this message translates to:
@@ -1477,6 +1537,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Last attempt: {status}. {reason}'**
   String lastAttempt(Object status, Object reason);
+
+  /// No description provided for @lastBooked.
+  ///
+  /// In en, this message translates to:
+  /// **'Last job for you: {date}'**
+  String lastBooked(String date);
 
   /// No description provided for @live.
   ///
@@ -1627,6 +1693,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'My worker profile'**
   String get myWorkerProfile;
+
+  /// No description provided for @myWorkers.
+  ///
+  /// In en, this message translates to:
+  /// **'My workers'**
+  String get myWorkers;
+
+  /// No description provided for @myWorkersHomeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Book a worker you liked again'**
+  String get myWorkersHomeHint;
 
   /// No description provided for @nFree.
   ///
@@ -1819,6 +1897,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No days off planned.'**
   String get noTimeOff;
+
+  /// No description provided for @noWorkersYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No workers yet'**
+  String get noWorkersYet;
+
+  /// No description provided for @noWorkersYetHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the heart on a worker you liked to save them. Workers who finish a job for you also show here.'**
+  String get noWorkersYetHint;
 
   /// No description provided for @noneFree.
   ///
@@ -2300,6 +2390,12 @@ abstract class AppLocalizations {
   /// **'Remove'**
   String get remove;
 
+  /// No description provided for @removeFromFavourites.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from saved'**
+  String get removeFromFavourites;
+
   /// No description provided for @removePromo.
   ///
   /// In en, this message translates to:
@@ -2474,6 +2570,18 @@ abstract class AppLocalizations {
   /// **'Save profile'**
   String get saveProfile;
 
+  /// No description provided for @saveToFavourites.
+  ///
+  /// In en, this message translates to:
+  /// **'Save worker'**
+  String get saveToFavourites;
+
+  /// No description provided for @savedWorkers.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved'**
+  String get savedWorkers;
+
   /// No description provided for @saving.
   ///
   /// In en, this message translates to:
@@ -2534,6 +2642,12 @@ abstract class AppLocalizations {
   /// **'Send reset link'**
   String get sendResetLink;
 
+  /// No description provided for @sendToEveryone.
+  ///
+  /// In en, this message translates to:
+  /// **'Send to everyone'**
+  String get sendToEveryone;
+
   /// No description provided for @sendYourPrice.
   ///
   /// In en, this message translates to:
@@ -2551,6 +2665,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sent {when}'**
   String sentAgo(Object when);
+
+  /// No description provided for @sentOnlyTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent only to {name}. If they cannot make it, send the job to every worker nearby.'**
+  String sentOnlyTo(String name);
 
   /// No description provided for @serverTrouble.
   ///
@@ -3242,6 +3362,12 @@ abstract class AppLocalizations {
   /// **'What went wrong?'**
   String get whatWentWrong;
 
+  /// No description provided for @whenWorkerFree.
+  ///
+  /// In en, this message translates to:
+  /// **'When {name} is free on {day}'**
+  String whenWorkerFree(String name, String day);
+
   /// No description provided for @withdraw.
   ///
   /// In en, this message translates to:
@@ -3266,6 +3392,12 @@ abstract class AppLocalizations {
   /// **'Work radius (km)'**
   String get workRadius;
 
+  /// No description provided for @workedWithBefore.
+  ///
+  /// In en, this message translates to:
+  /// **'Worked for you before'**
+  String get workedWithBefore;
+
   /// No description provided for @worker.
   ///
   /// In en, this message translates to:
@@ -3277,6 +3409,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{name} is {km} km away'**
   String workerAway(Object name, Object km);
+
+  /// No description provided for @workerNotFreeThatDay.
+  ///
+  /// In en, this message translates to:
+  /// **'This worker is not free on this day. Choose another day.'**
+  String get workerNotFreeThatDay;
 
   /// No description provided for @workerProfile.
   ///
@@ -3290,11 +3428,23 @@ abstract class AppLocalizations {
   /// **'Worker profile, services and documents'**
   String get workerProfileServicesDocs;
 
+  /// No description provided for @workerSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Worker saved. Find them in My workers.'**
+  String get workerSaved;
+
   /// No description provided for @workerSignupHint.
   ///
   /// In en, this message translates to:
   /// **'After signing up, upload your CNIC so KaamNow can verify you before you send offers.'**
   String get workerSignupHint;
+
+  /// No description provided for @workerUnsaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Removed from saved workers.'**
+  String get workerUnsaved;
 
   /// No description provided for @workingHours.
   ///

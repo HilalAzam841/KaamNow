@@ -109,6 +109,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get arriveInMinutes => 'You can arrive in (minutes)';
 
   @override
+  String get askedForYou => 'The customer asked for you';
+
+  @override
   String get atLeast5 => 'At least 5 characters';
 
   @override
@@ -141,6 +144,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get book => 'Book';
 
   @override
+  String get bookAgain => 'Book again';
+
+  @override
   String bookAgree(Object price) {
     return 'You agree to pay $price. All other offers will be closed.';
   }
@@ -154,6 +160,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String bookFor(Object price) {
     return 'Book for $price';
   }
+
+  @override
+  String get bookThisWorker => 'Book this worker';
 
   @override
   String bookWorkerQ(Object name) {
@@ -178,6 +187,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String bookingNumberPrice(Object id, Object price) {
     return 'Booking #$id · $price';
   }
+
+  @override
+  String bookingWorkerDirectly(String name) {
+    return 'Booking $name';
+  }
+
+  @override
+  String get bookingWorkerDirectlyHint =>
+      'Only this worker sees your job. If they cannot make it, you can send it to everyone.';
 
   @override
   String budget(Object amount) {
@@ -214,6 +232,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String cancelledReason(Object reason) {
     return 'Cancelled: $reason';
   }
+
+  @override
+  String get cannotTakeJob => 'I cannot take this job';
+
+  @override
+  String get cannotTakeJobHint =>
+      'The customer will be told, and the job goes to other workers nearby.';
+
+  @override
+  String get cannotTakeJobOk => 'Pass on it';
+
+  @override
+  String get cannotTakeJobQ => 'Pass on this job?';
 
   @override
   String get cashReceivedQ => 'Cash received?';
@@ -798,6 +829,9 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get jobPassedOn => 'Done. The job went to other workers.';
+
+  @override
   String get jobPosted => 'Job posted.';
 
   @override
@@ -842,6 +876,11 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String lastAttempt(Object status, Object reason) {
     return 'Last attempt: $status. $reason';
+  }
+
+  @override
+  String lastBooked(String date) {
+    return 'Last job for you: $date';
   }
 
   @override
@@ -929,6 +968,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get myWorkerProfile => 'My worker profile';
+
+  @override
+  String get myWorkers => 'My workers';
+
+  @override
+  String get myWorkersHomeHint => 'Book a worker you liked again';
 
   @override
   String nFree(int count) {
@@ -1046,6 +1091,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noTimeOff => 'No days off planned.';
+
+  @override
+  String get noWorkersYet => 'No workers yet';
+
+  @override
+  String get noWorkersYetHint =>
+      'Tap the heart on a worker you liked to save them. Workers who finish a job for you also show here.';
 
   @override
   String get noneFree => 'none free';
@@ -1342,6 +1394,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get remove => 'Remove';
 
   @override
+  String get removeFromFavourites => 'Remove from saved';
+
+  @override
   String get removePromo => 'Remove';
 
   @override
@@ -1451,6 +1506,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get saveProfile => 'Save profile';
 
   @override
+  String get saveToFavourites => 'Save worker';
+
+  @override
+  String get savedWorkers => 'Saved';
+
+  @override
   String get saving => 'Saving…';
 
   @override
@@ -1482,6 +1543,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sendResetLink => 'Send reset link';
 
   @override
+  String get sendToEveryone => 'Send to everyone';
+
+  @override
   String get sendYourPrice => 'Send your price';
 
   @override
@@ -1491,6 +1555,11 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String sentAgo(Object when) {
     return 'Sent $when';
+  }
+
+  @override
+  String sentOnlyTo(String name) {
+    return 'Sent only to $name. If they cannot make it, send the job to every worker nearby.';
   }
 
   @override
@@ -1870,6 +1939,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get whatWentWrong => 'What went wrong?';
 
   @override
+  String whenWorkerFree(String name, String day) {
+    return 'When $name is free on $day';
+  }
+
+  @override
   String get withdraw => 'Withdraw';
 
   @override
@@ -1882,12 +1956,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get workRadius => 'Work radius (km)';
 
   @override
+  String get workedWithBefore => 'Worked for you before';
+
+  @override
   String get worker => 'Worker';
 
   @override
   String workerAway(Object name, Object km) {
     return '$name is $km km away';
   }
+
+  @override
+  String get workerNotFreeThatDay =>
+      'This worker is not free on this day. Choose another day.';
 
   @override
   String get workerProfile => 'Worker profile';
@@ -1897,8 +1978,14 @@ class AppLocalizationsEn extends AppLocalizations {
       'Worker profile, services and documents';
 
   @override
+  String get workerSaved => 'Worker saved. Find them in My workers.';
+
+  @override
   String get workerSignupHint =>
       'After signing up, upload your CNIC so KaamNow can verify you before you send offers.';
+
+  @override
+  String get workerUnsaved => 'Removed from saved workers.';
 
   @override
   String get workingHours => 'Working hours';

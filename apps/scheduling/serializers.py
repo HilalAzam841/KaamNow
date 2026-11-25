@@ -62,6 +62,17 @@ class SlotQuerySerializer(serializers.Serializer):
         return value
 
 
+class WorkerSlotQuerySerializer(serializers.Serializer):
+    date = serializers.DateField()
+    validate_date = SlotQuerySerializer.validate_date
+
+
+class WorkerSlotSerializer(serializers.Serializer):
+    start = serializers.DateTimeField()
+    end = serializers.DateTimeField()
+    free = serializers.BooleanField()
+
+
 class SlotSerializer(serializers.Serializer):
     start = serializers.DateTimeField()
     end = serializers.DateTimeField()

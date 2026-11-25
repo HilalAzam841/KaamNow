@@ -16,8 +16,11 @@ import '../widgets/map_view.dart';
 import '../../l10n/l10n.dart';
 
 class NewRequestScreen extends StatefulWidget {
-  const NewRequestScreen({super.key, this.categoryId, this.initialPin});
+  const NewRequestScreen({super.key, this.categoryId, this.initialPin, this.workerId});
   final int? categoryId;
+
+  /// Book again: the job goes only to this worker, at one of their free times.
+  final int? workerId;
 
   /// Starts with the job location already set (e.g. from a map).
   final LatLng? initialPin;
@@ -39,6 +42,8 @@ class _NewRequestScreenState extends State<NewRequestScreen> {
   int _duration = 120;
   bool _emergency = false;
   List<TimeSlot>? _slots;
+  PublicWorker? _worker;
+  List<WorkerSlot>? _workerSlots;
   bool _slotsLoading = false;
   int _slotsCall = 0;
   final List<UploadFile> _images = [];
@@ -56,13 +61,28 @@ class _NewRequestScreenState extends State<NewRequestScreen> {
     session.api.categories().then((c) {
       if (mounted) setState(() => _categories = c);
     }).catchError((_) {});
-    if (_category != null && _pin != null) WidgetsBinding.instance.addPostFrameCallback((_) => _loadSlots());
+    if (widget.workerId != null) {
+      session.api.worker(widget.workerId!).then((w) {
+        if (!mounted) return;
+        setState(() {
+          _worker = w;
+          final cats = {for (final s in w.activeServices) s.category};
+          if (!cats.contains(_category)) _category = cats.length == 1 ? cats.first : null;
+        });
+        _loadSlots();
+      }).catchError((Object e) {
+        if (mounted) showError(context, e);
+      });
+    } else if (_category != null && _pin != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _loadSlots());
+    }
   }
 
   static const durations = [60, 120, 180, 240, 360, 480];
 
   /// Loads the day's 2-hour slots and how many matching workers nearby are free in each.
   Future<void> _loadSlots() async {
+    if (widget.workerId != null) return _loadWorkerSlots();
     if (_category == null || _pin == null || _emergency) {
       setState(() => _slots = null);
       return;
@@ -78,6 +98,53 @@ class _NewRequestScreenState extends State<NewRequestScreen> {
     } finally {
       if (mounted && call == _slotsCall) setState(() => _slotsLoading = false);
     }
+  }
+
+  Future<void> _loadWorkerSlots() async {
+    if (_worker == null) return;
+    final call = ++_slotsCall;
+    setState(() => _slotsLoading = true);
+    try {
+      final slots = await context.read<Session>().api.workerSlots(_worker!.id, _when);
+      if (mounted && call == _slotsCall) setState(() => _workerSlots = slots);
+    } catch (_) {
+      if (mounted && call == _slotsCall) setState(() => _workerSlots = null);
+    } finally {
+      if (mounted && call == _slotsCall) setState(() => _slotsLoading = false);
+    }
+  }
+
+  Widget _workerSlotPicker(BuildContext context) {
+    final t = context.t;
+    final theme = Theme.of(context);
+    final slots = _workerSlots;
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Row(children: [
+        Expanded(child: Text(t.whenWorkerFree(_worker!.fullName.split(' ').first, day(_when)),
+            style: theme.textTheme.titleSmall)),
+        TextButton(key: const Key('slot-day'), onPressed: _pickDay, child: Text(t.otherDay)),
+      ]),
+      if (_slotsLoading && slots == null)
+        const Padding(padding: EdgeInsets.all(8), child: LinearProgressIndicator())
+      else if (slots != null && slots.isEmpty)
+        Text(t.noSlotsLeft, style: theme.textTheme.bodySmall)
+      else if (slots != null) ...[
+        Wrap(spacing: 8, runSpacing: 8, children: [
+          for (final s in slots)
+            ChoiceChip(
+              key: Key('worker-slot-${s.start.hour}'),
+              selected: _when == s.start,
+              label: Text(clock(s.start)),
+              onSelected: s.free ? (_) => setState(() => _when = s.start) : null,
+            ),
+        ]),
+        if (!slots.any((s) => s.free))
+          Padding(
+            padding: const EdgeInsets.only(top: 4),
+            child: Text(t.workerNotFreeThatDay, style: theme.textTheme.bodySmall),
+          ),
+      ],
+    ]);
   }
 
   bool _sameDay(DateTime a, DateTime b) => a.year == b.year && a.month == b.month && a.day == b.day;
@@ -170,6 +237,7 @@ class _NewRequestScreenState extends State<NewRequestScreen> {
             area: _area.text.trim(),
             preferredTime: _when,
             durationMinutes: _duration,
+            workerId: widget.workerId,
             budget: _budget.text.trim(),
             isEmergency: _emergency,
             images: _images,
@@ -188,6 +256,11 @@ class _NewRequestScreenState extends State<NewRequestScreen> {
     }
   }
 
+  /// (category id, name) the customer can choose: the worker's services when booking one worker.
+  List<(int, String)> get _serviceChoices => _worker != null
+      ? [for (final s in _worker!.activeServices) (s.category, s.categoryName)]
+      : [for (final c in _categories) (c.id, c.name)];
+
   @override
   Widget build(BuildContext context) {
     final config = context.watch<Session>().config;
@@ -198,11 +271,21 @@ class _NewRequestScreenState extends State<NewRequestScreen> {
         child: Form(
           key: _form,
           child: ListView(padding: const EdgeInsets.all(16), children: [
+            if (widget.workerId != null)
+              Card(
+                key: const Key('booking-worker-banner'),
+                color: Theme.of(context).colorScheme.secondaryContainer,
+                child: ListTile(
+                  leading: const Icon(Icons.favorite),
+                  title: Text(_worker == null ? '…' : context.t.bookingWorkerDirectly(_worker!.fullName)),
+                  subtitle: Text(context.t.bookingWorkerDirectlyHint),
+                ),
+              ),
             DropdownButtonFormField<int>(
-              key: const Key('req-category'),
-              initialValue: _categories.any((c) => c.id == _category) ? _category : null,
+              key: _worker == null ? const Key('req-category') : Key('req-category-${_worker!.id}'),
+              initialValue: _serviceChoices.any((c) => c.$1 == _category) ? _category : null,
               decoration: InputDecoration(labelText: context.t.service),
-              items: [for (final c in _categories) DropdownMenuItem(value: c.id, child: Text(c.name))],
+              items: [for (final c in _serviceChoices) DropdownMenuItem(value: c.$1, child: Text(c.$2))],
               onChanged: (v) {
                 setState(() => _category = v);
                 _loadSlots();
@@ -263,7 +346,8 @@ class _NewRequestScreenState extends State<NewRequestScreen> {
               decoration: InputDecoration(labelText: context.t.areaOptional, hintText: context.t.areaHint),
             ),
             SectionTitle(context.t.details),
-            if (!_emergency && _slots != null) _slotPicker(context),
+            if (_worker != null) _workerSlotPicker(context),
+            if (widget.workerId == null && !_emergency && _slots != null) _slotPicker(context),
             ListTile(
               contentPadding: EdgeInsets.zero,
               leading: const Icon(Icons.schedule),
@@ -292,7 +376,7 @@ class _NewRequestScreenState extends State<NewRequestScreen> {
                 return double.tryParse(v!.trim()) == null ? context.t.enterNumber : _fieldErrors['budget'];
               },
             ),
-            if (config.emergencyEnabled)
+            if (config.emergencyEnabled && widget.workerId == null)
               SwitchListTile(
                 contentPadding: EdgeInsets.zero,
                 value: _emergency,

@@ -108,6 +108,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String get arriveInMinutes => 'آپ کتنے منٹ میں پہنچ سکتے ہیں';
 
   @override
+  String get askedForYou => 'گاہک نے آپ کو بلایا ہے';
+
+  @override
   String get atLeast5 => 'کم از کم 5 حروف';
 
   @override
@@ -140,6 +143,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String get book => 'بک کریں';
 
   @override
+  String get bookAgain => 'دوبارہ بک کریں';
+
+  @override
   String bookAgree(Object price) {
     return 'آپ $price ادا کرنے پر رضامند ہیں۔ باقی تمام پیشکشیں بند ہو جائیں گی۔';
   }
@@ -153,6 +159,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String bookFor(Object price) {
     return '$price میں بک کریں';
   }
+
+  @override
+  String get bookThisWorker => 'اس ورکر کو بک کریں';
 
   @override
   String bookWorkerQ(Object name) {
@@ -177,6 +186,15 @@ class AppLocalizationsUr extends AppLocalizations {
   String bookingNumberPrice(Object id, Object price) {
     return 'بکنگ نمبر $id · $price';
   }
+
+  @override
+  String bookingWorkerDirectly(String name) {
+    return '$name کی بکنگ';
+  }
+
+  @override
+  String get bookingWorkerDirectlyHint =>
+      'آپ کا کام صرف یہی ورکر دیکھے گا۔ اگر وہ نہ آ سکیں تو آپ اسے سب کو بھیج سکتے ہیں۔';
 
   @override
   String budget(Object amount) {
@@ -213,6 +231,19 @@ class AppLocalizationsUr extends AppLocalizations {
   String cancelledReason(Object reason) {
     return 'منسوخ: $reason';
   }
+
+  @override
+  String get cannotTakeJob => 'میں یہ کام نہیں لے سکتا';
+
+  @override
+  String get cannotTakeJobHint =>
+      'گاہک کو بتا دیا جائے گا، اور کام قریبی دوسرے ورکرز کو چلا جائے گا۔';
+
+  @override
+  String get cannotTakeJobOk => 'چھوڑ دیں';
+
+  @override
+  String get cannotTakeJobQ => 'یہ کام چھوڑ دیں؟';
 
   @override
   String get cashReceivedQ => 'نقد رقم مل گئی؟';
@@ -797,6 +828,9 @@ class AppLocalizationsUr extends AppLocalizations {
   }
 
   @override
+  String get jobPassedOn => 'ہو گیا۔ کام دوسرے ورکرز کو بھیج دیا گیا۔';
+
+  @override
   String get jobPosted => 'کام پوسٹ ہو گیا۔';
 
   @override
@@ -841,6 +875,11 @@ class AppLocalizationsUr extends AppLocalizations {
   @override
   String lastAttempt(Object status, Object reason) {
     return 'پچھلی کوشش: $status۔ $reason';
+  }
+
+  @override
+  String lastBooked(String date) {
+    return 'آپ کا آخری کام: $date';
   }
 
   @override
@@ -929,6 +968,12 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get myWorkerProfile => 'میرا کاریگر پروفائل';
+
+  @override
+  String get myWorkers => 'میرے ورکر';
+
+  @override
+  String get myWorkersHomeHint => 'پسندیدہ ورکر کو دوبارہ بک کریں';
 
   @override
   String nFree(int count) {
@@ -1047,6 +1092,13 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get noTimeOff => 'کوئی چھٹی طے نہیں۔';
+
+  @override
+  String get noWorkersYet => 'ابھی کوئی ورکر نہیں';
+
+  @override
+  String get noWorkersYetHint =>
+      'جو ورکر پسند آئے اس کے دل کے نشان پر ٹیپ کر کے اسے محفوظ کریں۔ جو ورکر آپ کا کام مکمل کریں وہ بھی یہاں نظر آتے ہیں۔';
 
   @override
   String get noneFree => 'کوئی فارغ نہیں';
@@ -1343,6 +1395,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String get remove => 'ہٹائیں';
 
   @override
+  String get removeFromFavourites => 'محفوظ کردہ سے ہٹائیں';
+
+  @override
   String get removePromo => 'ہٹائیں';
 
   @override
@@ -1450,6 +1505,12 @@ class AppLocalizationsUr extends AppLocalizations {
   String get saveProfile => 'پروفائل محفوظ کریں';
 
   @override
+  String get saveToFavourites => 'ورکر محفوظ کریں';
+
+  @override
+  String get savedWorkers => 'محفوظ کردہ';
+
+  @override
   String get saving => 'محفوظ ہو رہا ہے…';
 
   @override
@@ -1481,6 +1542,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String get sendResetLink => 'ری سیٹ لنک بھیجیں';
 
   @override
+  String get sendToEveryone => 'سب کو بھیجیں';
+
+  @override
   String get sendYourPrice => 'اپنی قیمت بھیجیں';
 
   @override
@@ -1490,6 +1554,11 @@ class AppLocalizationsUr extends AppLocalizations {
   @override
   String sentAgo(Object when) {
     return 'بھیجی گئی $when';
+  }
+
+  @override
+  String sentOnlyTo(String name) {
+    return 'صرف $name کو بھیجا گیا۔ اگر وہ نہ آ سکیں تو کام قریبی تمام ورکرز کو بھیج دیں۔';
   }
 
   @override
@@ -1871,6 +1940,11 @@ class AppLocalizationsUr extends AppLocalizations {
   String get whatWentWrong => 'کیا مسئلہ ہوا؟';
 
   @override
+  String whenWorkerFree(String name, String day) {
+    return '$day کو $name کب فارغ ہیں';
+  }
+
+  @override
   String get withdraw => 'واپس لیں';
 
   @override
@@ -1883,6 +1957,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String get workRadius => 'کام کا دائرہ (کلومیٹر)';
 
   @override
+  String get workedWithBefore => 'پہلے آپ کا کام کر چکے';
+
+  @override
   String get worker => 'کاریگر';
 
   @override
@@ -1891,14 +1968,24 @@ class AppLocalizationsUr extends AppLocalizations {
   }
 
   @override
+  String get workerNotFreeThatDay => 'یہ ورکر اس دن فارغ نہیں۔ دوسرا دن چنیں۔';
+
+  @override
   String get workerProfile => 'کاریگر کا پروفائل';
 
   @override
   String get workerProfileServicesDocs => 'کاریگر پروفائل، خدمات اور دستاویزات';
 
   @override
+  String get workerSaved =>
+      'ورکر محفوظ ہو گیا۔ انہیں \"میرے ورکر\" میں دیکھیں۔';
+
+  @override
   String get workerSignupHint =>
       'سائن اپ کے بعد اپنا شناختی کارڈ اپ لوڈ کریں تاکہ پیشکش بھیجنے سے پہلے کام ناؤ آپ کی تصدیق کر سکے۔';
+
+  @override
+  String get workerUnsaved => 'محفوظ کردہ ورکرز سے ہٹا دیا گیا۔';
 
   @override
   String get workingHours => 'کام کے اوقات';

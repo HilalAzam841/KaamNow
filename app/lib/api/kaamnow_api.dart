@@ -77,7 +77,7 @@ class KaamNowApi {
   Future<ServiceRequest> createRequest({required int category, required String title, required String description,
       required double latitude, required double longitude, required String address, String area = '',
       required DateTime preferredTime, int durationMinutes = 120, String? budget, bool isEmergency = false,
-      List<UploadFile> images = const []}) async {
+      int? workerId, List<UploadFile> images = const []}) async {
     final fields = {
       'category': '$category',
       'title': title,
@@ -90,6 +90,7 @@ class KaamNowApi {
       'duration_minutes': '$durationMinutes',
       'budget': ?(budget == null || budget.isEmpty ? null : budget),
       'is_emergency': isEmergency ? 'true' : 'false',
+      'worker': ?(workerId == null ? null : '$workerId'),
     };
     final data = await client.multipart('POST', '/requests/', fields: fields, files: images);
     return ServiceRequest.fromJson(asMap(data));
@@ -107,6 +108,26 @@ class KaamNowApi {
       'date': d,
     });
     return parseList(data, TimeSlot.fromJson);
+  }
+
+  /// Book again: send the job to every free worker nearby instead of only the chosen one.
+  Future<ServiceRequest> openToAll(int requestId) async =>
+      ServiceRequest.fromJson(asMap(await client.post('/requests/$requestId/open-to-all/')));
+
+  /// Invited worker: cannot take this job. It goes to other workers nearby.
+  Future<void> declineRequest(int requestId) => client.post('/requests/$requestId/decline/');
+
+  // ---- Favourite workers -------------------------------------------------
+  Future<List<PublicWorker>> favourites() async => parseList(await client.get('/favourites/'), PublicWorker.fromJson);
+  Future<List<PublicWorker>> recentWorkers() async =>
+      parseList(await client.get('/favourites/recent/'), PublicWorker.fromJson);
+  Future<void> addFavourite(int workerId) => client.post('/favourites/', body: {'worker': workerId});
+  Future<void> removeFavourite(int workerId) => client.delete('/favourites/$workerId/');
+
+  Future<List<WorkerSlot>> workerSlots(int workerId, DateTime date) async {
+    final d = '${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-'
+        '${date.day.toString().padLeft(2, '0')}';
+    return parseList(await client.get('/workers/$workerId/slots/', query: {'date': d}), WorkerSlot.fromJson);
   }
 
   /// Customers: own requests. Workers: scope "feed" (open nearby) or "offered".

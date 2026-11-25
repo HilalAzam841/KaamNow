@@ -37,6 +37,11 @@ class ServiceRequest(TimeStampedModel):
         max_digits=10, decimal_places=2, default=0, help_text="Locked at request creation from platform settings."
     )
     status = models.CharField(max_length=10, choices=Status.choices, default=Status.OPEN, db_index=True)
+    invited_worker = models.ForeignKey(
+        "accounts.WorkerProfile", on_delete=models.SET_NULL, null=True, blank=True, related_name="invited_requests",
+        help_text="Set when the customer books one worker directly (book again). Only this worker sees the job "
+                  "until it is opened to everyone.",
+    )
     cancelled_at = models.DateTimeField(null=True, blank=True)
     cancel_reason = models.CharField(max_length=255, blank=True)
 

@@ -88,6 +88,18 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
     _load();
   }
 
+  Future<void> _decline() async {
+    final t = context.t;
+    if (!await confirm(context, t.cannotTakeJobQ, t.cannotTakeJobHint, ok: t.cannotTakeJobOk)) return;
+    if (!mounted) return;
+    final ok = await runAction(context, () async {
+      await api.declineRequest(_request!.id);
+      return true;
+    }, success: t.jobPassedOn);
+    if (ok != true || !mounted) return;
+    context.canPop() ? context.pop() : _load();
+  }
+
   Future<void> _withdraw() async {
     if (!await confirm(context, context.t.withdrawOfferQ, context.t.withdrawHint, ok: context.t.withdraw)) return;
     if (!mounted) return;
@@ -114,6 +126,14 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                         StatusChip(r.status),
                       ]),
                       Text('${r.categoryName} · ${whenWindow(r.preferredTime, r.durationMinutes)}'),
+                      if (r.isDirect)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 6),
+                          child: Row(children: [
+                            Icon(Icons.favorite, color: theme.colorScheme.primary, size: 18),
+                            Text(' ${context.t.askedForYou}', key: const Key('asked-for-you')),
+                          ]),
+                        ),
                       if (r.isEmergency)
                         Padding(
                           padding: EdgeInsets.only(top: 6),
@@ -138,6 +158,16 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                   ),
                 ),
                 if (_offer == null && r.isOpen) _offerForm(),
+                if (_offer == null && r.isOpen && r.isDirect)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: TextButton.icon(
+                      key: const Key('decline-direct'),
+                      onPressed: _decline,
+                      icon: const Icon(Icons.do_not_disturb_alt),
+                      label: Text(context.t.cannotTakeJob),
+                    ),
+                  ),
                 if (_offer != null) _offerStatus(_offer!),
               ]),
             ),

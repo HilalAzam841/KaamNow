@@ -8,6 +8,7 @@ import '../widgets/common.dart';
 import '../widgets/language_button.dart';
 import '../widgets/offer_widgets.dart';
 import '../worker/schedule_screen.dart' show hoursSummary;
+import 'my_workers_screen.dart';
 import '../../l10n/l10n.dart';
 
 class WorkerPublicScreen extends StatelessWidget {
@@ -24,9 +25,22 @@ class WorkerPublicScreen extends StatelessWidget {
         builder: (context, data, reload) {
           final (w, reviews) = data;
           final theme = Theme.of(context);
+          final isCustomer = context.read<Session>().user?.isCustomer == true;
           return PageBody(
             child: ListView(padding: const EdgeInsets.all(16), children: [
-              WorkerSummary(worker: w),
+              WorkerSummary(
+                worker: w,
+                trailing: isCustomer ? FavouriteButton(workerId: w.id, initial: w.isFavourite) : null,
+              ),
+              if (isCustomer && w.activeServices.isNotEmpty) ...[
+                const SizedBox(height: 12),
+                FilledButton.icon(
+                  key: const Key('worker-book'),
+                  onPressed: () => bookAgain(context, w),
+                  icon: const Icon(Icons.event_available),
+                  label: Text(context.t.bookThisWorker),
+                ),
+              ],
               if (w.bio.isNotEmpty) ...[const SizedBox(height: 16), Text(w.bio)],
               if (w.serviceArea.isNotEmpty) ...[
                 const SizedBox(height: 8),

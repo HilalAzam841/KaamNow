@@ -76,7 +76,8 @@ class PublicWorker {
   PublicWorker({required this.id, required this.fullName, this.profilePicture, this.bio = '',
       this.experienceYears = 0, this.serviceArea = '', this.isVerified = false, this.averageRating = '0.00',
       this.ratingCount = 0, this.completedJobs = 0, this.planBadge = '', this.services = const [],
-      this.distanceKm, this.isAvailable, this.isSponsored = false, this.workingHours = const []});
+      this.distanceKm, this.isAvailable, this.isSponsored = false, this.workingHours = const [],
+      this.isFavourite = false, this.lastBookedAt});
 
   factory PublicWorker.fromJson(Map<String, dynamic> j) => PublicWorker(
         id: parseInt(j['id']),
@@ -95,6 +96,8 @@ class PublicWorker {
         isAvailable: j['is_available'] as bool?,
         isSponsored: j['is_sponsored'] == true,
         workingHours: parseList(j['working_hours'], WorkingHours.fromJson),
+        isFavourite: j['is_favourite'] == true,
+        lastBookedAt: parseDate(j['last_booked_at']),
       );
 
   final int id;
@@ -115,6 +118,14 @@ class PublicWorker {
 
   /// Weekly hours; empty means the worker takes jobs at any time.
   final List<WorkingHours> workingHours;
+
+  /// Whether the signed-in customer saved this worker (worker profile and My workers only).
+  final bool isFavourite;
+
+  /// When this worker last finished a job for the customer (My workers only).
+  final DateTime? lastBookedAt;
+
+  List<WorkerServiceInline> get activeServices => services.where((s) => s.isActive).toList();
 }
 
 class WorkerProfile {
@@ -187,7 +198,8 @@ class ServiceRequest {
       required this.description, required this.latitude, required this.longitude, this.address = '',
       this.area = '', this.preferredTime, this.budget, this.isEmergency = false, this.emergencyFee = '0.00',
       required this.status, this.images = const [], this.offersCount = 0, this.bookingId,
-      this.matchedWorkersCount, this.cancelReason = '', this.createdAt, this.durationMinutes = 120});
+      this.matchedWorkersCount, this.cancelReason = '', this.createdAt, this.durationMinutes = 120,
+      this.invitedWorkerId, this.invitedWorkerName = '', this.isDirect = false});
 
   factory ServiceRequest.fromJson(Map<String, dynamic> j) => ServiceRequest(
         id: parseInt(j['id']),
@@ -211,7 +223,17 @@ class ServiceRequest {
         matchedWorkersCount: j['matched_workers_count'] as int?,
         cancelReason: str(j['cancel_reason']),
         createdAt: parseDate(j['created_at']),
+        invitedWorkerId: j['invited_worker'] is Map ? parseInt((j['invited_worker'] as Map)['id']) : null,
+        invitedWorkerName: j['invited_worker'] is Map ? str((j['invited_worker'] as Map)['full_name']) : '',
+        isDirect: j['is_direct'] == true,
       );
+
+  /// Customer side: the one worker this job was sent to (book again), null when open to everyone.
+  final int? invitedWorkerId;
+  final String invitedWorkerName;
+
+  /// Worker side: the customer asked for you by name.
+  final bool isDirect;
 
   final int id;
   final int category;
@@ -896,4 +918,16 @@ class TimeSlot {
   final DateTime start;
   final DateTime end;
   final int freeWorkers;
+}
+
+/// One of a worker's 2-hour slots and whether they are free (`GET workers/{id}/slots/`).
+class WorkerSlot {
+  WorkerSlot({required this.start, required this.end, required this.free});
+
+  factory WorkerSlot.fromJson(Map<String, dynamic> j) =>
+      WorkerSlot(start: parseDate(j['start'])!, end: parseDate(j['end'])!, free: j['free'] == true);
+
+  final DateTime start;
+  final DateTime end;
+  final bool free;
 }

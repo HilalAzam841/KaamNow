@@ -45,7 +45,9 @@ class JobFeedScreen extends StatelessWidget {
                     child: ListTile(
                       leading: r.isEmergency
                           ? Tooltip(message: context.t.emergency, child: Icon(Icons.bolt, color: Colors.red))
-                          : const Icon(Icons.work),
+                          : r.isDirect
+                              ? Tooltip(message: context.t.askedForYou, child: const Icon(Icons.favorite, color: Colors.red))
+                              : const Icon(Icons.work),
                       title: Text(r.title),
                       subtitle: Text('${r.categoryName}${r.area.isNotEmpty ? ' · ${r.area}' : ''}\n'
                           '${whenWindow(r.preferredTime, r.durationMinutes)}${r.budget != null ? ' · ${context.t.budgetLower(rs(r.budget))}' : ''}'),
