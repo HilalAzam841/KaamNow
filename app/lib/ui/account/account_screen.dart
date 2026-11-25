@@ -81,7 +81,7 @@ class AccountScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text(context.t.tabAccount), actions: const [LanguageButton()]),
       body: PageBody(
-        child: ListView(children: [
+        child: ListView(key: const Key('account-list'), children: [
           ListTile(
             key: const Key('account-profile'),
             leading: Avatar(name: u.fullName, url: u.avatar),
