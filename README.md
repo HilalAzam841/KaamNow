@@ -205,6 +205,8 @@ credentials. Run one sandbox payment per gateway before launch (see section 8).
 
 ---
 
+**Keys and accounts to add later** (payments, SMS, Firebase, Google Maps, app stores) and every `.env` value: [`docs/API_KEYS.md`](docs/API_KEYS.md).
+
 ## 2. Tech stack
 
 Python 3.12+ (tested on 3.13) · Django 5.2 · Django REST Framework 3.18 · PostgreSQL 16 ·
