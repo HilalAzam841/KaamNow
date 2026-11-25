@@ -14,7 +14,7 @@ later, and talks to the backend only through the REST API and the booking WebSoc
 
 **Stage 1 (Backend MVP), Stage 2 (Advanced features) and Stage 3 (Flutter web client) are done,
 and Stage 4 adds the admin dashboard to the web app.** Every backend feature below has its business logic, REST endpoint(s), validation and
-automated tests. All 430 backend tests pass against PostgreSQL 16, and the Flutter app has 94
+automated tests. All 450 backend tests pass against PostgreSQL 16, and the Flutter app has 101
 unit and widget tests plus a browser end-to-end run (see `app/README.md`).
 
 ### Stage 1: Backend MVP
@@ -211,6 +211,20 @@ each one here with its reference, so the books, the worker's wallet and the cust
 | Disputed payments (money reported after the checkout closed, or an amount that does not match) are never settled automatically. After checking the merchant portal an admin **accepts** it (it becomes the booking's payment, refused if the booking is already paid), records that it was **refunded**, or **rejects** it (no money arrived). A note is required, the customer is told, and it is audited | `POST admin/payments/{id}/resolve/` |
 | The customer sees what was refunded on the booking; the revenue page shows refunds paid | booking detail, `GET admin/revenue/` (`refunds_paid`) |
 
+### Stage 16: promo codes and referrals
+
+Discounts are paid by KaamNow: the customer pays less, and the worker still earns their full share.
+
+| Feature | Where |
+|---|---|
+| Admins create promo codes: percent off (with an upper limit) or rupees off, smallest booking, one service only, start and end dates, total uses, uses per customer, first booking only. Codes are switched off rather than deleted, and the list shows how often each was used and how much it gave away. Every change is audited | `admin/promo-codes/` (list, create, update), app: admin **Promo codes** page |
+| The customer types a code when paying and sees the new amount before choosing cash or online. The server works out every amount from the booking, never from the app, and gives a clear reason when a code cannot be used | `POST promos/check/` (throttled), `POST payments/` with `promo_code` and `use_credit` |
+| A code (and credit) is held while a payment is open, so a code with one use left cannot be spent twice at once. It is given back if the payment fails, expires or is replaced, and made final when it is confirmed | `apps/promotions/services.py` (`hold`, `release`, `on_completed`) |
+| Promo code and credit together never take off more than a set share of a booking (50% by default), so every payment stays above zero | admin settings `max_discount_percent` |
+| Wallet: with a cash payment, the worker received the discount less in cash, so it comes off the commission they owe; with online payments KaamNow still owes them their full share. The ledger records a `promo_discount` entry | `Commission.discount_amount`, `apps/billing/wallet.py` |
+| Everyone has an invite code and link to share. A new customer who signs up with it gets welcome credit (Rs 100 by default). When their first booking of Rs 500 or more is paid, the inviter is rewarded (Rs 200 by default): customers as credit for their next booking, workers as money in their wallet | `GET referrals/me/`, `referral_code` on `POST auth/register/`, app: Account → **Invite friends**, invite link `/register?ref=CODE` |
+| Admins set the invite reward, welcome credit, smallest qualifying booking and the discount cap | `GET/PATCH admin/settings/`, app: admin **Settings** |
+
 **Before going live with online payments:** the JazzCash and Easypaisa adapters follow each
 gateway's published integration scheme and are covered by tests with simulated gateway responses.
 They have **not** been run against the real sandboxes yet, because that needs your merchant
@@ -380,13 +394,14 @@ be probed), `409` state conflict (already booked, wrong turn, and so on), `429` 
 | Bookings | `GET bookings/` · `GET bookings/{id}/` · `POST bookings/{id}/status/` · `POST bookings/{id}/completion-otp/` · `POST bookings/{id}/complete/` · `POST bookings/{id}/cancel/` |
 | Chat | `GET/POST bookings/{id}/messages/` · `POST bookings/{id}/messages/read/` |
 | Tracking | `POST bookings/{id}/location/` (worker) · `GET bookings/{id}/location/` |
-| Payments | `POST payments/` (cash, jazzcash, easypaisa) · `GET payments/` · `GET payments/{id}/` · `POST payments/{id}/confirm/` · `GET payments/earnings/` · `GET payments/wallet/` · `POST payments/payouts/` · `POST payments/payouts/{id}/cancel/` · `POST payments/commission/pay/` · `POST/GET payments/callbacks/jazzcash/` · `POST/GET payments/callbacks/easypaisa/` |
+| Promotions | `POST promos/check/` · `GET referrals/me/` |
+| Payments | `POST payments/` (cash, jazzcash, easypaisa; optional `promo_code`, `use_credit`) · `GET payments/` · `GET payments/{id}/` · `POST payments/{id}/confirm/` · `GET payments/earnings/` · `GET payments/wallet/` · `POST payments/payouts/` · `POST payments/payouts/{id}/cancel/` · `POST payments/commission/pay/` · `POST/GET payments/callbacks/jazzcash/` · `POST/GET payments/callbacks/easypaisa/` |
 | Subscriptions | `GET subscriptions/plans/` · `POST subscriptions/` · `GET subscriptions/my-subscription/` · `GET subscriptions/history/` |
 | Featured | `GET featured/plans/` · `GET/POST featured/` |
 | Complaints | `POST complaints/` · `GET complaints/` · `GET complaints/{id}/` |
 | Reviews | `POST reviews/` · `GET workers/{id}/reviews/` |
 | Notifications | `GET notifications/` · `POST notifications/{id}/read/` · `POST notifications/read-all/` · `GET notifications/unread-count/` · `POST/DELETE notifications/devices/` |
-| Admin | `GET admin/dashboard/` · `GET admin/workers/pending/` · `GET admin/workers/{id}/` · `POST admin/workers/{id}/verify/` · `POST admin/workers/{id}/reject/` · `GET admin/documents/{id}/file/` · `GET admin/users/` · `POST admin/users/{id}/suspend/` · `POST admin/users/{id}/reactivate/` · `GET admin/requests/` · `GET admin/bookings/` · `GET admin/revenue/` · `GET admin/commissions/` · `GET/PATCH admin/settings/commission/` · `GET admin/reports/` · `GET admin/audit-logs/` · `GET/PATCH admin/settings/` · `GET admin/revenue/other/` · `admin/subscription-plans/` (list, create, update) · `admin/featured-plans/` (list, create, update) · `GET admin/subscriptions/` · `POST admin/subscriptions/{id}/activate/` · `GET admin/featured-listings/` · `POST admin/featured-listings/{id}/cancel/` · `GET admin/complaints/` · `POST admin/complaints/{id}/status/` · `GET admin/settlements/` · `POST admin/settlements/{id}/mark-paid/` · `POST admin/settlements/{id}/reject/` · `GET admin/worker-balances/` · `POST admin/workers/{id}/record-commission/` · `GET admin/payments/` · `POST admin/payments/{id}/refund/` · `POST admin/payments/{id}/resolve/` |
+| Admin | `GET admin/dashboard/` · `GET admin/workers/pending/` · `GET admin/workers/{id}/` · `POST admin/workers/{id}/verify/` · `POST admin/workers/{id}/reject/` · `GET admin/documents/{id}/file/` · `GET admin/users/` · `POST admin/users/{id}/suspend/` · `POST admin/users/{id}/reactivate/` · `GET admin/requests/` · `GET admin/bookings/` · `GET admin/revenue/` · `GET admin/commissions/` · `GET/PATCH admin/settings/commission/` · `GET admin/reports/` · `GET admin/audit-logs/` · `GET/PATCH admin/settings/` · `GET admin/revenue/other/` · `admin/subscription-plans/` (list, create, update) · `admin/featured-plans/` (list, create, update) · `GET admin/subscriptions/` · `POST admin/subscriptions/{id}/activate/` · `GET admin/featured-listings/` · `POST admin/featured-listings/{id}/cancel/` · `GET admin/complaints/` · `POST admin/complaints/{id}/status/` · `GET admin/settlements/` · `POST admin/settlements/{id}/mark-paid/` · `POST admin/settlements/{id}/reject/` · `GET admin/worker-balances/` · `POST admin/workers/{id}/record-commission/` · `GET admin/payments/` · `POST admin/payments/{id}/refund/` · `POST admin/payments/{id}/resolve/` · `admin/promo-codes/` (list, create, update) |
 
 Endpoints added beyond the original list, because the flow needs them: `password-reset/confirm`,
 `password-change`, `workers/{id}/` (public card), `offers/{id}/negotiations/`,

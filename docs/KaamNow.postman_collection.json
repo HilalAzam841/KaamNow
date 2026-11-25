@@ -2500,6 +2500,102 @@
               "raw": "{\n  \"resolution\": \"refund\",\n  \"note\": \"Customer paid twice\",\n  \"method\": \"gateway\",\n  \"reference\": \"JC-RF-2001\"\n}"
             }
           }
+        },
+        {
+          "name": "Admin: create a promo code (audited)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/promo-codes/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "promo-codes"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_access}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"EID20\",\n  \"description\": \"Eid offer\",\n  \"kind\": \"percent\",\n  \"value\": \"20\",\n  \"max_discount\": \"300\",\n  \"max_uses\": 500\n}"
+            }
+          }
+        },
+        {
+          "name": "Customer: check a promo code",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/promos/check/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "promos",
+                "check"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{customer_access}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"booking\": \"{{booking_id}}\",\n  \"promo_code\": \"EID20\",\n  \"use_credit\": true\n}"
+            }
+          }
+        },
+        {
+          "name": "Customer or worker: my invite code and credit",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/referrals/me/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "referrals",
+                "me"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{customer_access}}"
+                }
+              ]
+            }
+          }
         }
       ]
     },

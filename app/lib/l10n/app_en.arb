@@ -44,6 +44,7 @@
       "version": {}
     }
   },
+  "applyPromo": "Apply",
   "areaHint": "e.g. DHA Phase 5",
   "areaLine": "Area: {area}",
   "@areaLine": {
@@ -235,6 +236,7 @@
   "confirmYourNumber": "Confirm your phone number",
   "contact": "Contact",
   "continueAction": "Continue",
+  "copyInvite": "Copy invite",
   "couldNotGetLocation": "Could not get your location.",
   "couldNotSendLocation": "Could not send your location.",
   "counter": "Counter",
@@ -242,6 +244,24 @@
   "counterSent": "Counter offer sent.",
   "createAccount": "Create account",
   "createAnAccount": "Create an account",
+  "creditAdmin": "From KaamNow",
+  "creditApplied": "Credit: {amount} off",
+  "@creditApplied": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
+  "creditBalance": "Your credit: {amount}",
+  "@creditBalance": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
+  "creditHistory": "Credit history",
+  "creditReferral": "Invite reward",
+  "creditReturned": "Returned",
+  "creditSpent": "Used on a booking",
+  "creditWelcome": "Welcome credit",
   "currentPassword": "Current password",
   "currentPlan": "Current plan: {name}",
   "@currentPlan": {
@@ -275,6 +295,7 @@
   "defaultAddress": "Default address",
   "describeProblem": "Describe the problem",
   "details": "Details",
+  "discountNote": "KaamNow pays the discount. Your worker still gets their full share.",
   "distanceKm": "{km} km",
   "@distanceKm": {
     "placeholders": {
@@ -379,6 +400,42 @@
   "installHint": "Add it to your home screen and open it like an app.",
   "installTitle": "Install KaamNow",
   "installedThanks": "KaamNow is installed. You can open it from your home screen.",
+  "inviteCodeHint": "Got a code from a friend? You get credit off your first booking.",
+  "inviteCodeOptional": "Invite code (optional)",
+  "inviteCopied": "Invite copied. Paste it in WhatsApp or SMS.",
+  "inviteExplain": "Friends who sign up with your code get {welcome} off their first booking. When they pay a booking of {min} or more, you get {reward} credit.",
+  "@inviteExplain": {
+    "placeholders": {
+      "welcome": {},
+      "min": {},
+      "reward": {}
+    }
+  },
+  "inviteExplainWorker": "Customers who sign up with your code get {welcome} off their first booking. When they pay a booking of {min} or more, {reward} is added to your wallet.",
+  "@inviteExplainWorker": {
+    "placeholders": {
+      "welcome": {},
+      "min": {},
+      "reward": {}
+    }
+  },
+  "inviteFriends": "Invite friends",
+  "inviteMessage": "Book trusted workers in Lahore with KaamNow. Sign up with my code {code} and get {amount} off your first booking: {link}",
+  "@inviteMessage": {
+    "placeholders": {
+      "code": {},
+      "amount": {},
+      "link": {}
+    }
+  },
+  "invitedCount": "Friends who joined: {count}",
+  "@invitedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "iosInstallSteps": "In Safari, tap the Share button, then choose “Add to Home Screen”.",
   "iveArrived": "I’ve arrived",
   "job": "Job",
@@ -656,6 +713,14 @@
   },
   "profileSaved": "Profile saved.",
   "profileUpdated": "Profile updated.",
+  "promoApplied": "{code}: {amount} off",
+  "@promoApplied": {
+    "placeholders": {
+      "code": {},
+      "amount": {}
+    }
+  },
+  "promoCode": "Promo code",
   "pushBlockedHint": "Blocked in your browser. Allow notifications for this site in the browser settings.",
   "pushBlockedHintPhone": "Blocked in your phone settings. Allow notifications for KaamNow in Settings.",
   "pushHintCustomer": "Know right away when workers send offers and when your booking changes.",
@@ -701,6 +766,7 @@
   "reject": "Reject",
   "rejectOfferQ": "Reject this offer?",
   "remove": "Remove",
+  "removePromo": "Remove",
   "removeServiceQ": "Remove {name}?",
   "@removeServiceQ": {
     "placeholders": {
@@ -747,6 +813,12 @@
   "@reviewsHeading": {
     "placeholders": {
       "n": {}
+    }
+  },
+  "rewardsEarned": "Rewards earned: {amount}",
+  "@rewardsEarned": {
+    "placeholders": {
+      "amount": {}
     }
   },
   "rsPrefix": "Rs ",
@@ -896,6 +968,12 @@
   },
   "urgentTitle": "Urgent? Mark your job as an emergency",
   "useAtLeast8": "Use at least 8 characters",
+  "useCredit": "Use my credit ({amount})",
+  "@useCredit": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
   "useMyLocation": "Use my location",
   "validUntil": "Valid until {time}",
   "@validUntil": {
@@ -975,6 +1053,13 @@
   "youAreAvailable": "You are available for jobs",
   "youAreOffline": "You are offline",
   "youEarned": "You earned",
+  "youPay": "You pay {amount}",
+  "@youPay": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
+  "yourInviteCode": "Your invite code",
   "yourOffer": "Your offer",
   "yourPhoneNumber": "Your phone number",
   "yourPlan": "Your plan",

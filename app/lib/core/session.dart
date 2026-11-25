@@ -60,9 +60,10 @@ class Session extends ChangeNotifier {
   }
 
   Future<void> register({required String phone, required String password, required String fullName,
-      required UserRole role, String? email, String? cnic}) async {
+      required UserRole role, String? email, String? cnic, String? referralCode}) async {
     final (u, access, refresh) = await api.register(
-        phone: phone.trim(), password: password, fullName: fullName.trim(), role: role, email: email, cnic: cnic);
+        phone: phone.trim(), password: password, fullName: fullName.trim(), role: role, email: email, cnic: cnic,
+        referralCode: referralCode?.trim().toUpperCase());
     await tokens.save(access: access, refresh: refresh);
     _set(SessionStatus.signedIn, u);
   }

@@ -65,15 +65,17 @@ class PaymentViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.
     @extend_schema(
         tags=["payments"], request=PaymentCreateSerializer, responses={201: PaymentWithCheckoutSerializer},
         summary="Customer pays for a completed booking. Cash: worker confirms receipt. JazzCash/Easypaisa: "
-        "open `checkout` in a WebView; the server confirms only after verifying the gateway callback.",
+        "open `checkout` in a WebView; the server confirms only after verifying the gateway callback. "
+        "Optional `promo_code` and `use_credit` lower the amount (check first with `POST promos/check/`).",
     )
     def create(self, request):
         if not IsCustomer().has_permission(request, self):
             return Response({"detail": IsCustomer.message}, status=status.HTTP_403_FORBIDDEN)
         serializer = PaymentCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+        v = serializer.validated_data
         payment, checkout = services.record_payment(
-            serializer.validated_data["booking"], request.user, serializer.validated_data["method"]
+            v["booking"], request.user, v["method"], promo_code=v["promo_code"], use_credit=v["use_credit"]
         )
         payment.checkout = checkout
         return Response(PaymentWithCheckoutSerializer(payment).data, status=status.HTTP_201_CREATED)

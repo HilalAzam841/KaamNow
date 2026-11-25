@@ -5,7 +5,8 @@ Each completed booking leaves money on one side:
 - paid online (JazzCash / Easypaisa): the platform holds the customer's money and owes the worker
   their share (``Commission.worker_earning``);
 - paid in cash: the worker holds the money and owes the platform its commission
-  (``Commission.commission_amount``).
+  (``Commission.commission_amount``), less any promo discount the customer got, since the worker
+  received that much less cash (``Commission.discount_amount``).
 
 The wallet balance nets the two over bookings not yet settled. A positive balance is paid out
 (the worker asks, an admin sends it and marks it paid); a negative one is paid by the worker
@@ -19,7 +20,7 @@ a positive one adds to what the platform owes, a negative one to what the worker
 from decimal import Decimal
 
 from django.db import IntegrityError, transaction
-from django.db.models import Q, Sum
+from django.db.models import F, Q, Sum
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
@@ -49,7 +50,7 @@ def _open_adjustments(worker):
 def _totals(commissions, adjustments):
     agg = commissions.aggregate(
         held=Sum("worker_earning", filter=Q(paid_via__in=ONLINE)),
-        owed=Sum("commission_amount", filter=Q(paid_via=Payment.Method.CASH)),
+        owed=Sum(F("commission_amount") - F("discount_amount"), filter=Q(paid_via=Payment.Method.CASH)),
     )
     adj = adjustments.aggregate(plus=Sum("amount", filter=Q(amount__gt=0)), minus=Sum("amount", filter=Q(amount__lt=0)))
     held = (agg["held"] or ZERO) + (adj["plus"] or ZERO)
@@ -298,7 +299,7 @@ def balances(owing=None):
                 | Q(paid_via=Payment.Method.CASH, status=Commission.Status.PENDING))
         .values("worker", "worker__user__full_name", "worker__user__phone")
         .annotate(held=Sum("worker_earning", filter=Q(paid_via__in=ONLINE)),
-                  owed=Sum("commission_amount", filter=Q(paid_via=Payment.Method.CASH)))
+                  owed=Sum(F("commission_amount") - F("discount_amount"), filter=Q(paid_via=Payment.Method.CASH)))
     )
     adjustments = (
         WorkerAdjustment.objects.filter(settlement__isnull=True)

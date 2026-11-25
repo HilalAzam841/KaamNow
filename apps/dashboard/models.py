@@ -24,6 +24,7 @@ class AuditLog(models.Model):
         COMMISSION_COLLECTED = "commission_collected", "Cash commission received from worker"
         PAYMENT_RESOLVED = "payment_resolved", "Disputed payment resolved"
         PAYMENT_REFUNDED = "payment_refunded", "Payment refunded to customer"
+        PROMO_SAVED = "promo_saved", "Promo code created or changed"
 
     actor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, related_name="audit_logs")
     action = models.CharField(max_length=30, choices=Action.choices, db_index=True)

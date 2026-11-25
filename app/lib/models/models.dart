@@ -422,7 +422,7 @@ class Checkout {
 class Payment {
   Payment({required this.id, required this.purpose, this.bookingId, required this.amount, required this.method,
       required this.status, this.reference = '', this.failureReason = '', this.checkout, this.createdAt,
-      this.refundedAmount = '0.00'});
+      this.refundedAmount = '0.00', this.discountAmount = '0.00'});
   factory Payment.fromJson(Map<String, dynamic> j) => Payment(
         id: parseInt(j['id']),
         purpose: str(j['purpose']),
@@ -435,6 +435,7 @@ class Payment {
         checkout: j['checkout'] == null ? null : Checkout.fromJson(asMap(j['checkout'])),
         createdAt: parseDate(j['created_at']),
         refundedAmount: j['refunded_amount'] == null ? '0.00' : str(j['refunded_amount']),
+        discountAmount: j['discount_amount'] == null ? '0.00' : str(j['discount_amount']),
       );
   final int id;
   final String purpose;
@@ -450,6 +451,10 @@ class Payment {
   /// Money KaamNow sent back to the customer for this payment (0 when none).
   final String refundedAmount;
   bool get hasRefund => (double.tryParse(refundedAmount) ?? 0) > 0;
+
+  /// Promo code and credit taken off the booking total (paid by KaamNow).
+  final String discountAmount;
+  bool get hasDiscount => (double.tryParse(discountAmount) ?? 0) > 0;
 }
 
 class AppNotification {
@@ -747,4 +752,79 @@ class Wallet {
   final PayoutAccount? lastPayoutAccount;
   final List<Settlement> settlements;
   double get balanceValue => double.tryParse(balance) ?? 0;
+}
+
+/// What a customer would pay for a booking with a promo code and/or credit (`POST promos/check/`).
+class PaymentQuote {
+  PaymentQuote({required this.total, this.promoCode = '', this.promoDescription = '', this.promoDiscount = '0.00',
+      this.creditBalance = '0.00', this.creditUsed = '0.00', this.discount = '0.00', required this.amount});
+  factory PaymentQuote.fromJson(Map<String, dynamic> j) => PaymentQuote(
+        total: str(j['total']),
+        promoCode: str(j['promo_code']),
+        promoDescription: str(j['promo_description']),
+        promoDiscount: str(j['promo_discount']),
+        creditBalance: str(j['credit_balance']),
+        creditUsed: str(j['credit_used']),
+        discount: str(j['discount']),
+        amount: str(j['amount']),
+      );
+  final String total;
+  final String promoCode;
+  final String promoDescription;
+  final String promoDiscount;
+  final String creditBalance;
+  final String creditUsed;
+  final String discount;
+  final String amount;
+
+  static bool _positive(String v) => (double.tryParse(v) ?? 0) > 0;
+  bool get hasCredit => _positive(creditBalance);
+  bool get hasDiscount => _positive(discount);
+  bool get hasPromo => promoCode.isNotEmpty;
+  bool get usesCredit => _positive(creditUsed);
+}
+
+class CreditEntry {
+  CreditEntry({required this.id, required this.amount, required this.kind, this.note = '', this.createdAt});
+  factory CreditEntry.fromJson(Map<String, dynamic> j) => CreditEntry(
+        id: parseInt(j['id']),
+        amount: str(j['amount']),
+        kind: str(j['kind']),
+        note: str(j['note']),
+        createdAt: parseDate(j['created_at']),
+      );
+  final int id;
+  final String amount;
+  final String kind;
+  final String note;
+  final DateTime? createdAt;
+}
+
+/// The user's invite code, credit and invite rewards (`GET referrals/me/`).
+class ReferralSummary {
+  ReferralSummary({required this.code, required this.inviteLink, this.creditBalance = '0.00', this.invited = 0,
+      this.rewarded = 0, this.rewardsEarned = '0.00', this.referralReward = '0.00', this.welcomeCredit = '0.00',
+      this.minBooking = '0.00', this.creditHistory = const []});
+  factory ReferralSummary.fromJson(Map<String, dynamic> j) => ReferralSummary(
+        code: str(j['code']),
+        inviteLink: str(j['invite_link']),
+        creditBalance: str(j['credit_balance']),
+        invited: parseInt(j['invited']),
+        rewarded: parseInt(j['rewarded']),
+        rewardsEarned: str(j['rewards_earned']),
+        referralReward: str(j['referral_reward']),
+        welcomeCredit: str(j['welcome_credit']),
+        minBooking: str(j['min_booking']),
+        creditHistory: [for (final e in (j['credit_history'] as List? ?? const [])) CreditEntry.fromJson(asMap(e))],
+      );
+  final String code;
+  final String inviteLink;
+  final String creditBalance;
+  final int invited;
+  final int rewarded;
+  final String rewardsEarned;
+  final String referralReward;
+  final String welcomeCredit;
+  final String minBooking;
+  final List<CreditEntry> creditHistory;
 }

@@ -78,6 +78,9 @@ class AppLocalizationsUr extends AppLocalizations {
   }
 
   @override
+  String get applyPromo => 'لاگو کریں';
+
+  @override
   String get areaHint => 'مثلاً ڈی ایچ اے فیز 5';
 
   @override
@@ -367,6 +370,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String get continueAction => 'جاری رکھیں';
 
   @override
+  String get copyInvite => 'دعوت کاپی کریں';
+
+  @override
   String get couldNotGetLocation => 'آپ کی لوکیشن نہیں مل سکی۔';
 
   @override
@@ -386,6 +392,34 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get createAnAccount => 'نیا اکاؤنٹ بنائیں';
+
+  @override
+  String get creditAdmin => 'کام ناؤ کی طرف سے';
+
+  @override
+  String creditApplied(Object amount) {
+    return 'کریڈٹ: $amount کی رعایت';
+  }
+
+  @override
+  String creditBalance(Object amount) {
+    return 'آپ کا کریڈٹ: $amount';
+  }
+
+  @override
+  String get creditHistory => 'کریڈٹ کی تاریخ';
+
+  @override
+  String get creditReferral => 'دعوت کا انعام';
+
+  @override
+  String get creditReturned => 'واپس';
+
+  @override
+  String get creditSpent => 'بکنگ پر استعمال';
+
+  @override
+  String get creditWelcome => 'خوش آمدید کریڈٹ';
 
   @override
   String get currentPassword => 'موجودہ پاس ورڈ';
@@ -434,6 +468,10 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get details => 'تفصیلات';
+
+  @override
+  String get discountNote =>
+      'رعایت کام ناؤ دیتا ہے۔ آپ کے ورکر کو پورا حصہ ملتا ہے۔';
 
   @override
   String distanceKm(Object km) {
@@ -630,6 +668,40 @@ class AppLocalizationsUr extends AppLocalizations {
   @override
   String get installedThanks =>
       'کام ناؤ انسٹال ہو گیا۔ آپ اسے اپنی ہوم اسکرین سے کھول سکتے ہیں۔';
+
+  @override
+  String get inviteCodeHint =>
+      'کسی دوست سے کوڈ ملا ہے؟ آپ کو پہلی بکنگ پر کریڈٹ ملے گا۔';
+
+  @override
+  String get inviteCodeOptional => 'دعوتی کوڈ (اختیاری)';
+
+  @override
+  String get inviteCopied =>
+      'دعوت کاپی ہو گئی۔ اسے واٹس ایپ یا SMS میں پیسٹ کریں۔';
+
+  @override
+  String inviteExplain(Object welcome, Object min, Object reward) {
+    return 'جو دوست آپ کے کوڈ سے سائن اپ کریں انہیں پہلی بکنگ پر $welcome کی رعایت ملتی ہے۔ جب وہ $min یا اس سے زیادہ کی بکنگ ادا کریں تو آپ کو $reward کا کریڈٹ ملتا ہے۔';
+  }
+
+  @override
+  String inviteExplainWorker(Object welcome, Object min, Object reward) {
+    return 'جو گاہک آپ کے کوڈ سے سائن اپ کریں انہیں پہلی بکنگ پر $welcome کی رعایت ملتی ہے۔ جب وہ $min یا اس سے زیادہ کی بکنگ ادا کریں تو $reward آپ کے والٹ میں شامل ہو جاتے ہیں۔';
+  }
+
+  @override
+  String get inviteFriends => 'دوستوں کو دعوت دیں';
+
+  @override
+  String inviteMessage(Object code, Object amount, Object link) {
+    return 'کام ناؤ سے لاہور میں قابلِ اعتماد ورکر بک کریں۔ میرے کوڈ $code سے سائن اپ کریں اور پہلی بکنگ پر $amount کی رعایت پائیں: $link';
+  }
+
+  @override
+  String invitedCount(int count) {
+    return 'شامل ہونے والے دوست: $count';
+  }
 
   @override
   String get iosInstallSteps =>
@@ -1084,6 +1156,14 @@ class AppLocalizationsUr extends AppLocalizations {
   String get profileUpdated => 'پروفائل اپ ڈیٹ ہو گیا۔';
 
   @override
+  String promoApplied(Object code, Object amount) {
+    return '$code: $amount کی رعایت';
+  }
+
+  @override
+  String get promoCode => 'پرومو کوڈ';
+
+  @override
   String get pushBlockedHint =>
       'آپ کے براؤزر میں بند ہیں۔ براؤزر کی سیٹنگز میں اس سائٹ کے لیے نوٹیفکیشنز کی اجازت دیں۔';
 
@@ -1173,6 +1253,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String get remove => 'ہٹائیں';
 
   @override
+  String get removePromo => 'ہٹائیں';
+
+  @override
   String removeServiceQ(Object name) {
     return '$name ہٹائیں؟';
   }
@@ -1232,6 +1315,11 @@ class AppLocalizationsUr extends AppLocalizations {
   @override
   String reviewsHeading(Object n) {
     return 'ریویوز ($n)';
+  }
+
+  @override
+  String rewardsEarned(Object amount) {
+    return 'حاصل شدہ انعامات: $amount';
   }
 
   @override
@@ -1561,6 +1649,11 @@ class AppLocalizationsUr extends AppLocalizations {
   String get useAtLeast8 => 'کم از کم 8 حروف استعمال کریں';
 
   @override
+  String useCredit(Object amount) {
+    return 'میرا کریڈٹ استعمال کریں ($amount)';
+  }
+
+  @override
   String get useMyLocation => 'میری لوکیشن استعمال کریں';
 
   @override
@@ -1705,6 +1798,14 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get youEarned => 'آپ کی کمائی';
+
+  @override
+  String youPay(Object amount) {
+    return 'آپ $amount ادا کریں گے';
+  }
+
+  @override
+  String get yourInviteCode => 'آپ کا دعوتی کوڈ';
 
   @override
   String get yourOffer => 'آپ کی پیشکش';

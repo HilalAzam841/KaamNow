@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     "apps.chat",
     "apps.tracking",
     "apps.support",
+    "apps.promotions",
 ]
 
 MIDDLEWARE = [
@@ -195,6 +196,7 @@ REST_FRAMEWORK = {
         "location": env("THROTTLE_LOCATION", "120/min"),
         "payment_callback": env("THROTTLE_PAYMENT_CALLBACK", "120/min"),
         "payout": env("THROTTLE_PAYOUT", "20/hour"),
+        "promo": env("THROTTLE_PROMO", "20/min"),
     },
     "TEST_REQUEST_DEFAULT_FORMAT": "json",
 }
@@ -382,6 +384,8 @@ EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD", "")
 EMAIL_USE_TLS = env_bool("EMAIL_USE_TLS", True)
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", "KaamNow <no-reply@kaamnow.pk>")
 PASSWORD_RESET_URL = env("PASSWORD_RESET_URL", "https://app.kaamnow.pk/reset-password?uid={uid}&token={token}")
+# Link people share to invite friends; {code} is the inviter's code.
+INVITE_URL = env("INVITE_URL", "https://app.kaamnow.pk/register?ref={code}")
 
 # --- Security hardening -----------------------------------------------------
 SECURE_CONTENT_TYPE_NOSNIFF = True

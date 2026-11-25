@@ -239,6 +239,7 @@ void main() {
         return ok(settings);
       });
       await pumpAdmin(tester, h);
+      tester.view.physicalSize = const Size(1400, 1600); // the whole settings form on screen
       await tester.tap(find.text('Settings').first);
       await tester.pumpAndSettle();
 

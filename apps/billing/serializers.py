@@ -26,6 +26,8 @@ ONLINE_METHOD_CHOICES = [(Payment.Method.JAZZCASH.value, "JazzCash"), (Payment.M
 class PaymentCreateSerializer(serializers.Serializer):
     booking = serializers.PrimaryKeyRelatedField(queryset=Booking.objects.all())
     method = serializers.ChoiceField(choices=Payment.Method.choices, default=Payment.Method.CASH)
+    promo_code = serializers.CharField(max_length=30, required=False, allow_blank=True, default="")
+    use_credit = serializers.BooleanField(default=False, help_text="Take the customer's credit off the total.")
 
 
 class CheckoutSerializer(serializers.Serializer):
@@ -39,7 +41,7 @@ class PaymentSerializer(serializers.ModelSerializer):
         model = Payment
         fields = [
             "id", "purpose", "booking", "amount", "method", "status", "reference", "failure_reason", "expires_at",
-            "confirmed_at", "refunded_amount", "created_at", "updated_at",
+            "confirmed_at", "refunded_amount", "discount_amount", "created_at", "updated_at",
         ]
         read_only_fields = fields
 
@@ -78,6 +80,7 @@ class PlatformSettingsSerializer(serializers.ModelSerializer):
     class Meta:
         model = PlatformSettings
         fields = ["commission_percent", "emergency_fee", "emergency_enabled", "min_payout", "commission_debt_limit",
+                  "referral_reward", "referral_welcome_credit", "referral_min_booking", "max_discount_percent",
                   "updated_at"]
         read_only_fields = ["updated_at"]
 

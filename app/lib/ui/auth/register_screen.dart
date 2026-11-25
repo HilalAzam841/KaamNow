@@ -9,7 +9,10 @@ import '../widgets/language_button.dart';
 import '../../l10n/l10n.dart';
 
 class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({super.key});
+  const RegisterScreen({super.key, this.referralCode});
+
+  /// From an invite link (`/register?ref=CODE`).
+  final String? referralCode;
   @override
   State<RegisterScreen> createState() => _RegisterScreenState();
 }
@@ -21,6 +24,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _email = TextEditingController();
   final _cnic = TextEditingController();
   final _password = TextEditingController();
+  late final _referral = TextEditingController(text: widget.referralCode ?? '');
   UserRole _role = UserRole.customer;
   bool _busy = false;
   String? _error;
@@ -41,6 +45,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             role: _role,
             email: _email.text.trim(),
             cnic: _role == UserRole.worker ? _cnic.text.trim() : null,
+            referralCode: _role == UserRole.customer ? _referral.text : null,
           );
     } on ApiException catch (e) {
       setState(() {
@@ -115,6 +120,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     textDirection: TextDirection.ltr,
                     decoration: InputDecoration(labelText: context.t.cnicNumber, hintText: '35202-1234567-1'),
                     validator: (v) => (v ?? '').trim().length < 13 ? context.t.enterCnic : _server('cnic_number'),
+                  ),
+                ],
+                if (_role == UserRole.customer) ...[
+                  const SizedBox(height: 12),
+                  TextFormField(
+                    key: const Key('reg-referral'),
+                    controller: _referral,
+                    textDirection: TextDirection.ltr,
+                    textCapitalization: TextCapitalization.characters,
+                    decoration: InputDecoration(
+                        labelText: context.t.inviteCodeOptional, helperText: context.t.inviteCodeHint, helperMaxLines: 2),
+                    validator: (_) => _server('referral_code'),
                   ),
                 ],
                 const SizedBox(height: 12),
