@@ -11,6 +11,7 @@ name: android
 #
 # Push notifications on the phone are switched on by the FIREBASE_* repository variables
 # (see "Push notifications on phones" in app/README.md); without them the app works, minus push.
+# The repository variable GOOGLE_MAPS_API_KEY switches the maps to Google Maps (app/README.md).
 
 on:
   pull_request:
@@ -29,6 +30,7 @@ jobs:
         working-directory: app
     env:
       API_URL: ${{ vars.ANDROID_API_URL || 'https://kaamnow.pk' }}
+      GOOGLE_MAPS_API_KEY: ${{ vars.GOOGLE_MAPS_API_KEY }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
@@ -56,6 +58,7 @@ jobs:
         run: >
           flutter build apk --release
           --dart-define=API_BASE_URL=$API_URL
+          --dart-define=GOOGLE_MAPS_API_KEY=$GOOGLE_MAPS_API_KEY
           --dart-define=FIREBASE_PROJECT_ID=${{ vars.FIREBASE_PROJECT_ID }} --dart-define=FIREBASE_API_KEY=${{ vars.FIREBASE_API_KEY }} --dart-define=FIREBASE_SENDER_ID=${{ vars.FIREBASE_SENDER_ID }} --dart-define=FIREBASE_ANDROID_APP_ID=${{ vars.FIREBASE_ANDROID_APP_ID }} --dart-define=FIREBASE_IOS_APP_ID=${{ vars.FIREBASE_IOS_APP_ID }}
           --build-number=${{ github.run_number }}
       - name: Name the APK

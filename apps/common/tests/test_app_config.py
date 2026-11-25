@@ -49,3 +49,13 @@ def test_cors_allows_configured_browser_origin(api, settings):
     assert ok["Access-Control-Allow-Origin"] == "https://app.kaamnow.pk"
     bad = api.options(URL, HTTP_ORIGIN="https://evil.example", HTTP_ACCESS_CONTROL_REQUEST_METHOD="GET")
     assert "Access-Control-Allow-Origin" not in bad
+
+
+def test_maps_default_to_openstreetmap(api, settings):
+    settings.GOOGLE_MAPS_BROWSER_KEY = ""
+    assert api.get(URL).json()["data"]["maps"] == {"provider": "openstreetmap", "google_browser_key": ""}
+
+
+def test_maps_use_google_with_a_browser_key(api, settings):
+    settings.GOOGLE_MAPS_BROWSER_KEY = "AIzaTestKey"
+    assert api.get(URL).json()["data"]["maps"] == {"provider": "google", "google_browser_key": "AIzaTestKey"}

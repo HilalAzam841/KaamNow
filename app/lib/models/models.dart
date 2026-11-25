@@ -608,7 +608,7 @@ class ClientConfig {
       required this.minWebVersion, this.supportEmail = '', this.supportPhone = '',
       this.webPushEnabled = false, this.webPushPublicKey = '', this.phonePushEnabled = false,
       this.phoneVerificationRequired = false,
-      this.smsAvailable = false});
+      this.smsAvailable = false, this.googleMapsBrowserKey = ''});
   factory ClientConfig.fromJson(Map<String, dynamic> j) {
     final city = asMap(j['city']);
     final em = asMap(j['emergency']);
@@ -625,6 +625,7 @@ class ClientConfig {
       webPushEnabled: asMap(j['web_push'])['enabled'] == true,
       webPushPublicKey: str(asMap(j['web_push'])['public_key']),
       phonePushEnabled: j['push_enabled'] == true,
+      googleMapsBrowserKey: str(asMap(j['maps'])['google_browser_key']),
       phoneVerificationRequired: asMap(j['phone_verification'])['required'] == true,
       smsAvailable: asMap(j['phone_verification'])['sms_available'] == true,
     );
@@ -646,6 +647,9 @@ class ClientConfig {
 
   /// The server can send Firebase push to the Android and iPhone apps.
   final bool phonePushEnabled;
+
+  /// Google Maps key for the web app (restricted to the site's address); empty when not set up.
+  final String googleMapsBrowserKey;
 
   /// Customers and workers must confirm their number by SMS before using the app.
   final bool phoneVerificationRequired;

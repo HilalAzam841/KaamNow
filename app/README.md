@@ -189,11 +189,35 @@ Building on your own computer, pass the same values:
 Each signed-in phone gets offers, chat messages and booking changes as notifications; tapping one
 opens that booking or job. Signing out stops them on that phone.
 
+## Google Maps
+
+The maps show OpenStreetMap until a Google Maps key is set up, then Google Maps everywhere.
+
+1. In [Google Cloud](https://console.cloud.google.com), create a project and turn on billing (Google
+   gives a monthly free allowance that covers a small app).
+2. Under **APIs & Services, Library**, enable **Maps JavaScript API**, **Maps SDK for Android** and
+   **Maps SDK for iOS**.
+3. Under **Credentials**, create two API keys:
+   - **Website key**: restrict it to *Websites* `https://kaamnow.pk/*` (your domain) and to the Maps
+     JavaScript API. Put it in the server's `.env` as `GOOGLE_MAPS_BROWSER_KEY=...` and run
+     `docker compose up -d`. The website switches to Google Maps straight away.
+   - **App key**: restrict it to *Android apps* (package `pk.kaamnow.app` and your signing
+     certificate's SHA-1) and *iOS apps* (bundle ID `pk.kaamnow.app`), and to the two Maps SDKs.
+     Add it in GitHub under **Settings, Secrets and variables, Actions, Variables** as
+     `GOOGLE_MAPS_API_KEY`. The next Android and iPhone builds use Google Maps.
+
+Both keys end up inside the app or web page, which is normal for map keys; the restrictions in step 3
+stop anyone else from using them.
+
+Building on your own computer: Android reads `googleMapsApiKey=...` from `android/local.properties`;
+iPhone reads `GOOGLE_MAPS_API_KEY=...` from `ios/Flutter/MapsKey.xcconfig` (both stay out of git).
+Also pass `--dart-define=GOOGLE_MAPS_API_KEY=...` to `flutter build`.
+
 ## Tests
 
 ```bash
 flutter analyze
-flutter test          # 84 unit and widget tests (API client, models, routing, key screens, admin dashboard, Urdu, install, notifications, Android checkout, phone confirmation, phone push, wallet and payouts)
+flutter test          # 89 unit and widget tests (API client, models, routing, key screens, admin dashboard, Urdu, install, notifications, Android checkout, phone confirmation, phone push, wallet and payouts, maps)
 ```
 
 `e2e/` drives the real web build against a running backend in Chromium, through the whole job
@@ -215,8 +239,8 @@ e2e/                     Playwright browser run against the real backend
 
 ## Known limits
 
-- **Maps** use OpenStreetMap tiles; the spec's Google Maps needs an API key. Swap `MAP_TILE_URL`
-  (or `google_maps_flutter`) when you have one.
+- **Maps** use OpenStreetMap until a Google Maps key is set up (see "Google Maps"). Address search
+  (typing an address instead of tapping the map) is not built yet.
 - **Push notifications** need the server's VAPID keys and HTTPS. On iPhone they work only after the
   app is added to the home screen (iOS 16.4+). The Android and iPhone apps get push once Firebase is set
   up (see "Push notifications on phones"); until then they show alerts inside the app. The in-app alert count

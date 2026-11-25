@@ -66,3 +66,12 @@ node step1.js && node step2.js && node step3.js
 
 Each step prints `OK ...` or `FAIL at <step>` and saves screenshots to `shots/`.
 It creates real users and bookings, so only run it against a development database.
+
+`maps.js` checks the job form's map: with `GOOGLE_MAPS_BROWSER_KEY` set on the server it must be
+Google Maps (Google's script loads with the key), without it OpenStreetMap (no Google requests).
+A made-up key is enough; Google then shows its "Something went wrong" message inside the map:
+
+```bash
+cd app/e2e && EXPECT=google node maps.js   # backend started with GOOGLE_MAPS_BROWSER_KEY=...
+cd app/e2e && EXPECT=osm node maps.js      # backend started without it
+```

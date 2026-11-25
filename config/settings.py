@@ -267,6 +267,10 @@ CELERY_BEAT_SCHEDULE = {
 
 # --- Firebase Cloud Messaging -----------------------------------------------
 FCM_PROJECT_ID = env("FCM_PROJECT_ID", "")
+
+# Google Maps for the web app. A browser key is public by design (it ships to every browser):
+# restrict it to the site's address and the Maps JavaScript API in Google Cloud. Empty = OpenStreetMap.
+GOOGLE_MAPS_BROWSER_KEY = env("GOOGLE_MAPS_BROWSER_KEY", "")
 # Path to the Firebase service-account JSON file (keep it outside the repo).
 FCM_CREDENTIALS_FILE = env("FCM_CREDENTIALS_FILE", "")
 
