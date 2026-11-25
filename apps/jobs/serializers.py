@@ -235,6 +235,7 @@ class BookingSerializer(serializers.ModelSerializer):
     total_amount = serializers.DecimalField(max_digits=12, decimal_places=2, read_only=True)
     has_review = serializers.SerializerMethodField()
     no_show = serializers.SerializerMethodField()
+    safety = serializers.SerializerMethodField()
 
     class Meta:
         model = Booking
@@ -244,7 +245,7 @@ class BookingSerializer(serializers.ModelSerializer):
             "total_amount", "status",
             "worker", "customer_name", "contact", "on_the_way_at", "arrived_at", "started_at", "completed_at",
             "cancelled_at", "cancel_reason", "completed_via", "status_history", "commission", "has_review",
-            "no_show", "created_at", "updated_at",
+            "no_show", "safety", "created_at", "updated_at",
         ]
         read_only_fields = fields
 
@@ -266,6 +267,22 @@ class BookingSerializer(serializers.ModelSerializer):
             side, opens_at = no_show_side_for(obj, user, self._grace)
             if side:
                 out["you_can_report"], out["opens_at"] = side, opens_at.isoformat()
+        return out
+
+    def get_safety(self, obj) -> dict:
+        """For the viewer: can_sos (SOS button shown), sos_status (their open alert, or null),
+        sharing_until (when their trip-sharing link ends, or null)."""
+        from apps.safety import services as safety
+
+        user = self._viewer()
+        out = {"can_sos": False, "sos_status": None, "sharing_until": None}
+        if user is None or not user.is_authenticated or user.pk not in (obj.customer_id, obj.worker.user_id):
+            return out
+        out["can_sos"] = safety.can_raise_sos(obj)
+        alert = safety.open_alert(obj, user)
+        out["sos_status"] = alert.status if alert else None
+        share = safety.active_share(obj, user)
+        out["sharing_until"] = share.expires_at.isoformat() if share else None
         return out
 
     def get_contact(self, obj) -> dict | None:

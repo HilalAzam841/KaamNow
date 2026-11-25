@@ -69,6 +69,7 @@ INSTALLED_APPS = [
     "apps.favourites",
     "apps.reminders",
     "apps.recurring",
+    "apps.safety",
     "apps.scheduling",
 ]
 
@@ -201,6 +202,8 @@ REST_FRAMEWORK = {
         "payment_callback": env("THROTTLE_PAYMENT_CALLBACK", "120/min"),
         "payout": env("THROTTLE_PAYOUT", "20/hour"),
         "promo": env("THROTTLE_PROMO", "20/min"),
+        "sos": env("THROTTLE_SOS", "10/min"),
+        "share": env("THROTTLE_SHARE", "60/min"),
     },
     "TEST_REQUEST_DEFAULT_FORMAT": "json",
 }
@@ -243,6 +246,7 @@ SPECTACULAR_SETTINGS = {
         "BookingStatusEnum": "apps.jobs.models.Booking.Status",
         "BookingStatusChangeEnum": "apps.jobs.serializers.STATUS_CHANGE_CHOICES",
         "RecurringStatusEnum": "apps.recurring.models.RecurringJob.Status",
+        "SosStatusEnum": "apps.safety.models.SosAlert.Status",
     },
 }
 
@@ -392,6 +396,7 @@ EMAIL_USE_TLS = env_bool("EMAIL_USE_TLS", True)
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", "KaamNow <no-reply@kaamnow.pk>")
 PASSWORD_RESET_URL = env("PASSWORD_RESET_URL", "https://app.kaamnow.pk/reset-password?uid={uid}&token={token}")
 # Link people share to invite friends; {code} is the inviter's code.
+TRIP_SHARE_URL = env("TRIP_SHARE_URL", "https://app.kaamnow.pk/share/{token}")
 INVITE_URL = env("INVITE_URL", "https://app.kaamnow.pk/register?ref={code}")
 
 # --- Security hardening -----------------------------------------------------

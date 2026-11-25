@@ -31,6 +31,7 @@ paths:
           - plan_changed
           - promo_saved
           - settings_changed
+          - sos_handled
           - subscription_activated
           - user_reactivated
           - user_suspended
@@ -57,6 +58,7 @@ paths:
           * `payment_refunded` - Payment refunded to customer
           * `promo_saved` - Promo code created or changed
           * `no_show_reviewed` - No-show report reviewed
+          * `sos_handled` - SOS alert handled
       - in: query
         name: actor
         schema:
@@ -1529,6 +1531,124 @@ paths:
               schema:
                 $ref: '#/components/schemas/Settlement'
           description: ''
+  /api/v1/admin/sos-alerts/:
+    get:
+      operationId: admin_sos_alerts_list
+      description: SOS alerts, newest first. Open ones need a call straight away.
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: role
+        schema:
+          type: string
+          enum:
+          - customer
+          - worker
+        description: |-
+          * `customer` - Customer
+          * `worker` - Worker
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - acknowledged
+          - open
+          - resolved
+        description: |-
+          * `open` - Open
+          * `acknowledged` - Someone is on it
+          * `resolved` - Resolved
+      tags:
+      - admin
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAdminSosAlertList'
+          description: ''
+  /api/v1/admin/sos-alerts/{id}/:
+    get:
+      operationId: admin_sos_alerts_retrieve
+      description: SOS alerts, newest first. Open ones need a call straight away.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this sos alert.
+        required: true
+      tags:
+      - admin
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminSosAlert'
+          description: ''
+  /api/v1/admin/sos-alerts/{id}/handle/:
+    post:
+      operationId: admin_sos_alerts_handle_create
+      description: SOS alerts, newest first. Open ones need a call straight away.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this sos alert.
+        required: true
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HandleSosRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/HandleSosRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/HandleSosRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminSosAlert'
+          description: ''
   /api/v1/admin/subscription-plans/:
     get:
       operationId: admin_subscription_plans_list
@@ -2506,6 +2626,95 @@ paths:
                 type: object
                 additionalProperties: {}
           description: ''
+  /api/v1/bookings/{booking_id}/share/:
+    post:
+      operationId: bookings_share_create
+      summary: Get a private link so family can follow this job. Sharing again replaces
+        the old link.
+      parameters:
+      - in: path
+        name: booking_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - safety
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ShareStartRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ShareStartRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ShareStartRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Share'
+          description: ''
+    delete:
+      operationId: bookings_share_destroy
+      summary: Turn off your link for this job.
+      parameters:
+      - in: path
+        name: booking_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - safety
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/bookings/{booking_id}/sos/:
+    post:
+      operationId: bookings_sos_create
+      summary: Press SOS during a job (or up to an hour after). Admins are alerted
+        and your emergency contacts are texted a link. The other side is not told.
+        Pressing again returns the same open alert (200).
+      parameters:
+      - in: path
+        name: booking_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - safety
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SosRaiseRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SosRaiseRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SosRaiseRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SosAlert'
+          description: ''
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SosAlert'
+          description: ''
   /api/v1/bookings/{id}/:
     get:
       operationId: bookings_retrieve
@@ -3063,6 +3272,7 @@ paths:
           - reminder
           - request_cancelled
           - review
+          - safety
           - subscription
           - system
           - verification
@@ -3087,6 +3297,7 @@ paths:
           * `reminder` - Booking reminder
           * `no_show` - No-show report
           * `recurring` - Repeating job
+          * `safety` - Safety alert
           * `system` - System
       tags:
       - notifications
@@ -4498,6 +4709,86 @@ paths:
               schema:
                 $ref: '#/components/schemas/Review'
           description: ''
+  /api/v1/safety/contacts/:
+    get:
+      operationId: safety_contacts_list
+      summary: Your emergency contacts (up to 3). They get an SMS when you press SOS.
+      tags:
+      - safety
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EmergencyContact'
+          description: ''
+    post:
+      operationId: safety_contacts_create
+      summary: Add an emergency contact.
+      tags:
+      - safety
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmergencyContactRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EmergencyContactRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EmergencyContactRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmergencyContact'
+          description: ''
+  /api/v1/safety/contacts/{id}/:
+    delete:
+      operationId: safety_contacts_destroy
+      summary: Remove an emergency contact.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - safety
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/safety/shared/{token}/:
+    get:
+      operationId: safety_shared_retrieve
+      summary: 'Public: follow a shared job with its link. 404 when the link is wrong,
+        off or expired.'
+      parameters:
+      - in: path
+        name: token
+        schema:
+          type: string
+        required: true
+      tags:
+      - safety
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SharedJob'
+          description: ''
   /api/v1/services/categories/:
     get:
       operationId: services_categories_list
@@ -5653,6 +5944,106 @@ components:
       - code
       - kind
       - value
+    AdminSosAlert:
+      type: object
+      description: Everything an admin needs to act fast, including both phone numbers
+        and the address.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        booking:
+          type: integer
+          readOnly: true
+        booking_title:
+          type: string
+          readOnly: true
+        booking_status:
+          type: string
+          readOnly: true
+        address:
+          type: string
+          readOnly: true
+        role:
+          allOf:
+          - $ref: '#/components/schemas/PartyEnum'
+          readOnly: true
+        raised_by:
+          type: integer
+          readOnly: true
+        raised_by_name:
+          type: string
+          readOnly: true
+        raised_by_phone:
+          type: string
+          readOnly: true
+        other_party:
+          type: object
+          additionalProperties: {}
+          readOnly: true
+        latitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+          readOnly: true
+          nullable: true
+        longitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+          readOnly: true
+          nullable: true
+        latest_worker_location:
+          type: object
+          additionalProperties: {}
+          nullable: true
+          readOnly: true
+        note:
+          type: string
+          readOnly: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/SosStatusEnum'
+          readOnly: true
+        contacts_texted:
+          type: integer
+          readOnly: true
+        handled_by_name:
+          type: string
+          readOnly: true
+        handled_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        admin_note:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - address
+      - admin_note
+      - booking
+      - booking_status
+      - booking_title
+      - contacts_texted
+      - created_at
+      - handled_at
+      - handled_by_name
+      - id
+      - latest_worker_location
+      - latitude
+      - longitude
+      - note
+      - other_party
+      - raised_by
+      - raised_by_name
+      - raised_by_phone
+      - role
+      - status
     AdminUser:
       type: object
       properties:
@@ -6017,6 +6408,7 @@ components:
       - payment_refunded
       - promo_saved
       - no_show_reviewed
+      - sos_handled
       type: string
       description: |-
         * `worker_verified` - Worker verified
@@ -6039,6 +6431,7 @@ components:
         * `payment_refunded` - Payment refunded to customer
         * `promo_saved` - Promo code created or changed
         * `no_show_reviewed` - No-show report reviewed
+        * `sos_handled` - SOS alert handled
     AuthResponse:
       type: object
       properties:
@@ -6167,6 +6560,13 @@ components:
             reported: who was reported absent (worker or customer), or null.
             you_can_report: who the viewer may report absent, and opens_at: from when.
           readOnly: true
+        safety:
+          type: object
+          additionalProperties: {}
+          description: |-
+            For the viewer: can_sos (SOS button shown), sos_status (their open alert, or null),
+            sharing_until (when their trip-sharing link ends, or null).
+          readOnly: true
         created_at:
           type: string
           format: date-time
@@ -6195,6 +6595,7 @@ components:
       - on_the_way_at
       - preferred_time
       - request_id
+      - safety
       - started_at
       - status
       - status_history
@@ -6713,6 +7114,41 @@ components:
       - gross_amount
       - net_earnings
       - recent
+    EmergencyContact:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 60
+        phone:
+          type: string
+          maxLength: 13
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - name
+      - phone
+    EmergencyContactRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 60
+        phone:
+          type: string
+          minLength: 1
+          maxLength: 13
+      required:
+      - name
+      - phone
     FavouriteWorker:
       type: object
       description: 'Public worker card: no phone, CNIC, documents or exact home location.'
@@ -6939,6 +7375,25 @@ components:
         * `weekly` - Every week
         * `biweekly` - Every two weeks
         * `monthly` - Every month
+    HandleSosRequest:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/HandleSosStatusEnum'
+        note:
+          type: string
+          default: ''
+          maxLength: 1000
+      required:
+      - status
+    HandleSosStatusEnum:
+      enum:
+      - acknowledged
+      - resolved
+      type: string
+      description: |-
+        * `acknowledged` - acknowledged
+        * `resolved` - resolved
     LanguageEnum:
       enum:
       - en
@@ -7433,6 +7888,25 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/AdminPromoCode'
+    PaginatedAdminSosAlertList:
+      type: object
+      properties:
+        count:
+          type: integer
+        page:
+          type: integer
+        total_pages:
+          type: integer
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdminSosAlert'
     PaginatedAdminUserList:
       type: object
       properties:
@@ -9717,6 +10191,123 @@ components:
         * `rejected` - Rejected
         * `cancelled` - Cancelled
         * `failed` - Payment failed
+    Share:
+      type: object
+      properties:
+        url:
+          type: string
+          description: Shown once. Sharing again makes a new link and turns this one
+            off.
+        expires_at:
+          type: string
+          format: date-time
+        contacts_texted:
+          type: integer
+      required:
+      - contacts_texted
+      - expires_at
+      - url
+    ShareStartRequest:
+      type: object
+      properties:
+        send_to_contacts:
+          type: boolean
+          default: false
+          description: Also text the link to your emergency contacts.
+    SharedJob:
+      type: object
+      description: 'Public view of a shared job: no phone numbers, no address, no
+        exact customer location.'
+      properties:
+        title:
+          type: string
+        category_name:
+          type: string
+        area:
+          type: string
+        status:
+          type: string
+        preferred_time:
+          type: string
+          format: date-time
+        duration_minutes:
+          type: integer
+        shared_by:
+          $ref: '#/components/schemas/PartyEnum'
+        customer_name:
+          type: string
+        worker:
+          $ref: '#/components/schemas/SharedWorker'
+        on_the_way_at:
+          type: string
+          format: date-time
+          nullable: true
+        arrived_at:
+          type: string
+          format: date-time
+          nullable: true
+        started_at:
+          type: string
+          format: date-time
+          nullable: true
+        completed_at:
+          type: string
+          format: date-time
+          nullable: true
+        worker_location:
+          allOf:
+          - $ref: '#/components/schemas/SharedLocation'
+          nullable: true
+          description: Only while the worker is on the way.
+        expires_at:
+          type: string
+          format: date-time
+      required:
+      - area
+      - arrived_at
+      - category_name
+      - completed_at
+      - customer_name
+      - duration_minutes
+      - expires_at
+      - on_the_way_at
+      - preferred_time
+      - shared_by
+      - started_at
+      - status
+      - title
+      - worker
+      - worker_location
+    SharedLocation:
+      type: object
+      properties:
+        latitude:
+          type: string
+        longitude:
+          type: string
+        recorded_at:
+          type: string
+          format: date-time
+      required:
+      - latitude
+      - longitude
+      - recorded_at
+    SharedWorker:
+      type: object
+      properties:
+        name:
+          type: string
+        is_verified:
+          type: boolean
+        average_rating:
+          type: string
+        completed_jobs_count:
+          type: integer
+      required:
+      - average_rating
+      - completed_jobs_count
+      - is_verified
+      - name
     SideEnum:
       enum:
       - worker
@@ -9740,6 +10331,64 @@ components:
       - end
       - free_workers
       - start
+    SosAlert:
+      type: object
+      description: What the person who pressed SOS sees.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        booking:
+          type: integer
+          readOnly: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/SosStatusEnum'
+          readOnly: true
+        contacts_texted:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        handled_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+      required:
+      - booking
+      - contacts_texted
+      - created_at
+      - handled_at
+      - id
+      - status
+    SosRaiseRequest:
+      type: object
+      properties:
+        latitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+        longitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+        note:
+          type: string
+          default: ''
+          maxLength: 500
+    SosStatusEnum:
+      enum:
+      - open
+      - acknowledged
+      - resolved
+      type: string
+      description: |-
+        * `open` - Open
+        * `acknowledged` - Someone is on it
+        * `resolved` - Resolved
     SubscribeRequest:
       type: object
       properties:
@@ -9967,6 +10616,7 @@ components:
       - reminder
       - no_show
       - recurring
+      - safety
       - system
       type: string
       description: |-
@@ -9990,6 +10640,7 @@ components:
         * `reminder` - Booking reminder
         * `no_show` - No-show report
         * `recurring` - Repeating job
+        * `safety` - Safety alert
         * `system` - System
     User:
       type: object

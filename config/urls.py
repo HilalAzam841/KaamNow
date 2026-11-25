@@ -9,6 +9,7 @@ from apps.billing.urls import featured_urlpatterns, payment_urlpatterns, subscri
 from apps.chat.views import BookingMessagesReadView, BookingMessagesView
 from apps.common.views import app_config, health
 from apps.tracking.views import BookingLocationView
+from apps.safety.views import BookingShareView, BookingSosView
 from apps.jobs.urls import bookings_router, requests_router
 from apps.offers.urls import offer_urlpatterns, request_offer_urlpatterns
 from apps.promotions.urls import referral_urlpatterns
@@ -33,6 +34,8 @@ api_v1 = [
     path("bookings/<int:booking_id>/messages/", BookingMessagesView.as_view(), name="booking-messages"),
     path("bookings/<int:booking_id>/messages/read/", BookingMessagesReadView.as_view(), name="booking-messages-read"),
     path("bookings/<int:booking_id>/location/", BookingLocationView.as_view(), name="booking-location"),
+    path("bookings/<int:booking_id>/sos/", BookingSosView.as_view(), name="booking-sos"),
+    path("bookings/<int:booking_id>/share/", BookingShareView.as_view(), name="booking-share"),
     path("bookings/", include(bookings_router.urls)),
     path("payments/", include(payment_urlpatterns)),
     path("subscriptions/", include(subscription_urlpatterns)),
@@ -43,6 +46,7 @@ api_v1 = [
     path("promos/", include("apps.promotions.urls")),
     path("favourites/", include("apps.favourites.urls")),
     path("recurring-jobs/", include("apps.recurring.urls")),
+    path("safety/", include("apps.safety.urls")),
     path("referrals/", include(referral_urlpatterns)),
     path("admin/", include("apps.dashboard.urls")),
 ]

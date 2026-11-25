@@ -3,6 +3,7 @@ from rest_framework.routers import DefaultRouter
 
 from apps.promotions.views import AdminPromoCodeViewSet
 from apps.reminders.views import AdminNoShowViewSet
+from apps.safety.views import AdminSosAlertViewSet
 
 from . import views
 
@@ -15,6 +16,7 @@ router.register("complaints", views.AdminComplaintViewSet, basename="admin-compl
 router.register("promo-codes", AdminPromoCodeViewSet, basename="admin-promo-code")
 router.register("payments", views.AdminPaymentViewSet, basename="admin-payment")
 router.register("no-shows", AdminNoShowViewSet, basename="admin-no-show")
+router.register("sos-alerts", AdminSosAlertViewSet, basename="admin-sos-alert")
 router.register("settlements", views.AdminSettlementViewSet, basename="admin-settlement")
 
 urlpatterns = [
