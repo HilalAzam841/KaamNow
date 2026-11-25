@@ -8,7 +8,11 @@ class AppConfig {
   static String get apiBaseUrl => _apiBaseUrl.isEmpty ? Uri.base.origin : _apiBaseUrl;
   static const appVersion = String.fromEnvironment('APP_VERSION', defaultValue: '1.0.0');
 
-  /// Map tiles. OpenStreetMap needs no key; swap for Google Maps once a key is available.
+  /// Google Maps key for the Android and iPhone apps (also set it for the native build, see
+  /// app/README.md). Empty: the apps show OpenStreetMap.
+  static const googleMapsKey = String.fromEnvironment('GOOGLE_MAPS_API_KEY');
+
+  /// OpenStreetMap tiles, used when Google Maps is not set up.
   static const tileUrl = String.fromEnvironment(
     'MAP_TILE_URL',
     defaultValue: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',

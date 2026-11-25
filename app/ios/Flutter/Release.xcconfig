@@ -1,1 +1,4 @@
+#include? "Pods/Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"
 #include "Generated.xcconfig"
+// Google Maps key, written by the GitHub build (or by you, see app/README.md). Not in git.
+#include? "MapsKey.xcconfig"

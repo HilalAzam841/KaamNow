@@ -136,6 +136,8 @@ are readable only by root.
   a number can get at most 5 codes a day.
 - **Firebase push:** put the service-account key at `deploy/secrets/firebase.json`, uncomment its line in
   `docker-compose.yml`, set `FCM_PROJECT_ID` and `FCM_CREDENTIALS_FILE=/run/secrets/firebase.json`, then `docker compose up -d`.
+- **Google Maps on the website:** set `GOOGLE_MAPS_BROWSER_KEY` (a key restricted to your domain, see
+  "Google Maps" in `app/README.md`) and run `docker compose up -d`. No rebuild is needed.
 
 ## Trying the production stack on your own computer
 

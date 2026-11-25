@@ -14,7 +14,7 @@ later, and talks to the backend only through the REST API and the booking WebSoc
 
 **Stage 1 (Backend MVP), Stage 2 (Advanced features) and Stage 3 (Flutter web client) are done,
 and Stage 4 adds the admin dashboard to the web app.** Every backend feature below has its business logic, REST endpoint(s), validation and
-automated tests. All 414 backend tests pass against PostgreSQL 16, and the Flutter app has 84
+automated tests. All 416 backend tests pass against PostgreSQL 16, and the Flutter app has 89
 unit and widget tests plus a browser end-to-end run (see `app/README.md`).
 
 ### Stage 1: Backend MVP
@@ -187,6 +187,17 @@ cash, the worker holds it and owes KaamNow the commission. This stage settles bo
 The money itself moves outside the app: admins send payouts from KaamNow's JazzCash, Easypaisa or bank account.
 Automatic payouts through a gateway's disbursement API can be added later.
 
+### Stage 14: Google Maps
+
+| Feature | Where |
+|---|---|
+| Maps (job location picker, live tracking with the worker's trail, worker base location, admin worker view) use Google Maps once a key is set, on the web, Android and iPhone; OpenStreetMap until then | `app/lib/ui/widgets/map_view.dart`, `app/lib/core/maps/` |
+| Web: the key comes from the server (`GOOGLE_MAPS_BROWSER_KEY`, sent in app config), so adding it needs no rebuild; Google's script loads only then, and the app falls back to OpenStreetMap if it cannot load | `apps/common/views.py`, `maps_loader_web.dart` |
+| Android and iPhone: the key is built in from the GitHub variable `GOOGLE_MAPS_API_KEY` (manifest and Info.plist) | `build.gradle.kts`, `AppDelegate.swift`, `.github/workflows/` |
+| Browser check with and without a key | `app/e2e/maps.js` |
+
+Set it up: see "Google Maps" in `app/README.md`.
+
 **Before going live with online payments:** the JazzCash and Easypaisa adapters follow each
 gateway's published integration scheme and are covered by tests with simulated gateway responses.
 They have **not** been run against the real sandboxes yet, because that needs your merchant
@@ -295,7 +306,7 @@ docker compose up --build
 pytest -q
 ```
 
-The suite has 414 tests and needs a running PostgreSQL (Redis is not needed for tests). It uses the database settings from your
+The suite has 416 tests and needs a running PostgreSQL (Redis is not needed for tests). It uses the database settings from your
 `.env` and creates a separate `test_kaamnow` database. Coverage includes:
 
 - **Authentication**: registration validation, login, suspended accounts, token refresh rotation, logout blacklisting, password reset (single-use token, no account enumeration), throttling.

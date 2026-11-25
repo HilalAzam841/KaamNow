@@ -3,7 +3,8 @@ name: ios
 # Builds the iPhone app on every pull request and push to main, and runs it on an iPhone
 # simulator against a real backend with the demo accounts. No Apple account is needed for this;
 # publishing to the App Store (or TestFlight) needs one, see app/README.md. Push notifications
-# are switched on by the FIREBASE_* repository variables (see app/README.md).
+# are switched on by the FIREBASE_* repository variables, Google Maps by GOOGLE_MAPS_API_KEY
+# (see app/README.md).
 
 on:
   pull_request:
@@ -35,9 +36,15 @@ jobs:
           channel: stable
           cache: true
       - run: flutter pub get
+      - name: Google Maps key (only when the variable is set)
+        env:
+          GOOGLE_MAPS_API_KEY: ${{ vars.GOOGLE_MAPS_API_KEY }}
+        if: env.GOOGLE_MAPS_API_KEY != ''
+        run: echo "GOOGLE_MAPS_API_KEY=$GOOGLE_MAPS_API_KEY" > ios/Flutter/MapsKey.xcconfig
       - name: Build the iPhone app (unsigned)
         run: >
           flutter build ios --release --no-codesign
+          --dart-define=GOOGLE_MAPS_API_KEY=${{ vars.GOOGLE_MAPS_API_KEY }}
           --dart-define=API_BASE_URL=${{ vars.IOS_API_URL || vars.ANDROID_API_URL || 'https://kaamnow.pk' }}
           --dart-define=FIREBASE_PROJECT_ID=${{ vars.FIREBASE_PROJECT_ID }} --dart-define=FIREBASE_API_KEY=${{ vars.FIREBASE_API_KEY }} --dart-define=FIREBASE_SENDER_ID=${{ vars.FIREBASE_SENDER_ID }} --dart-define=FIREBASE_ANDROID_APP_ID=${{ vars.FIREBASE_ANDROID_APP_ID }} --dart-define=FIREBASE_IOS_APP_ID=${{ vars.FIREBASE_IOS_APP_ID }}
           --build-number=${{ github.run_number }}

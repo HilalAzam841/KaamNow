@@ -17,6 +17,10 @@ val keyProps = Properties().apply {
 fun signingValue(prop: String, env: String): String? =
     keyProps.getProperty(prop) ?: System.getenv(env)?.takeIf { it.isNotBlank() }
 val releaseStoreFile = signingValue("storeFile", "KAAMNOW_KEYSTORE")
+val localProps = Properties().apply {
+    val f = rootProject.file("local.properties")
+    if (f.exists()) f.inputStream().use { load(it) }
+}
 
 android {
     namespace = "pk.kaamnow.kaamnow"
@@ -40,6 +44,11 @@ android {
         // flag during build.
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        // Google Maps key (android/local.properties googleMapsApiKey=..., or the GOOGLE_MAPS_API_KEY
+        // environment variable on GitHub). Also pass it as --dart-define=GOOGLE_MAPS_API_KEY so the
+        // app uses Google Maps; without it the app shows OpenStreetMap.
+        manifestPlaceholders["googleMapsApiKey"] = localProps.getProperty("googleMapsApiKey")
+            ?: System.getenv("GOOGLE_MAPS_API_KEY") ?: ""
     }
 
     signingConfigs {

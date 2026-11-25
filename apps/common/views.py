@@ -58,6 +58,13 @@ AppConfigSerializer = inline_serializer(
             name="AppConfigPhoneVerification",
             fields={"required": serializers.BooleanField(), "sms_available": serializers.BooleanField()},
         ),
+        "maps": inline_serializer(
+            name="AppConfigMaps",
+            fields={"provider": serializers.ChoiceField(choices=["google", "openstreetmap"]),
+                    "google_browser_key": serializers.CharField(
+                        help_text="Google Maps key for the web app. Public by design: restrict it to your "
+                        "site's address in Google Cloud. Empty when not set up.")},
+        ),
         "websocket_path": serializers.CharField(),
         "support": inline_serializer(
             name="AppConfigSupport",
@@ -102,6 +109,10 @@ def app_config(request):
             "push_enabled": fcm.is_configured(),
             "web_push": {"enabled": webpush.is_configured(), "public_key": webpush.public_key()},
             "phone_verification": {"required": settings.PHONE_VERIFICATION_REQUIRED, "sms_available": sms.is_available()},
+            "maps": {
+                "provider": "google" if settings.GOOGLE_MAPS_BROWSER_KEY else "openstreetmap",
+                "google_browser_key": settings.GOOGLE_MAPS_BROWSER_KEY,
+            },
             "websocket_path": "/ws/bookings/{booking_id}/?token={access_token}",
             "support": {"email": app["SUPPORT_EMAIL"], "phone": app["SUPPORT_PHONE"]},
         }
