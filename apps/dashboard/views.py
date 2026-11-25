@@ -18,7 +18,7 @@ from apps.accounts import services as account_services
 from apps.accounts.models import User, WorkerDocument, WorkerProfile
 from apps.accounts.serializers import AdminWorkerSerializer
 from apps.billing import services as billing_services
-from apps.billing import wallet
+from apps.billing import refunds, wallet
 from apps.billing.models import (
     Commission,
     FeaturedListing,
@@ -26,11 +26,16 @@ from apps.billing.models import (
     LedgerEntry,
     Payment,
     PlatformSettings,
+    Refund,
     SubscriptionPlan,
     WorkerSettlement,
     WorkerSubscription,
 )
 from apps.billing.serializers import (
+    AdminPaymentSerializer,
+    RefundRequestSerializer,
+    RefundSerializer,
+    ResolvePaymentSerializer,
     CommissionSerializer,
     MarkPayoutPaidSerializer,
     RecordCommissionSerializer,
@@ -239,6 +244,7 @@ class RevenueView(AdminAPIView):
             "commission_collected": money(totals["collected"]),
             "commission_pending": money(totals["pending"]),
             "payments_received": money(payments.aggregate(s=Sum("amount"))["s"]),
+            "refunds_paid": money(Refund.objects.filter(_date_filter(request)).aggregate(s=Sum("amount"))["s"]),
             "payments_by_method": {
                 r["method"]: money(r["s"]) for r in payments.values("method").annotate(s=Sum("amount")).order_by("method")
             },
@@ -469,6 +475,56 @@ class AdminSettlementViewSet(viewsets.ReadOnlyModelViewSet):
         audit(request.user, AuditLog.Action.PAYOUT_REJECTED, settlement, request, amount=money(settlement.amount),
               worker_id=settlement.worker_id, reason=settlement.note)
         return Response(SettlementSerializer(settlement).data)
+
+
+@extend_schema(tags=["admin"])
+class AdminPaymentViewSet(viewsets.ReadOnlyModelViewSet):
+    """All payments. Disputed ones to resolve: `?status=disputed`. Refunded: `?refunded=true`."""
+
+    permission_classes = [IsPlatformAdmin]
+    serializer_class = AdminPaymentSerializer
+    filterset_fields = ["status", "method", "purpose", "booking", "payer"]
+    search_fields = ["reference", "gateway_transaction_id", "payer__full_name", "payer__phone"]
+
+    def get_queryset(self):
+        qs = Payment.objects.select_related("payer", "booking__worker__user").prefetch_related("refunds__created_by")
+        refunded = self.request.query_params.get("refunded", "").lower()
+        if refunded == "true":
+            qs = qs.filter(refunded_amount__gt=0)
+        return qs.order_by("-created_at")
+
+    @extend_schema(tags=["admin"], parameters=[
+        OpenApiParameter("refunded", bool, description="true: only payments with a refund")])
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
+    @extend_schema(tags=["admin"], request=RefundRequestSerializer, responses={201: RefundSerializer},
+                   summary="After sending money back: record a full or partial refund of a completed booking "
+                           "payment, optionally charging the worker's share to their wallet. Audited.")
+    @action(detail=True, methods=["post"])
+    def refund(self, request, pk=None):
+        serializer = RefundRequestSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        refund = refunds.refund_payment(self.get_object(), request.user, **serializer.validated_data)
+        audit(request.user, AuditLog.Action.PAYMENT_REFUNDED, refund.payment, request, amount=money(refund.amount),
+              worker_share=money(refund.worker_share), method=refund.method, reference=refund.reference,
+              reason=refund.reason, complaint_id=refund.complaint_id)
+        return Response(RefundSerializer(refund).data, status=status.HTTP_201_CREATED)
+
+    @extend_schema(tags=["admin"], request=ResolvePaymentSerializer, responses={200: AdminPaymentSerializer},
+                   summary="Resolve a disputed payment after checking the merchant portal: accept, refund or "
+                           "reject. Audited.")
+    @action(detail=True, methods=["post"])
+    def resolve(self, request, pk=None):
+        serializer = ResolvePaymentSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        payment, refund = refunds.resolve_disputed(self.get_object(), request.user, **serializer.validated_data)
+        audit(request.user, AuditLog.Action.PAYMENT_RESOLVED, payment, request,
+              resolution=serializer.validated_data["resolution"], note=serializer.validated_data["note"],
+              amount=money(payment.amount), refund_id=refund.pk if refund else None,
+              reference=refund.reference if refund else None)
+        payment = self.get_queryset().get(pk=payment.pk)
+        return Response(AdminPaymentSerializer(payment).data)
 
 
 class WorkerBalancesView(AdminAPIView):

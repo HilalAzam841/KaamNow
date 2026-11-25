@@ -17,6 +17,7 @@ const adminDestinations = [
   _Dest('/admin/users', 'Users', Icons.people_rounded),
   _Dest('/admin/bookings', 'Jobs', Icons.event_note_rounded),
   _Dest('/admin/revenue', 'Revenue', Icons.payments_rounded),
+  _Dest('/admin/payments', 'Payments', Icons.receipt_long_rounded),
   _Dest('/admin/payouts', 'Payouts', Icons.account_balance_wallet_rounded),
   _Dest('/admin/plans', 'Plans', Icons.workspace_premium_rounded),
   _Dest('/admin/complaints', 'Complaints', Icons.support_agent_rounded),

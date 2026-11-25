@@ -15,6 +15,7 @@ import 'ui/admin/audit_screen.dart';
 import 'ui/admin/complaints_screen.dart' as admin;
 import 'ui/admin/jobs_screen.dart';
 import 'ui/admin/overview_screen.dart';
+import 'ui/admin/payments_screen.dart';
 import 'ui/admin/payouts_screen.dart';
 import 'ui/admin/plans_screen.dart';
 import 'ui/admin/revenue_screen.dart';
@@ -73,6 +74,7 @@ GoRouter buildRouter(Session session) {
           GoRoute(path: '/admin/users', builder: (_, _) => const AdminUsersScreen()),
           GoRoute(path: '/admin/bookings', builder: (_, _) => const AdminJobsScreen()),
           GoRoute(path: '/admin/revenue', builder: (_, _) => const AdminRevenueScreen()),
+          GoRoute(path: '/admin/payments', builder: (_, _) => const AdminPaymentsScreen()),
           GoRoute(path: '/admin/payouts', builder: (_, _) => const AdminPayoutsScreen()),
           GoRoute(path: '/admin/plans', builder: (_, _) => const AdminPlansScreen()),
           GoRoute(path: '/admin/complaints', builder: (_, _) => const admin.AdminComplaintsScreen()),

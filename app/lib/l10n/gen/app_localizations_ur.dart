@@ -1017,6 +1017,11 @@ class AppLocalizationsUr extends AppLocalizations {
   }
 
   @override
+  String paymentRefunded(Object amount) {
+    return 'آپ کی $amount کی ادائیگی واپس کر دی گئی۔';
+  }
+
+  @override
   String get paymentWindowClosed =>
       'گیٹ وے کی تصدیق کے بعد یہ صفحہ اپ ڈیٹ ہو جائے گا۔';
 
@@ -1147,6 +1152,16 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get reconnecting => 'دوبارہ جڑ رہا ہے…';
+
+  @override
+  String refundedToCustomer(Object amount) {
+    return 'گاہک کو واپس کیے گئے: $amount';
+  }
+
+  @override
+  String refundedToYou(Object amount) {
+    return 'آپ کو واپس کیے گئے: $amount';
+  }
 
   @override
   String get reject => 'مسترد کریں';
@@ -1414,6 +1429,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String get statusPendingPayment => 'ادائیگی کا انتظار';
 
   @override
+  String get statusRefunded => 'رقم واپس';
+
+  @override
   String get statusRejected => 'مسترد';
 
   @override
@@ -1594,7 +1612,7 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String walletCommissionOwed(Object amount) {
-    return 'نقد کاموں کا کمیشن: $amount';
+    return 'کمیشن اور کٹوتیاں: $amount';
   }
 
   @override

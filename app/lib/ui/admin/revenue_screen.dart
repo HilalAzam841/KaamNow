@@ -77,6 +77,7 @@ class _AdminRevenueScreenState extends State<AdminRevenueScreen> {
             const SectionTitle('Payments received'),
             Wrap(spacing: 8, children: [
               Chip(label: Text('Total ${rsShort(r['payments_received'])}')),
+              if (r['refunds_paid'] != null) Chip(label: Text('Refunds ${rsShort(r['refunds_paid'])}')),
               for (final e in byMethod.entries) Chip(label: Text('${humanize(e.key)}: ${rsShort(e.value)}')),
               Chip(label: Text('Active featured listings: ${o['active_featured_listings'] ?? 0}')),
               for (final e in subs.entries) Chip(label: Text('${humanize(e.key)} plan: ${e.value} active')),

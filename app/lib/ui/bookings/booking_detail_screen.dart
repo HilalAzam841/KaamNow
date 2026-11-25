@@ -449,7 +449,13 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
         child: ListTile(
           leading: const Icon(Icons.check_circle, color: Colors.green),
           title: Text(context.t.paidAmount(rs(current!.amount)), key: const Key('payment-done')),
-          subtitle: Text(context.t.methodRef(paymentMethodLabel(current.method), current.reference)),
+          subtitle: Text([
+            context.t.methodRef(paymentMethodLabel(current.method), current.reference),
+            if (current.hasRefund)
+              _isWorker
+                  ? context.t.refundedToCustomer(rs(current.refundedAmount))
+                  : context.t.refundedToYou(rs(current.refundedAmount)),
+          ].join('\n'), key: const Key('payment-done-detail')),
         ),
       ));
     } else if (current != null) {
@@ -469,7 +475,10 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
       widgets.add(Text(context.t.customerNotPaid));
     } else {
       final failed = _payments.where((p) => p.status == 'failed' || p.status == 'expired' || p.status == 'disputed');
-      if (failed.isNotEmpty) {
+      final refunded = _payments.where((p) => p.status == 'refunded');
+      if (refunded.isNotEmpty) {
+        widgets.add(Text(context.t.paymentRefunded(rs(refunded.first.amount)), key: const Key('payment-refunded')));
+      } else if (failed.isNotEmpty) {
         widgets.add(Text(context.t.lastAttempt(statusLabel(failed.first.status), failed.first.failureReason),
             style: TextStyle(color: theme.colorScheme.error)));
       }

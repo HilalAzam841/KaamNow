@@ -146,6 +146,70 @@ msgstr "کوڈ بھیج دیا گیا۔"
 msgid "Current password is incorrect."
 msgstr "موجودہ پاس ورڈ غلط ہے۔"
 
+#: apps/billing/refunds.py
+msgid "This complaint is about a different booking."
+msgstr "یہ شکایت کسی اور بکنگ کے بارے میں ہے۔"
+
+#: apps/billing/refunds.py
+msgid "Refund sent"
+msgstr "رقم واپس بھیج دی گئی"
+
+#: apps/billing/refunds.py
+#, python-brace-format
+msgid "We refunded {amount} for payment {reference}. Refund reference: {refund_reference}."
+msgstr "ہم نے ادائیگی {reference} کے {amount} واپس کر دیے۔ ریفنڈ ریفرنس: {refund_reference}۔"
+
+#: apps/billing/refunds.py
+msgid "Only booking payments can be refunded here."
+msgstr "یہاں صرف بکنگ کی ادائیگیاں واپس کی جا سکتی ہیں۔"
+
+#: apps/billing/refunds.py
+msgid "Only a completed payment can be refunded."
+msgstr "صرف مکمل ادائیگی واپس کی جا سکتی ہے۔"
+
+#: apps/billing/refunds.py
+#, python-brace-format
+msgid "You can refund at most {amount}."
+msgstr "آپ زیادہ سے زیادہ {amount} واپس کر سکتے ہیں۔"
+
+#: apps/billing/refunds.py
+msgid "Refund charged to your wallet"
+msgstr "ریفنڈ آپ کے والٹ سے کاٹا گیا"
+
+#: apps/billing/refunds.py
+#, python-brace-format
+msgid "The customer of booking #{id} was refunded {amount}. Your share, {share}, is taken from your wallet."
+msgstr "بکنگ #{id} کے گاہک کو {amount} واپس کیے گئے۔ آپ کا حصہ، {share}، آپ کے والٹ سے کاٹا گیا ہے۔"
+
+#: apps/billing/refunds.py
+msgid "This payment is not disputed."
+msgstr "یہ ادائیگی متنازع نہیں ہے۔"
+
+#: apps/billing/refunds.py
+msgid "Only a booking payment can be accepted. Refund this one instead."
+msgstr "صرف بکنگ کی ادائیگی قبول کی جا سکتی ہے۔ اس کے بجائے یہ رقم واپس کریں۔"
+
+#: apps/billing/refunds.py
+msgid "This booking already has another payment. Refund this one instead."
+msgstr "اس بکنگ کی ایک اور ادائیگی پہلے سے موجود ہے۔ اس کے بجائے یہ رقم واپس کریں۔"
+
+#: apps/billing/refunds.py
+msgid "Give the refund method and its reference."
+msgstr "ریفنڈ کا طریقہ اور اس کا ریفرنس درج کریں۔"
+
+#: apps/billing/refunds.py
+msgid "Payment not received"
+msgstr "ادائیگی موصول نہیں ہوئی"
+
+#: apps/billing/refunds.py
+#, python-brace-format
+msgid "We checked payment {reference} and no money reached KaamNow. Contact support if you were charged."
+msgstr "ہم نے ادائیگی {reference} چیک کی، کام ناؤ کو کوئی رقم نہیں ملی۔ اگر آپ سے رقم کٹی ہے تو سپورٹ سے رابطہ کریں۔"
+
+#: apps/billing/refunds.py
+msgid "Unknown resolution."
+msgstr "نامعلوم فیصلہ۔"
+
 #: apps/billing/serializers.py
 msgid "Benefits must be a list of short strings."
 msgstr "فوائد مختصر جملوں کی فہرست ہونی چاہیے۔"
