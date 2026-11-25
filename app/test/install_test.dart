@@ -81,6 +81,9 @@ void main() {
   });
 
   testWidgets('iPhone users get the Add to Home Screen steps instead of a prompt', (tester) async {
+    tester.view.physicalSize = const Size(1200, 2400);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
     final platform = FakeInstallPlatform(isIos: true);
     await pumpCustomer(tester, InstallController(platform: platform));
     expect(find.textContaining('Add to Home Screen'), findsOneWidget);

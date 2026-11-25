@@ -6,10 +6,13 @@ import '../../l10n/l10n.dart';
 
 /// Loads data once (and on pull-to-refresh), showing spinner / error / content.
 class Loader<T> extends StatefulWidget {
-  const Loader({super.key, required this.load, required this.builder, this.empty});
+  const Loader({super.key, required this.load, required this.builder, this.empty, this.errorBuilder});
   final Future<T> Function() load;
   final Widget Function(BuildContext context, T data, Future<void> Function() reload) builder;
   final bool Function(T data)? empty;
+
+  /// Replaces the default error view (with its Retry button) when loading fails.
+  final Widget Function(BuildContext context, Object error, Future<void> Function() retry)? errorBuilder;
 
   @override
   State<Loader<T>> createState() => LoaderState<T>();
@@ -44,7 +47,9 @@ class LoaderState<T> extends State<Loader<T>> {
   @override
   Widget build(BuildContext context) {
     if (_loading) return const Center(child: CircularProgressIndicator());
-    if (_error != null && _data == null) return ErrorView(error: _error!, onRetry: reload);
+    if (_error != null && _data == null) {
+      return widget.errorBuilder?.call(context, _error!, reload) ?? ErrorView(error: _error!, onRetry: reload);
+    }
     return widget.builder(context, _data as T, reload);
   }
 }

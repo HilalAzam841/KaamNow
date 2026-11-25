@@ -78,13 +78,13 @@ void main() {
     await shot(tester, 'android-02-customer-home');
 
     // Account screen, then Urdu and back.
-    await tapAndWait(tester, find.text('Account').last, find.text('Repeating jobs'));
+    await tapAndWait(tester, find.text('Account').last, find.text('Emergency contacts'));
     expect(find.byKey(const Key('push-switch')), findsNothing);
     await tapAndWait(tester, find.byKey(const Key('language-menu')).hitTestable().first, find.byKey(const Key('language-ur')));
-    await tapAndWait(tester, find.byKey(const Key('language-ur')), find.text('دہرائے جانے والے کام'));
+    await tapAndWait(tester, find.byKey(const Key('language-ur')), find.text('ہنگامی رابطے'));
     await shot(tester, 'android-03-account-urdu');
     await tapAndWait(tester, find.byKey(const Key('language-menu')).hitTestable().first, find.byKey(const Key('language-en')));
-    await tapAndWait(tester, find.byKey(const Key('language-en')), find.text('Repeating jobs'));
+    await tapAndWait(tester, find.byKey(const Key('language-en')), find.text('Emergency contacts'));
     await logOut(tester);
 
     // Worker: signs in and lands on the job feed.

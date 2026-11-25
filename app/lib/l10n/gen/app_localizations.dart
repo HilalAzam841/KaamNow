@@ -128,6 +128,12 @@ abstract class AppLocalizations {
   /// **'Add a service'**
   String get addAService;
 
+  /// No description provided for @addContact.
+  ///
+  /// In en, this message translates to:
+  /// **'Add contact'**
+  String get addContact;
+
   /// No description provided for @addServicesToSeeJobs.
   ///
   /// In en, this message translates to:
@@ -818,6 +824,24 @@ abstract class AppLocalizations {
   /// **'Contact'**
   String get contact;
 
+  /// No description provided for @contactAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'Added.'**
+  String get contactAdded;
+
+  /// No description provided for @contactPhoneLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Mobile number'**
+  String get contactPhoneLabel;
+
+  /// No description provided for @contactRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'Removed.'**
+  String get contactRemoved;
+
   /// No description provided for @continueAction.
   ///
   /// In en, this message translates to:
@@ -829,6 +853,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Copy invite'**
   String get copyInvite;
+
+  /// No description provided for @copyLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy link'**
+  String get copyLink;
 
   /// No description provided for @couldNotGetLocation.
   ///
@@ -1123,6 +1153,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Emergency'**
   String get emergency;
+
+  /// No description provided for @emergencyContacts.
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency contacts'**
+  String get emergencyContacts;
+
+  /// No description provided for @emergencyContactsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Texted when you press SOS during a job'**
+  String get emergencyContactsHint;
 
   /// No description provided for @emergencyFee.
   ///
@@ -1568,6 +1610,12 @@ abstract class AppLocalizations {
   /// **'{count, plural, =1{1 job} other{{count} jobs}}'**
   String jobsCount(int count);
 
+  /// No description provided for @jobsDoneCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 job done} other{{count} jobs done}}'**
+  String jobsDoneCount(int count);
+
   /// No description provided for @jobsNearYou.
   ///
   /// In en, this message translates to:
@@ -1640,6 +1688,18 @@ abstract class AppLocalizations {
   /// **'Done. You will not get these visits any more.'**
   String get leftRepeating;
 
+  /// No description provided for @linkCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Link copied.'**
+  String get linkCopied;
+
+  /// No description provided for @linkExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'This link has expired or was turned off.'**
+  String get linkExpired;
+
   /// No description provided for @live.
   ///
   /// In en, this message translates to:
@@ -1705,6 +1765,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Mark the job as complete?'**
   String get markCompleteQ;
+
+  /// No description provided for @maxContactsReached.
+  ///
+  /// In en, this message translates to:
+  /// **'You have 3 contacts, the most allowed.'**
+  String get maxContactsReached;
 
   /// No description provided for @messageNotSent.
   ///
@@ -1927,6 +1993,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No completed jobs yet.'**
   String get noCompletedJobs;
+
+  /// No description provided for @noEmergencyContacts.
+  ///
+  /// In en, this message translates to:
+  /// **'No emergency contacts yet'**
+  String get noEmergencyContacts;
+
+  /// No description provided for @noEmergencyContactsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Add up to 3 people you trust. When you press SOS during a job, they get a text with a link to follow it.'**
+  String get noEmergencyContactsHint;
 
   /// No description provided for @noMessagesYet.
   ///
@@ -2558,6 +2636,12 @@ abstract class AppLocalizations {
   /// **'Remove'**
   String get remove;
 
+  /// No description provided for @removeContactQ.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove {name}?'**
+  String removeContactQ(String name);
+
   /// No description provided for @removeFromFavourites.
   ///
   /// In en, this message translates to:
@@ -2858,6 +2942,12 @@ abstract class AppLocalizations {
   /// **'Send reset link'**
   String get sendResetLink;
 
+  /// No description provided for @sendSos.
+  ///
+  /// In en, this message translates to:
+  /// **'Send SOS'**
+  String get sendSos;
+
   /// No description provided for @sendToEveryone.
   ///
   /// In en, this message translates to:
@@ -2948,6 +3038,48 @@ abstract class AppLocalizations {
   /// **'Share my live location with the customer'**
   String get shareLiveLocation;
 
+  /// No description provided for @shareTrip.
+  ///
+  /// In en, this message translates to:
+  /// **'Share with family'**
+  String get shareTrip;
+
+  /// No description provided for @shareTripHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Anyone with this link can see the job\'s status and, while the worker is on the way, where they are. It never shows phone numbers or the address. It stops working {when}.'**
+  String shareTripHint(String when);
+
+  /// No description provided for @sharedByName.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} shared this job with you'**
+  String sharedByName(String name);
+
+  /// No description provided for @sharedJobTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Shared job'**
+  String get sharedJobTitle;
+
+  /// No description provided for @sharedLinkEnds.
+  ///
+  /// In en, this message translates to:
+  /// **'This link stops working {when}.'**
+  String sharedLinkEnds(String when);
+
+  /// No description provided for @sharingOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Shared with family until {time}'**
+  String sharingOn(String time);
+
+  /// No description provided for @sharingStopped.
+  ///
+  /// In en, this message translates to:
+  /// **'Sharing stopped. The link no longer works.'**
+  String get sharingStopped;
+
   /// No description provided for @shortBio.
   ///
   /// In en, this message translates to:
@@ -3025,6 +3157,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Nearest'**
   String get sortNearest;
+
+  /// No description provided for @sosBody.
+  ///
+  /// In en, this message translates to:
+  /// **'KaamNow\'s team is alerted at once, and your emergency contacts get a text with a link to follow this job. The other person is not told. If you are in danger, call 15 (police) or 1122 (rescue) first.'**
+  String get sosBody;
+
+  /// No description provided for @sosButton.
+  ///
+  /// In en, this message translates to:
+  /// **'SOS'**
+  String get sosButton;
+
+  /// No description provided for @sosContactsTexted.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No emergency contacts were texted.} =1{1 emergency contact was texted.} other{{count} emergency contacts were texted.}}'**
+  String sosContactsTexted(int count);
+
+  /// No description provided for @sosNoteLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'What is happening? (optional)'**
+  String get sosNoteLabel;
+
+  /// No description provided for @sosOpenBanner.
+  ///
+  /// In en, this message translates to:
+  /// **'Your SOS is open. KaamNow\'s team will call you. If you are in danger, call 15.'**
+  String get sosOpenBanner;
+
+  /// No description provided for @sosSeenBanner.
+  ///
+  /// In en, this message translates to:
+  /// **'KaamNow has seen your SOS and is on it.'**
+  String get sosSeenBanner;
+
+  /// No description provided for @sosSent.
+  ///
+  /// In en, this message translates to:
+  /// **'SOS sent. Our team will call you now.'**
+  String get sosSent;
+
+  /// No description provided for @sosTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Need help?'**
+  String get sosTitle;
 
   /// No description provided for @startRepeating.
   ///
@@ -3230,6 +3410,12 @@ abstract class AppLocalizations {
   /// **'Stop repeating this job?'**
   String get stopRepeatingQ;
 
+  /// No description provided for @stopSharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop sharing'**
+  String get stopSharing;
+
   /// No description provided for @stoppedRepeating.
   ///
   /// In en, this message translates to:
@@ -3325,6 +3511,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Tell us what happened'**
   String get tellUsWhatHappened;
+
+  /// No description provided for @textMyContacts.
+  ///
+  /// In en, this message translates to:
+  /// **'Text it to my emergency contacts'**
+  String get textMyContacts;
 
   /// No description provided for @thanksForReview.
   ///
@@ -3505,6 +3697,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Verification was rejected'**
   String get verificationRejected;
+
+  /// No description provided for @verifiedByKaamNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified by KaamNow'**
+  String get verifiedByKaamNow;
 
   /// No description provided for @verifiedByKaamnow.
   ///
@@ -3715,6 +3913,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This worker is not free on this day. Choose another day.'**
   String get workerNotFreeThatDay;
+
+  /// No description provided for @workerPositionNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Where the worker is now'**
+  String get workerPositionNow;
 
   /// No description provided for @workerProfile.
   ///

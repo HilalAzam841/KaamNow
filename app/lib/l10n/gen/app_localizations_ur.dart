@@ -27,6 +27,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String get addAService => 'سروس شامل کریں';
 
   @override
+  String get addContact => 'رابطہ شامل کریں';
+
+  @override
   String get addServicesToSeeJobs =>
       'متعلقہ کام دیکھنے کے لیے اپنی خدمات شامل کریں۔';
 
@@ -435,10 +438,22 @@ class AppLocalizationsUr extends AppLocalizations {
   String get contact => 'رابطہ';
 
   @override
+  String get contactAdded => 'شامل کر دیا گیا۔';
+
+  @override
+  String get contactPhoneLabel => 'موبائل نمبر';
+
+  @override
+  String get contactRemoved => 'ہٹا دیا گیا۔';
+
+  @override
   String get continueAction => 'جاری رکھیں';
 
   @override
   String get copyInvite => 'دعوت کاپی کریں';
+
+  @override
+  String get copyLink => 'لنک کاپی کریں';
 
   @override
   String get couldNotGetLocation => 'آپ کی لوکیشن نہیں مل سکی۔';
@@ -617,6 +632,13 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get emergency => 'ایمرجنسی';
+
+  @override
+  String get emergencyContacts => 'ہنگامی رابطے';
+
+  @override
+  String get emergencyContactsHint =>
+      'کام کے دوران ایس او ایس دبانے پر انہیں پیغام جاتا ہے';
 
   @override
   String emergencyFee(Object fee) {
@@ -890,6 +912,16 @@ class AppLocalizationsUr extends AppLocalizations {
   }
 
   @override
+  String jobsDoneCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count کام مکمل',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get jobsNearYou => 'آپ کے قریب کام';
 
   @override
@@ -934,6 +966,12 @@ class AppLocalizationsUr extends AppLocalizations {
   String get leftRepeating => 'ہو گیا۔ اب آپ کو یہ کام نہیں ملیں گے۔';
 
   @override
+  String get linkCopied => 'لنک کاپی ہو گیا۔';
+
+  @override
+  String get linkExpired => 'یہ لنک ختم ہو چکا ہے یا بند کر دیا گیا ہے۔';
+
+  @override
   String get live => 'لائیو';
 
   @override
@@ -967,6 +1005,10 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get markCompleteQ => 'کام کو مکمل قرار دیں؟';
+
+  @override
+  String get maxContactsReached =>
+      'آپ کے 3 رابطے ہیں، جو زیادہ سے زیادہ حد ہے۔';
 
   @override
   String get messageNotSent => 'پیغام نہیں بھیجا جا سکا۔';
@@ -1110,6 +1152,13 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get noCompletedJobs => 'ابھی کوئی کام مکمل نہیں ہوا۔';
+
+  @override
+  String get noEmergencyContacts => 'ابھی کوئی ہنگامی رابطہ نہیں';
+
+  @override
+  String get noEmergencyContactsHint =>
+      'زیادہ سے زیادہ 3 قابل اعتماد لوگ شامل کریں۔ جب آپ کام کے دوران ایس او ایس دبائیں گے تو انہیں کام دیکھنے کے لنک کے ساتھ پیغام جائے گا۔';
 
   @override
   String get noMessagesYet => 'ابھی کوئی پیغام نہیں';
@@ -1490,6 +1539,11 @@ class AppLocalizationsUr extends AppLocalizations {
   String get remove => 'ہٹائیں';
 
   @override
+  String removeContactQ(String name) {
+    return '$name کو ہٹائیں؟';
+  }
+
+  @override
   String get removeFromFavourites => 'محفوظ کردہ سے ہٹائیں';
 
   @override
@@ -1664,6 +1718,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String get sendResetLink => 'ری سیٹ لنک بھیجیں';
 
   @override
+  String get sendSos => 'ایس او ایس بھیجیں';
+
+  @override
   String get sendToEveryone => 'سب کو بھیجیں';
 
   @override
@@ -1718,6 +1775,35 @@ class AppLocalizationsUr extends AppLocalizations {
   String get shareLiveLocation => 'گاہک کے ساتھ اپنی لائیو لوکیشن شیئر کریں';
 
   @override
+  String get shareTrip => 'گھر والوں سے شیئر کریں';
+
+  @override
+  String shareTripHint(String when) {
+    return 'اس لنک والا کوئی بھی شخص کام کی صورتحال دیکھ سکتا ہے، اور جب ورکر راستے میں ہو تو وہ کہاں ہے۔ اس میں فون نمبر یا پتا کبھی نظر نہیں آتا۔ یہ $when کام کرنا بند کر دے گا۔';
+  }
+
+  @override
+  String sharedByName(String name) {
+    return '$name نے یہ کام آپ کے ساتھ شیئر کیا ہے';
+  }
+
+  @override
+  String get sharedJobTitle => 'شیئر کیا گیا کام';
+
+  @override
+  String sharedLinkEnds(String when) {
+    return 'یہ لنک $when کام کرنا بند کر دے گا۔';
+  }
+
+  @override
+  String sharingOn(String time) {
+    return 'گھر والوں سے $time تک شیئر کیا گیا';
+  }
+
+  @override
+  String get sharingStopped => 'شیئر کرنا بند ہو گیا۔ لنک اب کام نہیں کرتا۔';
+
+  @override
   String get shortBio => 'مختصر تعارف';
 
   @override
@@ -1755,6 +1841,42 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get sortNearest => 'سب سے قریب';
+
+  @override
+  String get sosBody =>
+      'کام ناؤ کی ٹیم کو فوراً اطلاع ملے گی، اور آپ کے ہنگامی رابطوں کو اس کام کو دیکھنے کا لنک بھیجا جائے گا۔ دوسرے شخص کو نہیں بتایا جائے گا۔ اگر آپ خطرے میں ہیں تو پہلے 15 (پولیس) یا 1122 (ریسکیو) پر کال کریں۔';
+
+  @override
+  String get sosButton => 'ایس او ایس';
+
+  @override
+  String sosContactsTexted(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ہنگامی رابطوں کو پیغام بھیجا گیا۔',
+      zero: 'کسی ہنگامی رابطے کو پیغام نہیں گیا۔',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get sosNoteLabel => 'کیا ہو رہا ہے؟ (اختیاری)';
+
+  @override
+  String get sosOpenBanner =>
+      'آپ کا ایس او ایس کھلا ہے۔ کام ناؤ کی ٹیم آپ کو کال کرے گی۔ اگر آپ خطرے میں ہیں تو 15 پر کال کریں۔';
+
+  @override
+  String get sosSeenBanner =>
+      'کام ناؤ نے آپ کا ایس او ایس دیکھ لیا ہے اور اس پر کام کر رہی ہے۔';
+
+  @override
+  String get sosSent =>
+      'ایس او ایس بھیج دیا گیا۔ ہماری ٹیم ابھی آپ کو کال کرے گی۔';
+
+  @override
+  String get sosTitle => 'مدد چاہیے؟';
 
   @override
   String get startRepeating => 'دہرانا شروع کریں';
@@ -1862,6 +1984,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String get stopRepeatingQ => 'یہ کام دہرانا بند کریں؟';
 
   @override
+  String get stopSharing => 'شیئر کرنا بند کریں';
+
+  @override
   String get stoppedRepeating => 'بند کر دیا گیا۔';
 
   @override
@@ -1912,6 +2037,9 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get tellUsWhatHappened => 'ہمیں بتائیں کیا ہوا';
+
+  @override
+  String get textMyContacts => 'اپنے ہنگامی رابطوں کو بھیجیں';
 
   @override
   String get thanksForReview => 'ریویو کا شکریہ!';
@@ -2017,6 +2145,9 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get verificationRejected => 'تصدیق مسترد ہو گئی';
+
+  @override
+  String get verifiedByKaamNow => 'کام ناؤ سے تصدیق شدہ';
 
   @override
   String get verifiedByKaamnow => 'کام ناؤ سے تصدیق شدہ';
@@ -2136,6 +2267,9 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get workerNotFreeThatDay => 'یہ ورکر اس دن فارغ نہیں۔ دوسرا دن چنیں۔';
+
+  @override
+  String get workerPositionNow => 'ورکر اس وقت کہاں ہے';
 
   @override
   String get workerProfile => 'کاریگر کا پروفائل';

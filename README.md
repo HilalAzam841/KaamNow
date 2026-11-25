@@ -14,7 +14,7 @@ later, and talks to the backend only through the REST API and the booking WebSoc
 
 **Stage 1 (Backend MVP), Stage 2 (Advanced features) and Stage 3 (Flutter web client) are done,
 and Stage 4 adds the admin dashboard to the web app.** Every backend feature below has its business logic, REST endpoint(s), validation and
-automated tests. All 532 backend tests pass against PostgreSQL 16, and the Flutter app has 125
+automated tests. All 546 backend tests pass against PostgreSQL 16, and the Flutter app has 132
 unit and widget tests plus a browser end-to-end run (see `app/README.md`).
 
 ### Stage 1: Backend MVP
@@ -274,6 +274,17 @@ For work that comes back (cleaning, AC service, gardening, tuition): a customer 
 | The customer can skip the next visit, pause and resume (visits missed while paused are skipped), change how often or the next date or the budget, and stop repeating. Recent visits show where each one went | `GET recurring-jobs/`, `PATCH recurring-jobs/{id}/`, `POST recurring-jobs/{id}/skip-next/`, `/pause/`, `/resume/`, `/cancel/`, app: Account → **Repeating jobs** |
 | The worker sees the repeating jobs they do (customer's first name and area only, no address) and can step away. Future visits then go to every free worker nearby, and the customer is told | `POST recurring-jobs/{id}/leave/`, app: Account → **Repeating jobs** |
 
+### Stage 21: safety (SOS and trip sharing)
+
+Strangers come into people's homes, so both sides get a way to raise an alarm, and family can follow a job.
+
+| Feature | Where |
+|---|---|
+| Customers and workers add up to 3 emergency contacts (family or friends) | `GET/POST safety/contacts/`, `DELETE safety/contacts/{id}/`, app: Account → **Emergency contacts** |
+| During a job (and up to an hour after it), a red **SOS** button is on the booking page. Pressing it, after a confirm that says to call 15 or 1122 first if in danger, alerts every admin at once and texts the person's emergency contacts with their number and a link to follow the job. The other side of the booking is **not** told, so pressing SOS never escalates a situation. A worker's last GPS position is attached. Pressing again while an alert is open doesn't make a second one. If SMS fails, the alert still goes through | `POST bookings/{id}/sos/`, `safety` on bookings (`can_sos`, `sos_status`) |
+| Admins see open alerts first, with both phone numbers, the address and the position, mark them as being handled (the person is told) and resolved. Every step is audited | `GET admin/sos-alerts/`, `POST admin/sos-alerts/{id}/handle/`, app: admin **SOS alerts** page |
+| **Share with family** makes a private link (optionally texted to emergency contacts). It shows the job, its status and the worker's name, rating and verification, and the worker's position only while they are on the way. It never shows phone numbers or the address. Only a hash of the link is stored. It stops working 3 hours after the job, when shared again, or when turned off | `POST/DELETE bookings/{id}/share/`, public `GET safety/shared/{token}/`, app: `/share/{token}` page (no sign-in), `TRIP_SHARE_URL` |
+
 **Before going live with online payments:** the JazzCash and Easypaisa adapters follow each
 gateway's published integration scheme and are covered by tests with simulated gateway responses.
 They have **not** been run against the real sandboxes yet, because that needs your merchant
@@ -314,6 +325,7 @@ apps/
   favourites/           FavouriteWorker, recent workers (book again)
   reminders/            BookingReminder, NoShowReport, reminder task
   recurring/            RecurringJob, RecurringVisit, task that posts each visit
+  safety/               EmergencyContact, SosAlert, TripShare (SOS and share links)
 docs/                   openapi.yaml, Postman collection
 scripts/                generate_postman.py
 app/                    Flutter client (web, Android, iPhone): lib/, test/, e2e/, integration_test/
@@ -389,7 +401,7 @@ docker compose up --build
 pytest -q
 ```
 
-The suite has 532 tests and needs a running PostgreSQL (Redis is not needed for tests). It uses the database settings from your
+The suite has 546 tests and needs a running PostgreSQL (Redis is not needed for tests). It uses the database settings from your
 `.env` and creates a separate `test_kaamnow` database. Coverage includes:
 
 - **Authentication**: registration validation, login, suspended accounts, token refresh rotation, logout blacklisting, password reset (single-use token, no account enumeration), throttling.
@@ -410,6 +422,7 @@ The suite has 532 tests and needs a running PostgreSQL (Redis is not needed for 
 - **Favourites and book again**: save, list, remove and privacy of saved workers; recent workers; only the chosen worker is alerted, sees and can offer on a book-again job; refusals with a reason and nothing saved; decline and open to everyone; one worker's free slots.
 - **Reminders and no-shows**: day and hour reminders to both sides exactly once, skipped cases, opting out, each user's language, optional SMS and SMS failures; no-show timing rules for both sides, one report per booking, admin review and audit.
 - **Repeating jobs**: repeat only your own, not-cancelled booking; first-visit limits; each visit posted once, two days ahead, to the usual worker or to everyone when they are not free (nothing half-made left behind); failures reported; missed visits skipped after downtime or a pause; pause, resume, skip, change and stop; the worker sees no address and can step away; notices in each user's language; monthly dates at month ends.
+- **Safety**: emergency contacts (limits, own number, other people's lists); SOS alerts admins, texts contacts with a working link, never tells the other side, uses the worker's last position, survives SMS failures, one open alert at a time, only for the booking's two people and only during the job or an hour after; admin handling with audit; share links store only a hash, show no phone numbers or address, show the worker's position only while on the way, expire, are replaced and turned off; SMS in the user's language.
 - **Complaints** and **scheduled tasks** (including a check that every beat entry points to a registered task).
 
 CI (`.github/workflows/tests.yml`) runs lint, checks for missing migrations, validates the
@@ -449,6 +462,7 @@ be probed), `409` state conflict (already booked, wrong turn, and so on), `429` 
 | Services | `GET services/categories/` · `GET services/categories/{id}/` · admin `POST`/`PATCH` on categories · `GET/POST services/workers/` · `PATCH/DELETE services/workers/{id}/` |
 | Requests | `POST requests/` · `GET requests/` · `GET/PATCH requests/{id}/` · `POST requests/{id}/cancel/` · `GET requests/{id}/nearby-workers/` · `GET requests/slots/?category=&latitude=&longitude=&date=` · `POST requests/{id}/open-to-all/` · `POST requests/{id}/decline/` |
 | Favourites | `GET/POST favourites/` · `DELETE favourites/{worker_id}/` · `GET favourites/recent/` |
+| Safety | `GET/POST safety/contacts/` · `DELETE safety/contacts/{id}/` · `POST bookings/{id}/sos/` · `POST/DELETE bookings/{id}/share/` · `GET safety/shared/{token}/` (public) |
 | Repeating jobs | `GET recurring-jobs/` · `GET/PATCH recurring-jobs/{id}/` · `POST recurring-jobs/from-booking/` · `POST recurring-jobs/{id}/pause/` · `POST recurring-jobs/{id}/resume/` · `POST recurring-jobs/{id}/skip-next/` · `POST recurring-jobs/{id}/cancel/` · `POST recurring-jobs/{id}/leave/` (worker) |
 | Offers | `GET/POST requests/{id}/offers/` · `GET offers/` (worker's own, `?status=`) · `GET/PATCH offers/{id}/` · `POST offers/{id}/accept/` · `POST offers/{id}/reject/` · `POST offers/{id}/negotiate/` · `GET offers/{id}/negotiations/` |
 | Bookings | `GET bookings/` · `GET bookings/{id}/` · `POST bookings/{id}/status/` · `POST bookings/{id}/completion-otp/` · `POST bookings/{id}/complete/` · `POST bookings/{id}/cancel/` · `POST bookings/{id}/no-show/` |
@@ -461,14 +475,14 @@ be probed), `409` state conflict (already booked, wrong turn, and so on), `429` 
 | Complaints | `POST complaints/` · `GET complaints/` · `GET complaints/{id}/` |
 | Reviews | `POST reviews/` · `GET workers/{id}/reviews/` |
 | Notifications | `GET notifications/` · `POST notifications/{id}/read/` · `POST notifications/read-all/` · `GET notifications/unread-count/` · `POST/DELETE notifications/devices/` |
-| Admin | `GET admin/dashboard/` · `GET admin/workers/pending/` · `GET admin/workers/{id}/` · `POST admin/workers/{id}/verify/` · `POST admin/workers/{id}/reject/` · `GET admin/documents/{id}/file/` · `GET admin/users/` · `POST admin/users/{id}/suspend/` · `POST admin/users/{id}/reactivate/` · `GET admin/requests/` · `GET admin/bookings/` · `GET admin/revenue/` · `GET admin/commissions/` · `GET/PATCH admin/settings/commission/` · `GET admin/reports/` · `GET admin/audit-logs/` · `GET/PATCH admin/settings/` · `GET admin/revenue/other/` · `admin/subscription-plans/` (list, create, update) · `admin/featured-plans/` (list, create, update) · `GET admin/subscriptions/` · `POST admin/subscriptions/{id}/activate/` · `GET admin/featured-listings/` · `POST admin/featured-listings/{id}/cancel/` · `GET admin/complaints/` · `POST admin/complaints/{id}/status/` · `GET admin/settlements/` · `POST admin/settlements/{id}/mark-paid/` · `POST admin/settlements/{id}/reject/` · `GET admin/worker-balances/` · `POST admin/workers/{id}/record-commission/` · `GET admin/payments/` · `POST admin/payments/{id}/refund/` · `POST admin/payments/{id}/resolve/` · `admin/promo-codes/` (list, create, update) · `GET admin/no-shows/` · `POST admin/no-shows/{id}/review/` |
+| Admin | `GET admin/dashboard/` · `GET admin/workers/pending/` · `GET admin/workers/{id}/` · `POST admin/workers/{id}/verify/` · `POST admin/workers/{id}/reject/` · `GET admin/documents/{id}/file/` · `GET admin/users/` · `POST admin/users/{id}/suspend/` · `POST admin/users/{id}/reactivate/` · `GET admin/requests/` · `GET admin/bookings/` · `GET admin/revenue/` · `GET admin/commissions/` · `GET/PATCH admin/settings/commission/` · `GET admin/reports/` · `GET admin/audit-logs/` · `GET/PATCH admin/settings/` · `GET admin/revenue/other/` · `admin/subscription-plans/` (list, create, update) · `admin/featured-plans/` (list, create, update) · `GET admin/subscriptions/` · `POST admin/subscriptions/{id}/activate/` · `GET admin/featured-listings/` · `POST admin/featured-listings/{id}/cancel/` · `GET admin/complaints/` · `POST admin/complaints/{id}/status/` · `GET admin/settlements/` · `POST admin/settlements/{id}/mark-paid/` · `POST admin/settlements/{id}/reject/` · `GET admin/worker-balances/` · `POST admin/workers/{id}/record-commission/` · `GET admin/payments/` · `POST admin/payments/{id}/refund/` · `POST admin/payments/{id}/resolve/` · `admin/promo-codes/` (list, create, update) · `GET admin/no-shows/` · `POST admin/no-shows/{id}/review/` · `GET admin/sos-alerts/` · `POST admin/sos-alerts/{id}/handle/` |
 
 Endpoints added beyond the original list, because the flow needs them: `password-reset/confirm`,
 `password-change`, `workers/{id}/` (public card), `offers/{id}/negotiations/`,
 `bookings/{id}/completion-otp/`, `payments/{id}/confirm/`, `payments/earnings/`,
 the notification helpers, and the admin users, suspension, requests, commission settings and audit log endpoints.
 
-Postman: import `docs/KaamNow.postman_collection.json` (129 requests in 12 folders that follow the
+Postman: import `docs/KaamNow.postman_collection.json` (137 requests in 12 folders that follow the
 full flow; test scripts store tokens and ids automatically). Regenerate it with
 `python scripts/generate_postman.py`.
 

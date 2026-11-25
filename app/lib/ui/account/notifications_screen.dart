@@ -10,10 +10,11 @@ import '../widgets/language_button.dart';
 import '../../l10n/l10n.dart';
 
 /// Where a notification should take the user, or null.
-String? notificationTarget(AppNotification n, {required bool isWorker}) {
+String? notificationTarget(AppNotification n, {required bool isWorker, bool isAdmin = false}) {
   final d = n.data;
   final booking = d['booking_id'];
   final request = d['request_id'];
+  if (n.type == 'safety' && isAdmin) return '/admin/sos';
   if (booking != null) return '/bookings/$booking';
   if (request != null) return isWorker ? '/jobs/$request' : '/requests/$request';
   if (n.type == 'verification' && isWorker) return '/worker/profile';
@@ -65,7 +66,7 @@ class NotificationsScreen extends StatelessWidget {
                     isThreeLine: true,
                     onTap: () async {
                       if (!n.isRead) session.api.markNotificationRead(n.id).catchError((_) {});
-                      final target = notificationTarget(n, isWorker: isWorker);
+                      final target = notificationTarget(n, isWorker: isWorker, isAdmin: session.user?.isAdmin == true);
                       if (target != null) await context.push(target);
                       reload();
                     },
