@@ -46,6 +46,10 @@
       "value": ""
     },
     {
+      "key": "share_url",
+      "value": ""
+    },
+    {
       "key": "otp",
       "value": ""
     },
@@ -2400,6 +2404,262 @@
             "body": {
               "mode": "raw",
               "raw": "{\n  \"booking_reminders\": false\n}"
+            }
+          }
+        },
+        {
+          "name": "Add an emergency contact",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/safety/contacts/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "safety",
+                "contacts"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{customer_access}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Ammi\",\n  \"phone\": \"03001112223\"\n}"
+            }
+          }
+        },
+        {
+          "name": "My emergency contacts",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/safety/contacts/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "safety",
+                "contacts"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{customer_access}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Share the job with family (text contacts too)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/bookings/{{booking_id}}/share/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "bookings",
+                "{{booking_id}}",
+                "share"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{customer_access}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"send_to_contacts\": true\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set('share_url', pm.response.json().data.url);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Family: follow a shared job (no login)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/safety/shared/PASTE_TOKEN_FROM_share_url/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "safety",
+                "shared",
+                "PASTE_TOKEN_FROM_share_url"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "Stop sharing",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/bookings/{{booking_id}}/share/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "bookings",
+                "{{booking_id}}",
+                "share"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{customer_access}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Press SOS",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/bookings/{{booking_id}}/sos/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "bookings",
+                "{{booking_id}}",
+                "sos"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{customer_access}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"note\": \"Need help now\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Admin: open SOS alerts",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/sos-alerts/?status=open",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "sos-alerts",
+                "?status=open"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_access}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Admin: on it / resolved (audited)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/sos-alerts/1/handle/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "sos-alerts",
+                "1",
+                "handle"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_access}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"acknowledged\",\n  \"note\": \"Called the customer\"\n}"
             }
           }
         },

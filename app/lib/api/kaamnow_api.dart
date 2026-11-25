@@ -117,6 +117,22 @@ class KaamNowApi {
   /// Invited worker: cannot take this job. It goes to other workers nearby.
   Future<void> declineRequest(int requestId) => client.post('/requests/$requestId/decline/');
 
+  // ---- Safety --------------------------------------------------------------
+  Future<List<EmergencyContact>> emergencyContacts() async =>
+      parseList(await client.get('/safety/contacts/'), EmergencyContact.fromJson);
+  Future<EmergencyContact> addEmergencyContact(String name, String phone) async => EmergencyContact.fromJson(
+      asMap(await client.post('/safety/contacts/', body: {'name': name, 'phone': phone})));
+  Future<void> removeEmergencyContact(int id) => client.delete('/safety/contacts/$id/');
+
+  /// Returns how many emergency contacts were texted.
+  Future<int> raiseSos(int bookingId, {String note = ''}) async =>
+      parseInt(asMap(await client.post('/bookings/$bookingId/sos/', body: {'note': note}))['contacts_texted']);
+  Future<TripShare> shareBooking(int bookingId, {bool sendToContacts = false}) async => TripShare.fromJson(
+      asMap(await client.post('/bookings/$bookingId/share/', body: {'send_to_contacts': sendToContacts})));
+  Future<void> stopSharing(int bookingId) => client.delete('/bookings/$bookingId/share/');
+  Future<SharedJob> sharedJob(String token) async =>
+      SharedJob.fromJson(asMap(await client.get('/safety/shared/${Uri.encodeComponent(token)}/')));
+
   // ---- Repeating jobs ------------------------------------------------------
   Future<List<RecurringJob>> recurringJobs({String? status}) async =>
       Paged.parse(await client.get('/recurring-jobs/', query: {'status': status}), RecurringJob.fromJson).results;

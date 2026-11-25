@@ -10,6 +10,7 @@
   "accountTitle": "Account holder name",
   "add": "Add",
   "addAService": "Add a service",
+  "addContact": "Add contact",
   "addServicesToSeeJobs": "Add the services you offer to see matching jobs.",
   "addTimeOff": "Add days off",
   "address": "Address",
@@ -262,8 +263,12 @@
   "confirmOncePaid": "Confirm once the customer has paid you.",
   "confirmYourNumber": "Confirm your phone number",
   "contact": "Contact",
+  "contactAdded": "Added.",
+  "contactPhoneLabel": "Mobile number",
+  "contactRemoved": "Removed.",
   "continueAction": "Continue",
   "copyInvite": "Copy invite",
+  "copyLink": "Copy link",
   "couldNotGetLocation": "Could not get your location.",
   "couldNotSendLocation": "Could not send your location.",
   "counter": "Counter",
@@ -387,6 +392,8 @@
   "email": "Email",
   "emailOptional": "Email (optional, for password reset)",
   "emergency": "Emergency",
+  "emergencyContacts": "Emergency contacts",
+  "emergencyContactsHint": "Texted when you press SOS during a job",
   "emergencyFee": "Emergency · fee {fee}",
   "@emergencyFee": {
     "placeholders": {
@@ -558,6 +565,14 @@
       }
     }
   },
+  "jobsDoneCount": "{count, plural, =1{1 job done} other{{count} jobs done}}",
+  "@jobsDoneCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "jobsNearYou": "Jobs near you",
   "justNow": "just now",
   "kaamnowCommission": "KaamNow commission",
@@ -595,6 +610,8 @@
   },
   "leaveRepeatingQ": "Stop doing this job?",
   "leftRepeating": "Done. You will not get these visits any more.",
+  "linkCopied": "Link copied.",
+  "linkExpired": "This link has expired or was turned off.",
   "live": "Live",
   "liveTracking": "Live tracking",
   "loadMore": "Load more",
@@ -606,6 +623,7 @@
   "loginWithNewPassword": "You can log in with your new password now.",
   "markAllRead": "Mark all read",
   "markCompleteQ": "Mark the job as complete?",
+  "maxContactsReached": "You have 3 contacts, the most allowed.",
   "messageNotSent": "Message not sent.",
   "messageToCustomer": "Message to the customer (optional)",
   "messagesPrivate": "Messages are private between you and the other person on this booking.",
@@ -718,6 +736,8 @@
   "noComplaintsHint": "If something goes wrong with a job, report it here and KaamNow will look into it.",
   "noCompletedBookings": "No completed bookings",
   "noCompletedJobs": "No completed jobs yet.",
+  "noEmergencyContacts": "No emergency contacts yet",
+  "noEmergencyContactsHint": "Add up to 3 people you trust. When you press SOS during a job, they get a text with a link to follow it.",
   "noMessagesYet": "No messages yet",
   "noOffers": "No offers",
   "noOffersHere": "No offers here",
@@ -921,6 +941,14 @@
   "reject": "Reject",
   "rejectOfferQ": "Reject this offer?",
   "remove": "Remove",
+  "removeContactQ": "Remove {name}?",
+  "@removeContactQ": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "removeFromFavourites": "Remove from saved",
   "removePromo": "Remove",
   "removeServiceQ": "Remove {name}?",
@@ -1025,6 +1053,7 @@
   "sendOffer": "Send offer",
   "sendReport": "Send report",
   "sendResetLink": "Send reset link",
+  "sendSos": "Send SOS",
   "sendToEveryone": "Send to everyone",
   "sendYourPrice": "Send your price",
   "sendingEvery15": "Sending every 15 seconds while this page is open.",
@@ -1058,6 +1087,41 @@
   },
   "settlementPayout": "Payout to you",
   "shareLiveLocation": "Share my live location with the customer",
+  "shareTrip": "Share with family",
+  "shareTripHint": "Anyone with this link can see the job's status and, while the worker is on the way, where they are. It never shows phone numbers or the address. It stops working {when}.",
+  "@shareTripHint": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "sharedByName": "{name} shared this job with you",
+  "@sharedByName": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "sharedJobTitle": "Shared job",
+  "sharedLinkEnds": "This link stops working {when}.",
+  "@sharedLinkEnds": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "sharingOn": "Shared with family until {time}",
+  "@sharingOn": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "sharingStopped": "Sharing stopped. The link no longer works.",
   "shortBio": "Short bio",
   "sixDigitCode": "6-digit code from the customer",
   "skipNextVisit": "Skip next visit",
@@ -1071,6 +1135,21 @@
   "sortMostExperience": "Most experience",
   "sortMostJobs": "Most jobs",
   "sortNearest": "Nearest",
+  "sosBody": "KaamNow's team is alerted at once, and your emergency contacts get a text with a link to follow this job. The other person is not told. If you are in danger, call 15 (police) or 1122 (rescue) first.",
+  "sosButton": "SOS",
+  "sosContactsTexted": "{count, plural, =0{No emergency contacts were texted.} =1{1 emergency contact was texted.} other{{count} emergency contacts were texted.}}",
+  "@sosContactsTexted": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "sosNoteLabel": "What is happening? (optional)",
+  "sosOpenBanner": "Your SOS is open. KaamNow's team will call you. If you are in danger, call 15.",
+  "sosSeenBanner": "KaamNow has seen your SOS and is on it.",
+  "sosSent": "SOS sent. Our team will call you now.",
+  "sosTitle": "Need help?",
   "startRepeating": "Start repeating",
   "startWork": "Start work",
   "startingPriceOptional": "Starting price (optional)",
@@ -1110,6 +1189,7 @@
   "stopRepeating": "Stop repeating",
   "stopRepeatingBody": "No more visits will be posted. Jobs already posted stay as they are.",
   "stopRepeatingQ": "Stop repeating this job?",
+  "stopSharing": "Stop sharing",
   "stoppedRepeating": "Stopped.",
   "subject": "Subject",
   "submit": "Submit",
@@ -1136,6 +1216,7 @@
   "tagline": "Trusted help in Lahore, at your price",
   "tapMapToPin": "Tap the map to place the pin.",
   "tellUsWhatHappened": "Tell us what happened",
+  "textMyContacts": "Text it to my emergency contacts",
   "thanksForReview": "Thanks for your review!",
   "thanksWillReview": "Thanks. KaamNow will review your report.",
   "timeOff": "Days off",
@@ -1206,6 +1287,7 @@
   },
   "verificationDocuments": "Verification documents",
   "verificationRejected": "Verification was rejected",
+  "verifiedByKaamNow": "Verified by KaamNow",
   "verifiedByKaamnow": "Verified by KaamNow",
   "visitFailed": "Could not be posted",
   "visitSentToAll": "Sent to workers nearby",
@@ -1279,6 +1361,7 @@
   "workerDidNotCome": "Worker did not come",
   "workerDidNotComeQ": "Report that the worker did not come?",
   "workerNotFreeThatDay": "This worker is not free on this day. Choose another day.",
+  "workerPositionNow": "Where the worker is now",
   "workerProfile": "Worker profile",
   "workerProfileServicesDocs": "Worker profile, services and documents",
   "workerSaved": "Worker saved. Find them in My workers.",

@@ -173,6 +173,16 @@ folders = [
         req("Report a no-show (cancels the booking)", "POST", "/bookings/{{booking_id}}/no-show/",
             {"note": "Waited 45 minutes, no answer on the phone"}),
         req("Turn job reminders off", "PATCH", "/auth/me/", {"booking_reminders": False}),
+        req("Add an emergency contact", "POST", "/safety/contacts/", {"name": "Ammi", "phone": "03001112223"}),
+        req("My emergency contacts", "GET", "/safety/contacts/"),
+        req("Share the job with family (text contacts too)", "POST", "/bookings/{{booking_id}}/share/",
+            {"send_to_contacts": True}, tests=[save("share_url", ".url")]),
+        req("Family: follow a shared job (no login)", "GET", "/safety/shared/PASTE_TOKEN_FROM_share_url/", token=None),
+        req("Stop sharing", "DELETE", "/bookings/{{booking_id}}/share/"),
+        req("Press SOS", "POST", "/bookings/{{booking_id}}/sos/", {"note": "Need help now"}),
+        req("Admin: open SOS alerts", "GET", "/admin/sos-alerts/?status=open", token="admin_access"),
+        req("Admin: on it / resolved (audited)", "POST", "/admin/sos-alerts/1/handle/",
+            {"status": "acknowledged", "note": "Called the customer"}, token="admin_access"),
         req("Repeat this job every week", "POST", "/recurring-jobs/from-booking/",
             {"booking": "{{booking_id}}", "frequency": "weekly", "first_visit": "2026-12-08T15:00:00+05:00"},
             tests=[save("recurring_id", ".id")]),
@@ -284,7 +294,7 @@ collection = {
     "variable": [{"key": "base_url", "value": "http://localhost:8000/api/v1"}] + [
         {"key": k, "value": ""} for k in (
             "customer_access", "customer_refresh", "worker_access", "admin_access", "worker_id", "request_id",
-            "offer_id", "booking_id", "recurring_id", "otp", "payment_id", "time_off_id", "direct_request_id",
+            "offer_id", "booking_id", "recurring_id", "share_url", "otp", "payment_id", "time_off_id", "direct_request_id",
         )
     ],
     "item": [{"name": name, "item": items} for name, items in folders],

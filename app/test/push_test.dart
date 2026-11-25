@@ -118,6 +118,9 @@ void main() {
   });
 
   testWidgets('the account switch turns them off and tells the server', (tester) async {
+    tester.view.physicalSize = const Size(1200, 2400);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
     final platform = FakePushPlatform(permission: 'granted', existing: subscriptionJson());
     final h = await pumpSignedIn(tester, PushController(platform: platform));
     expect(h.backend.callsTo('POST /notifications/web-push/subscribe/'), hasLength(1),

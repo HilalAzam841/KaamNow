@@ -27,6 +27,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addAService => 'Add a service';
 
   @override
+  String get addContact => 'Add contact';
+
+  @override
   String get addServicesToSeeJobs =>
       'Add the services you offer to see matching jobs.';
 
@@ -436,10 +439,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get contact => 'Contact';
 
   @override
+  String get contactAdded => 'Added.';
+
+  @override
+  String get contactPhoneLabel => 'Mobile number';
+
+  @override
+  String get contactRemoved => 'Removed.';
+
+  @override
   String get continueAction => 'Continue';
 
   @override
   String get copyInvite => 'Copy invite';
+
+  @override
+  String get copyLink => 'Copy link';
 
   @override
   String get couldNotGetLocation => 'Could not get your location.';
@@ -619,6 +634,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get emergency => 'Emergency';
+
+  @override
+  String get emergencyContacts => 'Emergency contacts';
+
+  @override
+  String get emergencyContactsHint => 'Texted when you press SOS during a job';
 
   @override
   String emergencyFee(Object fee) {
@@ -891,6 +912,17 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String jobsDoneCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count jobs done',
+      one: '1 job done',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get jobsNearYou => 'Jobs near you';
 
   @override
@@ -935,6 +967,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get leftRepeating => 'Done. You will not get these visits any more.';
 
   @override
+  String get linkCopied => 'Link copied.';
+
+  @override
+  String get linkExpired => 'This link has expired or was turned off.';
+
+  @override
   String get live => 'Live';
 
   @override
@@ -968,6 +1006,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get markCompleteQ => 'Mark the job as complete?';
+
+  @override
+  String get maxContactsReached => 'You have 3 contacts, the most allowed.';
 
   @override
   String get messageNotSent => 'Message not sent.';
@@ -1109,6 +1150,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noCompletedJobs => 'No completed jobs yet.';
+
+  @override
+  String get noEmergencyContacts => 'No emergency contacts yet';
+
+  @override
+  String get noEmergencyContactsHint =>
+      'Add up to 3 people you trust. When you press SOS during a job, they get a text with a link to follow it.';
 
   @override
   String get noMessagesYet => 'No messages yet';
@@ -1488,6 +1536,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get remove => 'Remove';
 
   @override
+  String removeContactQ(String name) {
+    return 'Remove $name?';
+  }
+
+  @override
   String get removeFromFavourites => 'Remove from saved';
 
   @override
@@ -1664,6 +1717,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sendResetLink => 'Send reset link';
 
   @override
+  String get sendSos => 'Send SOS';
+
+  @override
   String get sendToEveryone => 'Send to everyone';
 
   @override
@@ -1718,6 +1774,35 @@ class AppLocalizationsEn extends AppLocalizations {
   String get shareLiveLocation => 'Share my live location with the customer';
 
   @override
+  String get shareTrip => 'Share with family';
+
+  @override
+  String shareTripHint(String when) {
+    return 'Anyone with this link can see the job\'s status and, while the worker is on the way, where they are. It never shows phone numbers or the address. It stops working $when.';
+  }
+
+  @override
+  String sharedByName(String name) {
+    return '$name shared this job with you';
+  }
+
+  @override
+  String get sharedJobTitle => 'Shared job';
+
+  @override
+  String sharedLinkEnds(String when) {
+    return 'This link stops working $when.';
+  }
+
+  @override
+  String sharingOn(String time) {
+    return 'Shared with family until $time';
+  }
+
+  @override
+  String get sharingStopped => 'Sharing stopped. The link no longer works.';
+
+  @override
   String get shortBio => 'Short bio';
 
   @override
@@ -1755,6 +1840,41 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sortNearest => 'Nearest';
+
+  @override
+  String get sosBody =>
+      'KaamNow\'s team is alerted at once, and your emergency contacts get a text with a link to follow this job. The other person is not told. If you are in danger, call 15 (police) or 1122 (rescue) first.';
+
+  @override
+  String get sosButton => 'SOS';
+
+  @override
+  String sosContactsTexted(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count emergency contacts were texted.',
+      one: '1 emergency contact was texted.',
+      zero: 'No emergency contacts were texted.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get sosNoteLabel => 'What is happening? (optional)';
+
+  @override
+  String get sosOpenBanner =>
+      'Your SOS is open. KaamNow\'s team will call you. If you are in danger, call 15.';
+
+  @override
+  String get sosSeenBanner => 'KaamNow has seen your SOS and is on it.';
+
+  @override
+  String get sosSent => 'SOS sent. Our team will call you now.';
+
+  @override
+  String get sosTitle => 'Need help?';
 
   @override
   String get startRepeating => 'Start repeating';
@@ -1862,6 +1982,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get stopRepeatingQ => 'Stop repeating this job?';
 
   @override
+  String get stopSharing => 'Stop sharing';
+
+  @override
   String get stoppedRepeating => 'Stopped.';
 
   @override
@@ -1912,6 +2035,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tellUsWhatHappened => 'Tell us what happened';
+
+  @override
+  String get textMyContacts => 'Text it to my emergency contacts';
 
   @override
   String get thanksForReview => 'Thanks for your review!';
@@ -2015,6 +2141,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get verificationRejected => 'Verification was rejected';
+
+  @override
+  String get verifiedByKaamNow => 'Verified by KaamNow';
 
   @override
   String get verifiedByKaamnow => 'Verified by KaamNow';
@@ -2135,6 +2264,9 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get workerNotFreeThatDay =>
       'This worker is not free on this day. Choose another day.';
+
+  @override
+  String get workerPositionNow => 'Where the worker is now';
 
   @override
   String get workerProfile => 'Worker profile';

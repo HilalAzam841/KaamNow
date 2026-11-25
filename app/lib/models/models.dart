@@ -340,7 +340,7 @@ class Booking {
       required this.status, required this.worker, required this.customerName, this.contact = const {},
       this.cancelReason = '', this.completedAt, this.statusHistory = const [], this.commission,
       this.hasReview = false, this.createdAt, this.durationMinutes = 120, this.noShowReported,
-      this.canReportNoShow, this.noShowOpensAt});
+      this.canReportNoShow, this.noShowOpensAt, this.canSos = false, this.sosStatus, this.sharingUntil});
 
   factory Booking.fromJson(Map<String, dynamic> j) => Booking(
         id: parseInt(j['id']),
@@ -364,6 +364,9 @@ class Booking {
         noShowReported: asMap(j['no_show'])['reported'] as String?,
         canReportNoShow: asMap(j['no_show'])['you_can_report'] as String?,
         noShowOpensAt: parseDate(asMap(j['no_show'])['opens_at']),
+        canSos: asMap(j['safety'])['can_sos'] == true,
+        sosStatus: asMap(j['safety'])['sos_status'] as String?,
+        sharingUntil: parseDate(asMap(j['safety'])['sharing_until']),
         createdAt: parseDate(j['created_at']),
       );
 
@@ -391,6 +394,15 @@ class Booking {
 
   /// Who the signed-in user may report as a no-show ('worker' or 'customer'), from [noShowOpensAt].
   final String? canReportNoShow;
+
+  /// The SOS button is shown (during the job and up to an hour after).
+  final bool canSos;
+
+  /// The viewer's own SOS: open or acknowledged, null when none is open.
+  final String? sosStatus;
+
+  /// When the viewer's trip-sharing link stops working, or null when not shared.
+  final DateTime? sharingUntil;
   final DateTime? noShowOpensAt;
   final DateTime? createdAt;
 
@@ -1017,4 +1029,71 @@ class RecurringJob {
 
   bool get isActive => status == 'active';
   bool get isPaused => status == 'paused';
+}
+
+class EmergencyContact {
+  EmergencyContact({required this.id, required this.name, required this.phone});
+  factory EmergencyContact.fromJson(Map<String, dynamic> j) =>
+      EmergencyContact(id: parseInt(j['id']), name: str(j['name']), phone: str(j['phone']));
+  final int id;
+  final String name;
+  final String phone;
+}
+
+/// A private trip-sharing link. The url is only shown when it is made.
+class TripShare {
+  TripShare({required this.url, this.expiresAt, this.contactsTexted = 0});
+  factory TripShare.fromJson(Map<String, dynamic> j) => TripShare(
+      url: str(j['url']), expiresAt: parseDate(j['expires_at']), contactsTexted: parseInt(j['contacts_texted']));
+  final String url;
+  final DateTime? expiresAt;
+  final int contactsTexted;
+}
+
+/// What family sees with a shared link: no phone numbers and no address.
+class SharedJob {
+  SharedJob({required this.title, required this.categoryName, this.area = '', required this.status,
+      this.preferredTime, this.durationMinutes = 120, required this.sharedBy, this.customerName = '',
+      required this.workerName, this.workerVerified = false, this.workerRating = '0', this.workerJobs = 0,
+      this.workerLat, this.workerLng, this.locationAt, this.expiresAt});
+
+  factory SharedJob.fromJson(Map<String, dynamic> j) {
+    final w = asMap(j['worker']);
+    final loc = j['worker_location'] == null ? null : asMap(j['worker_location']);
+    return SharedJob(
+      title: str(j['title']),
+      categoryName: str(j['category_name']),
+      area: str(j['area']),
+      status: str(j['status']),
+      preferredTime: parseDate(j['preferred_time']),
+      durationMinutes: parseInt(j['duration_minutes'], 120),
+      sharedBy: str(j['shared_by']),
+      customerName: str(j['customer_name']),
+      workerName: str(w['name']),
+      workerVerified: w['is_verified'] == true,
+      workerRating: str(w['average_rating']),
+      workerJobs: parseInt(w['completed_jobs_count']),
+      workerLat: loc == null ? null : double.tryParse(str(loc['latitude'])),
+      workerLng: loc == null ? null : double.tryParse(str(loc['longitude'])),
+      locationAt: loc == null ? null : parseDate(loc['recorded_at']),
+      expiresAt: parseDate(j['expires_at']),
+    );
+  }
+
+  final String title;
+  final String categoryName;
+  final String area;
+  final String status;
+  final DateTime? preferredTime;
+  final int durationMinutes;
+  final String sharedBy;
+  final String customerName;
+  final String workerName;
+  final bool workerVerified;
+  final String workerRating;
+  final int workerJobs;
+  final double? workerLat;
+  final double? workerLng;
+  final DateTime? locationAt;
+  final DateTime? expiresAt;
 }

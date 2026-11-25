@@ -24,6 +24,7 @@ class Notification(models.Model):
         REMINDER = "reminder", "Booking reminder"
         NO_SHOW = "no_show", "No-show report"
         RECURRING = "recurring", "Repeating job"
+        SAFETY = "safety", "Safety alert"
         SYSTEM = "system", "System"
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="notifications")

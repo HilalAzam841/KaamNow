@@ -156,6 +156,12 @@ class AdminApi {
   Future<AdminNoShow> reviewNoShow(int id, String review, {String note = ''}) async => AdminNoShow.fromJson(
       asMap(await client.post('/admin/no-shows/$id/review/', body: {'review': review, 'note': note})));
 
+  // ---- SOS alerts -------------------------------------------------------------
+  Future<Paged<AdminSosAlert>> sosAlerts({String? status, int page = 1}) async => Paged.parse(
+      await client.get('/admin/sos-alerts/', query: {'status': status, 'page': page}), AdminSosAlert.fromJson);
+  Future<AdminSosAlert> handleSos(int id, String status, {String note = ''}) async => AdminSosAlert.fromJson(
+      asMap(await client.post('/admin/sos-alerts/$id/handle/', body: {'status': status, 'note': note})));
+
   // ---- complaints & audit ------------------------------------------------
   Future<Paged<AdminComplaint>> complaints({String? status, int page = 1}) async =>
       Paged.parse(await client.get('/admin/complaints/', query: {'status': status, 'page': page}),

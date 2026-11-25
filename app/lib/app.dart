@@ -43,6 +43,8 @@ import 'ui/worker/schedule_screen.dart';
 import 'ui/admin/no_shows_screen.dart';
 import 'ui/customer/my_workers_screen.dart';
 import 'ui/recurring/recurring_screen.dart';
+import 'ui/safety/safety.dart';
+import 'ui/admin/sos_screen.dart';
 import 'ui/shell/home_shell.dart';
 import 'ui/worker/earnings_screen.dart';
 import 'ui/worker/job_detail_screen.dart';
@@ -86,6 +88,7 @@ GoRouter buildRouter(Session session) {
           GoRoute(path: '/admin/plans', builder: (_, _) => const AdminPlansScreen()),
           GoRoute(path: '/admin/complaints', builder: (_, _) => const admin.AdminComplaintsScreen()),
           GoRoute(path: '/admin/no-shows', builder: (_, _) => const AdminNoShowsScreen()),
+          GoRoute(path: '/admin/sos', builder: (_, _) => const AdminSosScreen()),
           GoRoute(path: '/admin/settings', builder: (_, _) => const AdminSettingsScreen()),
           GoRoute(path: '/admin/audit', builder: (_, _) => const AdminAuditScreen()),
         ],
@@ -123,6 +126,8 @@ GoRouter buildRouter(Session session) {
       GoRoute(path: '/worker/schedule', builder: (_, _) => const ScheduleScreen()),
       GoRoute(path: '/my-workers', builder: (_, _) => const MyWorkersScreen()),
       GoRoute(path: '/recurring', builder: (_, _) => const RecurringJobsScreen()),
+      GoRoute(path: '/safety/contacts', builder: (_, _) => const EmergencyContactsScreen()),
+      GoRoute(path: '/share/:token', builder: (_, s) => SharedJobScreen(token: s.pathParameters['token']!)),
       GoRoute(path: '/worker/earnings', builder: (_, _) => const EarningsScreen()),
       GoRoute(path: '/worker/plans', builder: (_, _) => const PlansScreen()),
       GoRoute(path: '/complaints', builder: (_, _) => const ComplaintsScreen()),
@@ -142,7 +147,7 @@ String? redirectFor(Session session, String location) {
   final uri = Uri.parse(location);
   final path = uri.path.isEmpty ? '/' : uri.path;
   final isAuthRoute = _authRoutes.contains(path);
-  if (_publicRoutes.contains(path)) return null;
+  if (_publicRoutes.contains(path) || path.startsWith('/share/')) return null;
   final from = uri.queryParameters['from'];
   // An invite link (/register?ref=...) keeps its code through the splash screen.
   final keep = !isAuthRoute || uri.queryParameters.containsKey('ref');

@@ -1224,6 +1224,70 @@ msgstr "نیا ریویو"
 msgid "You received a {rating}-star review."
 msgstr "آپ کو {rating} اسٹار کا ریویو ملا۔"
 
+#: apps/safety/serializers.py
+msgid "Enter a name."
+msgstr "نام لکھیں۔"
+
+#: apps/safety/serializers.py
+msgid "Send both latitude and longitude, or neither."
+msgstr "عرض بلد اور طول بلد دونوں بھیجیں، یا کوئی بھی نہیں۔"
+
+#: apps/safety/services.py
+msgid "This number is already one of your emergency contacts."
+msgstr "یہ نمبر پہلے ہی آپ کے ہنگامی رابطوں میں شامل ہے۔"
+
+#: apps/safety/services.py
+msgid "Add someone else's number, not your own."
+msgstr "اپنا نہیں، کسی اور کا نمبر شامل کریں۔"
+
+#: apps/safety/services.py
+msgid "You can add up to 3 emergency contacts. Remove one first."
+msgstr "آپ زیادہ سے زیادہ 3 ہنگامی رابطے شامل کر سکتے ہیں۔ پہلے کوئی ایک ہٹائیں۔"
+
+#: apps/safety/services.py
+msgid "A job can only be shared while it is booked or under way."
+msgstr "کام صرف اس وقت شیئر کیا جا سکتا ہے جب وہ بک ہو یا جاری ہو۔"
+
+#: apps/safety/services.py
+msgid "Add an emergency contact first."
+msgstr "پہلے کوئی ہنگامی رابطہ شامل کریں۔"
+
+#: apps/safety/services.py
+#, python-brace-format
+msgid "KaamNow: {name} shared a job with you. Follow it here: {url}"
+msgstr "کام ناؤ: {name} نے آپ کے ساتھ ایک کام شیئر کیا ہے۔ یہاں دیکھیں: {url}"
+
+#: apps/safety/services.py
+msgid "SOS is only available during a job. If you are in danger, call 15."
+msgstr "ایس او ایس صرف کام کے دوران دستیاب ہے۔ اگر آپ خطرے میں ہیں تو 15 پر کال کریں۔"
+
+#: apps/safety/services.py
+#, python-brace-format
+msgid "SOS: {name} needs help"
+msgstr "ایس او ایس: {name} کو مدد چاہیے"
+
+#: apps/safety/services.py
+#, python-brace-format
+msgid "Booking #{id}, {title}. Call them now."
+msgstr "بکنگ نمبر {id}، {title}۔ ابھی انہیں کال کریں۔"
+
+#: apps/safety/services.py
+#, python-brace-format
+msgid "KaamNow SOS: {name} pressed the help button during a job. Please call them now on {phone}."
+msgstr "کام ناؤ ایس او ایس: {name} نے کام کے دوران مدد کا بٹن دبایا ہے۔ براہ کرم ابھی انہیں {phone} پر کال کریں۔"
+
+#: apps/safety/services.py
+msgid "This alert is already resolved."
+msgstr "یہ الرٹ پہلے ہی حل ہو چکا ہے۔"
+
+#: apps/safety/services.py
+msgid "KaamNow has seen your SOS"
+msgstr "کام ناؤ نے آپ کا ایس او ایس دیکھ لیا ہے"
+
+#: apps/safety/services.py
+msgid "Our team is on it and will call you. If you are in danger, call 15."
+msgstr "ہماری ٹیم اس پر کام کر رہی ہے اور آپ کو کال کرے گی۔ اگر آپ خطرے میں ہیں تو 15 پر کال کریں۔"
+
 #: apps/scheduling/serializers.py
 msgid "Time off can be at most 90 days at once."
 msgstr "ایک بار میں زیادہ سے زیادہ 90 دن کی چھٹی لی جا سکتی ہے۔"

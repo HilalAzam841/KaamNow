@@ -52,10 +52,10 @@ void main() {
   }
 
   Future<void> logOut(WidgetTester tester) async {
-    await tapAndWait(tester, find.text('Account').last, find.byKey(const Key('account-invite')));
+    await tapAndWait(tester, find.text('Account').last, find.byKey(const Key('account-safety')));
     // On a phone screen the worker's account list is longer than the screen.
     await tester.scrollUntilVisible(find.byKey(const Key('logout')), 200,
-        scrollable: find.ancestor(of: find.byKey(const Key('account-invite')), matching: find.byType(Scrollable)).first);
+        scrollable: find.ancestor(of: find.byKey(const Key('account-safety')), matching: find.byType(Scrollable)).first);
     await tester.ensureVisible(find.byKey(const Key('logout')));
     await tester.pump(const Duration(milliseconds: 500));
     await tester.tap(find.byKey(const Key('logout')).hitTestable());
@@ -78,13 +78,13 @@ void main() {
     await shot(tester, 'android-02-customer-home');
 
     // Account screen, then Urdu and back.
-    await tapAndWait(tester, find.text('Account').last, find.text('Repeating jobs'));
+    await tapAndWait(tester, find.text('Account').last, find.text('Emergency contacts'));
     expect(find.byKey(const Key('push-switch')), findsNothing);
     await tapAndWait(tester, find.byKey(const Key('language-menu')).hitTestable().first, find.byKey(const Key('language-ur')));
-    await tapAndWait(tester, find.byKey(const Key('language-ur')), find.text('دہرائے جانے والے کام'));
+    await tapAndWait(tester, find.byKey(const Key('language-ur')), find.text('ہنگامی رابطے'));
     await shot(tester, 'android-03-account-urdu');
     await tapAndWait(tester, find.byKey(const Key('language-menu')).hitTestable().first, find.byKey(const Key('language-en')));
-    await tapAndWait(tester, find.byKey(const Key('language-en')), find.text('Repeating jobs'));
+    await tapAndWait(tester, find.byKey(const Key('language-en')), find.text('Emergency contacts'));
     await logOut(tester);
 
     // Worker: signs in and lands on the job feed.

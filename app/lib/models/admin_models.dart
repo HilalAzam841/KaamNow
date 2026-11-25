@@ -349,3 +349,55 @@ class AdminNoShow {
   final String adminNote;
   final DateTime? createdAt;
 }
+
+/// An SOS raised during a job, with both phone numbers so an admin can call straight away.
+class AdminSosAlert {
+  AdminSosAlert({required this.id, required this.bookingId, required this.bookingTitle, this.bookingStatus = '',
+      this.address = '', required this.role, required this.raisedByName, required this.raisedByPhone,
+      this.otherName = '', this.otherPhone = '', this.otherRole = '', this.latitude, this.longitude,
+      this.note = '', required this.status, this.contactsTexted = 0, this.handledByName, this.adminNote = '',
+      this.createdAt});
+  factory AdminSosAlert.fromJson(Map<String, dynamic> j) {
+    final other = asMap(j['other_party']);
+    return AdminSosAlert(
+      id: parseInt(j['id']),
+      bookingId: parseInt(j['booking']),
+      bookingTitle: str(j['booking_title']),
+      bookingStatus: str(j['booking_status']),
+      address: str(j['address']),
+      role: str(j['role']),
+      raisedByName: str(j['raised_by_name']),
+      raisedByPhone: str(j['raised_by_phone']),
+      otherName: str(other['name']),
+      otherPhone: str(other['phone']),
+      otherRole: str(other['role']),
+      latitude: j['latitude'] as String?,
+      longitude: j['longitude'] as String?,
+      note: str(j['note']),
+      status: str(j['status']),
+      contactsTexted: parseInt(j['contacts_texted']),
+      handledByName: j['handled_by_name'] as String?,
+      adminNote: str(j['admin_note']),
+      createdAt: parseDate(j['created_at']),
+    );
+  }
+  final int id;
+  final int bookingId;
+  final String bookingTitle;
+  final String bookingStatus;
+  final String address;
+  final String role;
+  final String raisedByName;
+  final String raisedByPhone;
+  final String otherName;
+  final String otherPhone;
+  final String otherRole;
+  final String? latitude;
+  final String? longitude;
+  final String note;
+  final String status;
+  final int contactsTexted;
+  final String? handledByName;
+  final String adminNote;
+  final DateTime? createdAt;
+}

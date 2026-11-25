@@ -17,6 +17,7 @@ import '../widgets/language_button.dart';
 import '../widgets/map_view.dart';
 import '../widgets/offer_widgets.dart';
 import '../recurring/recurring_screen.dart';
+import '../safety/safety.dart';
 import 'promo_box.dart';
 import '../../l10n/l10n.dart';
 
@@ -255,6 +256,19 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
     final b = _booking;
     return Scaffold(
       appBar: AppBar(title: Text(b == null ? context.t.booking : context.t.bookingNumber(b.id)), actions: [
+        if (b != null && b.canSos)
+          Padding(
+            padding: const EdgeInsetsDirectional.only(end: 4),
+            child: FilledButton(
+              key: const Key('sos'),
+              style: FilledButton.styleFrom(
+                  backgroundColor: Colors.red, foregroundColor: Colors.white, visualDensity: VisualDensity.compact),
+              onPressed: () async {
+                if (await showSosDialog(context, b)) _load();
+              },
+              child: Text(context.t.sosButton),
+            ),
+          ),
         if (b != null)
           IconButton(
             tooltip: context.t.chat,
@@ -276,6 +290,7 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
               onRefresh: _load,
               child: PageBody(
                 child: ListView(padding: const EdgeInsets.all(16), children: [
+                  if (b.sosStatus != null) SosBanner(status: b.sosStatus!),
                   _header(b),
                   if (b.isActive) ..._contact(b),
                   if (b.isActive) ..._tracking(b),
@@ -468,6 +483,17 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
     }
     if (const {'confirmed', 'on_the_way', 'arrived'}.contains(b.status)) {
       buttons.add(TextButton(key: const Key('cancel-booking'), onPressed: _cancel, child: Text(context.t.cancelBooking)));
+    }
+    if (b.isActive) {
+      buttons.add(OutlinedButton.icon(
+        key: const Key('share-trip'),
+        onPressed: () async {
+          await showShareSheet(context, b);
+          _load();
+        },
+        icon: const Icon(Icons.share_location),
+        label: Text(b.sharingUntil != null ? context.t.sharingOn(clock(b.sharingUntil!)) : context.t.shareTrip),
+      ));
     }
     if (!_isWorker && b.status != 'cancelled') {
       buttons.add(OutlinedButton.icon(
