@@ -51,6 +51,15 @@ class PlatformSettings(TimeStampedModel):
         validators=[MinValueValidator(Decimal("0")), MaxValueValidator(Decimal("90"))],
         help_text="Promo codes and credit together can take at most this share off a booking.",
     )
+    reminder_sms_enabled = models.BooleanField(
+        default=False,
+        help_text="Also send the one-hour job reminder by SMS (costs money per message). Push and in-app "
+                  "reminders are always sent.",
+    )
+    no_show_grace_minutes = models.PositiveSmallIntegerField(
+        default=30, validators=[MinValueValidator(10), MaxValueValidator(180)],
+        help_text="How long after the start time (worker) or after arriving (customer) a no-show can be reported.",
+    )
     updated_by = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name="+"
     )

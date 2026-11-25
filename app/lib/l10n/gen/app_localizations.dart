@@ -398,6 +398,18 @@ abstract class AppLocalizations {
   /// **'Booking #{id} · {price}'**
   String bookingNumberPrice(Object id, Object price);
 
+  /// No description provided for @bookingRemindersHint.
+  ///
+  /// In en, this message translates to:
+  /// **'A reminder the day before and an hour before each booked job'**
+  String get bookingRemindersHint;
+
+  /// No description provided for @bookingRemindersSetting.
+  ///
+  /// In en, this message translates to:
+  /// **'Job reminders'**
+  String get bookingRemindersSetting;
+
   /// No description provided for @bookingWorkerDirectly.
   ///
   /// In en, this message translates to:
@@ -937,6 +949,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The customer has not paid yet.'**
   String get customerNotPaid;
+
+  /// No description provided for @customerNotThere.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer not there'**
+  String get customerNotThere;
+
+  /// No description provided for @customerNotThereQ.
+  ///
+  /// In en, this message translates to:
+  /// **'Report that the customer was not there?'**
+  String get customerNotThereQ;
 
   /// No description provided for @customersPaid.
   ///
@@ -1886,6 +1910,36 @@ abstract class AppLocalizations {
   /// **'No services yet'**
   String get noServicesYet;
 
+  /// No description provided for @noShowCustomerReported.
+  ///
+  /// In en, this message translates to:
+  /// **'Reported: the customer was not there.'**
+  String get noShowCustomerReported;
+
+  /// No description provided for @noShowNoteLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'What happened? (optional)'**
+  String get noShowNoteLabel;
+
+  /// No description provided for @noShowReported.
+  ///
+  /// In en, this message translates to:
+  /// **'Reported. The booking is cancelled and our team will review it.'**
+  String get noShowReported;
+
+  /// No description provided for @noShowWait.
+  ///
+  /// In en, this message translates to:
+  /// **'You can report this after {time}. Try calling first.'**
+  String noShowWait(String time);
+
+  /// No description provided for @noShowWorkerReported.
+  ///
+  /// In en, this message translates to:
+  /// **'Reported: the worker did not come.'**
+  String get noShowWorkerReported;
+
   /// No description provided for @noSlotsLeft.
   ///
   /// In en, this message translates to:
@@ -2437,6 +2491,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Report booking #{id}'**
   String reportBooking(Object id);
+
+  /// No description provided for @reportNoShow.
+  ///
+  /// In en, this message translates to:
+  /// **'Report and cancel'**
+  String get reportNoShow;
 
   /// No description provided for @reportProblem.
   ///
@@ -3409,6 +3469,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{name} is {km} km away'**
   String workerAway(Object name, Object km);
+
+  /// No description provided for @workerDidNotCome.
+  ///
+  /// In en, this message translates to:
+  /// **'Worker did not come'**
+  String get workerDidNotCome;
+
+  /// No description provided for @workerDidNotComeQ.
+  ///
+  /// In en, this message translates to:
+  /// **'Report that the worker did not come?'**
+  String get workerDidNotComeQ;
 
   /// No description provided for @workerNotFreeThatDay.
   ///

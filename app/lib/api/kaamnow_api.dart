@@ -187,6 +187,10 @@ class KaamNowApi {
   Future<Booking> cancelBooking(int id, String reason) async =>
       Booking.fromJson(asMap(await client.post('/bookings/$id/cancel/', body: {'reason': reason})));
 
+  /// The other side did not show up. Cancels the booking.
+  Future<Booking> reportNoShow(int id, {String note = ''}) async =>
+      Booking.fromJson(asMap(await client.post('/bookings/$id/no-show/', body: {'note': note})));
+
   /// Customer: a private one-time code to give the worker. Returns (code, expiresAt).
   Future<(String, DateTime?)> issueCompletionOtp(int id) async {
     final m = asMap(await client.post('/bookings/$id/completion-otp/'));

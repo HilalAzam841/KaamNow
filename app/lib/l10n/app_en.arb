@@ -112,6 +112,8 @@
       "price": {}
     }
   },
+  "bookingRemindersHint": "A reminder the day before and an hour before each booked job",
+  "bookingRemindersSetting": "Job reminders",
   "bookingWorkerDirectly": "Booking {name}",
   "@bookingWorkerDirectly": {
     "placeholders": {
@@ -307,6 +309,8 @@
   "customerCounteredShort": "Customer countered. Your move.",
   "customerCounteredYourMove": "The customer made a counter offer. Your move.",
   "customerNotPaid": "The customer has not paid yet.",
+  "customerNotThere": "Customer not there",
+  "customerNotThereQ": "Report that the customer was not there?",
   "customersPaid": "Customers paid",
   "dateRange": "{start} to {end}",
   "@dateRange": {
@@ -697,6 +701,18 @@
   "noRequestsYet": "No requests yet",
   "noReviewsYet": "No reviews yet.",
   "noServicesYet": "No services yet",
+  "noShowCustomerReported": "Reported: the customer was not there.",
+  "noShowNoteLabel": "What happened? (optional)",
+  "noShowReported": "Reported. The booking is cancelled and our team will review it.",
+  "noShowWait": "You can report this after {time}. Try calling first.",
+  "@noShowWait": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "noShowWorkerReported": "Reported: the worker did not come.",
   "noSlotsLeft": "No time slots left on this day. Choose another day.",
   "noTimeOff": "No days off planned.",
   "noWorkersYet": "No workers yet",
@@ -895,6 +911,7 @@
       "id": {}
     }
   },
+  "reportNoShow": "Report and cancel",
   "reportProblem": "Report a problem",
   "request": "Request",
   "requestCancelled": "Request cancelled.",
@@ -1193,6 +1210,8 @@
       "km": {}
     }
   },
+  "workerDidNotCome": "Worker did not come",
+  "workerDidNotComeQ": "Report that the worker did not come?",
   "workerNotFreeThatDay": "This worker is not free on this day. Choose another day.",
   "workerProfile": "Worker profile",
   "workerProfileServicesDocs": "Worker profile, services and documents",

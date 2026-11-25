@@ -174,7 +174,7 @@ class PlatformSettings {
   PlatformSettings({required this.commissionPercent, required this.emergencyFee, required this.emergencyEnabled,
       this.minPayout = '500.00', this.commissionDebtLimit = '0.00', this.referralReward = '0.00',
       this.referralWelcomeCredit = '0.00', this.referralMinBooking = '0.00', this.maxDiscountPercent = '50.00',
-      this.updatedAt});
+      this.reminderSmsEnabled = false, this.noShowGraceMinutes = 30, this.updatedAt});
   factory PlatformSettings.fromJson(Map<String, dynamic> j) => PlatformSettings(
       commissionPercent: str(j['commission_percent']),
       emergencyFee: str(j['emergency_fee']),
@@ -185,7 +185,11 @@ class PlatformSettings {
       referralWelcomeCredit: j['referral_welcome_credit'] == null ? '0.00' : str(j['referral_welcome_credit']),
       referralMinBooking: j['referral_min_booking'] == null ? '0.00' : str(j['referral_min_booking']),
       maxDiscountPercent: j['max_discount_percent'] == null ? '50.00' : str(j['max_discount_percent']),
+      reminderSmsEnabled: j['reminder_sms_enabled'] == true,
+      noShowGraceMinutes: parseInt(j['no_show_grace_minutes'], 30),
       updatedAt: parseDate(j['updated_at']));
+  final bool reminderSmsEnabled;
+  final int noShowGraceMinutes;
   final String referralReward;
   final String referralWelcomeCredit;
   final String referralMinBooking;
@@ -310,4 +314,38 @@ class AdminPromoCode {
   final String discountGiven;
 
   bool get isPercent => kind == 'percent';
+}
+
+/// A no-show report for admins (`admin/no-shows/`).
+class AdminNoShow {
+  AdminNoShow({required this.id, required this.bookingId, required this.bookingTitle, this.preferredTime,
+      required this.side, required this.reportedByName, required this.againstName, required this.againstRole,
+      required this.againstTotal, this.note = '', required this.review, this.adminNote = '', this.createdAt});
+  factory AdminNoShow.fromJson(Map<String, dynamic> j) => AdminNoShow(
+      id: parseInt(j['id']),
+      bookingId: parseInt(j['booking']),
+      bookingTitle: str(j['booking_title']),
+      preferredTime: parseDate(j['preferred_time']),
+      side: str(j['side']),
+      reportedByName: str(j['reported_by_name']),
+      againstName: str(j['against_name']),
+      againstRole: str(j['against_role']),
+      againstTotal: parseInt(j['against_total']),
+      note: str(j['note']),
+      review: str(j['review']),
+      adminNote: str(j['admin_note']),
+      createdAt: parseDate(j['created_at']));
+  final int id;
+  final int bookingId;
+  final String bookingTitle;
+  final DateTime? preferredTime;
+  final String side;
+  final String reportedByName;
+  final String againstName;
+  final String againstRole;
+  final int againstTotal;
+  final String note;
+  final String review;
+  final String adminNote;
+  final DateTime? createdAt;
 }

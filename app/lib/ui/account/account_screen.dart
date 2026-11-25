@@ -119,6 +119,18 @@ class AccountScreen extends StatelessWidget {
             title: Text(context.t.inviteFriends),
             onTap: () => context.push('/invite'),
           ),
+          if (!u.isAdmin)
+            SwitchListTile(
+              key: const Key('reminders-switch'),
+              secondary: const Icon(Icons.alarm),
+              title: Text(context.t.bookingRemindersSetting),
+              subtitle: Text(context.t.bookingRemindersHint),
+              value: u.bookingReminders,
+              onChanged: (on) async {
+                final updated = await runAction(context, () => session.api.updateMe({'booking_reminders': on}));
+                if (updated != null) session.setUser(updated);
+              },
+            ),
           const PushTile(),
           const InstallTile(),
           ListTile(leading: const Icon(Icons.support_agent), title: Text(context.t.helpAndComplaints), onTap: () => context.push('/complaints')),

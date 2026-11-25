@@ -201,6 +201,20 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
     if (b != null) _load();
   }
 
+  Future<void> _reportNoShow(Booking b) async {
+    final t = context.t;
+    final opens = b.noShowOpensAt;
+    if (opens != null && DateTime.now().isBefore(opens)) {
+      return showInfo(context, t.noShowWait(clock(opens)));
+    }
+    final worker = b.canReportNoShow == 'worker';
+    final note = await promptText(context, worker ? t.workerDidNotComeQ : t.customerNotThereQ,
+        label: t.noShowNoteLabel, ok: t.reportNoShow);
+    if (note == null || !mounted) return;
+    final r = await runAction(context, () => api.reportNoShow(widget.id, note: note), success: t.noShowReported);
+    if (r != null) _load();
+  }
+
   Future<void> _pay(String method) async {
     final d = _discount;
     final p = await runAction(
@@ -303,6 +317,13 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
             StatusChip(b.status, key: const Key('booking-status')),
           ]),
           Text('${b.categoryName} · ${whenWindow(b.preferredTime, b.durationMinutes)}'),
+          if (b.noShowReported != null)
+            Padding(
+              key: const Key('no-show-banner'),
+              padding: const EdgeInsets.only(top: 6),
+              child: Text(b.noShowReported == 'worker' ? context.t.noShowWorkerReported : context.t.noShowCustomerReported,
+                  style: TextStyle(color: theme.colorScheme.error)),
+            ),
           const Divider(height: 24),
           if (_isWorker)
             Row(children: [const Icon(Icons.person), const SizedBox(width: 8), Text(b.customerName, style: theme.textTheme.titleMedium)])
@@ -434,6 +455,14 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
         onPressed: _confirmDone,
         icon: const Icon(Icons.task_alt),
         label: Text(context.t.confirmJobDone),
+      ));
+    }
+    if (b.canReportNoShow != null) {
+      buttons.add(OutlinedButton.icon(
+        key: const Key('report-no-show'),
+        onPressed: () => _reportNoShow(b),
+        icon: const Icon(Icons.person_off),
+        label: Text(b.canReportNoShow == 'worker' ? context.t.workerDidNotCome : context.t.customerNotThere),
       ));
     }
     if (const {'confirmed', 'on_the_way', 'arrived'}.contains(b.status)) {

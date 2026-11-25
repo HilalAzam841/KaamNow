@@ -150,6 +150,12 @@ class AdminApi {
   Future<AdminPromoCode> updatePromoCode(int id, Map<String, dynamic> body) async =>
       AdminPromoCode.fromJson(asMap(await client.patch('/admin/promo-codes/$id/', body: body)));
 
+  // ---- no-shows ---------------------------------------------------------------
+  Future<Paged<AdminNoShow>> noShows({String? review, String? side, int page = 1}) async => Paged.parse(
+      await client.get('/admin/no-shows/', query: {'review': review, 'side': side, 'page': page}), AdminNoShow.fromJson);
+  Future<AdminNoShow> reviewNoShow(int id, String review, {String note = ''}) async => AdminNoShow.fromJson(
+      asMap(await client.post('/admin/no-shows/$id/review/', body: {'review': review, 'note': note})));
+
   // ---- complaints & audit ------------------------------------------------
   Future<Paged<AdminComplaint>> complaints({String? status, int page = 1}) async =>
       Paged.parse(await client.get('/admin/complaints/', query: {'status': status, 'page': page}),

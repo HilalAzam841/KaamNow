@@ -1202,6 +1202,70 @@
           }
         },
         {
+          "name": "No-show reports",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/no-shows/?review=open",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "no-shows",
+                "?review=open"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_access}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Review a no-show",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/no-shows/1/review/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "no-shows",
+                "1",
+                "review"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_access}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"review\": \"confirmed\",\n  \"note\": \"Checked by phone\"\n}"
+            }
+          }
+        },
+        {
           "name": "Audit log",
           "request": {
             "method": "GET",
@@ -2261,6 +2325,77 @@
             "body": {
               "mode": "raw",
               "raw": "{\n  \"confirm\": true\n}"
+            }
+          }
+        },
+        {
+          "name": "Report a no-show (cancels the booking)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/bookings/{{booking_id}}/no-show/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "bookings",
+                "{{booking_id}}",
+                "no-show"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{customer_access}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"note\": \"Waited 45 minutes, no answer on the phone\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Turn job reminders off",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/me/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "me"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{customer_access}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"booking_reminders\": false\n}"
             }
           }
         },

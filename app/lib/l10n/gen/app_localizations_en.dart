@@ -189,6 +189,13 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get bookingRemindersHint =>
+      'A reminder the day before and an hour before each booked job';
+
+  @override
+  String get bookingRemindersSetting => 'Job reminders';
+
+  @override
   String bookingWorkerDirectly(String name) {
     return 'Booking $name';
   }
@@ -504,6 +511,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get customerNotPaid => 'The customer has not paid yet.';
+
+  @override
+  String get customerNotThere => 'Customer not there';
+
+  @override
+  String get customerNotThereQ => 'Report that the customer was not there?';
 
   @override
   String get customersPaid => 'Customers paid';
@@ -1086,6 +1099,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noServicesYet => 'No services yet';
 
   @override
+  String get noShowCustomerReported => 'Reported: the customer was not there.';
+
+  @override
+  String get noShowNoteLabel => 'What happened? (optional)';
+
+  @override
+  String get noShowReported =>
+      'Reported. The booking is cancelled and our team will review it.';
+
+  @override
+  String noShowWait(String time) {
+    return 'You can report this after $time. Try calling first.';
+  }
+
+  @override
+  String get noShowWorkerReported => 'Reported: the worker did not come.';
+
+  @override
   String get noSlotsLeft =>
       'No time slots left on this day. Choose another day.';
 
@@ -1423,6 +1454,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String reportBooking(Object id) {
     return 'Report booking #$id';
   }
+
+  @override
+  String get reportNoShow => 'Report and cancel';
 
   @override
   String get reportProblem => 'Report a problem';
@@ -1965,6 +1999,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String workerAway(Object name, Object km) {
     return '$name is $km km away';
   }
+
+  @override
+  String get workerDidNotCome => 'Worker did not come';
+
+  @override
+  String get workerDidNotComeQ => 'Report that the worker did not come?';
 
   @override
   String get workerNotFreeThatDay =>

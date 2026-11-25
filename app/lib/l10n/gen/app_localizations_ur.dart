@@ -188,6 +188,13 @@ class AppLocalizationsUr extends AppLocalizations {
   }
 
   @override
+  String get bookingRemindersHint =>
+      'ہر بک کیے گئے کام سے ایک دن پہلے اور ایک گھنٹہ پہلے یاد دہانی';
+
+  @override
+  String get bookingRemindersSetting => 'کام کی یاد دہانیاں';
+
+  @override
   String bookingWorkerDirectly(String name) {
     return '$name کی بکنگ';
   }
@@ -503,6 +510,12 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get customerNotPaid => 'گاہک نے ابھی ادائیگی نہیں کی۔';
+
+  @override
+  String get customerNotThere => 'گاہک موجود نہیں';
+
+  @override
+  String get customerNotThereQ => 'رپورٹ کریں کہ گاہک موجود نہیں تھا؟';
 
   @override
   String get customersPaid => 'گاہکوں نے ادا کیا';
@@ -1088,6 +1101,24 @@ class AppLocalizationsUr extends AppLocalizations {
   String get noServicesYet => 'ابھی کوئی سروس دستیاب نہیں';
 
   @override
+  String get noShowCustomerReported => 'رپورٹ: گاہک موجود نہیں تھا۔';
+
+  @override
+  String get noShowNoteLabel => 'کیا ہوا؟ (اختیاری)';
+
+  @override
+  String get noShowReported =>
+      'رپورٹ ہو گئی۔ بکنگ منسوخ کر دی گئی ہے اور ہماری ٹیم اس کا جائزہ لے گی۔';
+
+  @override
+  String noShowWait(String time) {
+    return 'آپ $time کے بعد یہ رپورٹ کر سکتے ہیں۔ پہلے فون کر کے دیکھیں۔';
+  }
+
+  @override
+  String get noShowWorkerReported => 'رپورٹ: ورکر نہیں آیا۔';
+
+  @override
   String get noSlotsLeft => 'اس دن کوئی وقت باقی نہیں۔ دوسرا دن چنیں۔';
 
   @override
@@ -1423,6 +1454,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String reportBooking(Object id) {
     return 'بکنگ نمبر $id رپورٹ کریں';
   }
+
+  @override
+  String get reportNoShow => 'رپورٹ اور منسوخ کریں';
 
   @override
   String get reportProblem => 'مسئلہ رپورٹ کریں';
@@ -1966,6 +2000,12 @@ class AppLocalizationsUr extends AppLocalizations {
   String workerAway(Object name, Object km) {
     return '$name $km کلومیٹر دور ہیں';
   }
+
+  @override
+  String get workerDidNotCome => 'ورکر نہیں آیا';
+
+  @override
+  String get workerDidNotComeQ => 'رپورٹ کریں کہ ورکر نہیں آیا؟';
 
   @override
   String get workerNotFreeThatDay => 'یہ ورکر اس دن فارغ نہیں۔ دوسرا دن چنیں۔';
