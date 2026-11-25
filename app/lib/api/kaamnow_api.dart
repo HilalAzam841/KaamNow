@@ -37,6 +37,11 @@ class KaamNowApi {
       client.post('/notifications/web-push/subscribe/', body: subscription);
   Future<void> unsubscribeWebPush(String endpoint) =>
       client.post('/notifications/web-push/unsubscribe/', body: {'endpoint': endpoint});
+
+  /// Phone apps: this device's Firebase token ('android' or 'ios').
+  Future<void> registerDevice(String token, String platform) =>
+      client.post('/notifications/devices/', body: {'token': token, 'platform': platform});
+  Future<void> unregisterDevice(String token) => client.delete('/notifications/devices/', body: {'token': token});
   Future<User> me() async => User.fromJson(asMap(await client.get('/auth/me/')));
   Future<User> updateMe(Map<String, dynamic> fields) async =>
       User.fromJson(asMap(await client.patch('/auth/me/', body: fields)));

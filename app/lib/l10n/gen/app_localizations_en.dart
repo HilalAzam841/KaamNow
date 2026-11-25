@@ -925,6 +925,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get onlyIfDone => 'Only confirm if the work is done.';
 
   @override
+  String get openAction => 'Open';
+
+  @override
   String get openBooking => 'Open booking';
 
   @override
@@ -1017,6 +1020,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get pushBlockedHint =>
       'Blocked in your browser. Allow notifications for this site in the browser settings.';
+
+  @override
+  String get pushBlockedHintPhone =>
+      'Blocked in your phone settings. Allow notifications for KaamNow in Settings.';
 
   @override
   String get pushHintCustomer =>

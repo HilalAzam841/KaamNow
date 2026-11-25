@@ -6,6 +6,7 @@ import 'core/format.dart';
 import 'core/install/install_controller.dart';
 import 'core/locale_controller.dart';
 import 'core/push/push_controller.dart';
+import 'core/push/push_platform.dart';
 import 'core/session.dart';
 import 'l10n/l10n.dart';
 import 'ui/account/account_screen.dart';
@@ -180,7 +181,10 @@ class _KaamNowAppState extends State<KaamNowApp> {
     super.initState();
     widget.locale.addListener(_onLanguageOrSession);
     widget.session.addListener(_onLanguageOrSession);
-    widget.push.attach(widget.session);
+    widget.push
+      ..openRoute = _openFromNotification
+      ..showForeground = _showForeground
+      ..attach(widget.session);
     _onLanguageOrSession();
   }
 
@@ -189,6 +193,27 @@ class _KaamNowAppState extends State<KaamNowApp> {
     widget.locale.removeListener(_onLanguageOrSession);
     widget.session.removeListener(_onLanguageOrSession);
     super.dispose();
+  }
+
+  final _messenger = GlobalKey<ScaffoldMessengerState>();
+
+  /// Tapped a notification: open its screen (the router asks signed-out users to log in first).
+  void _openFromNotification(String route) => _router.go(route);
+
+  /// The phone does not show notifications while the app is open, so show them in the app.
+  void _showForeground(ForegroundAlert alert) {
+    final messenger = _messenger.currentState;
+    if (messenger == null) return;
+    final text = [alert.title, alert.body].where((s) => s.isNotEmpty).join('\n');
+    messenger.showSnackBar(SnackBar(
+      key: const Key('push-foreground'),
+      content: Text(text),
+      duration: const Duration(seconds: 6),
+      action: alert.route.isEmpty
+          ? null
+          : SnackBarAction(label: lookupAppLocalizations(Locale(_effectiveLanguage)).openAction,
+              onPressed: () => _openFromNotification(alert.route)),
+    ));
   }
 
   /// The admin dashboard is English-only; everyone else gets the language they picked.
@@ -240,6 +265,7 @@ class _KaamNowAppState extends State<KaamNowApp> {
             onGenerateTitle: (context) => context.t.appName,
             debugShowCheckedModeBanner: false,
             routerConfig: _router,
+            scaffoldMessengerKey: _messenger,
             locale: Locale(code),
             supportedLocales: AppLocalizations.supportedLocales,
             localizationsDelegates: const [AppLocalizations.delegate, ...GlobalMaterialLocalizations.delegates],

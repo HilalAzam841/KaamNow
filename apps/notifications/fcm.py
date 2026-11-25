@@ -41,14 +41,23 @@ def _access_token():
         return _credentials.token
 
 
-def build_message(token, title, body, data):
+def build_message(token, title, body, data, *, urgent=True, tag=None):
+    android_notification = {"channel_id": "kaamnow_default"}
+    aps = {"sound": "default"}
+    if tag:
+        android_notification["tag"] = tag
+        aps["thread-id"] = tag
     return {
         "message": {
             "token": token,
             "notification": {"title": title, "body": body},
             # FCM data values must be strings.
             "data": {str(k): str(v) for k, v in (data or {}).items()},
-            "android": {"priority": "high", "notification": {"channel_id": "kaamnow_default"}},
+            "android": {"priority": "high" if urgent else "normal", "notification": android_notification},
+            "apns": {
+                "headers": {"apns-priority": "10" if urgent else "5"},
+                "payload": {"aps": aps},
+            },
         }
     }
 
@@ -64,12 +73,12 @@ def _error_status(response):
     return error.get("status", "")
 
 
-def send_to_token(token, title, body, data):
+def send_to_token(token, title, body, data, *, urgent=True, tag=None):
     """Returns 'sent', 'dead' (token should be deactivated) or 'failed'."""
     url = FCM_URL.format(project=settings.FCM_PROJECT_ID)
     try:
         response = requests.post(
-            url, json=build_message(token, title, body, data),
+            url, json=build_message(token, title, body, data, urgent=urgent, tag=tag),
             headers={"Authorization": f"Bearer {_access_token()}"}, timeout=10,
         )
     except requests.RequestException:

@@ -102,3 +102,37 @@ class TestFCM:
             notify(customer, Notification.Type.SYSTEM, "Hello", "World")
         post.assert_not_called()
         assert Notification.objects.filter(user=customer).count() == 1
+
+
+class TestPhoneMessages:
+    """What the Android and iPhone apps receive: the screen to open, priority and grouping."""
+
+    def test_apns_and_android_settings(self):
+        msg = fcm.build_message("tok", "T", "B", {}, urgent=False, tag="chat-7")["message"]
+        assert msg["android"]["priority"] == "normal"
+        assert msg["android"]["notification"] == {"channel_id": "kaamnow_default", "tag": "chat-7"}
+        assert msg["apns"]["headers"]["apns-priority"] == "5"
+        assert msg["apns"]["payload"]["aps"] == {"sound": "default", "thread-id": "chat-7"}
+        urgent = fcm.build_message("tok", "T", "B", {})["message"]
+        assert urgent["apns"]["headers"]["apns-priority"] == "10"
+        assert "tag" not in urgent["android"]["notification"]
+
+    def _sent(self, customer, data):
+        DeviceToken.objects.create(user=customer, token=TOKEN)
+        with mock.patch("apps.notifications.fcm.requests.post", return_value=fcm_response(200)) as post:
+            send_push(customer.pk, "t", "b", data)
+        return post.call_args.kwargs["json"]["message"]
+
+    def test_chat_messages_carry_the_screen_and_group_by_booking(self, customer, fcm_on):
+        sent = self._sent(customer, {"type": "chat_message", "booking_id": 12})
+        assert sent["data"]["route"] == "/bookings/12/chat"
+        assert not sent["data"]["route"].startswith("/#")
+        assert sent["android"]["priority"] == "high"
+        assert sent["android"]["notification"]["tag"] == "chat-12"
+        assert sent["apns"]["payload"]["aps"]["thread-id"] == "chat-12"
+
+    def test_ordinary_alerts_are_not_urgent(self, customer, fcm_on):
+        sent = self._sent(customer, {"type": "system"})
+        assert sent["android"]["priority"] == "normal"
+        assert sent["data"]["route"].startswith("/")
+        assert "tag" not in sent["android"]["notification"]

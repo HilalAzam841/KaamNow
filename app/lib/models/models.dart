@@ -606,7 +606,8 @@ class ClientConfig {
   ClientConfig({required this.cityLat, required this.cityLng, required this.emergencyEnabled,
       required this.emergencyFee, required this.paymentMethods, required this.minOfferPrice,
       required this.minWebVersion, this.supportEmail = '', this.supportPhone = '',
-      this.webPushEnabled = false, this.webPushPublicKey = '', this.phoneVerificationRequired = false,
+      this.webPushEnabled = false, this.webPushPublicKey = '', this.phonePushEnabled = false,
+      this.phoneVerificationRequired = false,
       this.smsAvailable = false});
   factory ClientConfig.fromJson(Map<String, dynamic> j) {
     final city = asMap(j['city']);
@@ -623,6 +624,7 @@ class ClientConfig {
       supportPhone: str(asMap(j['support'])['phone']),
       webPushEnabled: asMap(j['web_push'])['enabled'] == true,
       webPushPublicKey: str(asMap(j['web_push'])['public_key']),
+      phonePushEnabled: j['push_enabled'] == true,
       phoneVerificationRequired: asMap(j['phone_verification'])['required'] == true,
       smsAvailable: asMap(j['phone_verification'])['sms_available'] == true,
     );
@@ -641,6 +643,9 @@ class ClientConfig {
   final String supportPhone;
   final bool webPushEnabled;
   final String webPushPublicKey;
+
+  /// The server can send Firebase push to the Android and iPhone apps.
+  final bool phonePushEnabled;
 
   /// Customers and workers must confirm their number by SMS before using the app.
   final bool phoneVerificationRequired;

@@ -1,6 +1,8 @@
 from celery import shared_task
 
 from . import fcm, webpush
+from apps.accounts.models import User
+
 from .models import DeviceToken, WebPushSubscription
 
 
@@ -10,9 +12,21 @@ def send_push(self, user_id, title, body, data=None):
     if not fcm.is_configured():
         return {"sent": 0, "skipped": "fcm_not_configured"}
     tokens = list(DeviceToken.objects.filter(user_id=user_id, is_active=True).values_list("id", "token"))
+    if not tokens:
+        return {"sent": 0}
+    data = dict(data or {})
+    user = User.objects.filter(pk=user_id).first()
+    if user is not None:
+        # The app screen to open when the notification is tapped, e.g. "/bookings/12/chat".
+        data.setdefault("route", deep_link(user, data).removeprefix("/#"))
+    options = {
+        "urgent": data.get("type") in URGENT_TYPES,
+        # One notification per chat, replaced as new messages arrive.
+        "tag": f"chat-{data['booking_id']}" if data.get("type") == "chat_message" and data.get("booking_id") else None,
+    }
     sent, dead, failed = 0, [], 0
     for token_id, token in tokens:
-        result = fcm.send_to_token(token, title, body, data or {})
+        result = fcm.send_to_token(token, title, body, data, **options)
         if result == "sent":
             sent += 1
         elif result == "dead":

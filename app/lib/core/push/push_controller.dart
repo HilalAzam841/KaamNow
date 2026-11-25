@@ -6,7 +6,7 @@ import 'push_factory.dart' if (dart.library.js_interop) 'push_web.dart';
 import 'push_platform.dart';
 
 enum PushState {
-  /// The server has no keys, or this browser has no web push.
+  /// The server cannot deliver to this device, or the device has no push (e.g. Firebase not set up).
   unavailable,
 
   /// iPhone/iPad in Safari: install the app first.
@@ -18,7 +18,7 @@ enum PushState {
   on,
 }
 
-/// Browser notifications for this device: turning them on/off and keeping the server in step.
+/// Notifications for this device (browser or phone app): turning them on/off and keeping the server in step.
 class PushController extends ChangeNotifier {
   PushController({PushPlatform? platform, this.bannerDismissed = false})
       : platform = platform ?? createPushPlatform();
@@ -38,9 +38,32 @@ class PushController extends ChangeNotifier {
 
   String get _publicKey => _session?.config.webPushPublicKey ?? '';
 
+  /// The server can deliver to this kind of device.
+  bool get _serverReady {
+    final config = _session?.config;
+    if (config == null) return false;
+    return platform.kind == PushKind.web ? config.webPushEnabled && _publicKey.isNotEmpty : config.phonePushEnabled;
+  }
+
+  /// Called with a screen (e.g. "/bookings/12") when the app is opened from a notification.
+  void Function(String route)? openRoute;
+
+  /// Called when a notification arrives while the app is open.
+  void Function(ForegroundAlert alert)? showForeground;
+
+  Future<void> _register(Map<String, dynamic> sub) => platform.kind == PushKind.web
+      ? _session!.api.subscribeWebPush(sub)
+      : _session!.api.registerDevice('${sub['token']}', '${sub['platform']}');
+
+  Future<void> _unregister(String id) async {
+    final api = _session?.api;
+    if (api == null) return;
+    platform.kind == PushKind.web ? await api.unsubscribeWebPush(id) : await api.unregisterDevice(id);
+  }
+
   PushState get state {
     final session = _session;
-    if (session == null || !session.config.webPushEnabled || _publicKey.isEmpty) return PushState.unavailable;
+    if (session == null || !_serverReady) return PushState.unavailable;
     if (platform.needsInstallFirst) return PushState.needsInstall;
     if (!platform.supported) return PushState.unavailable;
     if (platform.permission == 'denied') return PushState.blocked;
@@ -58,8 +81,13 @@ class PushController extends ChangeNotifier {
     session.beforeLogout.add(_onLogout);
     session.addListener(_onSession);
     platform.onResubscribe(() {
-      if (platform.permission == 'granted') enable();
+      if (platform.permission == 'granted' && _session?.user != null) enable();
     });
+    platform.onOpen((route) {
+      // Signed out: the router sends them to log in first.
+      openRoute?.call(route);
+    });
+    platform.onForeground((alert) => showForeground?.call(alert));
     _onSession();
   }
 
@@ -76,7 +104,7 @@ class PushController extends ChangeNotifier {
     try {
       final sub = await platform.current();
       if (sub != null && platform.permission == 'granted' && state != PushState.unavailable) {
-        await _session!.api.subscribeWebPush(sub);
+        await _register(sub);
         _subscribed = true;
       } else {
         _subscribed = false;
@@ -95,7 +123,7 @@ class PushController extends ChangeNotifier {
     try {
       final sub = await platform.subscribe(_publicKey);
       if (sub == null) return false;
-      await _session!.api.subscribeWebPush(sub);
+      await _register(sub);
       _subscribed = true;
       return true;
     } finally {
@@ -108,8 +136,11 @@ class PushController extends ChangeNotifier {
     busy = true;
     notifyListeners();
     try {
-      final endpoint = await platform.unsubscribe();
-      if (endpoint != null) await _session?.api.unsubscribeWebPush(endpoint);
+      // Tell the server first, while still signed in, then stop on the device.
+      final sub = await platform.current();
+      final id = sub == null ? null : '${sub['endpoint'] ?? sub['token'] ?? ''}';
+      if (id != null && id.isNotEmpty) await _unregister(id);
+      await platform.unsubscribe();
       _subscribed = false;
     } finally {
       busy = false;
