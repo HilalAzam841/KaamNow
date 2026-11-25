@@ -134,6 +134,12 @@ abstract class AppLocalizations {
   /// **'Add contact'**
   String get addContact;
 
+  /// No description provided for @addPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Add photo'**
+  String get addPhoto;
+
   /// No description provided for @addServicesToSeeJobs.
   ///
   /// In en, this message translates to:
@@ -1040,6 +1046,18 @@ abstract class AppLocalizations {
   /// **'Default address'**
   String get defaultAddress;
 
+  /// No description provided for @deletePhotoBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Customers will no longer see it.'**
+  String get deletePhotoBody;
+
+  /// No description provided for @deletePhotoQ.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this photo?'**
+  String get deletePhotoQ;
+
   /// No description provided for @describeProblem.
   ///
   /// In en, this message translates to:
@@ -1129,6 +1147,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Earnings'**
   String get earnings;
+
+  /// No description provided for @editCaption.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit caption'**
+  String get editCaption;
 
   /// No description provided for @editProfile.
   ///
@@ -1345,6 +1369,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Every week'**
   String get freqWeekly;
+
+  /// No description provided for @fromKaamNowJob.
+  ///
+  /// In en, this message translates to:
+  /// **'From a KaamNow job'**
+  String get fromKaamNowJob;
 
   /// No description provided for @fromPrice.
   ///
@@ -1772,6 +1802,12 @@ abstract class AppLocalizations {
   /// **'You have 3 contacts, the most allowed.'**
   String get maxContactsReached;
 
+  /// No description provided for @maxPhotosReached.
+  ///
+  /// In en, this message translates to:
+  /// **'You have 12 photos, the most allowed. Delete one to add another.'**
+  String get maxPhotosReached;
+
   /// No description provided for @messageNotSent.
   ///
   /// In en, this message translates to:
@@ -1837,6 +1873,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Please give a bit more detail (20+ characters)'**
   String get moreDetail;
+
+  /// No description provided for @moveEarlier.
+  ///
+  /// In en, this message translates to:
+  /// **'Move earlier'**
+  String get moveEarlier;
+
+  /// No description provided for @moveLater.
+  ///
+  /// In en, this message translates to:
+  /// **'Move later'**
+  String get moveLater;
+
+  /// No description provided for @myPortfolio.
+  ///
+  /// In en, this message translates to:
+  /// **'My work photos'**
+  String get myPortfolio;
+
+  /// No description provided for @myPortfolioHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Show customers what you have done'**
+  String get myPortfolioHint;
 
   /// No description provided for @myScheduleSubtitle.
   ///
@@ -2042,6 +2102,18 @@ abstract class AppLocalizations {
   /// **'New jobs in your area and services will show up here, and you will get an alert.'**
   String get noOpenJobsHint;
 
+  /// No description provided for @noPortfolioHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Add up to 12 photos of jobs you did. Customers see them on your profile. Location and camera details are removed from each photo.'**
+  String get noPortfolioHint;
+
+  /// No description provided for @noPortfolioYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No work photos yet'**
+  String get noPortfolioYet;
+
   /// No description provided for @noRepeatingJobs.
   ///
   /// In en, this message translates to:
@@ -2077,6 +2149,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No reviews yet.'**
   String get noReviewsYet;
+
+  /// No description provided for @noService.
+  ///
+  /// In en, this message translates to:
+  /// **'None'**
+  String get noService;
 
   /// No description provided for @noServicesYet.
   ///
@@ -2294,6 +2372,12 @@ abstract class AppLocalizations {
   /// **'The passwords do not match'**
   String get passwordsDontMatch;
 
+  /// No description provided for @pastWork.
+  ///
+  /// In en, this message translates to:
+  /// **'Past work'**
+  String get pastWork;
+
   /// No description provided for @pauseRepeating.
   ///
   /// In en, this message translates to:
@@ -2402,11 +2486,47 @@ abstract class AppLocalizations {
   /// **'Phone number'**
   String get phoneNumber;
 
+  /// No description provided for @photoAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo added.'**
+  String get photoAdded;
+
+  /// No description provided for @photoCaptionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'What is in the photo? (optional)'**
+  String get photoCaptionLabel;
+
+  /// No description provided for @photoDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo deleted.'**
+  String get photoDeleted;
+
+  /// No description provided for @photoHiddenBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Hidden by KaamNow: {reason}'**
+  String photoHiddenBy(String reason);
+
+  /// No description provided for @photoServiceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Service (optional)'**
+  String get photoServiceLabel;
+
   /// No description provided for @photoUpdated.
   ///
   /// In en, this message translates to:
   /// **'Photo updated.'**
   String get photoUpdated;
+
+  /// No description provided for @photosCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} of {max} photos'**
+  String photosCount(int count, int max);
 
   /// No description provided for @photosOptional.
   ///

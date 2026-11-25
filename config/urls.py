@@ -10,6 +10,7 @@ from apps.chat.views import BookingMessagesReadView, BookingMessagesView
 from apps.common.views import app_config, health
 from apps.tracking.views import BookingLocationView
 from apps.safety.views import BookingShareView, BookingSosView
+from apps.portfolio.views import MyPortfolioPhotoView, MyPortfolioReorderView, MyPortfolioView, WorkerPortfolioView
 from apps.jobs.urls import bookings_router, requests_router
 from apps.offers.urls import offer_urlpatterns, request_offer_urlpatterns
 from apps.promotions.urls import referral_urlpatterns
@@ -23,6 +24,10 @@ api_v1 = [
     path("workers/<int:pk>/reviews/", WorkerReviewsView.as_view(), name="worker-reviews"),
     path("workers/<int:pk>/slots/", WorkerSlotsView.as_view(), name="worker-slots"),
     path("workers/me/schedule/", MyScheduleView.as_view(), name="worker-schedule"),
+    path("workers/me/portfolio/", MyPortfolioView.as_view(), name="worker-portfolio"),
+    path("workers/me/portfolio/reorder/", MyPortfolioReorderView.as_view(), name="worker-portfolio-reorder"),
+    path("workers/me/portfolio/<int:pk>/", MyPortfolioPhotoView.as_view(), name="worker-portfolio-photo"),
+    path("workers/<int:pk>/portfolio/", WorkerPortfolioView.as_view(), name="worker-public-portfolio"),
     path("workers/me/time-off/", MyTimeOffView.as_view(), name="worker-time-off"),
     path("workers/me/time-off/<int:pk>/", MyTimeOffDetailView.as_view(), name="worker-time-off-detail"),
     path("workers/", include(worker_urlpatterns)),

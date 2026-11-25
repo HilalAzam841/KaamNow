@@ -70,6 +70,7 @@ INSTALLED_APPS = [
     "apps.reminders",
     "apps.recurring",
     "apps.safety",
+    "apps.portfolio",
     "apps.scheduling",
 ]
 

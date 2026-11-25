@@ -962,6 +962,35 @@ msgstr "پیشکش مسترد ہو گئی"
 msgid "Offer withdrawn"
 msgstr "پیشکش واپس لے لی گئی"
 
+#: apps/portfolio/serializers.py
+msgid "Say why, so the worker knows."
+msgstr "وجہ لکھیں تاکہ ورکر کو معلوم ہو۔"
+
+#: apps/portfolio/services.py
+msgid "Link a job you finished on KaamNow."
+msgstr "کام ناؤ پر مکمل کیا ہوا اپنا کوئی کام منسلک کریں۔"
+
+#: apps/portfolio/services.py
+msgid "Choose one of the services you offer."
+msgstr "اپنی پیش کردہ خدمات میں سے کوئی ایک منتخب کریں۔"
+
+#: apps/portfolio/services.py
+msgid "You can have up to 12 photos. Delete one first."
+msgstr "آپ زیادہ سے زیادہ 12 تصاویر رکھ سکتے ہیں۔ پہلے کوئی ایک حذف کریں۔"
+
+#: apps/portfolio/services.py
+msgid "Send every one of your photos, each once, in the new order."
+msgstr "اپنی ہر تصویر ایک بار، نئی ترتیب میں بھیجیں۔"
+
+#: apps/portfolio/services.py
+msgid "A portfolio photo was hidden"
+msgstr "آپ کے کام کی ایک تصویر چھپا دی گئی"
+
+#: apps/portfolio/services.py
+#, python-brace-format
+msgid "KaamNow hid one of your work photos: {reason}"
+msgstr "کام ناؤ نے آپ کے کام کی ایک تصویر چھپا دی: {reason}"
+
 #: apps/promotions/serializers.py
 msgid "Use 3 to 30 letters, digits or dashes."
 msgstr "3 سے 30 حروف، ہندسے یا ڈیش استعمال کریں۔"

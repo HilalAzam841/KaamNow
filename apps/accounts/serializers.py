@@ -248,9 +248,17 @@ class PublicWorkerSerializer(serializers.ModelSerializer):
 
 class PublicWorkerDetailSerializer(PublicWorkerSerializer):
     is_favourite = serializers.SerializerMethodField()
+    portfolio = serializers.SerializerMethodField()
 
     class Meta(PublicWorkerSerializer.Meta):
-        fields = PublicWorkerSerializer.Meta.fields + ["is_favourite"]
+        fields = PublicWorkerSerializer.Meta.fields + ["is_favourite", "portfolio"]
+
+    def get_portfolio(self, obj) -> list[dict]:
+        """Photos of past work, in the worker's order. Hidden ones are left out."""
+        from apps.portfolio.serializers import PortfolioPhotoSerializer
+        from apps.portfolio.services import visible_photos
+
+        return PortfolioPhotoSerializer(visible_photos(obj), many=True, context=self.context).data
 
     def get_is_favourite(self, obj) -> bool:
         """Whether the signed-in customer saved this worker."""

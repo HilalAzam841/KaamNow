@@ -82,7 +82,7 @@ class PublicWorker {
       this.experienceYears = 0, this.serviceArea = '', this.isVerified = false, this.averageRating = '0.00',
       this.ratingCount = 0, this.completedJobs = 0, this.planBadge = '', this.services = const [],
       this.distanceKm, this.isAvailable, this.isSponsored = false, this.workingHours = const [],
-      this.isFavourite = false, this.lastBookedAt});
+      this.isFavourite = false, this.lastBookedAt, this.portfolio = const []});
 
   factory PublicWorker.fromJson(Map<String, dynamic> j) => PublicWorker(
         id: parseInt(j['id']),
@@ -102,6 +102,7 @@ class PublicWorker {
         isSponsored: j['is_sponsored'] == true,
         workingHours: parseList(j['working_hours'], WorkingHours.fromJson),
         isFavourite: j['is_favourite'] == true,
+        portfolio: parseList(j['portfolio'], PortfolioPhoto.fromJson),
         lastBookedAt: parseDate(j['last_booked_at']),
       );
 
@@ -126,6 +127,9 @@ class PublicWorker {
 
   /// Whether the signed-in customer saved this worker (worker profile and My workers only).
   final bool isFavourite;
+
+  /// Photos of past work (profile page only).
+  final List<PortfolioPhoto> portfolio;
 
   /// When this worker last finished a job for the customer (My workers only).
   final DateTime? lastBookedAt;
@@ -1096,4 +1100,35 @@ class SharedJob {
   final double? workerLng;
   final DateTime? locationAt;
   final DateTime? expiresAt;
+}
+
+/// A photo of a worker's past work. [isHidden] and [hiddenReason] are only sent to the worker and admins.
+class PortfolioPhoto {
+  PortfolioPhoto({required this.id, required this.image, this.caption = '', this.category, this.categoryName,
+      this.fromJob = false, this.isHidden = false, this.hiddenReason = '', this.workerId, this.workerName = '',
+      this.createdAt});
+  factory PortfolioPhoto.fromJson(Map<String, dynamic> j) => PortfolioPhoto(
+        id: parseInt(j['id']),
+        image: str(j['image']),
+        caption: str(j['caption']),
+        category: j['category'] == null ? null : parseInt(j['category']),
+        categoryName: j['category_name'] as String?,
+        fromJob: j['from_job'] == true,
+        isHidden: j['is_hidden'] == true,
+        hiddenReason: str(j['hidden_reason']),
+        workerId: j['worker'] == null ? null : parseInt(j['worker']),
+        workerName: str(j['worker_name']),
+        createdAt: parseDate(j['created_at']),
+      );
+  final int id;
+  final String image;
+  final String caption;
+  final int? category;
+  final String? categoryName;
+  final bool fromJob;
+  final bool isHidden;
+  final String hiddenReason;
+  final int? workerId;
+  final String workerName;
+  final DateTime? createdAt;
 }

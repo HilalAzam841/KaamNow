@@ -45,6 +45,8 @@ import 'ui/customer/my_workers_screen.dart';
 import 'ui/recurring/recurring_screen.dart';
 import 'ui/safety/safety.dart';
 import 'ui/admin/sos_screen.dart';
+import 'ui/admin/portfolio_screen.dart';
+import 'ui/worker/portfolio_screen.dart';
 import 'ui/shell/home_shell.dart';
 import 'ui/worker/earnings_screen.dart';
 import 'ui/worker/job_detail_screen.dart';
@@ -89,6 +91,7 @@ GoRouter buildRouter(Session session) {
           GoRoute(path: '/admin/complaints', builder: (_, _) => const admin.AdminComplaintsScreen()),
           GoRoute(path: '/admin/no-shows', builder: (_, _) => const AdminNoShowsScreen()),
           GoRoute(path: '/admin/sos', builder: (_, _) => const AdminSosScreen()),
+          GoRoute(path: '/admin/portfolio', builder: (_, _) => const AdminPortfolioScreen()),
           GoRoute(path: '/admin/settings', builder: (_, _) => const AdminSettingsScreen()),
           GoRoute(path: '/admin/audit', builder: (_, _) => const AdminAuditScreen()),
         ],
@@ -124,6 +127,7 @@ GoRouter buildRouter(Session session) {
       GoRoute(path: '/worker/profile', builder: (_, _) => const WorkerProfileScreen()),
       GoRoute(path: '/invite', builder: (_, _) => const InviteScreen()),
       GoRoute(path: '/worker/schedule', builder: (_, _) => const ScheduleScreen()),
+      GoRoute(path: '/worker/portfolio', builder: (_, _) => const PortfolioScreen()),
       GoRoute(path: '/my-workers', builder: (_, _) => const MyWorkersScreen()),
       GoRoute(path: '/recurring', builder: (_, _) => const RecurringJobsScreen()),
       GoRoute(path: '/safety/contacts', builder: (_, _) => const EmergencyContactsScreen()),

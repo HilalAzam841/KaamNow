@@ -11,6 +11,7 @@
   "add": "Add",
   "addAService": "Add a service",
   "addContact": "Add contact",
+  "addPhoto": "Add photo",
   "addServicesToSeeJobs": "Add the services you offer to see matching jobs.",
   "addTimeOff": "Add days off",
   "address": "Address",
@@ -339,6 +340,8 @@
     }
   },
   "defaultAddress": "Default address",
+  "deletePhotoBody": "Customers will no longer see it.",
+  "deletePhotoQ": "Delete this photo?",
   "describeProblem": "Describe the problem",
   "details": "Details",
   "discountNote": "KaamNow pays the discount. Your worker still gets their full share.",
@@ -388,6 +391,7 @@
     }
   },
   "earnings": "Earnings",
+  "editCaption": "Edit caption",
   "editProfile": "Edit profile",
   "email": "Email",
   "emailOptional": "Email (optional, for password reset)",
@@ -460,6 +464,7 @@
   "freqBiweekly": "Every two weeks",
   "freqMonthly": "Every month",
   "freqWeekly": "Every week",
+  "fromKaamNowJob": "From a KaamNow job",
   "fromPrice": "from {price}",
   "@fromPrice": {
     "placeholders": {
@@ -624,6 +629,7 @@
   "markAllRead": "Mark all read",
   "markCompleteQ": "Mark the job as complete?",
   "maxContactsReached": "You have 3 contacts, the most allowed.",
+  "maxPhotosReached": "You have 12 photos, the most allowed. Delete one to add another.",
   "messageNotSent": "Message not sent.",
   "messageToCustomer": "Message to the customer (optional)",
   "messagesPrivate": "Messages are private between you and the other person on this booking.",
@@ -656,6 +662,10 @@
     }
   },
   "moreDetail": "Please give a bit more detail (20+ characters)",
+  "moveEarlier": "Move earlier",
+  "moveLater": "Move later",
+  "myPortfolio": "My work photos",
+  "myPortfolioHint": "Show customers what you have done",
   "myScheduleSubtitle": "Days and times you take jobs, and days off",
   "myScheduleTitle": "My working hours",
   "myWorkerProfile": "My worker profile",
@@ -744,12 +754,15 @@
   "noOffersHereHint": "Offers you send on jobs appear here.",
   "noOpenJobs": "No open jobs right now",
   "noOpenJobsHint": "New jobs in your area and services will show up here, and you will get an alert.",
+  "noPortfolioHint": "Add up to 12 photos of jobs you did. Customers see them on your profile. Location and camera details are removed from each photo.",
+  "noPortfolioYet": "No work photos yet",
   "noRepeatingJobs": "No repeating jobs",
   "noRepeatingJobsCustomer": "Open a booking and tap Repeat this job to have it done every week or month.",
   "noRepeatingJobsWorker": "When a customer repeats a job with you, it shows here.",
   "noRequestsHint": "Post a job to get prices from nearby workers.",
   "noRequestsYet": "No requests yet",
   "noReviewsYet": "No reviews yet.",
+  "noService": "None",
   "noServicesYet": "No services yet",
   "noShowCustomerReported": "Reported: the customer was not there.",
   "noShowNoteLabel": "What happened? (optional)",
@@ -825,6 +838,7 @@
   "passwordChanged": "Password changed",
   "passwordChangedShort": "Password changed.",
   "passwordsDontMatch": "The passwords do not match",
+  "pastWork": "Past work",
   "pauseRepeating": "Pause",
   "pausedRepeating": "Paused. No visits until you resume.",
   "payCash": "Pay the worker in cash. They will confirm when they receive it.",
@@ -870,7 +884,30 @@
   "payoutRequested": "Payout requested. We will send it soon.",
   "payoutTo": "Send it to",
   "phoneNumber": "Phone number",
+  "photoAdded": "Photo added.",
+  "photoCaptionLabel": "What is in the photo? (optional)",
+  "photoDeleted": "Photo deleted.",
+  "photoHiddenBy": "Hidden by KaamNow: {reason}",
+  "@photoHiddenBy": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "photoServiceLabel": "Service (optional)",
   "photoUpdated": "Photo updated.",
+  "photosCount": "{count} of {max} photos",
+  "@photosCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
   "photosOptional": "Photos (optional)",
   "pinPlaced": "Pin placed. Tap the map to move it.",
   "planPaymentWindowClosed": "Your plan activates once the payment is confirmed.",

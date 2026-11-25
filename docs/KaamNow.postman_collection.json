@@ -50,6 +50,10 @@
       "value": ""
     },
     {
+      "key": "photo_id",
+      "value": ""
+    },
+    {
       "key": "otp",
       "value": ""
     },
@@ -640,6 +644,278 @@
             "body": {
               "mode": "raw",
               "raw": "{\n  \"is_available\": true\n}"
+            }
+          }
+        },
+        {
+          "name": "Add a work photo",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/workers/me/portfolio/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "workers",
+                "me",
+                "portfolio"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{worker_access}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "image",
+                  "type": "file",
+                  "src": ""
+                },
+                {
+                  "key": "caption",
+                  "value": "New wiring in a kitchen",
+                  "type": "text"
+                },
+                {
+                  "key": "category",
+                  "value": "1",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set('photo_id', pm.response.json().data.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "My work photos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/workers/me/portfolio/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "workers",
+                "me",
+                "portfolio"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{worker_access}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Change a photo caption",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/workers/me/portfolio/{{photo_id}}/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "workers",
+                "me",
+                "portfolio",
+                "{{photo_id}}"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{worker_access}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"caption\": \"DB board fitted\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Reorder work photos",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/workers/me/portfolio/reorder/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "workers",
+                "me",
+                "portfolio",
+                "reorder"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{worker_access}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ids\": [\n    \"{{photo_id}}\"\n  ]\n}"
+            }
+          }
+        },
+        {
+          "name": "A worker's work photos (public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/workers/{{worker_id}}/portfolio/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "workers",
+                "{{worker_id}}",
+                "portfolio"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "Admin: work photos to check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/portfolio-photos/?is_hidden=false",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "portfolio-photos",
+                "?is_hidden=false"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_access}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Admin: hide a work photo (audited)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/portfolio-photos/{{photo_id}}/hide/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "portfolio-photos",
+                "{{photo_id}}",
+                "hide"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_access}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Not a photo of work\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Admin: show it again",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/portfolio-photos/{{photo_id}}/unhide/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "portfolio-photos",
+                "{{photo_id}}",
+                "unhide"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_access}}"
+                }
+              ]
             }
           }
         },

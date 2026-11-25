@@ -30,6 +30,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String get addContact => 'رابطہ شامل کریں';
 
   @override
+  String get addPhoto => 'تصویر شامل کریں';
+
+  @override
   String get addServicesToSeeJobs =>
       'متعلقہ کام دیکھنے کے لیے اپنی خدمات شامل کریں۔';
 
@@ -561,6 +564,12 @@ class AppLocalizationsUr extends AppLocalizations {
   String get defaultAddress => 'مستقل پتہ';
 
   @override
+  String get deletePhotoBody => 'گاہک اسے مزید نہیں دیکھ سکیں گے۔';
+
+  @override
+  String get deletePhotoQ => 'یہ تصویر حذف کریں؟';
+
+  @override
   String get describeProblem => 'مسئلہ بیان کریں';
 
   @override
@@ -620,6 +629,9 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get earnings => 'آمدنی';
+
+  @override
+  String get editCaption => 'عنوان بدلیں';
 
   @override
   String get editProfile => 'پروفائل میں ترمیم';
@@ -744,6 +756,9 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get freqWeekly => 'ہر ہفتے';
+
+  @override
+  String get fromKaamNowJob => 'کام ناؤ کے ایک کام سے';
 
   @override
   String fromPrice(Object price) {
@@ -1011,6 +1026,10 @@ class AppLocalizationsUr extends AppLocalizations {
       'آپ کے 3 رابطے ہیں، جو زیادہ سے زیادہ حد ہے۔';
 
   @override
+  String get maxPhotosReached =>
+      'آپ کی 12 تصاویر ہیں، جو زیادہ سے زیادہ حد ہے۔ نئی شامل کرنے کے لیے ایک حذف کریں۔';
+
+  @override
   String get messageNotSent => 'پیغام نہیں بھیجا جا سکا۔';
 
   @override
@@ -1051,6 +1070,18 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get moreDetail => 'براہِ کرم کچھ مزید تفصیل دیں (20 سے زیادہ حروف)';
+
+  @override
+  String get moveEarlier => 'پہلے کریں';
+
+  @override
+  String get moveLater => 'بعد میں کریں';
+
+  @override
+  String get myPortfolio => 'میرے کام کی تصاویر';
+
+  @override
+  String get myPortfolioHint => 'گاہکوں کو دکھائیں کہ آپ نے کیا کام کیا ہے';
 
   @override
   String get myScheduleSubtitle =>
@@ -1180,6 +1211,13 @@ class AppLocalizationsUr extends AppLocalizations {
       'آپ کے علاقے اور خدمات کے نئے کام یہاں نظر آئیں گے، اور آپ کو اطلاع ملے گی۔';
 
   @override
+  String get noPortfolioHint =>
+      'اپنے کیے ہوئے کاموں کی زیادہ سے زیادہ 12 تصاویر شامل کریں۔ گاہک انہیں آپ کی پروفائل پر دیکھتے ہیں۔ ہر تصویر سے مقام اور کیمرے کی تفصیلات ہٹا دی جاتی ہیں۔';
+
+  @override
+  String get noPortfolioYet => 'ابھی کام کی کوئی تصویر نہیں';
+
+  @override
   String get noRepeatingJobs => 'کوئی دہرایا جانے والا کام نہیں';
 
   @override
@@ -1199,6 +1237,9 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get noReviewsYet => 'ابھی کوئی ریویو نہیں۔';
+
+  @override
+  String get noService => 'کوئی نہیں';
 
   @override
   String get noServicesYet => 'ابھی کوئی سروس دستیاب نہیں';
@@ -1334,6 +1375,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String get passwordsDontMatch => 'دونوں پاس ورڈ ایک جیسے نہیں ہیں';
 
   @override
+  String get pastWork => 'پچھلا کام';
+
+  @override
   String get pauseRepeating => 'روکیں';
 
   @override
@@ -1403,7 +1447,29 @@ class AppLocalizationsUr extends AppLocalizations {
   String get phoneNumber => 'فون نمبر';
 
   @override
+  String get photoAdded => 'تصویر شامل ہو گئی۔';
+
+  @override
+  String get photoCaptionLabel => 'تصویر میں کیا ہے؟ (اختیاری)';
+
+  @override
+  String get photoDeleted => 'تصویر حذف ہو گئی۔';
+
+  @override
+  String photoHiddenBy(String reason) {
+    return 'کام ناؤ نے چھپا دی: $reason';
+  }
+
+  @override
+  String get photoServiceLabel => 'خدمت (اختیاری)';
+
+  @override
   String get photoUpdated => 'تصویر اپ ڈیٹ ہو گئی۔';
+
+  @override
+  String photosCount(int count, int max) {
+    return '$max میں سے $count تصاویر';
+  }
 
   @override
   String get photosOptional => 'تصاویر (اختیاری)';

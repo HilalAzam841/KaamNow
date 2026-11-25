@@ -83,6 +83,7 @@ class AccountScreen extends StatelessWidget {
       body: PageBody(
         child: ListView(children: [
           ListTile(
+            key: const Key('account-profile'),
             leading: Avatar(name: u.fullName, url: u.avatar),
             title: Text(u.fullName),
             subtitle: Text('${ltr(u.phone)}${u.email != null ? '\n${ltr(u.email!)}' : ''}'),
@@ -95,6 +96,13 @@ class AccountScreen extends StatelessWidget {
               leading: const Icon(Icons.badge),
               title: Text(context.t.workerProfileServicesDocs),
               onTap: () => context.push('/worker/profile'),
+            ),
+            ListTile(
+              key: const Key('account-portfolio'),
+              leading: const Icon(Icons.photo_library),
+              title: Text(context.t.myPortfolio),
+              subtitle: Text(context.t.myPortfolioHint),
+              onTap: () => context.push('/worker/portfolio'),
             ),
             ListTile(
               key: const Key('account-schedule'),

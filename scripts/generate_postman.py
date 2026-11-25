@@ -81,6 +81,21 @@ folders = [
         req("Add service (Electrician = 1)", "POST", "/services/workers/",
             {"category": 1, "starting_price": "500", "description": "Wiring, fans, DB boards"}, token="worker_access"),
         req("Go online", "POST", "/workers/availability/", {"is_available": True}, token="worker_access"),
+        req("Add a work photo", "POST", "/workers/me/portfolio/", token="worker_access", form=[
+            {"key": "image", "type": "file", "src": ""},
+            {"key": "caption", "value": "New wiring in a kitchen", "type": "text"},
+            {"key": "category", "value": "1", "type": "text"},
+        ], tests=[save("photo_id", ".id")]),
+        req("My work photos", "GET", "/workers/me/portfolio/", token="worker_access"),
+        req("Change a photo caption", "PATCH", "/workers/me/portfolio/{{photo_id}}/", {"caption": "DB board fitted"},
+            token="worker_access"),
+        req("Reorder work photos", "POST", "/workers/me/portfolio/reorder/", {"ids": ["{{photo_id}}"]},
+            token="worker_access"),
+        req("A worker's work photos (public)", "GET", "/workers/{{worker_id}}/portfolio/", token=None),
+        req("Admin: work photos to check", "GET", "/admin/portfolio-photos/?is_hidden=false", token="admin_access"),
+        req("Admin: hide a work photo (audited)", "POST", "/admin/portfolio-photos/{{photo_id}}/hide/",
+            {"reason": "Not a photo of work"}, token="admin_access"),
+        req("Admin: show it again", "POST", "/admin/portfolio-photos/{{photo_id}}/unhide/", token="admin_access"),
         req("My working hours", "GET", "/workers/me/schedule/", token="worker_access"),
         req("Set working hours (Mon-Sat 9 to 6)", "PUT", "/workers/me/schedule/", {"hours": [
             {"weekday": d, "start": "09:00", "end": "18:00"} for d in range(6)
@@ -294,7 +309,7 @@ collection = {
     "variable": [{"key": "base_url", "value": "http://localhost:8000/api/v1"}] + [
         {"key": k, "value": ""} for k in (
             "customer_access", "customer_refresh", "worker_access", "admin_access", "worker_id", "request_id",
-            "offer_id", "booking_id", "recurring_id", "share_url", "otp", "payment_id", "time_off_id", "direct_request_id",
+            "offer_id", "booking_id", "recurring_id", "share_url", "photo_id", "otp", "payment_id", "time_off_id", "direct_request_id",
         )
     ],
     "item": [{"name": name, "item": items} for name, items in folders],

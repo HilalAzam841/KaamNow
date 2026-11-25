@@ -5,6 +5,7 @@ import '../../core/format.dart';
 import '../../core/session.dart';
 import '../../models/models.dart';
 import '../widgets/common.dart';
+import '../worker/portfolio_screen.dart';
 import '../widgets/language_button.dart';
 import '../widgets/offer_widgets.dart';
 import '../worker/schedule_screen.dart' show hoursSummary;
@@ -42,6 +43,10 @@ class WorkerPublicScreen extends StatelessWidget {
                 ),
               ],
               if (w.bio.isNotEmpty) ...[const SizedBox(height: 16), Text(w.bio)],
+              if (w.portfolio.isNotEmpty) ...[
+                SectionTitle(context.t.pastWork),
+                PortfolioStrip(photos: w.portfolio),
+              ],
               if (w.serviceArea.isNotEmpty) ...[
                 const SizedBox(height: 8),
                 Row(children: [const Icon(Icons.map, size: 16), Text(' ${context.t.worksIn(w.serviceArea)}')]),
