@@ -421,7 +421,8 @@ class Checkout {
 
 class Payment {
   Payment({required this.id, required this.purpose, this.bookingId, required this.amount, required this.method,
-      required this.status, this.reference = '', this.failureReason = '', this.checkout, this.createdAt});
+      required this.status, this.reference = '', this.failureReason = '', this.checkout, this.createdAt,
+      this.refundedAmount = '0.00'});
   factory Payment.fromJson(Map<String, dynamic> j) => Payment(
         id: parseInt(j['id']),
         purpose: str(j['purpose']),
@@ -433,6 +434,7 @@ class Payment {
         failureReason: str(j['failure_reason']),
         checkout: j['checkout'] == null ? null : Checkout.fromJson(asMap(j['checkout'])),
         createdAt: parseDate(j['created_at']),
+        refundedAmount: j['refunded_amount'] == null ? '0.00' : str(j['refunded_amount']),
       );
   final int id;
   final String purpose;
@@ -444,6 +446,10 @@ class Payment {
   final String failureReason;
   final Checkout? checkout;
   final DateTime? createdAt;
+
+  /// Money KaamNow sent back to the customer for this payment (0 when none).
+  final String refundedAmount;
+  bool get hasRefund => (double.tryParse(refundedAmount) ?? 0) > 0;
 }
 
 class AppNotification {

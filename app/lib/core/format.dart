@@ -62,6 +62,7 @@ String statusLabel(String s) => switch (s) {
       'paid' => strings.statusPaid,
       'collected' => strings.statusCollected,
       'disputed' => strings.statusDisputed,
+      'refunded' => strings.statusRefunded,
       'offered' => strings.statusOffered,
       'requested' => strings.statusRequested,
       _ => humanize(s),

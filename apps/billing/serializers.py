@@ -1,8 +1,11 @@
+from decimal import Decimal
+
 from django.utils.translation import gettext as _
 from rest_framework import serializers
 
 from apps.catalog.models import ServiceCategory
 from apps.jobs.models import Booking
+from apps.support.models import Complaint
 
 from .models import (
     Commission,
@@ -11,6 +14,7 @@ from .models import (
     LedgerEntry,
     Payment,
     PlatformSettings,
+    Refund,
     SubscriptionPlan,
     WorkerSettlement,
     WorkerSubscription,
@@ -35,7 +39,7 @@ class PaymentSerializer(serializers.ModelSerializer):
         model = Payment
         fields = [
             "id", "purpose", "booking", "amount", "method", "status", "reference", "failure_reason", "expires_at",
-            "confirmed_at", "created_at", "updated_at",
+            "confirmed_at", "refunded_amount", "created_at", "updated_at",
         ]
         read_only_fields = fields
 
@@ -283,3 +287,61 @@ class WorkerBalanceSerializer(serializers.Serializer):
     earnings_held = serializers.DecimalField(max_digits=14, decimal_places=2)
     commission_owed = serializers.DecimalField(max_digits=14, decimal_places=2)
     balance = serializers.DecimalField(max_digits=14, decimal_places=2)
+
+
+class RefundSerializer(serializers.ModelSerializer):
+    created_by_name = serializers.CharField(source="created_by.full_name", read_only=True)
+
+    class Meta:
+        model = Refund
+        fields = ["id", "payment", "amount", "worker_share", "method", "reason", "reference", "complaint",
+                  "created_by_name", "created_at"]
+        read_only_fields = fields
+
+
+class AdminPaymentSerializer(PaymentSerializer):
+    payer_name = serializers.CharField(source="payer.full_name", read_only=True)
+    payer_phone = serializers.CharField(source="payer.phone", read_only=True)
+    worker_name = serializers.CharField(source="booking.worker.user.full_name", read_only=True, default=None)
+    refundable_amount = serializers.SerializerMethodField()
+    refunds = RefundSerializer(many=True, read_only=True)
+
+    class Meta(PaymentSerializer.Meta):
+        fields = PaymentSerializer.Meta.fields + [
+            "payer", "payer_name", "payer_phone", "worker_name", "gateway_transaction_id", "refundable_amount",
+            "refunds",
+        ]
+        read_only_fields = fields
+
+    def get_refundable_amount(self, obj) -> str:
+        from .refunds import refundable
+
+        return f"{refundable(obj):.2f}"
+
+
+class RefundRequestSerializer(serializers.Serializer):
+    amount = serializers.DecimalField(max_digits=12, decimal_places=2, min_value=Decimal("1.00"))
+    method = serializers.ChoiceField(choices=Refund.Method.choices)
+    reason = serializers.CharField(max_length=255)
+    reference = serializers.CharField(max_length=100, help_text="Refund transaction ID or receipt number.")
+    charge_worker = serializers.BooleanField(
+        default=False, help_text="Take the worker's share of the refund (their earning's part) from their wallet."
+    )
+    complaint = serializers.PrimaryKeyRelatedField(queryset=Complaint.objects.all(), required=False, allow_null=True)
+
+
+class ResolvePaymentSerializer(serializers.Serializer):
+    resolution = serializers.ChoiceField(
+        choices=[("accept", "Accept"), ("refund", "Refund"), ("reject", "Reject")],
+        help_text="accept: the money counts as the booking's payment. refund: you sent it back. "
+                  "reject: no money arrived.",
+    )
+    note = serializers.CharField(max_length=255)
+    method = serializers.ChoiceField(choices=Refund.Method.choices, required=False)
+    reference = serializers.CharField(max_length=100, required=False, allow_blank=True, default="")
+    complaint = serializers.PrimaryKeyRelatedField(queryset=Complaint.objects.all(), required=False, allow_null=True)
+
+    def validate(self, attrs):
+        if attrs["resolution"] == "refund" and (not attrs.get("method") or not attrs.get("reference", "").strip()):
+            raise serializers.ValidationError({"reference": _("Give the refund method and its reference.")})
+        return attrs

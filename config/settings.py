@@ -230,6 +230,7 @@ SPECTACULAR_SETTINGS = {
         "SettlementMethodEnum": "apps.billing.models.WorkerSettlement.Method",
         "PayoutMethodEnum": "apps.billing.serializers.PAYOUT_METHOD_CHOICES",
         "CommissionReceivedMethodEnum": "apps.billing.serializers.RECEIVED_METHOD_CHOICES",
+        "RefundMethodEnum": "apps.billing.models.Refund.Method",
         "PurchaseStatusEnum": "apps.billing.models.WorkerSubscription.Status",
         "ComplaintStatusEnum": "apps.support.models.Complaint.Status",
         "ComplaintStatusChangeEnum": "apps.support.serializers.STATUS_CHANGE_CHOICES",

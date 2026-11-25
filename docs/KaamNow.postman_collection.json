@@ -2394,6 +2394,112 @@
               "raw": "{\n  \"refresh\": \"{{customer_refresh}}\"\n}"
             }
           }
+        },
+        {
+          "name": "Admin: disputed payments",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/payments/?status=disputed",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "payments"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "disputed"
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_access}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Admin: refund a payment (audited)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/payments/{{payment_id}}/refund/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "payments",
+                "{{payment_id}}",
+                "refund"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_access}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": \"500.00\",\n  \"method\": \"gateway\",\n  \"reason\": \"Leak came back the next day\",\n  \"reference\": \"JC-RF-1001\",\n  \"charge_worker\": true\n}"
+            }
+          }
+        },
+        {
+          "name": "Admin: resolve a disputed payment (audited)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/payments/{{payment_id}}/resolve/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "payments",
+                "{{payment_id}}",
+                "resolve"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_access}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"resolution\": \"refund\",\n  \"note\": \"Customer paid twice\",\n  \"method\": \"gateway\",\n  \"reference\": \"JC-RF-2001\"\n}"
+            }
+          }
         }
       ]
     },

@@ -11,6 +11,9 @@ The wallet balance nets the two over bookings not yet settled. A positive balanc
 (the worker asks, an admin sends it and marks it paid); a negative one is paid by the worker
 (online, or recorded by an admin when handed over in cash or by transfer). Each settlement takes
 the bookings it covers with it, so nothing is counted twice.
+
+One-off ``WorkerAdjustment`` rows (e.g. the worker's share of a customer refund) count the same way:
+a positive one adds to what the platform owes, a negative one to what the worker owes.
 """
 
 from decimal import Decimal
@@ -25,7 +28,7 @@ from apps.common.i18n import money, t
 from apps.notifications.models import Notification
 from apps.notifications.services import notify
 
-from .models import Commission, LedgerEntry, Payment, PlatformSettings, WorkerSettlement
+from .models import Commission, LedgerEntry, Payment, PlatformSettings, WorkerAdjustment, WorkerSettlement
 
 ZERO = Decimal("0.00")
 ONLINE = [m.value for m in Payment.ONLINE_METHODS]
@@ -39,17 +42,27 @@ def _open_commissions(worker):
     )
 
 
-def _totals(commissions):
+def _open_adjustments(worker):
+    return WorkerAdjustment.objects.filter(worker=worker, settlement__isnull=True)
+
+
+def _totals(commissions, adjustments):
     agg = commissions.aggregate(
         held=Sum("worker_earning", filter=Q(paid_via__in=ONLINE)),
         owed=Sum("commission_amount", filter=Q(paid_via=Payment.Method.CASH)),
     )
-    held, owed = agg["held"] or ZERO, agg["owed"] or ZERO
+    adj = adjustments.aggregate(plus=Sum("amount", filter=Q(amount__gt=0)), minus=Sum("amount", filter=Q(amount__lt=0)))
+    held = (agg["held"] or ZERO) + (adj["plus"] or ZERO)
+    owed = (agg["owed"] or ZERO) - (adj["minus"] or ZERO)
     return held, owed, held - owed
 
 
+def _worker_totals(worker):
+    return _totals(_open_commissions(worker), _open_adjustments(worker))
+
+
 def summary(worker):
-    held, owed, balance = _totals(_open_commissions(worker))
+    held, owed, balance = _worker_totals(worker)
     cfg = PlatformSettings.load()
     open_settlement = WorkerSettlement.objects.filter(worker=worker, status=WorkerSettlement.Status.REQUESTED).first()
     last_payout = (
@@ -79,13 +92,13 @@ def is_blocked_by_debt(worker, *, balance=None, cfg=None):
     if not cfg.commission_debt_limit:
         return False
     if balance is None:
-        balance = _totals(_open_commissions(worker))[2]
+        balance = _worker_totals(worker)[2]
     return -balance > cfg.commission_debt_limit
 
 
 def check_commission_debt(worker):
     """Called before a worker sends an offer."""
-    balance = _totals(_open_commissions(worker))[2]
+    balance = _worker_totals(worker)[2]
     if is_blocked_by_debt(worker, balance=balance):
         raise BusinessRuleError(
             _("You owe {amount} in commission. Pay it from your wallet to keep sending offers.").format(
@@ -101,10 +114,12 @@ def _lock(worker):
     WorkerProfile.objects.select_for_update().get(pk=worker.pk)
     if WorkerSettlement.objects.filter(worker=worker, status=WorkerSettlement.Status.REQUESTED).exists():
         raise ConflictError(_("You already have an open payout or commission payment."))
-    commissions = list(_open_commissions(worker).select_for_update(of=("self",)))
-    ids = [c.pk for c in commissions]
-    held, owed, balance = _totals(Commission.objects.filter(pk__in=ids))
-    return ids, held, owed, balance
+    commission_ids = list(_open_commissions(worker).select_for_update(of=("self",)).values_list("pk", flat=True))
+    adjustment_ids = list(_open_adjustments(worker).select_for_update().values_list("pk", flat=True))
+    held, owed, balance = _totals(
+        Commission.objects.filter(pk__in=commission_ids), WorkerAdjustment.objects.filter(pk__in=adjustment_ids)
+    )
+    return (commission_ids, adjustment_ids), held, owed, balance
 
 
 def _create(worker, ids, **fields):
@@ -113,7 +128,10 @@ def _create(worker, ids, **fields):
             settlement = WorkerSettlement.objects.create(worker=worker, **fields)
     except IntegrityError as exc:
         raise ConflictError(_("You already have an open payout or commission payment.")) from exc
-    Commission.objects.filter(pk__in=ids).update(settlement=settlement, updated_at=timezone.now())
+    commission_ids, adjustment_ids = ids
+    now = timezone.now()
+    Commission.objects.filter(pk__in=commission_ids).update(settlement=settlement, updated_at=now)
+    WorkerAdjustment.objects.filter(pk__in=adjustment_ids).update(settlement=settlement, updated_at=now)
     return settlement
 
 
@@ -122,6 +140,7 @@ def _release(settlement, status, note=""):
     settlement.note = note[:255] or settlement.note
     settlement.save(update_fields=["status", "note", "updated_at"])
     settlement.commissions.update(settlement=None, updated_at=timezone.now())
+    settlement.adjustments.update(settlement=None, updated_at=timezone.now())
 
 
 def _finish(settlement, *, processed_by=None, reference=""):
@@ -280,15 +299,24 @@ def balances(owing=None):
         .values("worker", "worker__user__full_name", "worker__user__phone")
         .annotate(held=Sum("worker_earning", filter=Q(paid_via__in=ONLINE)),
                   owed=Sum("commission_amount", filter=Q(paid_via=Payment.Method.CASH)))
-        .order_by("worker")
     )
+    adjustments = (
+        WorkerAdjustment.objects.filter(settlement__isnull=True)
+        .values("worker", "worker__user__full_name", "worker__user__phone")
+        .annotate(held=Sum("amount", filter=Q(amount__gt=0)), owed=Sum("amount", filter=Q(amount__lt=0)))
+    )
+    per_worker = {}
+    for r, sign in [(r, 1) for r in rows] + [(r, -1) for r in adjustments]:
+        row = per_worker.setdefault(r["worker"], {
+            "worker": r["worker"], "worker_name": r["worker__user__full_name"],
+            "worker_phone": r["worker__user__phone"], "earnings_held": ZERO, "commission_owed": ZERO,
+        })
+        row["earnings_held"] += r["held"] or ZERO
+        row["commission_owed"] += sign * (r["owed"] or ZERO)
     out = []
-    for r in rows:
-        held, owed = r["held"] or ZERO, r["owed"] or ZERO
-        balance = held - owed
+    for row in per_worker.values():
+        balance = row["earnings_held"] - row["commission_owed"]
         if owing is True and balance >= 0 or owing is False and balance <= 0 or balance == 0:
             continue
-        out.append({"worker": r["worker"], "worker_name": r["worker__user__full_name"],
-                    "worker_phone": r["worker__user__phone"], "earnings_held": held, "commission_owed": owed,
-                    "balance": balance})
+        out.append({**row, "balance": balance})
     return sorted(out, key=lambda r: r["balance"])

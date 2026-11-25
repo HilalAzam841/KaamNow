@@ -1016,6 +1016,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String paymentRefunded(Object amount) {
+    return 'Your payment of $amount was refunded.';
+  }
+
+  @override
   String get paymentWindowClosed =>
       'This page updates once the gateway confirms the payment.';
 
@@ -1146,6 +1151,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get reconnecting => 'Reconnecting…';
+
+  @override
+  String refundedToCustomer(Object amount) {
+    return 'Refunded to the customer: $amount';
+  }
+
+  @override
+  String refundedToYou(Object amount) {
+    return 'Refunded to you: $amount';
+  }
 
   @override
   String get reject => 'Reject';
@@ -1414,6 +1429,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get statusPendingPayment => 'Awaiting payment';
 
   @override
+  String get statusRefunded => 'Refunded';
+
+  @override
   String get statusRejected => 'Rejected';
 
   @override
@@ -1592,7 +1610,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String walletCommissionOwed(Object amount) {
-    return 'Commission on cash jobs: $amount';
+    return 'Commission and charges: $amount';
   }
 
   @override

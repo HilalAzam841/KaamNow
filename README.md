@@ -14,7 +14,7 @@ later, and talks to the backend only through the REST API and the booking WebSoc
 
 **Stage 1 (Backend MVP), Stage 2 (Advanced features) and Stage 3 (Flutter web client) are done,
 and Stage 4 adds the admin dashboard to the web app.** Every backend feature below has its business logic, REST endpoint(s), validation and
-automated tests. All 416 backend tests pass against PostgreSQL 16, and the Flutter app has 89
+automated tests. All 430 backend tests pass against PostgreSQL 16, and the Flutter app has 94
 unit and widget tests plus a browser end-to-end run (see `app/README.md`).
 
 ### Stage 1: Backend MVP
@@ -198,6 +198,19 @@ Automatic payouts through a gateway's disbursement API can be added later.
 
 Set it up: see "Google Maps" in `app/README.md`.
 
+### Stage 15: refunds and payment disputes
+
+KaamNow sends refunds itself (from the JazzCash or Easypaisa merchant portal, a bank or in cash) and records
+each one here with its reference, so the books, the worker's wallet and the customer all agree.
+
+| Feature | Where |
+|---|---|
+| Admins see every payment with who paid, the worker, the gateway transaction ID and past refunds; filter disputed, completed or refunded | `GET admin/payments/` (`?status=`, `?refunded=true`, `?search=`), app: admin **Payments** page |
+| Refund a completed booking payment in full or in part (several refunds, never more than was paid), with the method, reference, reason and an optional complaint about that booking. The customer is told, the ledger gets a `customer_refund` entry, and it is in the audit log | `POST admin/payments/{id}/refund/`, `apps/billing/refunds.py` |
+| Optionally charge the worker their share of the refund (the refund times their earning over the amount paid). It goes into their wallet as a charge and is settled with their next payout or commission payment; otherwise KaamNow pays it | `WorkerAdjustment`, `apps/billing/wallet.py` |
+| Disputed payments (money reported after the checkout closed, or an amount that does not match) are never settled automatically. After checking the merchant portal an admin **accepts** it (it becomes the booking's payment, refused if the booking is already paid), records that it was **refunded**, or **rejects** it (no money arrived). A note is required, the customer is told, and it is audited | `POST admin/payments/{id}/resolve/` |
+| The customer sees what was refunded on the booking; the revenue page shows refunds paid | booking detail, `GET admin/revenue/` (`refunds_paid`) |
+
 **Before going live with online payments:** the JazzCash and Easypaisa adapters follow each
 gateway's published integration scheme and are covered by tests with simulated gateway responses.
 They have **not** been run against the real sandboxes yet, because that needs your merchant
@@ -373,7 +386,7 @@ be probed), `409` state conflict (already booked, wrong turn, and so on), `429` 
 | Complaints | `POST complaints/` · `GET complaints/` · `GET complaints/{id}/` |
 | Reviews | `POST reviews/` · `GET workers/{id}/reviews/` |
 | Notifications | `GET notifications/` · `POST notifications/{id}/read/` · `POST notifications/read-all/` · `GET notifications/unread-count/` · `POST/DELETE notifications/devices/` |
-| Admin | `GET admin/dashboard/` · `GET admin/workers/pending/` · `GET admin/workers/{id}/` · `POST admin/workers/{id}/verify/` · `POST admin/workers/{id}/reject/` · `GET admin/documents/{id}/file/` · `GET admin/users/` · `POST admin/users/{id}/suspend/` · `POST admin/users/{id}/reactivate/` · `GET admin/requests/` · `GET admin/bookings/` · `GET admin/revenue/` · `GET admin/commissions/` · `GET/PATCH admin/settings/commission/` · `GET admin/reports/` · `GET admin/audit-logs/` · `GET/PATCH admin/settings/` · `GET admin/revenue/other/` · `admin/subscription-plans/` (list, create, update) · `admin/featured-plans/` (list, create, update) · `GET admin/subscriptions/` · `POST admin/subscriptions/{id}/activate/` · `GET admin/featured-listings/` · `POST admin/featured-listings/{id}/cancel/` · `GET admin/complaints/` · `POST admin/complaints/{id}/status/` · `GET admin/settlements/` · `POST admin/settlements/{id}/mark-paid/` · `POST admin/settlements/{id}/reject/` · `GET admin/worker-balances/` · `POST admin/workers/{id}/record-commission/` |
+| Admin | `GET admin/dashboard/` · `GET admin/workers/pending/` · `GET admin/workers/{id}/` · `POST admin/workers/{id}/verify/` · `POST admin/workers/{id}/reject/` · `GET admin/documents/{id}/file/` · `GET admin/users/` · `POST admin/users/{id}/suspend/` · `POST admin/users/{id}/reactivate/` · `GET admin/requests/` · `GET admin/bookings/` · `GET admin/revenue/` · `GET admin/commissions/` · `GET/PATCH admin/settings/commission/` · `GET admin/reports/` · `GET admin/audit-logs/` · `GET/PATCH admin/settings/` · `GET admin/revenue/other/` · `admin/subscription-plans/` (list, create, update) · `admin/featured-plans/` (list, create, update) · `GET admin/subscriptions/` · `POST admin/subscriptions/{id}/activate/` · `GET admin/featured-listings/` · `POST admin/featured-listings/{id}/cancel/` · `GET admin/complaints/` · `POST admin/complaints/{id}/status/` · `GET admin/settlements/` · `POST admin/settlements/{id}/mark-paid/` · `POST admin/settlements/{id}/reject/` · `GET admin/worker-balances/` · `POST admin/workers/{id}/record-commission/` · `GET admin/payments/` · `POST admin/payments/{id}/refund/` · `POST admin/payments/{id}/resolve/` |
 
 Endpoints added beyond the original list, because the flow needs them: `password-reset/confirm`,
 `password-change`, `workers/{id}/` (public card), `offers/{id}/negotiations/`,

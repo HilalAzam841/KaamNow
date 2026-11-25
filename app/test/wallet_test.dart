@@ -102,7 +102,7 @@ void main() {
       expect(find.text('KaamNow owes you'), findsOneWidget);
       expect(find.text('Rs 1,700'), findsOneWidget);
       expect(find.text('From online payments: Rs 1,800'), findsOneWidget);
-      expect(find.text('Commission on cash jobs: Rs 100'), findsOneWidget);
+      expect(find.text('Commission and charges: Rs 100'), findsOneWidget);
 
       await tester.tap(find.byKey(const Key('wallet-get-paid')));
       await tester.pumpAndSettle();

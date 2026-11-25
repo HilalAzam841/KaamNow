@@ -9,6 +9,7 @@ router.register("featured-plans", views.AdminFeaturedPlanViewSet, basename="admi
 router.register("subscriptions", views.AdminSubscriptionViewSet, basename="admin-subscription")
 router.register("featured-listings", views.AdminFeaturedListingViewSet, basename="admin-featured-listing")
 router.register("complaints", views.AdminComplaintViewSet, basename="admin-complaint")
+router.register("payments", views.AdminPaymentViewSet, basename="admin-payment")
 router.register("settlements", views.AdminSettlementViewSet, basename="admin-settlement")
 
 urlpatterns = [

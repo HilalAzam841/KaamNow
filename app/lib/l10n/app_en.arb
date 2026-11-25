@@ -615,6 +615,12 @@
       "amount": {}
     }
   },
+  "paymentRefunded": "Your payment of {amount} was refunded.",
+  "@paymentRefunded": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
   "paymentWindowClosed": "This page updates once the gateway confirms the payment.",
   "payoutCancelled": "Payout request cancelled.",
   "payoutOpen": "Payout of {amount} requested",
@@ -680,6 +686,18 @@
   "received": "Received",
   "recentJobs": "Recent jobs",
   "reconnecting": "Reconnecting…",
+  "refundedToCustomer": "Refunded to the customer: {amount}",
+  "@refundedToCustomer": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
+  "refundedToYou": "Refunded to you: {amount}",
+  "@refundedToYou": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
   "reject": "Reject",
   "rejectOfferQ": "Reject this offer?",
   "remove": "Remove",
@@ -813,6 +831,7 @@
   "statusPaid": "Paid",
   "statusPending": "Pending",
   "statusPendingPayment": "Awaiting payment",
+  "statusRefunded": "Refunded",
   "statusRejected": "Rejected",
   "statusRequested": "Requested",
   "statusResolved": "Resolved",
@@ -902,7 +921,7 @@
   "waitingForWorkerLocation": "Waiting for the worker’s location…",
   "wallet": "Wallet",
   "walletBalance": "Balance with KaamNow",
-  "walletCommissionOwed": "Commission on cash jobs: {amount}",
+  "walletCommissionOwed": "Commission and charges: {amount}",
   "@walletCommissionOwed": {
     "placeholders": {
       "amount": {}

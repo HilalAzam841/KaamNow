@@ -105,6 +105,42 @@ class AdminApi {
       asMap(await client.post('/admin/workers/$workerId/record-commission/',
           body: {'method': method, 'reference': reference})));
 
+  // ---- payments, refunds and disputes -------------------------------------
+  Future<Paged<AdminPayment>> payments({String? status, String? method, bool? refunded, String? search,
+          int page = 1}) async =>
+      Paged.parse(
+          await client.get('/admin/payments/', query: {
+            'status': status,
+            'method': method,
+            'refunded': refunded?.toString(),
+            'search': search,
+            'page': page,
+          }),
+          AdminPayment.fromJson);
+  Future<AdminRefund> refundPayment(int id,
+          {required String amount,
+          required String method,
+          required String reason,
+          required String reference,
+          bool chargeWorker = false,
+          int? complaintId}) async =>
+      AdminRefund.fromJson(asMap(await client.post('/admin/payments/$id/refund/', body: {
+        'amount': amount,
+        'method': method,
+        'reason': reason,
+        'reference': reference,
+        'charge_worker': chargeWorker,
+        'complaint': ?complaintId,
+      })));
+  Future<AdminPayment> resolvePayment(int id, String resolution, String note,
+          {String? method, String? reference}) async =>
+      AdminPayment.fromJson(asMap(await client.post('/admin/payments/$id/resolve/', body: {
+        'resolution': resolution,
+        'note': note,
+        'method': ?method,
+        'reference': ?reference,
+      })));
+
   // ---- complaints & audit ------------------------------------------------
   Future<Paged<AdminComplaint>> complaints({String? status, int page = 1}) async =>
       Paged.parse(await client.get('/admin/complaints/', query: {'status': status, 'page': page}),

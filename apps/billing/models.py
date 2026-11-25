@@ -109,6 +109,7 @@ class Payment(TimeStampedModel):
         FAILED = "failed", "Failed"
         DISPUTED = "disputed", "Disputed"
         EXPIRED = "expired", "Expired"
+        REFUNDED = "refunded", "Refunded"
 
     ONLINE_METHODS = (Method.JAZZCASH, Method.EASYPAISA)
 
@@ -129,10 +130,17 @@ class Payment(TimeStampedModel):
     confirmed_by = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name="+"
     )
+    refunded_amount = models.DecimalField(
+        max_digits=12, decimal_places=2, default=Decimal("0.00"), help_text="Total refunded to the payer so far."
+    )
 
     class Meta:
         ordering = ["-created_at"]
         constraints = [
+            models.CheckConstraint(
+                condition=Q(refunded_amount__gte=0) & Q(refunded_amount__lte=models.F("amount")),
+                name="payment_refund_within_amount",
+            ),
             # At most one live (pending or completed) payment per booking.
             models.UniqueConstraint(
                 fields=["booking"], condition=Q(status__in=["pending", "completed"]),
@@ -164,12 +172,16 @@ class LedgerEntry(models.Model):
         FEATURED_REVENUE = "featured_revenue", "Featured listing revenue"
         WORKER_PAYOUT = "worker_payout", "Payout to worker"
         COMMISSION_SETTLEMENT = "commission_settlement", "Cash commission settled"
+        CUSTOMER_REFUND = "customer_refund", "Refund to customer"
 
     payment = models.ForeignKey(
         Payment, on_delete=models.PROTECT, related_name="ledger_entries", null=True, blank=True
     )
     settlement = models.ForeignKey(
         "billing.WorkerSettlement", on_delete=models.PROTECT, null=True, blank=True, related_name="ledger_entries"
+    )
+    refund = models.ForeignKey(
+        "billing.Refund", on_delete=models.PROTECT, null=True, blank=True, related_name="ledger_entries"
     )
     booking = models.ForeignKey(
         "jobs.Booking", on_delete=models.PROTECT, related_name="ledger_entries", null=True, blank=True
@@ -186,10 +198,13 @@ class LedgerEntry(models.Model):
         ordering = ["created_at", "id"]
         verbose_name_plural = "ledger entries"
         constraints = [
-            models.UniqueConstraint(fields=["payment", "entry_type"], name="unique_ledger_entry_per_payment_type"),
+            models.UniqueConstraint(fields=["payment", "entry_type"], condition=Q(refund__isnull=True),
+                                    name="unique_ledger_entry_per_payment_type"),
+            models.UniqueConstraint(fields=["refund", "entry_type"], name="unique_ledger_entry_per_refund_type"),
             models.UniqueConstraint(fields=["settlement", "entry_type"], name="unique_ledger_entry_per_settlement_type"),
             models.CheckConstraint(
-                condition=Q(payment__isnull=False) | Q(settlement__isnull=False), name="ledger_entry_has_source"
+                condition=Q(payment__isnull=False) | Q(settlement__isnull=False) | Q(refund__isnull=False),
+                name="ledger_entry_has_source"
             ),
         ]
 
@@ -373,3 +388,60 @@ class WorkerSettlement(TimeStampedModel):
 
     def __str__(self):
         return f"{self.get_kind_display()} Rs.{self.amount} for {self.worker} ({self.status})"
+
+
+class Refund(TimeStampedModel):
+    """Money returned to a customer, recorded by an admin after sending it (through the gateway's
+    merchant portal, a bank transfer or cash). Part of it can be charged to the worker."""
+
+    class Method(models.TextChoices):
+        GATEWAY = "gateway", "Back through JazzCash / Easypaisa"
+        BANK = "bank", "Bank transfer"
+        CASH = "cash", "Cash"
+
+    payment = models.ForeignKey(Payment, on_delete=models.PROTECT, related_name="refunds")
+    amount = models.DecimalField(max_digits=12, decimal_places=2)
+    worker_share = models.DecimalField(
+        max_digits=12, decimal_places=2, default=Decimal("0.00"),
+        help_text="Part of the refund taken from the worker's earnings; KaamNow pays the rest.",
+    )
+    method = models.CharField(max_length=10, choices=Method.choices)
+    reason = models.CharField(max_length=255)
+    reference = models.CharField(max_length=100, help_text="Refund transaction ID or receipt number.")
+    complaint = models.ForeignKey(
+        "support.Complaint", on_delete=models.SET_NULL, null=True, blank=True, related_name="refunds"
+    )
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="+")
+
+    class Meta:
+        ordering = ["-created_at"]
+        constraints = [
+            models.CheckConstraint(condition=Q(amount__gt=0), name="refund_amount_positive"),
+            models.CheckConstraint(
+                condition=Q(worker_share__gte=0) & Q(worker_share__lte=models.F("amount")),
+                name="refund_worker_share_within_amount",
+            ),
+        ]
+
+    def __str__(self):
+        return f"Refund Rs.{self.amount} on payment {self.payment_id}"
+
+
+class WorkerAdjustment(TimeStampedModel):
+    """A one-off change to a worker's wallet, e.g. their share of a customer refund (negative:
+    the worker owes it). Settled with the next payout or commission payment, like a booking."""
+
+    worker = models.ForeignKey("accounts.WorkerProfile", on_delete=models.PROTECT, related_name="adjustments")
+    amount = models.DecimalField(max_digits=12, decimal_places=2, help_text="Positive: owed to the worker.")
+    reason = models.CharField(max_length=255)
+    refund = models.OneToOneField(Refund, on_delete=models.PROTECT, null=True, blank=True, related_name="adjustment")
+    settlement = models.ForeignKey(
+        WorkerSettlement, on_delete=models.PROTECT, null=True, blank=True, related_name="adjustments"
+    )
+
+    class Meta:
+        ordering = ["-created_at"]
+        constraints = [models.CheckConstraint(condition=~Q(amount=0), name="adjustment_not_zero")]
+
+    def __str__(self):
+        return f"Adjustment Rs.{self.amount} for {self.worker}"

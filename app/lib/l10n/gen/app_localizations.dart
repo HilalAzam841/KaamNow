@@ -1778,6 +1778,12 @@ abstract class AppLocalizations {
   /// **'{method} payment of {amount} pending'**
   String paymentPending(Object method, Object amount);
 
+  /// No description provided for @paymentRefunded.
+  ///
+  /// In en, this message translates to:
+  /// **'Your payment of {amount} was refunded.'**
+  String paymentRefunded(Object amount);
+
   /// No description provided for @paymentWindowClosed.
   ///
   /// In en, this message translates to:
@@ -2005,6 +2011,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Reconnecting…'**
   String get reconnecting;
+
+  /// No description provided for @refundedToCustomer.
+  ///
+  /// In en, this message translates to:
+  /// **'Refunded to the customer: {amount}'**
+  String refundedToCustomer(Object amount);
+
+  /// No description provided for @refundedToYou.
+  ///
+  /// In en, this message translates to:
+  /// **'Refunded to you: {amount}'**
+  String refundedToYou(Object amount);
 
   /// No description provided for @reject.
   ///
@@ -2486,6 +2504,12 @@ abstract class AppLocalizations {
   /// **'Awaiting payment'**
   String get statusPendingPayment;
 
+  /// No description provided for @statusRefunded.
+  ///
+  /// In en, this message translates to:
+  /// **'Refunded'**
+  String get statusRefunded;
+
   /// No description provided for @statusRejected.
   ///
   /// In en, this message translates to:
@@ -2813,7 +2837,7 @@ abstract class AppLocalizations {
   /// No description provided for @walletCommissionOwed.
   ///
   /// In en, this message translates to:
-  /// **'Commission on cash jobs: {amount}'**
+  /// **'Commission and charges: {amount}'**
   String walletCommissionOwed(Object amount);
 
   /// No description provided for @walletEarningsHeld.

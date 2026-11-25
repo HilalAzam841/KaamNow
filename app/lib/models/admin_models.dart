@@ -205,3 +205,54 @@ class WorkerBalance {
   final String commissionOwed;
   final String balance;
 }
+
+class AdminRefund {
+  AdminRefund({required this.id, required this.amount, required this.workerShare, required this.method,
+      required this.reason, required this.reference, this.complaintId, this.createdByName = '', this.createdAt});
+  factory AdminRefund.fromJson(Map<String, dynamic> j) => AdminRefund(
+        id: parseInt(j['id']),
+        amount: str(j['amount']),
+        workerShare: str(j['worker_share']),
+        method: str(j['method']),
+        reason: str(j['reason']),
+        reference: str(j['reference']),
+        complaintId: j['complaint'] as int?,
+        createdByName: str(j['created_by_name']),
+        createdAt: parseDate(j['created_at']),
+      );
+  final int id;
+  final String amount;
+  final String workerShare;
+  final String method;
+  final String reason;
+  final String reference;
+  final int? complaintId;
+  final String createdByName;
+  final DateTime? createdAt;
+}
+
+/// A payment as admins see it (with who paid, the gateway transaction and refunds).
+class AdminPayment {
+  AdminPayment({required this.payment, required this.payerName, required this.payerPhone, this.workerName,
+      this.gatewayTransactionId = '', this.refundableAmount = '0.00', this.refunds = const []});
+  factory AdminPayment.fromJson(Map<String, dynamic> j) => AdminPayment(
+        payment: Payment.fromJson(j),
+        payerName: str(j['payer_name']),
+        payerPhone: str(j['payer_phone']),
+        workerName: j['worker_name'] as String?,
+        gatewayTransactionId: str(j['gateway_transaction_id']),
+        refundableAmount: j['refundable_amount'] == null ? '0.00' : str(j['refundable_amount']),
+        refunds: [for (final r in (j['refunds'] as List? ?? const [])) AdminRefund.fromJson(asMap(r))],
+      );
+  final Payment payment;
+  final String payerName;
+  final String payerPhone;
+  final String? workerName;
+  final String gatewayTransactionId;
+  final String refundableAmount;
+  final List<AdminRefund> refunds;
+
+  int get id => payment.id;
+  bool get canRefund => (double.tryParse(refundableAmount) ?? 0) > 0;
+  bool get isDisputed => payment.status == 'disputed';
+}
