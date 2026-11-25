@@ -2,6 +2,7 @@ from django.urls import path
 from rest_framework.routers import DefaultRouter
 
 from apps.promotions.views import AdminPromoCodeViewSet
+from apps.reminders.views import AdminNoShowViewSet
 
 from . import views
 
@@ -13,6 +14,7 @@ router.register("featured-listings", views.AdminFeaturedListingViewSet, basename
 router.register("complaints", views.AdminComplaintViewSet, basename="admin-complaint")
 router.register("promo-codes", AdminPromoCodeViewSet, basename="admin-promo-code")
 router.register("payments", views.AdminPaymentViewSet, basename="admin-payment")
+router.register("no-shows", AdminNoShowViewSet, basename="admin-no-show")
 router.register("settlements", views.AdminSettlementViewSet, basename="admin-settlement")
 
 urlpatterns = [

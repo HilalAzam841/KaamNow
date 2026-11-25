@@ -772,6 +772,10 @@ msgid "Enter the completion code from the customer."
 msgstr "گاہک سے ملا تکمیل کوڈ درج کریں۔"
 
 #: apps/jobs/views.py
+msgid "Only booking participants can report a no-show."
+msgstr "صرف بکنگ کے فریق ہی غیر حاضری کی رپورٹ کر سکتے ہیں۔"
+
+#: apps/jobs/views.py
 msgid "Only booking participants can cancel."
 msgstr "صرف بکنگ کے فریقین منسوخ کر سکتے ہیں۔"
 
@@ -1037,6 +1041,77 @@ msgstr "دعوت کا انعام"
 #: apps/promotions/views.py
 msgid "You can only check your own bookings."
 msgstr "آپ صرف اپنی بکنگ چیک کر سکتے ہیں۔"
+
+#: apps/reminders/services.py
+#, python-brace-format
+msgid "today at {time}"
+msgstr "آج {time} بجے"
+
+#: apps/reminders/services.py
+#, python-brace-format
+msgid "tomorrow at {time}"
+msgstr "کل {time} بجے"
+
+#: apps/reminders/services.py
+#, python-brace-format
+msgid "on {date} at {time}"
+msgstr "{date} کو {time} بجے"
+
+#: apps/reminders/services.py
+#, python-brace-format
+msgid "Reminder: {category} job {when}"
+msgstr "یاد دہانی: {category} کا کام {when}"
+
+#: apps/reminders/services.py
+#, python-brace-format
+msgid "Your {category} job starts {when}"
+msgstr "آپ کا {category} کا کام {when} شروع ہو گا"
+
+#: apps/reminders/services.py
+#, python-brace-format
+msgid "{name} is coming to {address}."
+msgstr "{name} {address} پر آ رہے ہیں۔"
+
+#: apps/reminders/services.py
+#, python-brace-format
+msgid "Job: {title}. Area: {area}. Open the booking for the address."
+msgstr "کام: {title}۔ علاقہ: {area}۔ پتے کے لیے بکنگ کھولیں۔"
+
+#: apps/reminders/services.py
+#, python-brace-format
+msgid "KaamNow: {title}"
+msgstr "کام ناؤ: {title}"
+
+#: apps/reminders/services.py
+msgid "A no-show was already reported for this booking."
+msgstr "اس بکنگ کی غیر حاضری پہلے ہی رپورٹ ہو چکی ہے۔"
+
+#: apps/reminders/services.py
+msgid "You cannot report a no-show for this booking now."
+msgstr "آپ ابھی اس بکنگ کی غیر حاضری رپورٹ نہیں کر سکتے۔"
+
+#: apps/reminders/services.py
+#, python-brace-format
+msgid "Please wait until {time} before reporting a no-show."
+msgstr "غیر حاضری رپورٹ کرنے سے پہلے {time} تک انتظار کریں۔"
+
+#: apps/reminders/services.py
+msgid "No-show reported"
+msgstr "غیر حاضری رپورٹ ہوئی"
+
+#: apps/reminders/services.py
+#, python-brace-format
+msgid "Booking #{id}: {who}"
+msgstr "بکنگ #{id}: {who}"
+
+#: apps/reminders/services.py
+msgid "You were reported as a no-show"
+msgstr "آپ کی غیر حاضری رپورٹ ہوئی ہے"
+
+#: apps/reminders/services.py
+#, python-brace-format
+msgid "Booking #{id} was cancelled. If this is wrong, contact support from Help."
+msgstr "بکنگ #{id} منسوخ کر دی گئی۔ اگر یہ غلط ہے تو مدد کے حصے سے سپورٹ سے رابطہ کریں۔"
 
 #: apps/reviews/services.py
 msgid "You can only review your own bookings."

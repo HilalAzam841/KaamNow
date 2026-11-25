@@ -6,7 +6,8 @@ enum UserRole { customer, worker, admin }
 
 class User {
   User({required this.id, required this.phone, required this.fullName, required this.role, this.email,
-      this.avatar, this.defaultAddress = '', this.workerProfileId, this.language = 'en', this.phoneVerified = false});
+      this.avatar, this.defaultAddress = '', this.workerProfileId, this.language = 'en', this.phoneVerified = false,
+      this.bookingReminders = true});
 
   factory User.fromJson(Map<String, dynamic> j) => User(
         id: parseInt(j['id']),
@@ -19,6 +20,7 @@ class User {
         workerProfileId: j['worker_profile_id'] as int?,
         language: j['language'] == 'ur' ? 'ur' : 'en',
         phoneVerified: j['phone_verified'] == true,
+        bookingReminders: j['booking_reminders'] != false,
       );
 
   final int id;
@@ -35,6 +37,9 @@ class User {
 
   /// Confirmed with an SMS code.
   final bool phoneVerified;
+
+  /// Reminders the day before and an hour before a booked job.
+  final bool bookingReminders;
 
   bool get isWorker => role == UserRole.worker;
   bool get isCustomer => role == UserRole.customer;
@@ -334,7 +339,8 @@ class Booking {
       this.preferredTime, required this.agreedPrice, required this.emergencyFee, required this.totalAmount,
       required this.status, required this.worker, required this.customerName, this.contact = const {},
       this.cancelReason = '', this.completedAt, this.statusHistory = const [], this.commission,
-      this.hasReview = false, this.createdAt, this.durationMinutes = 120});
+      this.hasReview = false, this.createdAt, this.durationMinutes = 120, this.noShowReported,
+      this.canReportNoShow, this.noShowOpensAt});
 
   factory Booking.fromJson(Map<String, dynamic> j) => Booking(
         id: parseInt(j['id']),
@@ -355,6 +361,9 @@ class Booking {
         statusHistory: parseList(j['status_history'], BookingStatusLog.fromJson),
         commission: j['commission'] == null ? null : asMap(j['commission']),
         hasReview: j['has_review'] == true,
+        noShowReported: asMap(j['no_show'])['reported'] as String?,
+        canReportNoShow: asMap(j['no_show'])['you_can_report'] as String?,
+        noShowOpensAt: parseDate(asMap(j['no_show'])['opens_at']),
         createdAt: parseDate(j['created_at']),
       );
 
@@ -376,6 +385,13 @@ class Booking {
   final List<BookingStatusLog> statusHistory;
   final Map<String, dynamic>? commission;
   final bool hasReview;
+
+  /// 'worker' or 'customer' when that side was reported as a no-show.
+  final String? noShowReported;
+
+  /// Who the signed-in user may report as a no-show ('worker' or 'customer'), from [noShowOpensAt].
+  final String? canReportNoShow;
+  final DateTime? noShowOpensAt;
   final DateTime? createdAt;
 
   static const activeStatuses = {'confirmed', 'on_the_way', 'arrived', 'in_progress'};

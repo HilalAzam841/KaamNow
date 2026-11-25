@@ -22,6 +22,7 @@ const adminDestinations = [
   _Dest('/admin/promo-codes', 'Promo codes', Icons.local_offer_rounded),
   _Dest('/admin/plans', 'Plans', Icons.workspace_premium_rounded),
   _Dest('/admin/complaints', 'Complaints', Icons.support_agent_rounded),
+  _Dest('/admin/no-shows', 'No-shows', Icons.person_off_rounded),
   _Dest('/admin/settings', 'Settings', Icons.tune_rounded),
   _Dest('/admin/audit', 'Audit log', Icons.history_rounded),
 ];

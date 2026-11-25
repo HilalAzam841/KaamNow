@@ -107,6 +107,9 @@ folders = [
             token="admin_access"),
         req("Reports", "GET", "/admin/reports/", token="admin_access"),
         req("Suspend user", "POST", "/admin/users/2/suspend/", {"reason": "Fraud"}, token="admin_access"),
+        req("No-show reports", "GET", "/admin/no-shows/?review=open", token="admin_access"),
+        req("Review a no-show", "POST", "/admin/no-shows/1/review/", {"review": "confirmed", "note": "Checked by phone"},
+            token="admin_access"),
         req("Audit log", "GET", "/admin/audit-logs/", token="admin_access"),
     ]),
     ("4. Customer request", [
@@ -167,6 +170,9 @@ folders = [
             token="worker_access"),
         req("Customer: confirm completion in-app (alternative)", "POST", "/bookings/{{booking_id}}/complete/",
             {"confirm": True}),
+        req("Report a no-show (cancels the booking)", "POST", "/bookings/{{booking_id}}/no-show/",
+            {"note": "Waited 45 minutes, no answer on the phone"}),
+        req("Turn job reminders off", "PATCH", "/auth/me/", {"booking_reminders": False}),
         req("Cancel booking", "POST", "/bookings/{{booking_id}}/cancel/", {"reason": "Plans changed"}),
     ]),
     ("7. Payment, review, notifications", [

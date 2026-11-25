@@ -67,6 +67,7 @@ INSTALLED_APPS = [
     "apps.support",
     "apps.promotions",
     "apps.favourites",
+    "apps.reminders",
     "apps.scheduling",
 ]
 
@@ -268,6 +269,7 @@ CELERY_BEAT_SCHEDULE = {
     "expire-subscriptions-and-featured": {"task": "apps.billing.tasks.expire_subscriptions_and_featured", "schedule": 30 * 60},
     "purge-old-locations": {"task": "apps.tracking.tasks.purge_old_locations", "schedule": 24 * 60 * 60},
     "purge-old-phone-codes": {"task": "apps.accounts.tasks.purge_old_phone_codes", "schedule": 6 * 60 * 60},
+    "send-booking-reminders": {"task": "apps.reminders.tasks.send_booking_reminders", "schedule": 5 * 60},
 }
 
 # --- Firebase Cloud Messaging -----------------------------------------------

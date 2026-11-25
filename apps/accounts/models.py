@@ -74,6 +74,9 @@ class User(AbstractBaseUser, PermissionsMixin, TimeStampedModel):
     is_suspended = models.BooleanField(default=False, db_index=True)
     suspended_reason = models.CharField(max_length=255, blank=True)
     date_joined = models.DateTimeField(default=timezone.now)
+    booking_reminders = models.BooleanField(
+        default=True, help_text="Send reminders the day before and an hour before a booked job.",
+    )
     phone_verified_at = models.DateTimeField(
         null=True, blank=True, help_text="When the user confirmed this phone number with an SMS code."
     )

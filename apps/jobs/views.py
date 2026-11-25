@@ -15,6 +15,7 @@ from . import services
 from .models import Booking, ServiceRequest
 from .serializers import (
     BookingCancelSerializer,
+    NoShowSerializer,
     BookingCompleteSerializer,
     BookingSerializer,
     BookingStatusSerializer,
@@ -202,7 +203,7 @@ class BookingViewSet(viewsets.ReadOnlyModelViewSet):
             return Booking.objects.none()
         user = self.request.user
         qs = Booking.objects.select_related(
-            "request__category", "customer", "worker__user", "commission", "review"
+            "request__category", "customer", "worker__user", "commission", "review", "no_show"
         ).prefetch_related("status_logs", "worker__services__category", "worker__working_hours")
         if is_admin(self.request):
             return qs
@@ -254,6 +255,22 @@ class BookingViewSet(viewsets.ReadOnlyModelViewSet):
             booking = services.complete_booking_with_otp(booking, request.user, otp)
         else:
             raise PermissionDenied()
+        return Response(BookingSerializer(self.get_queryset().get(pk=booking.pk), context={"request": request}).data)
+
+    @extend_schema(tags=["bookings"], request=NoShowSerializer, responses={200: BookingSerializer},
+                   summary="Report that the other side did not show up. Cancels the booking. Customers can report "
+                           "the worker some time after the start; workers can report the customer some time after "
+                           "arriving.")
+    @action(detail=True, methods=["post"], url_path="no-show")
+    def no_show(self, request, pk=None):
+        from apps.reminders.services import report_no_show
+
+        booking = self.get_object()
+        if request.user.pk not in (booking.customer_id, booking.worker.user_id):
+            raise PermissionDenied(_("Only booking participants can report a no-show."))
+        serializer = NoShowSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        report_no_show(booking, request.user, serializer.validated_data["note"])
         return Response(BookingSerializer(self.get_queryset().get(pk=booking.pk), context={"request": request}).data)
 
     @extend_schema(tags=["bookings"], request=BookingCancelSerializer, responses={200: BookingSerializer})

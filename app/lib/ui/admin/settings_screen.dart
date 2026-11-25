@@ -38,6 +38,8 @@ class _SettingsFormState extends State<_SettingsForm> {
   late final _welcome = TextEditingController(text: widget.settings.referralWelcomeCredit);
   late final _minBooking = TextEditingController(text: widget.settings.referralMinBooking);
   late final _maxDiscount = TextEditingController(text: widget.settings.maxDiscountPercent);
+  late bool _reminderSms = widget.settings.reminderSmsEnabled;
+  late final _grace = TextEditingController(text: '${widget.settings.noShowGraceMinutes}');
   bool _saving = false;
 
   String? _number(String? v, {double max = 1e9}) {
@@ -59,6 +61,8 @@ class _SettingsFormState extends State<_SettingsForm> {
       if (_welcome.text.trim() != s.referralWelcomeCredit) 'referral_welcome_credit': _welcome.text.trim(),
       if (_minBooking.text.trim() != s.referralMinBooking) 'referral_min_booking': _minBooking.text.trim(),
       if (_maxDiscount.text.trim() != s.maxDiscountPercent) 'max_discount_percent': _maxDiscount.text.trim(),
+      if (_reminderSms != s.reminderSmsEnabled) 'reminder_sms_enabled': _reminderSms,
+      if (_grace.text.trim() != '${s.noShowGraceMinutes}') 'no_show_grace_minutes': int.parse(_grace.text.trim()),
     };
     if (changes.isEmpty) return;
     if (changes.containsKey('commission_percent') &&
@@ -158,6 +162,29 @@ class _SettingsFormState extends State<_SettingsForm> {
                 decoration: const InputDecoration(labelText: 'Largest discount (% of a booking)', helperText: 'Promo codes and credit together never take off more than this', helperMaxLines: 2),
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
                 validator: (v) => _number(v, max: 90),
+              ),
+              const SizedBox(height: 24),
+              Text('Reminders and no-shows', style: Theme.of(context).textTheme.titleMedium),
+              SwitchListTile(
+                key: const Key('reminder-sms'),
+                contentPadding: EdgeInsets.zero,
+                title: const Text('Also send the one-hour reminder by SMS'),
+                subtitle: const Text('Costs money per message. In-app and push reminders are always sent.'),
+                value: _reminderSms,
+                onChanged: (v) => setState(() => _reminderSms = v),
+              ),
+              TextFormField(
+                key: const Key('no-show-grace'),
+                controller: _grace,
+                decoration: const InputDecoration(
+                    labelText: 'No-show wait (minutes)',
+                    helperText: 'How long after the start (or after the worker arrives) a no-show can be reported',
+                    helperMaxLines: 2),
+                keyboardType: TextInputType.number,
+                validator: (v) {
+                  final n = int.tryParse((v ?? '').trim());
+                  return n == null || n < 10 || n > 180 ? 'Enter 10 to 180' : null;
+                },
               ),
               const SizedBox(height: 16),
               FilledButton(

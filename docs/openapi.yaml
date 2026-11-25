@@ -22,6 +22,7 @@ paths:
           - complaint_updated
           - document_viewed
           - featured_cancelled
+          - no_show_reviewed
           - payment_disputed
           - payment_refunded
           - payment_resolved
@@ -55,6 +56,7 @@ paths:
           * `payment_resolved` - Disputed payment resolved
           * `payment_refunded` - Payment refunded to customer
           * `promo_saved` - Promo code created or changed
+          * `no_show_reviewed` - No-show report reviewed
       - in: query
         name: actor
         schema:
@@ -634,6 +636,129 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FeaturedPlan'
+          description: ''
+  /api/v1/admin/no-shows/:
+    get:
+      operationId: admin_no_shows_list
+      description: No-show reports. Each row shows how many no-shows the reported
+        person has in total.
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: review
+        schema:
+          type: string
+          enum:
+          - confirmed
+          - dismissed
+          - open
+        description: |-
+          * `open` - Not reviewed
+          * `confirmed` - Confirmed
+          * `dismissed` - Dismissed
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: side
+        schema:
+          type: string
+          enum:
+          - customer
+          - worker
+        description: |-
+          Who did not show up.
+
+          * `worker` - Worker did not come
+          * `customer` - Customer was not there
+      tags:
+      - admin
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAdminNoShowList'
+          description: ''
+  /api/v1/admin/no-shows/{id}/:
+    get:
+      operationId: admin_no_shows_retrieve
+      description: No-show reports. Each row shows how many no-shows the reported
+        person has in total.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this no show report.
+        required: true
+      tags:
+      - admin
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminNoShow'
+          description: ''
+  /api/v1/admin/no-shows/{id}/review/:
+    post:
+      operationId: admin_no_shows_review_create
+      description: No-show reports. Each row shows how many no-shows the reported
+        person has in total.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this no show report.
+        required: true
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReviewNoShowRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ReviewNoShowRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ReviewNoShowRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminNoShow'
           description: ''
   /api/v1/admin/payments/:
     get:
@@ -2491,6 +2616,41 @@ paths:
               schema:
                 $ref: '#/components/schemas/CompletionOTP'
           description: ''
+  /api/v1/bookings/{id}/no-show/:
+    post:
+      operationId: bookings_no_show_create
+      summary: Report that the other side did not show up. Cancels the booking. Customers
+        can report the worker some time after the start; workers can report the customer
+        some time after arriving.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this booking.
+        required: true
+      tags:
+      - bookings
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NoShowRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/NoShowRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/NoShowRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+          description: ''
   /api/v1/bookings/{id}/status/:
     post:
       operationId: bookings_status_create
@@ -2894,10 +3054,12 @@ paths:
           - negotiation
           - new_offer
           - new_request
+          - no_show
           - offer_accepted
           - offer_closed
           - offer_rejected
           - payment
+          - reminder
           - request_cancelled
           - review
           - subscription
@@ -2921,6 +3083,8 @@ paths:
           * `complaint` - Complaint update
           * `review` - Review
           * `verification` - Account verification
+          * `reminder` - Booking reminder
+          * `no_show` - No-show report
           * `system` - System
       tags:
       - notifications
@@ -4890,6 +5054,97 @@ components:
       - status
       - subject
       - updated_at
+    AdminNoShow:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        booking:
+          type: integer
+          readOnly: true
+        booking_title:
+          type: string
+          readOnly: true
+        preferred_time:
+          type: string
+          format: date-time
+          readOnly: true
+        side:
+          allOf:
+          - $ref: '#/components/schemas/SideEnum'
+          readOnly: true
+          description: |-
+            Who did not show up.
+
+            * `worker` - Worker did not come
+            * `customer` - Customer was not there
+        reported_by:
+          type: integer
+          readOnly: true
+        reported_by_name:
+          type: string
+          readOnly: true
+        against:
+          type: integer
+          readOnly: true
+        against_name:
+          type: string
+          readOnly: true
+        against_role:
+          type: string
+          readOnly: true
+        against_total:
+          type: integer
+          description: No-shows against this person that were not dismissed, this
+            one included.
+          readOnly: true
+        note:
+          type: string
+          readOnly: true
+        review:
+          allOf:
+          - $ref: '#/components/schemas/AdminNoShowReviewEnum'
+          readOnly: true
+        admin_note:
+          type: string
+          readOnly: true
+        reviewed_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - admin_note
+      - against
+      - against_name
+      - against_role
+      - against_total
+      - booking
+      - booking_title
+      - created_at
+      - id
+      - note
+      - preferred_time
+      - reported_by
+      - reported_by_name
+      - review
+      - reviewed_at
+      - side
+    AdminNoShowReviewEnum:
+      enum:
+      - open
+      - confirmed
+      - dismissed
+      type: string
+      description: |-
+        * `open` - Not reviewed
+        * `confirmed` - Confirmed
+        * `dismissed` - Dismissed
     AdminPayment:
       type: object
       properties:
@@ -5517,6 +5772,7 @@ components:
       - payment_resolved
       - payment_refunded
       - promo_saved
+      - no_show_reviewed
       type: string
       description: |-
         * `worker_verified` - Worker verified
@@ -5538,6 +5794,7 @@ components:
         * `payment_resolved` - Disputed payment resolved
         * `payment_refunded` - Payment refunded to customer
         * `promo_saved` - Promo code created or changed
+        * `no_show_reviewed` - No-show report reviewed
     AuthResponse:
       type: object
       properties:
@@ -5659,6 +5916,13 @@ components:
         has_review:
           type: boolean
           readOnly: true
+        no_show:
+          type: object
+          additionalProperties: {}
+          description: |-
+            reported: who was reported absent (worker or customer), or null.
+            you_can_report: who the viewer may report absent, and opens_at: from when.
+          readOnly: true
         created_at:
           type: string
           format: date-time
@@ -5683,6 +5947,7 @@ components:
       - emergency_fee
       - has_review
       - id
+      - no_show
       - on_the_way_at
       - preferred_time
       - request_id
@@ -6748,6 +7013,13 @@ components:
         * `accept` - Customer accepted (booking created)
         * `reject` - Rejected
         * `withdraw` - Withdrawn
+    NoShowRequest:
+      type: object
+      properties:
+        note:
+          type: string
+          default: ''
+          maxLength: 500
     Notification:
       type: object
       properties:
@@ -6850,6 +7122,25 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/AdminComplaint'
+    PaginatedAdminNoShowList:
+      type: object
+      properties:
+        count:
+          type: integer
+        page:
+          type: integer
+        total_pages:
+          type: integer
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdminNoShow'
     PaginatedAdminPaymentList:
       type: object
       properties:
@@ -7420,6 +7711,16 @@ components:
           pattern: ^-?\d{0,3}(?:\.\d{0,2})?$
           description: Promo codes and credit together can take at most this share
             off a booking.
+        reminder_sms_enabled:
+          type: boolean
+          description: Also send the one-hour job reminder by SMS (costs money per
+            message). Push and in-app reminders are always sent.
+        no_show_grace_minutes:
+          type: integer
+          maximum: 180
+          minimum: 10
+          description: How long after the start time (worker) or after arriving (customer)
+            a no-show can be reported.
     PatchedServiceCategoryRequest:
       type: object
       properties:
@@ -7556,6 +7857,9 @@ components:
 
             * `en` - English
             * `ur` - اردو
+        booking_reminders:
+          type: boolean
+          description: Send reminders the day before and an hour before a booked job.
     PatchedWorkerProfileRequest:
       type: object
       description: The worker's own profile (private view).
@@ -7917,6 +8221,16 @@ components:
           pattern: ^-?\d{0,3}(?:\.\d{0,2})?$
           description: Promo codes and credit together can take at most this share
             off a booking.
+        reminder_sms_enabled:
+          type: boolean
+          description: Also send the one-hour job reminder by SMS (costs money per
+            message). Push and in-app reminders are always sent.
+        no_show_grace_minutes:
+          type: integer
+          maximum: 180
+          minimum: 10
+          description: How long after the start time (worker) or after arriving (customer)
+            a no-show can be reported.
         updated_at:
           type: string
           format: date-time
@@ -8466,6 +8780,25 @@ components:
       required:
       - booking
       - rating
+    ReviewNoShowRequest:
+      type: object
+      properties:
+        review:
+          $ref: '#/components/schemas/ReviewNoShowReviewEnum'
+        note:
+          type: string
+          default: ''
+          maxLength: 500
+      required:
+      - review
+    ReviewNoShowReviewEnum:
+      enum:
+      - confirmed
+      - dismissed
+      type: string
+      description: |-
+        * `confirmed` - confirmed
+        * `dismissed` - dismissed
     Schedule:
       type: object
       properties:
@@ -8926,6 +9259,14 @@ components:
         * `rejected` - Rejected
         * `cancelled` - Cancelled
         * `failed` - Payment failed
+    SideEnum:
+      enum:
+      - worker
+      - customer
+      type: string
+      description: |-
+        * `worker` - Worker did not come
+        * `customer` - Customer was not there
     Slot:
       type: object
       properties:
@@ -9165,6 +9506,8 @@ components:
       - complaint
       - review
       - verification
+      - reminder
+      - no_show
       - system
       type: string
       description: |-
@@ -9185,6 +9528,8 @@ components:
         * `complaint` - Complaint update
         * `review` - Review
         * `verification` - Account verification
+        * `reminder` - Booking reminder
+        * `no_show` - No-show report
         * `system` - System
     User:
       type: object
@@ -9229,6 +9574,9 @@ components:
 
             * `en` - English
             * `ur` - اردو
+        booking_reminders:
+          type: boolean
+          description: Send reminders the day before and an hour before a booked job.
         worker_profile_id:
           type: integer
           nullable: true

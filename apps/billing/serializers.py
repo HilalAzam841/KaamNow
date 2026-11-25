@@ -81,7 +81,7 @@ class PlatformSettingsSerializer(serializers.ModelSerializer):
         model = PlatformSettings
         fields = ["commission_percent", "emergency_fee", "emergency_enabled", "min_payout", "commission_debt_limit",
                   "referral_reward", "referral_welcome_credit", "referral_min_booking", "max_discount_percent",
-                  "updated_at"]
+                  "reminder_sms_enabled", "no_show_grace_minutes", "updated_at"]
         read_only_fields = ["updated_at"]
 
 

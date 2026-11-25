@@ -183,6 +183,10 @@ class BookingCancelSerializer(serializers.Serializer):
     reason = serializers.CharField(max_length=255)
 
 
+class NoShowSerializer(serializers.Serializer):
+    note = serializers.CharField(max_length=500, required=False, allow_blank=True, default="")
+
+
 STATUS_CHANGE_CHOICES = [
     (Booking.Status.ON_THE_WAY.value, "On the way"),
     (Booking.Status.ARRIVED.value, "Arrived"),
@@ -230,6 +234,7 @@ class BookingSerializer(serializers.ModelSerializer):
     commission = serializers.SerializerMethodField()
     total_amount = serializers.DecimalField(max_digits=12, decimal_places=2, read_only=True)
     has_review = serializers.SerializerMethodField()
+    no_show = serializers.SerializerMethodField()
 
     class Meta:
         model = Booking
@@ -239,13 +244,29 @@ class BookingSerializer(serializers.ModelSerializer):
             "total_amount", "status",
             "worker", "customer_name", "contact", "on_the_way_at", "arrived_at", "started_at", "completed_at",
             "cancelled_at", "cancel_reason", "completed_via", "status_history", "commission", "has_review",
-            "created_at", "updated_at",
+            "no_show", "created_at", "updated_at",
         ]
         read_only_fields = fields
 
     def _viewer(self):
         request = self.context.get("request")
         return request.user if request else None
+
+    def get_no_show(self, obj) -> dict:
+        """reported: who was reported absent (worker or customer), or null.
+        you_can_report: who the viewer may report absent, and opens_at: from when."""
+        from apps.reminders.services import grace_period, no_show_side_for
+
+        report = getattr(obj, "no_show", None) if hasattr(obj, "no_show") else None
+        out = {"reported": report.side if report else None, "you_can_report": None, "opens_at": None}
+        user = self._viewer()
+        if report is None and user is not None and user.is_authenticated:
+            if not hasattr(self, "_grace"):
+                self._grace = grace_period()
+            side, opens_at = no_show_side_for(obj, user, self._grace)
+            if side:
+                out["you_can_report"], out["opens_at"] = side, opens_at.isoformat()
+        return out
 
     def get_contact(self, obj) -> dict | None:
         user = self._viewer()

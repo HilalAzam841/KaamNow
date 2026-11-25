@@ -40,6 +40,7 @@ import 'ui/customer/request_detail_screen.dart';
 import 'ui/customer/worker_public_screen.dart';
 import 'ui/account/invite_screen.dart';
 import 'ui/worker/schedule_screen.dart';
+import 'ui/admin/no_shows_screen.dart';
 import 'ui/customer/my_workers_screen.dart';
 import 'ui/shell/home_shell.dart';
 import 'ui/worker/earnings_screen.dart';
@@ -83,6 +84,7 @@ GoRouter buildRouter(Session session) {
           GoRoute(path: '/admin/payouts', builder: (_, _) => const AdminPayoutsScreen()),
           GoRoute(path: '/admin/plans', builder: (_, _) => const AdminPlansScreen()),
           GoRoute(path: '/admin/complaints', builder: (_, _) => const admin.AdminComplaintsScreen()),
+          GoRoute(path: '/admin/no-shows', builder: (_, _) => const AdminNoShowsScreen()),
           GoRoute(path: '/admin/settings', builder: (_, _) => const AdminSettingsScreen()),
           GoRoute(path: '/admin/audit', builder: (_, _) => const AdminAuditScreen()),
         ],
