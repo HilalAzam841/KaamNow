@@ -52,7 +52,10 @@ void main() {
   }
 
   Future<void> logOut(WidgetTester tester) async {
-    await tapAndWait(tester, find.text('Account').last, find.text('Log out'));
+    await tapAndWait(tester, find.text('Account').last, find.byKey(const Key('account-invite')));
+    // On a phone screen the worker's account list is longer than the screen.
+    await tester.scrollUntilVisible(find.byKey(const Key('logout')), 200,
+        scrollable: find.ancestor(of: find.byKey(const Key('account-invite')), matching: find.byType(Scrollable)).first);
     await tester.tap(find.byKey(const Key('logout')));
     await waitFor(tester, find.byKey(const Key('login-phone')));
   }
