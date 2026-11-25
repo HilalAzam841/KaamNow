@@ -41,7 +41,7 @@ from .serializers import (
     PasswordResetRequestSerializer,
     PasswordResetSmsConfirmSerializer,
     PhoneCodeSerializer,
-    PublicWorkerSerializer,
+    PublicWorkerDetailSerializer,
     RegisterSerializer,
     UserSerializer,
     WorkerDocumentSerializer,
@@ -353,8 +353,15 @@ class NearbyWorkersView(APIView):
 
 @extend_schema(tags=["workers"])
 class PublicWorkerDetailView(generics.RetrieveAPIView):
-    serializer_class = PublicWorkerSerializer
+    serializer_class = PublicWorkerDetailSerializer
     permission_classes = [permissions.AllowAny]
     queryset = WorkerProfile.objects.select_related("user").prefetch_related("services__category", "working_hours").filter(
         verification_status=WorkerProfile.VerificationStatus.VERIFIED, user__is_active=True, user__is_suspended=False
     )
+
+    def get_serializer_context(self):
+        from apps.favourites.services import favourite_ids
+
+        ctx = super().get_serializer_context()
+        ctx["favourite_ids"] = favourite_ids(self.request.user)
+        return ctx

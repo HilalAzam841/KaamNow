@@ -118,6 +118,30 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
               child: PageBody(
                 child: ListView(padding: const EdgeInsets.all(16), children: [
                   _RequestHeader(request: r),
+                  if (r.invitedWorkerId != null && r.isOpen)
+                    Card(
+                      key: const Key('invited-banner'),
+                      child: Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                          Text(context.t.sentOnlyTo(r.invitedWorkerName)),
+                          const SizedBox(height: 8),
+                          OutlinedButton.icon(
+                            key: const Key('open-to-all'),
+                            onPressed: () async {
+                              final api = context.read<Session>().api;
+                              final updated = await runAction(context, () => api.openToAll(r.id));
+                              if (updated != null && context.mounted) {
+                                showInfo(context, context.t.jobPostedNotified(updated.matchedWorkersCount ?? 0));
+                                _load();
+                              }
+                            },
+                            icon: const Icon(Icons.groups),
+                            label: Text(context.t.sendToEveryone),
+                          ),
+                        ]),
+                      ),
+                    ),
                   if (r.bookingId != null)
                     Card(
                       color: Theme.of(context).colorScheme.primaryContainer,

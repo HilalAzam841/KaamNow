@@ -150,6 +150,17 @@ def slots_with_free_workers(workers, day):
     ]
 
 
+def worker_day_slots(worker, day):
+    """[(start, end, is_free)] for one worker's slots on a day that have not started yet."""
+    soon = timezone.now() + timedelta(minutes=30)
+    slots = [s for s in day_slots(day) if s[0] >= soon]
+    if not slots:
+        return []
+    schedule = schedules_for([worker], slots[0][0], slots[-1][1])[worker.pk]
+    taking_jobs = worker.can_receive_jobs
+    return [(start, end, taking_jobs and schedule.reason_not_free(start, end) is None) for start, end in slots]
+
+
 def replace_hours(worker, rows):
     WorkingHours.objects.filter(worker=worker).delete()
     WorkingHours.objects.bulk_create([

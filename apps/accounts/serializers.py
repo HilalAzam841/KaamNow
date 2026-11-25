@@ -246,6 +246,17 @@ class PublicWorkerSerializer(serializers.ModelSerializer):
         return plan.badge if plan else ""
 
 
+class PublicWorkerDetailSerializer(PublicWorkerSerializer):
+    is_favourite = serializers.SerializerMethodField()
+
+    class Meta(PublicWorkerSerializer.Meta):
+        fields = PublicWorkerSerializer.Meta.fields + ["is_favourite"]
+
+    def get_is_favourite(self, obj) -> bool:
+        """Whether the signed-in customer saved this worker."""
+        return obj.pk in self.context.get("favourite_ids", set())
+
+
 class NearbyWorkerSerializer(PublicWorkerSerializer):
     distance_km = serializers.FloatField(read_only=True)
     is_available = serializers.BooleanField(read_only=True)

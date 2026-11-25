@@ -58,6 +58,7 @@
   "areasHint": "e.g. Gulberg, Model Town",
   "areasYouCover": "Areas you cover",
   "arriveInMinutes": "You can arrive in (minutes)",
+  "askedForYou": "The customer asked for you",
   "atLeast5": "At least 5 characters",
   "atLeast8": "At least 8 characters",
   "availableAnyTime": "Available any time",
@@ -68,6 +69,7 @@
   "baseLocation": "Base location",
   "baseLocationHint": "Jobs are matched by distance from here. Customers never see it.",
   "book": "Book",
+  "bookAgain": "Book again",
   "bookAgree": "You agree to pay {price}. All other offers will be closed.",
   "@bookAgree": {
     "placeholders": {
@@ -87,6 +89,7 @@
       "price": {}
     }
   },
+  "bookThisWorker": "Book this worker",
   "bookWorkerQ": "Book {name}?",
   "@bookWorkerQ": {
     "placeholders": {
@@ -109,6 +112,15 @@
       "price": {}
     }
   },
+  "bookingWorkerDirectly": "Booking {name}",
+  "@bookingWorkerDirectly": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "bookingWorkerDirectlyHint": "Only this worker sees your job. If they cannot make it, you can send it to everyone.",
   "budget": "Budget: {amount}",
   "@budget": {
     "placeholders": {
@@ -134,6 +146,10 @@
       "reason": {}
     }
   },
+  "cannotTakeJob": "I cannot take this job",
+  "cannotTakeJobHint": "The customer will be told, and the job goes to other workers nearby.",
+  "cannotTakeJobOk": "Pass on it",
+  "cannotTakeJobQ": "Pass on this job?",
   "cashReceivedQ": "Cash received?",
   "ccAppIssue": "Problem with the app",
   "ccBehaviour": "Behaviour",
@@ -513,6 +529,7 @@
       "price": {}
     }
   },
+  "jobPassedOn": "Done. The job went to other workers.",
   "jobPosted": "Job posted.",
   "jobPostedNotified": "Job posted. {n} nearby workers were notified.",
   "@jobPostedNotified": {
@@ -545,6 +562,14 @@
     "placeholders": {
       "status": {},
       "reason": {}
+    }
+  },
+  "lastBooked": "Last job for you: {date}",
+  "@lastBooked": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
     }
   },
   "live": "Live",
@@ -593,6 +618,8 @@
   "myScheduleSubtitle": "Days and times you take jobs, and days off",
   "myScheduleTitle": "My working hours",
   "myWorkerProfile": "My worker profile",
+  "myWorkers": "My workers",
+  "myWorkersHomeHint": "Book a worker you liked again",
   "nFree": "{count} free",
   "@nFree": {
     "placeholders": {
@@ -672,6 +699,8 @@
   "noServicesYet": "No services yet",
   "noSlotsLeft": "No time slots left on this day. Choose another day.",
   "noTimeOff": "No days off planned.",
+  "noWorkersYet": "No workers yet",
+  "noWorkersYetHint": "Tap the heart on a worker you liked to save them. Workers who finish a job for you also show here.",
   "noneFree": "none free",
   "notNow": "Not now",
   "noteOptional": "Note (optional)",
@@ -843,6 +872,7 @@
   "reject": "Reject",
   "rejectOfferQ": "Reject this offer?",
   "remove": "Remove",
+  "removeFromFavourites": "Remove from saved",
   "removePromo": "Remove",
   "removeServiceQ": "Remove {name}?",
   "@removeServiceQ": {
@@ -919,6 +949,8 @@
   "saveHours": "Save hours",
   "saveNewPassword": "Save new password",
   "saveProfile": "Save profile",
+  "saveToFavourites": "Save worker",
+  "savedWorkers": "Saved",
   "saving": "Saving…",
   "scheduleExplain": "You only get job alerts and can only send offers for jobs inside your working hours. Emergency jobs reach you whenever you are switched on as available.",
   "scheduleSaved": "Working hours saved.",
@@ -929,12 +961,21 @@
   "sendOffer": "Send offer",
   "sendReport": "Send report",
   "sendResetLink": "Send reset link",
+  "sendToEveryone": "Send to everyone",
   "sendYourPrice": "Send your price",
   "sendingEvery15": "Sending every 15 seconds while this page is open.",
   "sentAgo": "Sent {when}",
   "@sentAgo": {
     "placeholders": {
       "when": {}
+    }
+  },
+  "sentOnlyTo": "Sent only to {name}. If they cannot make it, send the job to every worker nearby.",
+  "@sentOnlyTo": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
     }
   },
   "serverTrouble": "KaamNow is having trouble right now. Please try again.",
@@ -1128,10 +1169,22 @@
   "walletYouOwe": "You owe KaamNow",
   "whatHelp": "What do you need help with?",
   "whatWentWrong": "What went wrong?",
+  "whenWorkerFree": "When {name} is free on {day}",
+  "@whenWorkerFree": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "day": {
+        "type": "String"
+      }
+    }
+  },
   "withdraw": "Withdraw",
   "withdrawHint": "You cannot bid on this job again.",
   "withdrawOfferQ": "Withdraw your offer?",
   "workRadius": "Work radius (km)",
+  "workedWithBefore": "Worked for you before",
   "worker": "Worker",
   "workerAway": "{name} is {km} km away",
   "@workerAway": {
@@ -1140,9 +1193,12 @@
       "km": {}
     }
   },
+  "workerNotFreeThatDay": "This worker is not free on this day. Choose another day.",
   "workerProfile": "Worker profile",
   "workerProfileServicesDocs": "Worker profile, services and documents",
+  "workerSaved": "Worker saved. Find them in My workers.",
   "workerSignupHint": "After signing up, upload your CNIC so KaamNow can verify you before you send offers.",
+  "workerUnsaved": "Removed from saved workers.",
   "workingHours": "Working hours",
   "worksIn": "Works in {area}",
   "@worksIn": {

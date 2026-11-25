@@ -106,6 +106,13 @@ class AccountScreen extends StatelessWidget {
             ListTile(leading: const Icon(Icons.payments), title: Text(context.t.earnings), onTap: () => context.push('/worker/earnings')),
             ListTile(leading: const Icon(Icons.workspace_premium), title: Text(context.t.plans), onTap: () => context.push('/worker/plans')),
           ],
+          if (u.isCustomer)
+            ListTile(
+              key: const Key('account-my-workers'),
+              leading: const Icon(Icons.favorite_border),
+              title: Text(context.t.myWorkers),
+              onTap: () => context.push('/my-workers'),
+            ),
           ListTile(
             key: const Key('account-invite'),
             leading: const Icon(Icons.card_giftcard),

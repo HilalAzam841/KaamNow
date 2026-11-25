@@ -7,6 +7,7 @@ from decimal import Decimal
 
 from django.conf import settings
 from django.db import transaction
+from django.db.models import Q
 from django.db.models import F
 from django.utils import timezone
 from rest_framework import status as http_status
@@ -83,6 +84,8 @@ def worker_can_bid_on(worker, service_request):
         return False
     if service_request.customer_id == worker.user_id:
         return False
+    if service_request.invited_worker_id and service_request.invited_worker_id != worker.pk:
+        return False
     if not worker.services.filter(category_id=service_request.category_id, is_active=True).exists():
         return False
     distance = worker_distance_to_request(worker, service_request)
@@ -109,6 +112,7 @@ def open_requests_for_worker(worker):
             longitude__gte=Decimal(str(box.min_lng)), longitude__lte=Decimal(str(box.max_lng)),
         )
         .exclude(customer=worker.user)
+        .filter(Q(invited_worker__isnull=True) | Q(invited_worker=worker))
         .order_by("-created_at")
     )
     results = []
@@ -150,13 +154,37 @@ def create_service_request(customer, images=None, **data):
         data["emergency_fee"] = platform.emergency_fee
     else:
         data["emergency_fee"] = Decimal("0")
+    invited = data.get("invited_worker")
+    if invited is not None and data.get("is_emergency"):
+        raise BusinessRuleError(_("Emergency jobs go to every worker nearby. Turn off emergency to book one worker."))
     service_request = ServiceRequest.objects.create(customer=customer, **data)
     for image in images or []:
         ServiceRequestImage.objects.create(request=service_request, image=image)
 
+    if invited is not None:
+        # Book again: only this worker hears about the job. Raising here rolls the request back.
+        check_worker_can_be_invited(invited, service_request)
+        transaction.on_commit(lambda: notify_many(
+            [invited.user], Notification.Type.NEW_REQUEST,
+            t("{name} wants to book you again", name=customer.full_name.split(" ")[0]),
+            service_request.title,
+            {"request_id": service_request.pk, "is_emergency": False, "is_direct": True},
+        ))
+        service_request.matched_workers_count = 1
+        return service_request
+
+    service_request.matched_workers_count = len(_notify_matching_workers(service_request))
+    return service_request
+
+
+def _notify_matching_workers(service_request, exclude_worker=None):
+    """Alerts the free matching workers nearby about an open job. Returns them."""
+    category = service_request.category
     window = None if service_request.is_emergency else service_request.window
-    workers = find_nearby_workers(category, service_request.latitude, service_request.longitude, exclude_user=customer,
-                                  window=window)
+    workers = find_nearby_workers(category, service_request.latitude, service_request.longitude,
+                                  exclude_user=service_request.customer, window=window)
+    if exclude_worker is not None:
+        workers = [w for w in workers if w.pk != exclude_worker.pk]
     if workers:
         title = (
             t("URGENT: New {category} request nearby", category=category_name(category))
@@ -168,6 +196,74 @@ def create_service_request(customer, images=None, **data):
             title,
             service_request.title,
             {"request_id": service_request.pk, "is_emergency": service_request.is_emergency},
+        ))
+    return workers
+
+
+INVITE_MESSAGES = {
+    "off_hours": lambda: _("This worker does not work at that time. Choose one of their free times."),
+    "time_off": lambda: _("This worker is off on that day. Choose another day."),
+    "busy": lambda: _("This worker already has a job at that time. Choose another time."),
+}
+
+
+def check_worker_can_be_invited(worker, service_request):
+    """Raises a 409 with a clear reason when this worker cannot take the job."""
+    from apps.scheduling.services import why_not_free
+
+    def refuse(message, code):
+        raise BusinessRuleError(message, code=code, status_code=http_status.HTTP_409_CONFLICT)
+
+    if worker.user_id == service_request.customer_id:
+        refuse(_("You cannot book yourself."), "worker_unavailable")
+    if not worker.can_receive_jobs or not worker.services.filter(
+        category_id=service_request.category_id, is_active=True
+    ).exists():
+        refuse(_("This worker is not taking {category} jobs right now. Post your job to everyone instead.").format(
+            category=service_request.category.display_name), "worker_unavailable")
+    distance = worker_distance_to_request(worker, service_request)
+    if distance is None or distance > float(worker.service_radius_km):
+        refuse(_("This address is outside the area this worker covers. Post your job to everyone instead."),
+               "worker_too_far")
+    reason = why_not_free(worker, service_request)
+    if reason:
+        refuse(INVITE_MESSAGES[reason](), f"worker_{reason}")
+
+
+@transaction.atomic
+def open_to_everyone(service_request, *, declined_by=None):
+    """Turns a book-again job into a normal one: every free matching worker nearby can now offer.
+
+    Called by the customer, or when the invited worker says they cannot take it (declined_by).
+    """
+    service_request = ServiceRequest.objects.select_for_update(of=("self",)).select_related(
+        "category", "customer", "invited_worker__user"
+    ).get(pk=service_request.pk)
+    if not service_request.is_open:
+        raise BusinessRuleError(_("This job is no longer open."), status_code=http_status.HTTP_409_CONFLICT)
+    invited = service_request.invited_worker
+    if invited is None:
+        raise BusinessRuleError(_("This job is already open to every worker nearby."),
+                                status_code=http_status.HTTP_409_CONFLICT)
+    if declined_by is not None and declined_by.pk != invited.pk:
+        raise BusinessRuleError(_("This job was not sent to you."), status_code=http_status.HTTP_403_FORBIDDEN)
+    from apps.offers.models import WorkerOffer
+
+    if declined_by is not None and WorkerOffer.objects.filter(
+        request=service_request, worker=invited, status=WorkerOffer.Status.PENDING
+    ).exists():
+        raise BusinessRuleError(_("Withdraw your offer first."), status_code=http_status.HTTP_409_CONFLICT)
+
+    service_request.invited_worker = None
+    service_request.save(update_fields=["invited_worker", "updated_at"])
+    workers = _notify_matching_workers(service_request, exclude_worker=invited)
+    if declined_by is not None:
+        customer = service_request.customer
+        transaction.on_commit(lambda: notify_many(
+            [customer], Notification.Type.SYSTEM,
+            t("{name} cannot take this job", name=invited.user.full_name.split(" ")[0]),
+            t("We sent \"{title}\" to {count} other workers nearby.", title=service_request.title, count=len(workers)),
+            {"request_id": service_request.pk},
         ))
     service_request.matched_workers_count = len(workers)
     return service_request

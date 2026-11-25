@@ -66,6 +66,17 @@ class CustomerHomeScreen extends StatelessWidget {
                   ),
                 ),
               ],
+              const SizedBox(height: 12),
+              Card(
+                key: const Key('home-my-workers'),
+                child: ListTile(
+                  leading: const Icon(Icons.favorite, color: Colors.red),
+                  title: Text(context.t.myWorkers),
+                  subtitle: Text(context.t.myWorkersHomeHint),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => context.push('/my-workers'),
+                ),
+              ),
               const SizedBox(height: 16),
               if (cats.isEmpty)
                 EmptyView(icon: Icons.category, title: context.t.noServicesYet)

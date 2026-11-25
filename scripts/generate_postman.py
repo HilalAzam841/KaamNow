@@ -112,6 +112,11 @@ folders = [
     ("4. Customer request", [
         req("List categories", "GET", "/services/categories/", token=None),
         req("Nearby workers", "GET", "/workers/nearby/?category=1&latitude=31.5100&longitude=74.3440"),
+        req("Save a worker", "POST", "/favourites/", {"worker": "{{worker_id}}"}),
+        req("My saved workers", "GET", "/favourites/"),
+        req("Workers who worked for me", "GET", "/favourites/recent/"),
+        req("One worker's free slots", "GET", "/workers/{{worker_id}}/slots/?date=2026-12-02"),
+        req("Remove a saved worker", "DELETE", "/favourites/{{worker_id}}/"),
         req("Time slots with free workers", "GET",
             "/requests/slots/?category=1&latitude=31.5100&longitude=74.3440&date=2026-12-01"),
         req("Create request", "POST", "/requests/", {
@@ -120,6 +125,15 @@ folders = [
             "latitude": "31.512000", "longitude": "74.345000", "address": "House 12, Street 4, Gulberg III",
             "area": "Gulberg III", "preferred_time": "2026-12-01T15:00:00+05:00", "duration_minutes": 120,
         }, tests=[save("request_id", ".id")]),
+        req("Book again: one worker only", "POST", "/requests/", {
+            "category": 1, "title": "Fan making noise again",
+            "description": "The fan you fixed last month is humming again.",
+            "latitude": "31.512000", "longitude": "74.345000", "address": "House 12, Street 4, Gulberg III",
+            "preferred_time": "2026-12-02T12:00:00+05:00", "worker": "{{worker_id}}",
+        }, tests=[save("direct_request_id", ".id")]),
+        req("Send book-again job to everyone", "POST", "/requests/{{direct_request_id}}/open-to-all/"),
+        req("Worker: cannot take a book-again job", "POST", "/requests/{{direct_request_id}}/decline/",
+            token="worker_access"),
         req("My requests", "GET", "/requests/"),
         req("Request detail", "GET", "/requests/{{request_id}}/"),
         req("Matching workers for request", "GET", "/requests/{{request_id}}/nearby-workers/"),
@@ -252,7 +266,7 @@ collection = {
     "variable": [{"key": "base_url", "value": "http://localhost:8000/api/v1"}] + [
         {"key": k, "value": ""} for k in (
             "customer_access", "customer_refresh", "worker_access", "admin_access", "worker_id", "request_id",
-            "offer_id", "booking_id", "otp", "payment_id",
+            "offer_id", "booking_id", "otp", "payment_id", "time_off_id", "direct_request_id",
         )
     ],
     "item": [{"name": name, "item": items} for name, items in folders],

@@ -2657,6 +2657,83 @@ paths:
               schema:
                 $ref: '#/components/schemas/Complaint'
           description: ''
+  /api/v1/favourites/:
+    get:
+      operationId: favourites_list
+      summary: Workers you saved, newest first.
+      tags:
+      - favourites
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FavouriteWorker'
+          description: ''
+    post:
+      operationId: favourites_create
+      summary: Save a worker to book again. Saving one twice is fine.
+      tags:
+      - favourites
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddFavouriteRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AddFavouriteRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AddFavouriteRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FavouriteWorker'
+          description: ''
+  /api/v1/favourites/{worker_id}/:
+    delete:
+      operationId: favourites_destroy
+      summary: Remove a saved worker.
+      parameters:
+      - in: path
+        name: worker_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - favourites
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/favourites/recent/:
+    get:
+      operationId: favourites_recent_list
+      summary: Workers who did a job for you, most recent first, to book again.
+      tags:
+      - favourites
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FavouriteWorker'
+          description: ''
   /api/v1/featured/:
     get:
       operationId: featured_list
@@ -3752,6 +3829,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/ServiceRequest'
           description: ''
+  /api/v1/requests/{id}/decline/:
+    post:
+      operationId: requests_decline_create
+      summary: 'Invited worker: say you cannot take this job. It goes to other workers
+        nearby.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this service request.
+        required: true
+      tags:
+      - requests
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
   /api/v1/requests/{id}/nearby-workers/:
     get:
       operationId: requests_nearby_workers_list
@@ -3814,6 +3910,28 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PaginatedNearbyWorkerList'
+          description: ''
+  /api/v1/requests/{id}/open-to-all/:
+    post:
+      operationId: requests_open_to_all_create
+      summary: Send a book-again job to every free matching worker nearby.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this service request.
+        required: true
+      tags:
+      - requests
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceRequest'
           description: ''
   /api/v1/requests/{request_id}/offers/:
     get:
@@ -4370,7 +4488,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PublicWorker'
+                $ref: '#/components/schemas/PublicWorkerDetail'
           description: ''
   /api/v1/workers/{id}/reviews/:
     get:
@@ -4417,6 +4535,36 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PaginatedReviewList'
+          description: ''
+  /api/v1/workers/{id}/slots/:
+    get:
+      operationId: workers_slots_list
+      summary: One worker's two-hour slots on a day and whether they are free, to
+        book them again.
+      parameters:
+      - in: query
+        name: date
+        schema:
+          type: string
+        description: YYYY-MM-DD
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - workers
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/WorkerSlot'
           description: ''
   /api/v1/workers/availability/:
     post:
@@ -4658,6 +4806,13 @@ paths:
           description: ''
 components:
   schemas:
+    AddFavouriteRequest:
+      type: object
+      properties:
+        worker:
+          type: integer
+      required:
+      - worker
     AdminComplaint:
       type: object
       properties:
@@ -6049,6 +6204,91 @@ components:
       - gross_amount
       - net_earnings
       - recent
+    FavouriteWorker:
+      type: object
+      description: 'Public worker card: no phone, CNIC, documents or exact home location.'
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        full_name:
+          type: string
+          readOnly: true
+        profile_picture:
+          type: string
+          format: uri
+          nullable: true
+          readOnly: true
+        bio:
+          type: string
+          readOnly: true
+        experience_years:
+          type: integer
+          readOnly: true
+        service_area:
+          type: string
+          readOnly: true
+          description: e.g. Gulberg, Lahore
+        is_verified:
+          type: boolean
+          readOnly: true
+        average_rating:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,1}(?:\.\d{0,2})?$
+          readOnly: true
+        rating_count:
+          type: integer
+          readOnly: true
+        completed_jobs_count:
+          type: integer
+          readOnly: true
+        plan_badge:
+          type: string
+          readOnly: true
+        services:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkerServiceInline'
+          readOnly: true
+        working_hours:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+          description: 'Weekly hours (empty when the worker has not set any: available
+            any time).'
+          readOnly: true
+        is_favourite:
+          type: boolean
+          readOnly: true
+        saved_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        last_booked_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+      required:
+      - average_rating
+      - bio
+      - completed_jobs_count
+      - experience_years
+      - full_name
+      - id
+      - is_favourite
+      - is_verified
+      - last_booked_at
+      - plan_badge
+      - profile_picture
+      - rating_count
+      - saved_at
+      - service_area
+      - services
+      - working_hours
     FeaturedListing:
       type: object
       properties:
@@ -7774,6 +8014,80 @@ components:
       - service_area
       - services
       - working_hours
+    PublicWorkerDetail:
+      type: object
+      description: 'Public worker card: no phone, CNIC, documents or exact home location.'
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        full_name:
+          type: string
+          readOnly: true
+        profile_picture:
+          type: string
+          format: uri
+          nullable: true
+          readOnly: true
+        bio:
+          type: string
+          readOnly: true
+        experience_years:
+          type: integer
+          readOnly: true
+        service_area:
+          type: string
+          readOnly: true
+          description: e.g. Gulberg, Lahore
+        is_verified:
+          type: boolean
+          readOnly: true
+        average_rating:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,1}(?:\.\d{0,2})?$
+          readOnly: true
+        rating_count:
+          type: integer
+          readOnly: true
+        completed_jobs_count:
+          type: integer
+          readOnly: true
+        plan_badge:
+          type: string
+          readOnly: true
+        services:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkerServiceInline'
+          readOnly: true
+        working_hours:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+          description: 'Weekly hours (empty when the worker has not set any: available
+            any time).'
+          readOnly: true
+        is_favourite:
+          type: boolean
+          description: Whether the signed-in customer saved this worker.
+          readOnly: true
+      required:
+      - average_rating
+      - bio
+      - completed_jobs_count
+      - experience_years
+      - full_name
+      - id
+      - is_favourite
+      - is_verified
+      - plan_badge
+      - profile_picture
+      - rating_count
+      - service_area
+      - services
+      - working_hours
     PurchaseStatusEnum:
       enum:
       - pending_payment
@@ -8334,6 +8648,13 @@ components:
           type: integer
           nullable: true
           readOnly: true
+        invited_worker:
+          type: object
+          additionalProperties: {}
+          nullable: true
+          description: The one worker this job was sent to (book again), or null when
+            it is open to everyone.
+          readOnly: true
         cancel_reason:
           type: string
           readOnly: true
@@ -8365,6 +8686,7 @@ components:
       - emergency_fee
       - id
       - images
+      - invited_worker
       - is_emergency
       - latitude
       - longitude
@@ -8426,6 +8748,13 @@ components:
             format: binary
           writeOnly: true
           maxItems: 5
+        worker:
+          type: integer
+          writeOnly: true
+          nullable: true
+          description: 'Book one worker again: only this worker sees the job, at a
+            time they are free. Leave out to send the job to every matching worker
+            nearby.'
       required:
       - address
       - category
@@ -9451,6 +9780,21 @@ components:
           type: boolean
       required:
       - category
+    WorkerSlot:
+      type: object
+      properties:
+        start:
+          type: string
+          format: date-time
+        end:
+          type: string
+          format: date-time
+        free:
+          type: boolean
+      required:
+      - end
+      - free
+      - start
     WorkerSubscription:
       type: object
       properties:

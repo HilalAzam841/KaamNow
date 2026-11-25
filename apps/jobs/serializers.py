@@ -6,6 +6,7 @@ from django.conf import settings
 from django.utils import timezone
 from rest_framework import serializers
 
+from apps.accounts.models import WorkerProfile
 from apps.accounts.serializers import PublicWorkerSerializer
 from apps.catalog.models import ServiceCategory
 from apps.common.validators import validate_image_upload
@@ -27,12 +28,19 @@ class ServiceRequestCreateSerializer(serializers.ModelSerializer):
     )
     latitude = serializers.DecimalField(max_digits=9, decimal_places=6, min_value=-90, max_value=90)
     longitude = serializers.DecimalField(max_digits=9, decimal_places=6, min_value=-180, max_value=180)
+    worker = serializers.PrimaryKeyRelatedField(
+        source="invited_worker", required=False, allow_null=True, write_only=True,
+        queryset=WorkerProfile.objects.select_related("user").filter(
+            verification_status=WorkerProfile.VerificationStatus.VERIFIED),
+        help_text="Book one worker again: only this worker sees the job, at a time they are free. "
+                  "Leave out to send the job to every matching worker nearby.",
+    )
 
     class Meta:
         model = ServiceRequest
         fields = [
             "id", "category", "title", "description", "latitude", "longitude", "address", "area",
-            "preferred_time", "duration_minutes", "budget", "is_emergency", "images",
+            "preferred_time", "duration_minutes", "budget", "is_emergency", "images", "worker",
         ]
         read_only_fields = ["id"]
         extra_kwargs = {
@@ -78,6 +86,7 @@ class ServiceRequestSerializer(serializers.ModelSerializer):
     offers_count = serializers.SerializerMethodField()
     booking_id = serializers.SerializerMethodField()
     matched_workers_count = serializers.SerializerMethodField()
+    invited_worker = serializers.SerializerMethodField()
 
     class Meta:
         model = ServiceRequest
@@ -85,7 +94,7 @@ class ServiceRequestSerializer(serializers.ModelSerializer):
             "id", "category", "category_name", "title", "description", "latitude", "longitude", "address", "area",
             "preferred_time", "duration_minutes", "budget", "is_emergency", "emergency_fee", "status", "images",
             "offers_count",
-            "booking_id", "matched_workers_count",
+            "booking_id", "matched_workers_count", "invited_worker",
             "cancel_reason", "cancelled_at", "created_at", "updated_at",
         ]
         read_only_fields = fields
@@ -99,6 +108,11 @@ class ServiceRequestSerializer(serializers.ModelSerializer):
 
     def get_matched_workers_count(self, obj) -> int | None:
         return getattr(obj, "matched_workers_count", None)
+
+    def get_invited_worker(self, obj) -> dict | None:
+        """The one worker this job was sent to (book again), or null when it is open to everyone."""
+        w = obj.invited_worker
+        return None if w is None else {"id": w.pk, "full_name": w.user.full_name}
 
 
 def _approx(value):
@@ -116,11 +130,12 @@ class ServiceRequestForWorkerSerializer(serializers.ModelSerializer):
     distance_km = serializers.SerializerMethodField()
     images = ServiceRequestImageSerializer(many=True, read_only=True)
     my_offer_id = serializers.SerializerMethodField()
+    is_direct = serializers.SerializerMethodField()
 
     class Meta:
         model = ServiceRequest
         fields = [
-            "id", "category", "category_name", "title", "description", "area", "approx_latitude",
+            "id", "is_direct", "category", "category_name", "title", "description", "area", "approx_latitude",
             "approx_longitude", "distance_km", "preferred_time", "duration_minutes", "budget", "is_emergency",
             "emergency_fee", "status",
             "images", "customer_name",
@@ -130,6 +145,11 @@ class ServiceRequestForWorkerSerializer(serializers.ModelSerializer):
 
     def get_customer_name(self, obj) -> str:
         return obj.customer.full_name.split(" ")[0]
+
+    def get_is_direct(self, obj) -> bool:
+        """True when the customer asked for this worker by name (book again)."""
+        worker = self.context.get("worker")
+        return worker is not None and obj.invited_worker_id == worker.pk
 
     def get_approx_latitude(self, obj) -> str:
         return str(_approx(obj.latitude))
