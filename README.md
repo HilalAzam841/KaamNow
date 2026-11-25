@@ -14,7 +14,7 @@ later, and talks to the backend only through the REST API and the booking WebSoc
 
 **Stage 1 (Backend MVP), Stage 2 (Advanced features) and Stage 3 (Flutter web client) are done,
 and Stage 4 adds the admin dashboard to the web app.** Every backend feature below has its business logic, REST endpoint(s), validation and
-automated tests. All 393 backend tests pass against PostgreSQL 16, and the Flutter app has 77
+automated tests. All 414 backend tests pass against PostgreSQL 16, and the Flutter app has 84
 unit and widget tests plus a browser end-to-end run (see `app/README.md`).
 
 ### Stage 1: Backend MVP
@@ -169,6 +169,24 @@ Publishing needs an Apple Developer account (TestFlight, then the App Store); se
 It switches on with a free Firebase project: see "Push notifications on phones" in `app/README.md`.
 Until then the apps work as before, with alerts inside the app.
 
+### Stage 13: worker payouts and commission settlement
+
+When a customer pays online, KaamNow holds the money and owes the worker their share. When a customer pays
+cash, the worker holds it and owes KaamNow the commission. This stage settles both.
+
+| Feature | Where |
+|---|---|
+| Worker wallet: online earnings held minus cash commission owed, over jobs not yet settled | `apps/billing/wallet.py`, `GET payments/wallet/` |
+| The worker asks to be paid the whole balance (from a minimum, Rs 500 by default) to JazzCash, Easypaisa or a bank account (IBAN); the number is checked and shown only to them and admins; they can cancel while it is open | `POST payments/payouts/`, `POST payments/payouts/{id}/cancel/` |
+| Admins see open requests, send the money, then mark it paid with the transaction ID or decline it with a reason. The worker is told, the action is in the audit log, and the ledger records the payout and the commission it settled | `admin/settlements/` (`mark-paid`, `reject`), app: admin **Payouts** page |
+| A worker who owes commission pays it with JazzCash or Easypaisa; it counts only once the server verifies the gateway's callback, and a failed or expired payment puts the jobs back in the wallet | `POST payments/commission/pay/` |
+| Commission handed in at the office or sent by bank transfer: the admin records it with a receipt number (audited); a list shows every worker who owes | `POST admin/workers/{id}/record-commission/`, `GET admin/worker-balances/?owing=true` |
+| Workers who owe more than a limit (Rs 5,000 by default, 0 turns it off) cannot send offers until they pay | `check_commission_debt` in offer creation, admin settings |
+| Each settlement takes the jobs it covers with it, so no money is counted twice; one open settlement per worker; rows are locked while settling | `WorkerSettlement`, `Commission.settlement` |
+
+The money itself moves outside the app: admins send payouts from KaamNow's JazzCash, Easypaisa or bank account.
+Automatic payouts through a gateway's disbursement API can be added later.
+
 **Before going live with online payments:** the JazzCash and Easypaisa adapters follow each
 gateway's published integration scheme and are covered by tests with simulated gateway responses.
 They have **not** been run against the real sandboxes yet, because that needs your merchant
@@ -277,7 +295,7 @@ docker compose up --build
 pytest -q
 ```
 
-The suite has 350 tests and needs a running PostgreSQL (Redis is not needed for tests). It uses the database settings from your
+The suite has 414 tests and needs a running PostgreSQL (Redis is not needed for tests). It uses the database settings from your
 `.env` and creates a separate `test_kaamnow` database. Coverage includes:
 
 - **Authentication**: registration validation, login, suspended accounts, token refresh rotation, logout blacklisting, password reset (single-use token, no account enumeration), throttling.
@@ -336,20 +354,20 @@ be probed), `409` state conflict (already booked, wrong turn, and so on), `429` 
 | Bookings | `GET bookings/` · `GET bookings/{id}/` · `POST bookings/{id}/status/` · `POST bookings/{id}/completion-otp/` · `POST bookings/{id}/complete/` · `POST bookings/{id}/cancel/` |
 | Chat | `GET/POST bookings/{id}/messages/` · `POST bookings/{id}/messages/read/` |
 | Tracking | `POST bookings/{id}/location/` (worker) · `GET bookings/{id}/location/` |
-| Payments | `POST payments/` (cash, jazzcash, easypaisa) · `GET payments/` · `GET payments/{id}/` · `POST payments/{id}/confirm/` · `GET payments/earnings/` · `POST/GET payments/callbacks/jazzcash/` · `POST/GET payments/callbacks/easypaisa/` |
+| Payments | `POST payments/` (cash, jazzcash, easypaisa) · `GET payments/` · `GET payments/{id}/` · `POST payments/{id}/confirm/` · `GET payments/earnings/` · `GET payments/wallet/` · `POST payments/payouts/` · `POST payments/payouts/{id}/cancel/` · `POST payments/commission/pay/` · `POST/GET payments/callbacks/jazzcash/` · `POST/GET payments/callbacks/easypaisa/` |
 | Subscriptions | `GET subscriptions/plans/` · `POST subscriptions/` · `GET subscriptions/my-subscription/` · `GET subscriptions/history/` |
 | Featured | `GET featured/plans/` · `GET/POST featured/` |
 | Complaints | `POST complaints/` · `GET complaints/` · `GET complaints/{id}/` |
 | Reviews | `POST reviews/` · `GET workers/{id}/reviews/` |
 | Notifications | `GET notifications/` · `POST notifications/{id}/read/` · `POST notifications/read-all/` · `GET notifications/unread-count/` · `POST/DELETE notifications/devices/` |
-| Admin | `GET admin/dashboard/` · `GET admin/workers/pending/` · `GET admin/workers/{id}/` · `POST admin/workers/{id}/verify/` · `POST admin/workers/{id}/reject/` · `GET admin/documents/{id}/file/` · `GET admin/users/` · `POST admin/users/{id}/suspend/` · `POST admin/users/{id}/reactivate/` · `GET admin/requests/` · `GET admin/bookings/` · `GET admin/revenue/` · `GET admin/commissions/` · `GET/PATCH admin/settings/commission/` · `GET admin/reports/` · `GET admin/audit-logs/` · `GET/PATCH admin/settings/` · `GET admin/revenue/other/` · `admin/subscription-plans/` (list, create, update) · `admin/featured-plans/` (list, create, update) · `GET admin/subscriptions/` · `POST admin/subscriptions/{id}/activate/` · `GET admin/featured-listings/` · `POST admin/featured-listings/{id}/cancel/` · `GET admin/complaints/` · `POST admin/complaints/{id}/status/` |
+| Admin | `GET admin/dashboard/` · `GET admin/workers/pending/` · `GET admin/workers/{id}/` · `POST admin/workers/{id}/verify/` · `POST admin/workers/{id}/reject/` · `GET admin/documents/{id}/file/` · `GET admin/users/` · `POST admin/users/{id}/suspend/` · `POST admin/users/{id}/reactivate/` · `GET admin/requests/` · `GET admin/bookings/` · `GET admin/revenue/` · `GET admin/commissions/` · `GET/PATCH admin/settings/commission/` · `GET admin/reports/` · `GET admin/audit-logs/` · `GET/PATCH admin/settings/` · `GET admin/revenue/other/` · `admin/subscription-plans/` (list, create, update) · `admin/featured-plans/` (list, create, update) · `GET admin/subscriptions/` · `POST admin/subscriptions/{id}/activate/` · `GET admin/featured-listings/` · `POST admin/featured-listings/{id}/cancel/` · `GET admin/complaints/` · `POST admin/complaints/{id}/status/` · `GET admin/settlements/` · `POST admin/settlements/{id}/mark-paid/` · `POST admin/settlements/{id}/reject/` · `GET admin/worker-balances/` · `POST admin/workers/{id}/record-commission/` |
 
 Endpoints added beyond the original list, because the flow needs them: `password-reset/confirm`,
 `password-change`, `workers/{id}/` (public card), `offers/{id}/negotiations/`,
 `bookings/{id}/completion-otp/`, `payments/{id}/confirm/`, `payments/earnings/`,
 the notification helpers, and the admin users, suspension, requests, commission settings and audit log endpoints.
 
-Postman: import `docs/KaamNow.postman_collection.json` (96 requests in 12 folders that follow the
+Postman: import `docs/KaamNow.postman_collection.json` (103 requests in 12 folders that follow the
 full flow; test scripts store tokens and ids automatically). Regenerate it with
 `python scripts/generate_postman.py`.
 
@@ -485,7 +503,7 @@ upgrades on `/ws/`. Serve `MEDIA_ROOT` from it, and **never** serve `PRIVATE_MED
 - **PostGIS**: discovery goes through `apps/common/geo.get_geo_backend()`. To switch, add a `PostGISBackend` that implements `workers_covering_point()` with `ST_DWithin` and set `GEO_BACKEND=postgis`. Callers do not change.
 - **New payment gateways**: subclass `billing.gateways.base.PaymentGateway` (`build_checkout`, `verify_callback`), register it in `billing/gateways/__init__.py`, add a method choice and a callback route. Settlement, ledger and fulfilment are shared.
 - **Revenue streams**: booking commission (`platform_commission` ledger entries), subscriptions (`subscription_revenue`), featured listings (`featured_revenue`) and emergency fees (`emergency_fee`). `GET /admin/revenue/` covers commission; `GET /admin/revenue/other/` covers the rest.
-- **Commission collection**: with cash, commission is recorded as `pending` (the worker holds the money). With JazzCash or Easypaisa it is `collected` automatically. Settling cash commissions and paying out online earnings is a finance process that is not built yet.
+- **Commission collection**: with cash, commission is recorded as `pending` (the worker holds the money). With JazzCash or Easypaisa it is `collected` automatically. The worker wallet (Stage 13) nets the two: payouts of online earnings and payment of cash commission, both settled by an admin or a verified gateway callback.
 - **Plans and pricing**: the seeded plan and featured prices (Free; Professional Rs. 1,500 at 8% commission; Premium Rs. 3,000 at 6%; featured 7 days Rs. 500 and 30 days Rs. 1,500; emergency fee Rs. 300) are placeholders. Admins change them through the admin API or Django admin.
 - **Phone numbers** are normalised to E.164 (`+923XXXXXXXXX`). Users can log in with `0300...`, `92300...` or `+92300...`.
 - **Time zone**: `Asia/Karachi`. Timestamps are returned in ISO 8601 with the offset.

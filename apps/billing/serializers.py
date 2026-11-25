@@ -12,6 +12,7 @@ from .models import (
     Payment,
     PlatformSettings,
     SubscriptionPlan,
+    WorkerSettlement,
     WorkerSubscription,
 )
 
@@ -72,7 +73,8 @@ class LedgerEntrySerializer(serializers.ModelSerializer):
 class PlatformSettingsSerializer(serializers.ModelSerializer):
     class Meta:
         model = PlatformSettings
-        fields = ["commission_percent", "emergency_fee", "emergency_enabled", "updated_at"]
+        fields = ["commission_percent", "emergency_fee", "emergency_enabled", "min_payout", "commission_debt_limit",
+                  "updated_at"]
         read_only_fields = ["updated_at"]
 
 
@@ -169,3 +171,115 @@ class FeaturedListingSerializer(serializers.ModelSerializer):
 class FeaturedPurchaseResponseSerializer(serializers.Serializer):
     listing = FeaturedListingSerializer()
     checkout = CheckoutSerializer()
+
+
+# --- Worker wallet: payouts and commission settlement -------------------------
+PAYOUT_METHOD_CHOICES = [
+    (WorkerSettlement.Method.JAZZCASH.value, "JazzCash"),
+    (WorkerSettlement.Method.EASYPAISA.value, "Easypaisa"),
+    (WorkerSettlement.Method.BANK.value, "Bank transfer"),
+]
+
+
+class SettlementSerializer(serializers.ModelSerializer):
+    """Shown only to the worker it belongs to and to admins (it holds their account number)."""
+
+    worker_name = serializers.CharField(source="worker.user.full_name", read_only=True)
+    worker_phone = serializers.CharField(source="worker.user.phone", read_only=True)
+    bookings = serializers.SerializerMethodField()
+
+    class Meta:
+        model = WorkerSettlement
+        fields = [
+            "id", "worker", "worker_name", "worker_phone", "kind", "status", "amount", "earnings_amount",
+            "commission_amount", "method", "account_title", "account_number", "reference", "note", "payment",
+            "bookings", "processed_at", "created_at",
+        ]
+        read_only_fields = fields
+
+    def get_bookings(self, obj) -> list[int]:
+        return [c.booking_id for c in obj.commissions.all()]
+
+
+class PayoutAccountSerializer(serializers.Serializer):
+    method = serializers.ChoiceField(choices=PAYOUT_METHOD_CHOICES)
+    account_title = serializers.CharField(max_length=100)
+    account_number = serializers.CharField(max_length=34)
+
+
+class PayoutRequestSerializer(PayoutAccountSerializer):
+    def validate(self, attrs):
+        number = "".join(attrs["account_number"].split()).upper()
+        if attrs["method"] == WorkerSettlement.Method.BANK:
+            # Pakistani IBAN: PK, 2 check digits, 4-letter bank code, 16 digits.
+            import re
+
+            if not re.fullmatch(r"PK\d{2}[A-Z]{4}\d{16}", number):
+                raise serializers.ValidationError({"account_number": _("Enter your IBAN, e.g. PK36SCBL0000001123456702.")})
+        else:
+            digits = number.replace("-", "")
+            if digits.startswith("+92"):
+                digits = "0" + digits[3:]
+            elif digits.startswith("92"):
+                digits = "0" + digits[2:]
+            if not (digits.isdigit() and len(digits) == 11 and digits.startswith("03")):
+                raise serializers.ValidationError({"account_number": _("Enter the mobile number of the account, e.g. 03001234567.")})
+            number = digits
+        attrs["account_number"] = number
+        return attrs
+
+
+class LastPayoutAccountSerializer(PayoutAccountSerializer):
+    pass
+
+
+class WalletSerializer(serializers.Serializer):
+    earnings_held = serializers.DecimalField(max_digits=14, decimal_places=2,
+                                             help_text="Your share of online payments, held by KaamNow.")
+    commission_owed = serializers.DecimalField(max_digits=14, decimal_places=2,
+                                               help_text="Commission on jobs paid to you in cash.")
+    balance = serializers.DecimalField(max_digits=14, decimal_places=2,
+                                       help_text="Positive: KaamNow owes you. Negative: you owe KaamNow.")
+    min_payout = serializers.DecimalField(max_digits=10, decimal_places=2)
+    commission_debt_limit = serializers.DecimalField(max_digits=10, decimal_places=2)
+    can_request_payout = serializers.BooleanField()
+    must_pay_commission = serializers.BooleanField()
+    offers_blocked = serializers.BooleanField()
+    open_settlement = SettlementSerializer(allow_null=True)
+    last_payout_account = LastPayoutAccountSerializer(allow_null=True)
+    settlements = SettlementSerializer(many=True)
+
+
+class CommissionPaymentSerializer(serializers.Serializer):
+    method = serializers.ChoiceField(choices=ONLINE_METHOD_CHOICES)
+
+
+class CommissionPaymentResponseSerializer(serializers.Serializer):
+    settlement = SettlementSerializer()
+    payment = PaymentWithCheckoutSerializer()
+
+
+class MarkPayoutPaidSerializer(serializers.Serializer):
+    reference = serializers.CharField(max_length=100, help_text="The transfer's transaction ID.")
+
+
+class RejectPayoutSerializer(serializers.Serializer):
+    reason = serializers.CharField(max_length=255)
+
+
+RECEIVED_METHOD_CHOICES = [(WorkerSettlement.Method.CASH.value, "Cash"),
+                           (WorkerSettlement.Method.BANK.value, "Bank transfer")]
+
+
+class RecordCommissionSerializer(serializers.Serializer):
+    method = serializers.ChoiceField(choices=RECEIVED_METHOD_CHOICES)
+    reference = serializers.CharField(max_length=100, help_text="Receipt number or transfer ID.")
+
+
+class WorkerBalanceSerializer(serializers.Serializer):
+    worker = serializers.IntegerField()
+    worker_name = serializers.CharField()
+    worker_phone = serializers.CharField()
+    earnings_held = serializers.DecimalField(max_digits=14, decimal_places=2)
+    commission_owed = serializers.DecimalField(max_digits=14, decimal_places=2)
+    balance = serializers.DecimalField(max_digits=14, decimal_places=2)

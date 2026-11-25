@@ -194,6 +194,7 @@ REST_FRAMEWORK = {
         "chat": env("THROTTLE_CHAT", "60/min"),
         "location": env("THROTTLE_LOCATION", "120/min"),
         "payment_callback": env("THROTTLE_PAYMENT_CALLBACK", "120/min"),
+        "payout": env("THROTTLE_PAYOUT", "20/hour"),
     },
     "TEST_REQUEST_DEFAULT_FORMAT": "json",
 }
@@ -226,6 +227,9 @@ SPECTACULAR_SETTINGS = {
         "PaymentMethodEnum": "apps.billing.models.Payment.Method",
         "OnlinePaymentMethodEnum": "apps.billing.serializers.ONLINE_METHOD_CHOICES",
         "PaymentStatusEnum": "apps.billing.models.Payment.Status",
+        "SettlementMethodEnum": "apps.billing.models.WorkerSettlement.Method",
+        "PayoutMethodEnum": "apps.billing.serializers.PAYOUT_METHOD_CHOICES",
+        "CommissionReceivedMethodEnum": "apps.billing.serializers.RECEIVED_METHOD_CHOICES",
         "PurchaseStatusEnum": "apps.billing.models.WorkerSubscription.Status",
         "ComplaintStatusEnum": "apps.support.models.Complaint.Status",
         "ComplaintStatusChangeEnum": "apps.support.serializers.STATUS_CHANGE_CHOICES",

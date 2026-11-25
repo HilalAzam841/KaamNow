@@ -21,6 +21,16 @@ class PlatformSettings(TimeStampedModel):
         help_text="Flat fee added to emergency (urgent) bookings. Kept by the platform.",
     )
     emergency_enabled = models.BooleanField(default=True)
+    min_payout = models.DecimalField(
+        max_digits=10, decimal_places=2, default=Decimal("500.00"),
+        validators=[MinValueValidator(Decimal("1")), MaxValueValidator(Decimal("100000"))],
+        help_text="Smallest balance a worker can ask to be paid out.",
+    )
+    commission_debt_limit = models.DecimalField(
+        max_digits=10, decimal_places=2, default=Decimal("5000.00"),
+        validators=[MinValueValidator(Decimal("0")), MaxValueValidator(Decimal("1000000"))],
+        help_text="Workers who owe more cash commission than this cannot send offers until they pay. 0 = no limit.",
+    )
     updated_by = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name="+"
     )
@@ -59,6 +69,15 @@ class Commission(TimeStampedModel):
     commission_amount = models.DecimalField(max_digits=12, decimal_places=2)
     worker_earning = models.DecimalField(max_digits=12, decimal_places=2)
     status = models.CharField(max_length=10, choices=Status.choices, default=Status.PENDING, db_index=True)
+    paid_via = models.CharField(
+        max_length=10, blank=True, default="",
+        help_text="How the customer paid (cash: the worker holds the money; online: the platform does). "
+        "Empty until the payment is confirmed.",
+    )
+    settlement = models.ForeignKey(
+        "billing.WorkerSettlement", on_delete=models.PROTECT, null=True, blank=True, related_name="commissions",
+        help_text="The payout or commission payment that settles this booking's money with the worker.",
+    )
 
     class Meta:
         ordering = ["-created_at"]
@@ -77,6 +96,7 @@ class Payment(TimeStampedModel):
         BOOKING = "booking", "Booking"
         SUBSCRIPTION = "subscription", "Worker subscription"
         FEATURED_LISTING = "featured_listing", "Featured listing"
+        COMMISSION = "commission", "Commission owed by a worker"
 
     class Method(models.TextChoices):
         CASH = "cash", "Cash"
@@ -142,15 +162,22 @@ class LedgerEntry(models.Model):
         EMERGENCY_FEE = "emergency_fee", "Emergency fee"
         SUBSCRIPTION_REVENUE = "subscription_revenue", "Subscription revenue"
         FEATURED_REVENUE = "featured_revenue", "Featured listing revenue"
+        WORKER_PAYOUT = "worker_payout", "Payout to worker"
+        COMMISSION_SETTLEMENT = "commission_settlement", "Cash commission settled"
 
-    payment = models.ForeignKey(Payment, on_delete=models.PROTECT, related_name="ledger_entries")
+    payment = models.ForeignKey(
+        Payment, on_delete=models.PROTECT, related_name="ledger_entries", null=True, blank=True
+    )
+    settlement = models.ForeignKey(
+        "billing.WorkerSettlement", on_delete=models.PROTECT, null=True, blank=True, related_name="ledger_entries"
+    )
     booking = models.ForeignKey(
         "jobs.Booking", on_delete=models.PROTECT, related_name="ledger_entries", null=True, blank=True
     )
     worker = models.ForeignKey(
         "accounts.WorkerProfile", on_delete=models.PROTECT, null=True, blank=True, related_name="ledger_entries"
     )
-    entry_type = models.CharField(max_length=20, choices=EntryType.choices)
+    entry_type = models.CharField(max_length=30, choices=EntryType.choices)
     amount = models.DecimalField(max_digits=12, decimal_places=2)
     description = models.CharField(max_length=255, blank=True)
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
@@ -160,6 +187,10 @@ class LedgerEntry(models.Model):
         verbose_name_plural = "ledger entries"
         constraints = [
             models.UniqueConstraint(fields=["payment", "entry_type"], name="unique_ledger_entry_per_payment_type"),
+            models.UniqueConstraint(fields=["settlement", "entry_type"], name="unique_ledger_entry_per_settlement_type"),
+            models.CheckConstraint(
+                condition=Q(payment__isnull=False) | Q(settlement__isnull=False), name="ledger_entry_has_source"
+            ),
         ]
 
 
@@ -278,3 +309,67 @@ class FeaturedListing(TimeStampedModel):
 
     def __str__(self):
         return f"Featured {self.worker} in {self.category} ({self.status})"
+
+
+class WorkerSettlement(TimeStampedModel):
+    """Settles booking money between the platform and a worker.
+
+    Online payments leave the worker's share with the platform; cash payments leave the platform's
+    commission with the worker. A settlement nets the two for a set of bookings (their commissions
+    point here) and moves the difference one way:
+
+    - payout: the platform owes the worker; the worker asks, an admin sends the money and marks it paid.
+    - collection: the worker owes commission; they pay it online, or an admin records cash or a transfer.
+    """
+
+    class Kind(models.TextChoices):
+        PAYOUT = "payout", "Payout to worker"
+        COLLECTION = "collection", "Commission paid by worker"
+
+    class Status(models.TextChoices):
+        REQUESTED = "requested", "Open"
+        COMPLETED = "completed", "Completed"
+        REJECTED = "rejected", "Rejected"
+        CANCELLED = "cancelled", "Cancelled"
+        FAILED = "failed", "Payment failed"
+
+    class Method(models.TextChoices):
+        JAZZCASH = "jazzcash", "JazzCash"
+        EASYPAISA = "easypaisa", "Easypaisa"
+        BANK = "bank", "Bank transfer"
+        CASH = "cash", "Cash"
+
+    worker = models.ForeignKey("accounts.WorkerProfile", on_delete=models.PROTECT, related_name="settlements")
+    kind = models.CharField(max_length=10, choices=Kind.choices, db_index=True)
+    status = models.CharField(max_length=10, choices=Status.choices, default=Status.REQUESTED, db_index=True)
+    amount = models.DecimalField(max_digits=12, decimal_places=2, help_text="The money that moves.")
+    earnings_amount = models.DecimalField(
+        max_digits=12, decimal_places=2, default=Decimal("0.00"), help_text="Worker's share of online payments included."
+    )
+    commission_amount = models.DecimalField(
+        max_digits=12, decimal_places=2, default=Decimal("0.00"), help_text="Cash commission included."
+    )
+    method = models.CharField(max_length=10, choices=Method.choices)
+    account_title = models.CharField(max_length=100, blank=True)
+    account_number = models.CharField(max_length=34, blank=True, help_text="Mobile wallet number or IBAN.")
+    reference = models.CharField(max_length=100, blank=True, help_text="Transfer or receipt reference.")
+    note = models.CharField(max_length=255, blank=True, help_text="Reason when rejected; admin note.")
+    payment = models.OneToOneField(
+        Payment, on_delete=models.PROTECT, null=True, blank=True, related_name="settlement"
+    )
+    processed_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name="+"
+    )
+    processed_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["worker"], condition=Q(status="requested"), name="one_open_settlement_per_worker"
+            ),
+            models.CheckConstraint(condition=Q(amount__gt=0), name="settlement_amount_positive"),
+        ]
+
+    def __str__(self):
+        return f"{self.get_kind_display()} Rs.{self.amount} for {self.worker} ({self.status})"

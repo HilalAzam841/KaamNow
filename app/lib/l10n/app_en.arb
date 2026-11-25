@@ -7,6 +7,7 @@
     }
   },
   "aboutYou": "About you",
+  "accountTitle": "Account holder name",
   "add": "Add",
   "addAService": "Add a service",
   "addServicesToSeeJobs": "Add the services you offer to see matching jobs.",
@@ -58,6 +59,7 @@
   "atLeast8": "At least 8 characters",
   "back": "Back",
   "backToLogin": "Back to log in",
+  "bankTransfer": "Bank transfer",
   "baseLocation": "Base location",
   "baseLocationHint": "Jobs are matched by distance from here. Customers never see it.",
   "book": "Book",
@@ -118,6 +120,7 @@
   "cancel": "Cancel",
   "cancelBooking": "Cancel booking",
   "cancelBookingQ": "Cancel this booking?",
+  "cancelPayout": "Cancel request",
   "cancelRequest": "Cancel request",
   "cancelRequestQ": "Cancel this request?",
   "cancelledReason": "Cancelled: {reason}",
@@ -184,6 +187,13 @@
       "date": {}
     }
   },
+  "commissionPaymentOpen": "Commission payment of {amount} in progress",
+  "@commissionPaymentOpen": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
+  "commissionPaymentWindowClosed": "Payment window closed. Your wallet updates once JazzCash or Easypaisa confirms it.",
   "commissionPercent": "Commission {percent}%",
   "@commissionPercent": {
     "placeholders": {
@@ -348,6 +358,7 @@
   },
   "fullName": "Full name",
   "getCompletionCode": "Get completion code",
+  "getPaid": "Get paid",
   "getVerified": "Get verified to send offers",
   "getVerifiedHint": "Upload both sides of your CNIC, add your services and set your base location. KaamNow reviews new workers before they can bid.",
   "helpAndComplaints": "Help and complaints",
@@ -361,6 +372,7 @@
   },
   "howToInstall": "How to install",
   "iWantTo": "I want to",
+  "iban": "IBAN",
   "imOnMyWay": "I’m on my way",
   "install": "Install",
   "installApp": "Install app",
@@ -437,6 +449,12 @@
     "placeholders": {
       "method": {},
       "ref": {}
+    }
+  },
+  "minPayoutHint": "You can ask for a payout from {amount}.",
+  "@minPayoutHint": {
+    "placeholders": {
+      "amount": {}
     }
   },
   "minimumIs": "Minimum is {amount}",
@@ -534,6 +552,12 @@
       "n": {}
     }
   },
+  "offersBlockedDebt": "You owe more than {amount} in commission, so you cannot send offers until you pay.",
+  "@offersBlockedDebt": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
   "offersCount": "{count, plural, =1{1 offer} other{{count} offers}}",
   "@offersCount": {
     "placeholders": {
@@ -573,6 +597,8 @@
   "passwordChangedShort": "Password changed.",
   "passwordsDontMatch": "The passwords do not match",
   "payCash": "Pay the worker in cash. They will confirm when they receive it.",
+  "payCommission": "Pay commission",
+  "payCommissionOffice": "Pay online when available, or hand it to the KaamNow office and they will record it.",
   "payWith": "Pay with {method}",
   "@payWith": {
     "placeholders": {
@@ -590,6 +616,22 @@
     }
   },
   "paymentWindowClosed": "This page updates once the gateway confirms the payment.",
+  "payoutCancelled": "Payout request cancelled.",
+  "payoutOpen": "Payout of {amount} requested",
+  "@payoutOpen": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
+  "payoutOpenHint": "To {method} {account}. Jobs in it are not counted in your balance until it is sent or declined.",
+  "@payoutOpenHint": {
+    "placeholders": {
+      "method": {},
+      "account": {}
+    }
+  },
+  "payoutRequested": "Payout requested. We will send it soon.",
+  "payoutTo": "Send it to",
   "phoneNumber": "Phone number",
   "photoUpdated": "Photo updated.",
   "photosOptional": "Photos (optional)",
@@ -664,6 +706,13 @@
   "request": "Request",
   "requestCancelled": "Request cancelled.",
   "requestFailed": "Request failed.",
+  "requestPayoutOf": "Ask for {amount}",
+  "@requestPayoutOf": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
+  "requiredField": "Required",
   "resendIn": "Send a new code in {seconds}s",
   "@resendIn": {
     "placeholders": {
@@ -721,6 +770,16 @@
   "serviceAdded": "Service added.",
   "services": "Services",
   "setLocationFirst": "Set the job location on the map, or use your current location.",
+  "settlementCollection": "Commission paid",
+  "settlementHistory": "Payouts and payments",
+  "settlementLine": "{date} · {method}",
+  "@settlementLine": {
+    "placeholders": {
+      "date": {},
+      "method": {}
+    }
+  },
+  "settlementPayout": "Payout to you",
   "shareLiveLocation": "Share my live location with the customer",
   "shortBio": "Short bio",
   "sixDigitCode": "6-digit code from the customer",
@@ -755,6 +814,7 @@
   "statusPending": "Pending",
   "statusPendingPayment": "Awaiting payment",
   "statusRejected": "Rejected",
+  "statusRequested": "Requested",
   "statusResolved": "Resolved",
   "statusUpdated": "Status updated: {status}",
   "@statusUpdated": {
@@ -840,6 +900,25 @@
   "waitingForOffersHint": "Nearby workers have been notified. Offers appear here as they arrive.",
   "waitingForWorkerConfirm": "Waiting for the worker to confirm.",
   "waitingForWorkerLocation": "Waiting for the worker’s location…",
+  "wallet": "Wallet",
+  "walletBalance": "Balance with KaamNow",
+  "walletCommissionOwed": "Commission on cash jobs: {amount}",
+  "@walletCommissionOwed": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
+  "walletEarningsHeld": "From online payments: {amount}",
+  "@walletEarningsHeld": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
+  "walletExplain": "Customers who pay online pay KaamNow, so we owe you your share. Customers who pay cash pay you, so you owe our commission. The two are netted here.",
+  "walletNumber": "Mobile account number",
+  "walletOwedToYou": "KaamNow owes you",
+  "walletSettled": "All settled",
+  "walletYouOwe": "You owe KaamNow",
   "whatHelp": "What do you need help with?",
   "whatWentWrong": "What went wrong?",
   "withdraw": "Withdraw",

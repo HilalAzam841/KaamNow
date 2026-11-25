@@ -2018,6 +2018,242 @@
           }
         },
         {
+          "name": "Worker wallet (balance with KaamNow)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/payments/wallet/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "payments",
+                "wallet"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{worker_access}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Worker: pay commission owed online",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/payments/commission/pay/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "payments",
+                "commission",
+                "pay"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{worker_access}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"method\": \"jazzcash\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Worker: ask for a payout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/payments/payouts/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "payments",
+                "payouts"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{worker_access}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"method\": \"jazzcash\",\n  \"account_title\": \"Bilal Ahmed\",\n  \"account_number\": \"03001234567\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set('settlement_id', pm.response.json().data.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Admin: open payout requests",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/settlements/?kind=payout&status=requested",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "settlements",
+                "?kind=payout&status=requested"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_access}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Admin: mark payout paid (audited)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/settlements/{{settlement_id}}/mark-paid/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "settlements",
+                "{{settlement_id}}",
+                "mark-paid"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_access}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reference\": \"JC-778899\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Admin: workers who owe commission",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/worker-balances/?owing=true",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "worker-balances",
+                "?owing=true"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_access}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Admin: record commission handed in (audited)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/workers/{{worker_id}}/record-commission/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "workers",
+                "{{worker_id}}",
+                "record-commission"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_access}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"method\": \"cash\",\n  \"reference\": \"Receipt 0042\"\n}"
+            }
+          }
+        },
+        {
           "name": "Review worker",
           "request": {
             "method": "POST",

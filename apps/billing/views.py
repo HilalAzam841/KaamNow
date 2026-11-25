@@ -3,6 +3,7 @@ from decimal import Decimal
 
 from django.db.models import Count, Q, Sum
 from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
 from drf_spectacular.utils import OpenApiResponse, extend_schema, extend_schema_view
 from rest_framework import generics, mixins, permissions, status, viewsets
 from rest_framework.decorators import action
@@ -12,10 +13,20 @@ from rest_framework.views import APIView
 
 from apps.common.permissions import IsCustomer, IsPlatformAdmin, IsWorker
 
-from . import services
+from . import services, wallet
 from .gateways import GatewayError, SignatureError
-from .models import Commission, FeaturedListing, FeaturedPlan, Payment, SubscriptionPlan, WorkerSubscription
+from .models import (
+    Commission,
+    FeaturedListing,
+    FeaturedPlan,
+    Payment,
+    SubscriptionPlan,
+    WorkerSettlement,
+    WorkerSubscription,
+)
 from .serializers import (
+    CommissionPaymentResponseSerializer,
+    CommissionPaymentSerializer,
     EarningsSummarySerializer,
     FeaturedListingSerializer,
     FeaturedPlanSerializer,
@@ -25,9 +36,12 @@ from .serializers import (
     PaymentCreateSerializer,
     PaymentSerializer,
     PaymentWithCheckoutSerializer,
+    PayoutRequestSerializer,
+    SettlementSerializer,
     SubscribeResponseSerializer,
     SubscribeSerializer,
     SubscriptionPlanSerializer,
+    WalletSerializer,
     WorkerSubscriptionSerializer,
 )
 
@@ -151,6 +165,60 @@ class WorkerEarningsView(APIView):
             "recent": qs.select_related("worker__user")[:20],
         }
         return Response(EarningsSummarySerializer(data).data)
+
+
+# --------------------------------------------------------------------------
+# Worker wallet
+# --------------------------------------------------------------------------
+class WalletView(APIView):
+    permission_classes = [IsWorker]
+
+    @extend_schema(tags=["payments"], responses={200: WalletSerializer},
+                   summary="Worker: balance with KaamNow (online earnings held minus cash commission owed)")
+    def get(self, request):
+        return Response(WalletSerializer(wallet.summary(request.user.worker_profile)).data)
+
+
+class PayoutRequestView(APIView):
+    permission_classes = [IsWorker]
+    throttle_scope = "payout"
+
+    @extend_schema(tags=["payments"], request=PayoutRequestSerializer, responses={201: SettlementSerializer},
+                   summary="Worker: ask to be paid the whole balance. An admin sends it and marks it paid.")
+    def post(self, request):
+        serializer = PayoutRequestSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        settlement = wallet.request_payout(request.user.worker_profile, **serializer.validated_data)
+        return Response(SettlementSerializer(settlement).data, status=status.HTTP_201_CREATED)
+
+
+class PayoutCancelView(APIView):
+    permission_classes = [IsWorker]
+
+    @extend_schema(tags=["payments"], request=None, responses={200: SettlementSerializer},
+                   summary="Worker: cancel an open payout request")
+    def post(self, request, pk):
+        settlement = get_object_or_404(WorkerSettlement, pk=pk, worker=request.user.worker_profile)
+        return Response(SettlementSerializer(wallet.cancel_payout(settlement, request.user.worker_profile)).data)
+
+
+class CommissionPaymentView(APIView):
+    permission_classes = [IsWorker]
+    throttle_scope = "payout"
+
+    @extend_schema(tags=["payments"], request=CommissionPaymentSerializer,
+                   responses={201: CommissionPaymentResponseSerializer},
+                   summary="Worker: pay the commission owed with JazzCash or Easypaisa. Settled only after the "
+                   "server verifies the gateway callback.")
+    def post(self, request):
+        serializer = CommissionPaymentSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        settlement, payment, checkout = wallet.pay_commission(
+            request.user.worker_profile, serializer.validated_data["method"]
+        )
+        payment.checkout = checkout
+        return Response({"settlement": SettlementSerializer(settlement).data,
+                         "payment": PaymentWithCheckoutSerializer(payment).data}, status=status.HTTP_201_CREATED)
 
 
 # --------------------------------------------------------------------------

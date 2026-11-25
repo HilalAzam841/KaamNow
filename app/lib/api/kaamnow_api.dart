@@ -194,6 +194,22 @@ class KaamNowApi {
       Payment.fromJson(asMap(await client.post('/payments/$paymentId/confirm/')));
   Future<EarningsSummary> earnings() async => EarningsSummary.fromJson(asMap(await client.get('/payments/earnings/')));
 
+  // ---- worker wallet: payouts and commission ------------------------------
+  Future<Wallet> wallet() async => Wallet.fromJson(asMap(await client.get('/payments/wallet/')));
+  Future<Settlement> requestPayout(PayoutAccount account) async => Settlement.fromJson(asMap(await client.post(
+      '/payments/payouts/',
+      body: {'method': account.method, 'account_title': account.accountTitle, 'account_number': account.accountNumber})));
+  Future<Settlement> cancelPayout(int id) async =>
+      Settlement.fromJson(asMap(await client.post('/payments/payouts/$id/cancel/')));
+
+  /// Starts an online commission payment; open the returned checkout. Settled by the server only
+  /// after the gateway confirms it.
+  Future<Checkout?> payCommission(String method) async {
+    final m = asMap(await client.post('/payments/commission/pay/', body: {'method': method}));
+    final payment = asMap(m['payment']);
+    return payment['checkout'] == null ? null : Checkout.fromJson(asMap(payment['checkout']));
+  }
+
   // ---- Reviews & complaints ---------------------------------------------
   Future<Review> createReview(int bookingId, int rating, String comment) async => Review.fromJson(
       asMap(await client.post('/reviews/', body: {'booking': bookingId, 'rating': rating, 'comment': comment})));

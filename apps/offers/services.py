@@ -56,6 +56,9 @@ def create_offer(worker, service_request, *, price, estimated_arrival_minutes, m
     from apps.billing.services import check_daily_offer_limit
 
     check_daily_offer_limit(worker)
+    from apps.billing.wallet import check_commission_debt
+
+    check_commission_debt(worker)
     price = validate_price(price)
     try:
         with transaction.atomic():

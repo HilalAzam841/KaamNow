@@ -150,6 +150,14 @@ msgstr "موجودہ پاس ورڈ غلط ہے۔"
 msgid "Benefits must be a list of short strings."
 msgstr "فوائد مختصر جملوں کی فہرست ہونی چاہیے۔"
 
+#: apps/billing/serializers.py
+msgid "Enter your IBAN, e.g. PK36SCBL0000001123456702."
+msgstr "اپنا IBAN درج کریں، مثلاً PK36SCBL0000001123456702۔"
+
+#: apps/billing/serializers.py
+msgid "Enter the mobile number of the account, e.g. 03001234567."
+msgstr "اکاؤنٹ کا موبائل نمبر درج کریں، مثلاً 03001234567۔"
+
 #: apps/billing/services.py
 #, python-brace-format
 msgid "{method} payments are not available right now."
@@ -281,6 +289,75 @@ msgstr "آپ فیچرڈ ہیں"
 #, python-brace-format
 msgid "You are now a sponsored {category} until {date}."
 msgstr "آپ اب {date} تک اسپانسرڈ {category} ہیں۔"
+
+#: apps/billing/wallet.py
+#, python-brace-format
+msgid "You owe {amount} in commission. Pay it from your wallet to keep sending offers."
+msgstr "آپ کے ذمے {amount} کمیشن ہے۔ آفرز بھیجتے رہنے کے لیے اسے اپنے والٹ سے ادا کریں۔"
+
+#: apps/billing/wallet.py
+msgid "You already have an open payout or commission payment."
+msgstr "آپ کی ایک پے آؤٹ یا کمیشن کی ادائیگی پہلے سے جاری ہے۔"
+
+#: apps/billing/wallet.py
+msgid "Payouts are available once your profile is verified."
+msgstr "پروفائل کی تصدیق کے بعد پے آؤٹ لیا جا سکتا ہے۔"
+
+#: apps/billing/wallet.py
+#, python-brace-format
+msgid "You can ask for a payout once your balance reaches {amount}."
+msgstr "بیلنس {amount} ہونے پر آپ پے آؤٹ مانگ سکتے ہیں۔"
+
+#: apps/billing/wallet.py
+msgid "This payout is not yours."
+msgstr "یہ پے آؤٹ آپ کا نہیں ہے۔"
+
+#: apps/billing/wallet.py
+msgid "Only an open payout request can be cancelled."
+msgstr "صرف جاری پے آؤٹ کی درخواست منسوخ کی جا سکتی ہے۔"
+
+#: apps/billing/wallet.py
+msgid "Pay with JazzCash or Easypaisa, or hand the commission to KaamNow's office."
+msgstr "JazzCash یا Easypaisa سے ادا کریں، یا کمیشن KaamNow کے دفتر میں جمع کروائیں۔"
+
+#: apps/billing/wallet.py
+msgid "You do not owe any commission."
+msgstr "آپ کے ذمے کوئی کمیشن نہیں ہے۔"
+
+#: apps/billing/wallet.py
+msgid "Commission paid"
+msgstr "کمیشن ادا ہو گیا"
+
+#: apps/billing/wallet.py
+#, python-brace-format
+msgid "Thank you. Your commission payment of {amount} is confirmed."
+msgstr "شکریہ۔ آپ کی {amount} کمیشن کی ادائیگی کنفرم ہو گئی ہے۔"
+
+#: apps/billing/wallet.py
+msgid "This payout is already closed."
+msgstr "یہ پے آؤٹ پہلے ہی بند ہو چکا ہے۔"
+
+#: apps/billing/wallet.py
+msgid "Payout sent"
+msgstr "پے آؤٹ بھیج دیا گیا"
+
+#: apps/billing/wallet.py
+#, python-brace-format
+msgid "We sent {amount} to your {method} account. Reference: {reference}."
+msgstr "ہم نے آپ کے {method} اکاؤنٹ میں {amount} بھیج دیے ہیں۔ حوالہ: {reference}۔"
+
+#: apps/billing/wallet.py
+msgid "Payout not sent"
+msgstr "پے آؤٹ نہیں بھیجا گیا"
+
+#: apps/billing/wallet.py
+#, python-brace-format
+msgid "Your payout request was declined: {reason}"
+msgstr "آپ کی پے آؤٹ کی درخواست مسترد ہو گئی: {reason}"
+
+#: apps/billing/wallet.py
+msgid "This worker does not owe any commission."
+msgstr "اس ورکر کے ذمے کوئی کمیشن نہیں ہے۔"
 
 #: apps/catalog/serializers.py
 msgid "A category with this name already exists."
@@ -838,6 +915,10 @@ msgstr "جاز کیش"
 #: apps/billing/models.py
 msgid "Easypaisa"
 msgstr "ایزی پیسہ"
+
+#: apps/billing/models.py
+msgid "Bank transfer"
+msgstr "بینک ٹرانسفر"
 
 #: apps/jobs/services.py
 #, python-brace-format

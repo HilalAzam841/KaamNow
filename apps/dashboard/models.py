@@ -19,6 +19,9 @@ class AuditLog(models.Model):
         FEATURED_CANCELLED = "featured_cancelled", "Featured listing cancelled"
         COMPLAINT_UPDATED = "complaint_updated", "Complaint status changed"
         PAYMENT_DISPUTED = "payment_disputed", "Payment flagged as disputed"
+        PAYOUT_PAID = "payout_paid", "Worker payout marked as paid"
+        PAYOUT_REJECTED = "payout_rejected", "Worker payout rejected"
+        COMMISSION_COLLECTED = "commission_collected", "Cash commission received from worker"
 
     actor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, related_name="audit_logs")
     action = models.CharField(max_length=30, choices=Action.choices, db_index=True)

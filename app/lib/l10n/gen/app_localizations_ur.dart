@@ -18,6 +18,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String get aboutYou => 'آپ کے بارے میں';
 
   @override
+  String get accountTitle => 'اکاؤنٹ ہولڈر کا نام';
+
+  @override
   String get add => 'شامل کریں';
 
   @override
@@ -107,6 +110,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String get backToLogin => 'لاگ ان پر واپس جائیں';
 
   @override
+  String get bankTransfer => 'بینک ٹرانسفر';
+
+  @override
   String get baseLocation => 'بنیادی لوکیشن';
 
   @override
@@ -176,6 +182,9 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get cancelBookingQ => 'یہ بکنگ منسوخ کریں؟';
+
+  @override
+  String get cancelPayout => 'درخواست منسوخ کریں';
 
   @override
   String get cancelRequest => 'درخواست منسوخ کریں';
@@ -280,6 +289,15 @@ class AppLocalizationsUr extends AppLocalizations {
   String commissionLine(Object percent, Object amount, Object date) {
     return '$percent% کمیشن $amount · $date';
   }
+
+  @override
+  String commissionPaymentOpen(Object amount) {
+    return '$amount کمیشن کی ادائیگی جاری ہے';
+  }
+
+  @override
+  String get commissionPaymentWindowClosed =>
+      'ادائیگی کی ونڈو بند ہو گئی۔ JazzCash یا Easypaisa کی تصدیق کے بعد آپ کا والٹ اپ ڈیٹ ہو جائے گا۔';
 
   @override
   String commissionPercent(Object percent) {
@@ -560,6 +578,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String get getCompletionCode => 'تکمیل کوڈ حاصل کریں';
 
   @override
+  String get getPaid => 'رقم وصول کریں';
+
+  @override
   String get getVerified => 'پیشکش بھیجنے کے لیے تصدیق کروائیں';
 
   @override
@@ -586,6 +607,9 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get iWantTo => 'میں چاہتا/چاہتی ہوں';
+
+  @override
+  String get iban => 'IBAN';
 
   @override
   String get imOnMyWay => 'میں راستے میں ہوں';
@@ -741,6 +765,11 @@ class AppLocalizationsUr extends AppLocalizations {
   }
 
   @override
+  String minPayoutHint(Object amount) {
+    return 'آپ $amount سے پے آؤٹ مانگ سکتے ہیں۔';
+  }
+
+  @override
   String minimumIs(Object amount) {
     return 'کم از کم $amount';
   }
@@ -887,6 +916,11 @@ class AppLocalizationsUr extends AppLocalizations {
   }
 
   @override
+  String offersBlockedDebt(Object amount) {
+    return 'آپ کے ذمے $amount سے زیادہ کمیشن ہے، اس لیے ادائیگی تک آپ آفرز نہیں بھیج سکتے۔';
+  }
+
+  @override
   String offersCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -956,6 +990,13 @@ class AppLocalizationsUr extends AppLocalizations {
       'کاریگر کو نقد ادائیگی کریں۔ رقم ملنے پر وہ تصدیق کریں گے۔';
 
   @override
+  String get payCommission => 'کمیشن ادا کریں';
+
+  @override
+  String get payCommissionOffice =>
+      'دستیاب ہو تو آن لائن ادا کریں، یا کام ناؤ کے دفتر میں جمع کروائیں، وہ اسے درج کر لیں گے۔';
+
+  @override
   String payWith(Object method) {
     return '$method سے ادائیگی کریں';
   }
@@ -978,6 +1019,25 @@ class AppLocalizationsUr extends AppLocalizations {
   @override
   String get paymentWindowClosed =>
       'گیٹ وے کی تصدیق کے بعد یہ صفحہ اپ ڈیٹ ہو جائے گا۔';
+
+  @override
+  String get payoutCancelled => 'پے آؤٹ کی درخواست منسوخ ہو گئی۔';
+
+  @override
+  String payoutOpen(Object amount) {
+    return '$amount کے پے آؤٹ کی درخواست جاری ہے';
+  }
+
+  @override
+  String payoutOpenHint(Object method, Object account) {
+    return '$method $account میں۔ اس میں شامل کام بھیجے جانے یا مسترد ہونے تک آپ کے بیلنس میں شمار نہیں ہوتے۔';
+  }
+
+  @override
+  String get payoutRequested => 'پے آؤٹ کی درخواست ہو گئی۔ ہم جلد بھیج دیں گے۔';
+
+  @override
+  String get payoutTo => 'یہاں بھیجیں';
 
   @override
   String get phoneNumber => 'فون نمبر';
@@ -1128,6 +1188,14 @@ class AppLocalizationsUr extends AppLocalizations {
   String get requestFailed => 'درخواست ناکام رہی۔';
 
   @override
+  String requestPayoutOf(Object amount) {
+    return '$amount مانگیں';
+  }
+
+  @override
+  String get requiredField => 'ضروری ہے';
+
+  @override
   String resendIn(int seconds) {
     return '$seconds سیکنڈ بعد نیا کوڈ بھیجیں';
   }
@@ -1233,6 +1301,20 @@ class AppLocalizationsUr extends AppLocalizations {
       'نقشے پر کام کی جگہ لگائیں، یا اپنی موجودہ لوکیشن استعمال کریں۔';
 
   @override
+  String get settlementCollection => 'کمیشن ادا کیا';
+
+  @override
+  String get settlementHistory => 'پے آؤٹس اور ادائیگیاں';
+
+  @override
+  String settlementLine(Object date, Object method) {
+    return '$date · $method';
+  }
+
+  @override
+  String get settlementPayout => 'آپ کو پے آؤٹ';
+
+  @override
   String get shareLiveLocation => 'گاہک کے ساتھ اپنی لائیو لوکیشن شیئر کریں';
 
   @override
@@ -1333,6 +1415,9 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get statusRejected => 'مسترد';
+
+  @override
+  String get statusRequested => 'درخواست کی گئی';
 
   @override
   String get statusResolved => 'حل ہو گیا';
@@ -1500,6 +1585,38 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get waitingForWorkerLocation => 'کاریگر کی لوکیشن کا انتظار ہے…';
+
+  @override
+  String get wallet => 'والٹ';
+
+  @override
+  String get walletBalance => 'کام ناؤ کے ساتھ بیلنس';
+
+  @override
+  String walletCommissionOwed(Object amount) {
+    return 'نقد کاموں کا کمیشن: $amount';
+  }
+
+  @override
+  String walletEarningsHeld(Object amount) {
+    return 'آن لائن ادائیگیوں سے: $amount';
+  }
+
+  @override
+  String get walletExplain =>
+      'جو گاہک آن لائن ادا کرتے ہیں وہ کام ناؤ کو ادا کرتے ہیں، اس لیے آپ کا حصہ ہمارے ذمے ہے۔ جو نقد ادا کرتے ہیں وہ آپ کو ادا کرتے ہیں، اس لیے ہمارا کمیشن آپ کے ذمے ہے۔ دونوں کا حساب یہاں برابر کیا جاتا ہے۔';
+
+  @override
+  String get walletNumber => 'موبائل اکاؤنٹ نمبر';
+
+  @override
+  String get walletOwedToYou => 'کام ناؤ کے ذمے آپ کے';
+
+  @override
+  String get walletSettled => 'سب حساب برابر';
+
+  @override
+  String get walletYouOwe => 'آپ کے ذمے کام ناؤ کے';
 
   @override
   String get whatHelp => 'آپ کو کس کام میں مدد چاہیے؟';

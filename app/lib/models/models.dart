@@ -653,3 +653,88 @@ class ClientConfig {
   /// The server can send SMS codes (also used for "Forgot password").
   final bool smsAvailable;
 }
+
+/// A payout to a worker, or a commission payment from one (see the server's wallet.py).
+class Settlement {
+  Settlement({required this.id, required this.kind, required this.status, required this.amount,
+      this.earningsAmount = '0', this.commissionAmount = '0', this.method = '', this.accountTitle = '',
+      this.accountNumber = '', this.reference = '', this.note = '', this.workerId = 0, this.workerName = '',
+      this.workerPhone = '', this.bookings = const [], this.createdAt, this.processedAt});
+  factory Settlement.fromJson(Map<String, dynamic> j) => Settlement(
+      id: parseInt(j['id']),
+      kind: str(j['kind']),
+      status: str(j['status']),
+      amount: str(j['amount']),
+      earningsAmount: str(j['earnings_amount']),
+      commissionAmount: str(j['commission_amount']),
+      method: str(j['method']),
+      accountTitle: str(j['account_title']),
+      accountNumber: str(j['account_number']),
+      reference: str(j['reference']),
+      note: str(j['note']),
+      workerId: parseInt(j['worker']),
+      workerName: str(j['worker_name']),
+      workerPhone: str(j['worker_phone']),
+      bookings: [for (final b in (j['bookings'] is List ? j['bookings'] as List : const [])) parseInt(b)],
+      createdAt: parseDate(j['created_at']),
+      processedAt: parseDate(j['processed_at']));
+  final int id;
+  final String kind;
+  final String status;
+  final String amount;
+  final String earningsAmount;
+  final String commissionAmount;
+  final String method;
+  final String accountTitle;
+  final String accountNumber;
+  final String reference;
+  final String note;
+  final int workerId;
+  final String workerName;
+  final String workerPhone;
+  final List<int> bookings;
+  final DateTime? createdAt;
+  final DateTime? processedAt;
+  bool get isPayout => kind == 'payout';
+  bool get isOpen => status == 'requested';
+}
+
+class PayoutAccount {
+  const PayoutAccount({required this.method, required this.accountTitle, required this.accountNumber});
+  factory PayoutAccount.fromJson(Map<String, dynamic> j) => PayoutAccount(
+      method: str(j['method']), accountTitle: str(j['account_title']), accountNumber: str(j['account_number']));
+  final String method;
+  final String accountTitle;
+  final String accountNumber;
+}
+
+class Wallet {
+  Wallet({required this.earningsHeld, required this.commissionOwed, required this.balance, required this.minPayout,
+      this.commissionDebtLimit = '0', this.canRequestPayout = false, this.mustPayCommission = false,
+      this.offersBlocked = false, this.openSettlement, this.lastPayoutAccount, this.settlements = const []});
+  factory Wallet.fromJson(Map<String, dynamic> j) => Wallet(
+      earningsHeld: str(j['earnings_held']),
+      commissionOwed: str(j['commission_owed']),
+      balance: str(j['balance']),
+      minPayout: str(j['min_payout']),
+      commissionDebtLimit: str(j['commission_debt_limit']),
+      canRequestPayout: j['can_request_payout'] == true,
+      mustPayCommission: j['must_pay_commission'] == true,
+      offersBlocked: j['offers_blocked'] == true,
+      openSettlement: j['open_settlement'] == null ? null : Settlement.fromJson(asMap(j['open_settlement'])),
+      lastPayoutAccount:
+          j['last_payout_account'] == null ? null : PayoutAccount.fromJson(asMap(j['last_payout_account'])),
+      settlements: parseList(j['settlements'], Settlement.fromJson));
+  final String earningsHeld;
+  final String commissionOwed;
+  final String balance;
+  final String minPayout;
+  final String commissionDebtLimit;
+  final bool canRequestPayout;
+  final bool mustPayCommission;
+  final bool offersBlocked;
+  final Settlement? openSettlement;
+  final PayoutAccount? lastPayoutAccount;
+  final List<Settlement> settlements;
+  double get balanceValue => double.tryParse(balance) ?? 0;
+}

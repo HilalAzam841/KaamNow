@@ -9,6 +9,7 @@ router.register("featured-plans", views.AdminFeaturedPlanViewSet, basename="admi
 router.register("subscriptions", views.AdminSubscriptionViewSet, basename="admin-subscription")
 router.register("featured-listings", views.AdminFeaturedListingViewSet, basename="admin-featured-listing")
 router.register("complaints", views.AdminComplaintViewSet, basename="admin-complaint")
+router.register("settlements", views.AdminSettlementViewSet, basename="admin-settlement")
 
 urlpatterns = [
     path("dashboard/", views.DashboardView.as_view(), name="admin-dashboard"),
@@ -16,6 +17,9 @@ urlpatterns = [
     path("workers/<int:pk>/", views.AdminWorkerDetailView.as_view(), name="admin-worker-detail"),
     path("workers/<int:pk>/verify/", views.VerifyWorkerView.as_view(), name="admin-worker-verify"),
     path("workers/<int:pk>/reject/", views.RejectWorkerView.as_view(), name="admin-worker-reject"),
+    path("workers/<int:pk>/record-commission/", views.RecordCommissionView.as_view(),
+         name="admin-worker-record-commission"),
+    path("worker-balances/", views.WorkerBalancesView.as_view(), name="admin-worker-balances"),
     path("documents/<int:pk>/file/", views.WorkerDocumentFileView.as_view(), name="admin-document-file"),
     path("users/", views.AdminUsersView.as_view(), name="admin-users"),
     path("users/<int:pk>/suspend/", views.SuspendUserView.as_view(), name="admin-user-suspend"),
