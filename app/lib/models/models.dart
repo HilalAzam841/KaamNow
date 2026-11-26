@@ -1158,3 +1158,88 @@ class SavedAddress {
   final double longitude;
   final bool isDefault;
 }
+
+/// Money totals for a date range in an earnings report.
+class ReportTotals {
+  ReportTotals({this.jobs = 0, this.gross = '0', this.commission = '0', this.discount = '0', this.earnings = '0',
+      this.adjustments = '0', this.net = '0'});
+  factory ReportTotals.fromJson(Map<String, dynamic> j) => ReportTotals(
+        jobs: parseInt(j['jobs']),
+        gross: str(j['gross']),
+        commission: str(j['commission']),
+        discount: str(j['discount']),
+        earnings: str(j['earnings']),
+        adjustments: str(j['adjustments']),
+        net: str(j['net']),
+      );
+  final int jobs;
+  final String gross;
+  final String commission;
+  final String discount;
+
+  /// From jobs only.
+  final String earnings;
+
+  /// Refund shares charged to the worker (negative) and other wallet changes.
+  final String adjustments;
+
+  /// earnings + adjustments.
+  final String net;
+}
+
+class ReportBucket {
+  ReportBucket({required this.start, this.jobs = 0, this.gross = '0', this.net = '0'});
+  factory ReportBucket.fromJson(Map<String, dynamic> j) => ReportBucket(
+      start: DateTime.parse(str(j['start'])), jobs: parseInt(j['jobs']), gross: str(j['gross']), net: str(j['net']));
+  final DateTime start;
+  final int jobs;
+  final String gross;
+  final String net;
+}
+
+class ServiceEarning {
+  ServiceEarning({required this.category, required this.name, this.jobs = 0, this.net = '0'});
+  factory ServiceEarning.fromJson(Map<String, dynamic> j) => ServiceEarning(
+      category: parseInt(j['category']), name: str(j['name']), jobs: parseInt(j['jobs']), net: str(j['net']));
+  final int category;
+  final String name;
+  final int jobs;
+  final String net;
+}
+
+class EarningsReport {
+  EarningsReport({required this.start, required this.end, required this.group, required this.totals,
+      required this.averagePerJob, required this.previous, this.series = const [], this.byService = const [],
+      this.byPayment = const {}});
+  factory EarningsReport.fromJson(Map<String, dynamic> j) {
+    final pay = asMap(j['by_payment']);
+    return EarningsReport(
+      start: DateTime.parse(str(j['start'])),
+      end: DateTime.parse(str(j['end'])),
+      group: str(j['group']),
+      totals: ReportTotals.fromJson(asMap(j['totals'])),
+      averagePerJob: str(j['average_per_job']),
+      previous: ReportTotals.fromJson(asMap(j['previous'])),
+      series: parseList(j['series'], ReportBucket.fromJson),
+      byService: parseList(j['by_service'], ServiceEarning.fromJson),
+      byPayment: {for (final k in ['cash', 'online', 'unpaid']) k: ReportTotals.fromJson(asMap(pay[k]))},
+    );
+  }
+  final DateTime start;
+  final DateTime end;
+
+  /// day, week or month: the step of [series].
+  final String group;
+  final ReportTotals totals;
+  final String averagePerJob;
+
+  /// The same number of days just before [start].
+  final ReportTotals previous;
+  final List<ReportBucket> series;
+  final List<ServiceEarning> byService;
+
+  /// cash, online and unpaid.
+  final Map<String, ReportTotals> byPayment;
+
+  int get days => end.difference(start).inDays + 1;
+}

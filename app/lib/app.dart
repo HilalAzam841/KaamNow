@@ -49,6 +49,7 @@ import 'ui/admin/sos_screen.dart';
 import 'ui/admin/portfolio_screen.dart';
 import 'ui/worker/portfolio_screen.dart';
 import 'ui/shell/home_shell.dart';
+import 'ui/worker/earnings_report_screen.dart';
 import 'ui/worker/earnings_screen.dart';
 import 'ui/worker/job_detail_screen.dart';
 import 'ui/worker/job_feed_screen.dart';
@@ -135,6 +136,7 @@ GoRouter buildRouter(Session session) {
       GoRoute(path: '/safety/contacts', builder: (_, _) => const EmergencyContactsScreen()),
       GoRoute(path: '/share/:token', builder: (_, s) => SharedJobScreen(token: s.pathParameters['token']!)),
       GoRoute(path: '/worker/earnings', builder: (_, _) => const EarningsScreen()),
+      GoRoute(path: '/worker/earnings/report', builder: (_, _) => const EarningsReportScreen()),
       GoRoute(path: '/worker/plans', builder: (_, _) => const PlansScreen()),
       GoRoute(path: '/complaints', builder: (_, _) => const ComplaintsScreen()),
       GoRoute(

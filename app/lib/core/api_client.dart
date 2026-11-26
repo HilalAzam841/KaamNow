@@ -47,8 +47,8 @@ class ApiClient {
       _send(() => http.Request('GET', uri(path, query)));
 
   /// Downloads a binary file (e.g. a private document). Returns the bytes and content type.
-  Future<(Uint8List, String)> getBytes(String path) async {
-    final res = await _sendRaw(() => http.Request('GET', uri(path)));
+  Future<(Uint8List, String)> getBytes(String path, {Map<String, dynamic>? query}) async {
+    final res = await _sendRaw(() => http.Request('GET', uri(path, query)));
     if (res.statusCode >= 200 && res.statusCode < 300) {
       return (res.bodyBytes, res.headers['content-type'] ?? 'application/octet-stream');
     }
