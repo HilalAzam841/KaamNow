@@ -1,5 +1,11 @@
+import 'dart:typed_data';
+
 import '../core/api_client.dart';
 import '../models/models.dart';
+
+/// YYYY-MM-DD for a calendar date.
+String isoDate(DateTime d) =>
+    '${d.year.toString().padLeft(4, '0')}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
 
 /// Typed wrapper over every endpoint the app uses. One method per API call.
 class KaamNowApi {
@@ -297,6 +303,14 @@ class KaamNowApi {
       Paged.parse(await client.get('/payments/', query: {'booking': bookingId}), Payment.fromJson).results;
   Future<Payment> confirmCashPayment(int paymentId) async =>
       Payment.fromJson(asMap(await client.post('/payments/$paymentId/confirm/')));
+  Future<EarningsReport> earningsReport({required DateTime start, required DateTime end}) async =>
+      EarningsReport.fromJson(asMap(await client.get('/payments/earnings/report/',
+          query: {'start': isoDate(start), 'end': isoDate(end)})));
+
+  /// The CSV statement for a date range: bytes and content type.
+  Future<(Uint8List, String)> earningsStatement({required DateTime start, required DateTime end}) =>
+      client.getBytes('/payments/earnings/statement/', query: {'start': isoDate(start), 'end': isoDate(end)});
+
   Future<EarningsSummary> earnings() async => EarningsSummary.fromJson(asMap(await client.get('/payments/earnings/')));
 
   // ---- worker wallet: payouts and commission ------------------------------

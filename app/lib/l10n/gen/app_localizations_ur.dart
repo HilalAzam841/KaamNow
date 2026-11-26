@@ -623,6 +623,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String get downloadFailed => 'ڈاؤن لوڈ نہیں ہو سکا۔';
 
   @override
+  String get downloadStatement => 'اسٹیٹمنٹ ڈاؤن لوڈ کریں (CSV)';
+
+  @override
   String durationHours(int hours) {
     String _temp0 = intl.Intl.pluralLogic(
       hours,
@@ -644,6 +647,13 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get earnings => 'آمدنی';
+
+  @override
+  String get earningsReports => 'کمائی کی رپورٹ';
+
+  @override
+  String get earningsReportsHint =>
+      'ہفتے یا مہینے کے حساب سے، سروس، نقد اور آن لائن کے لحاظ سے، اور ڈاؤن لوڈ کے لیے اسٹیٹمنٹ';
 
   @override
   String get editAddress => 'پتہ بدلیں';
@@ -1485,6 +1495,26 @@ class AppLocalizationsUr extends AppLocalizations {
   String get payoutTo => 'یہاں بھیجیں';
 
   @override
+  String get periodCustom => 'تاریخیں منتخب کریں';
+
+  @override
+  String get periodLastMonth => 'پچھلے مہینے';
+
+  @override
+  String periodRange(Object start, Object end) {
+    return '$start سے $end تک';
+  }
+
+  @override
+  String get periodThisMonth => 'اس مہینے';
+
+  @override
+  String get periodThisWeek => 'اس ہفتے';
+
+  @override
+  String get periodThisYear => 'اس سال';
+
+  @override
   String get phoneNumber => 'فون نمبر';
 
   @override
@@ -1700,15 +1730,81 @@ class AppLocalizationsUr extends AppLocalizations {
   String get repeatingJobsWorkerHint => 'وہ گاہک جو ہر بار آپ کو چاہتے ہیں';
 
   @override
+  String get reportAverage => 'فی کام اوسط';
+
+  @override
   String reportBooking(Object id) {
     return 'بکنگ نمبر $id رپورٹ کریں';
+  }
+
+  @override
+  String get reportByPayment => 'گاہکوں نے کیسے ادائیگی کی';
+
+  @override
+  String get reportByService => 'سروس کے لحاظ سے';
+
+  @override
+  String get reportByTime => 'وقت کے ساتھ کمائی';
+
+  @override
+  String get reportCash => 'نقد (آپ کے پاس)';
+
+  @override
+  String reportChangeDown(Object percent, int days) {
+    return 'پچھلے $days دنوں سے $percent% کم';
+  }
+
+  @override
+  String reportChangeUp(Object percent, int days) {
+    return 'پچھلے $days دنوں سے $percent% زیادہ';
+  }
+
+  @override
+  String get reportEmpty => 'ان تاریخوں میں کوئی کام مکمل نہیں ہوا۔';
+
+  @override
+  String get reportJobs => 'مکمل کام';
+
+  @override
+  String reportJobsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count کام',
+      one: '1 کام',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get reportNet => 'آپ کی کمائی';
+
+  @override
+  String reportNoChange(int days) {
+    return 'پچھلے $days دنوں جتنی';
   }
 
   @override
   String get reportNoShow => 'رپورٹ اور منسوخ کریں';
 
   @override
+  String get reportOnline => 'آن لائن (KaamNow کے پاس)';
+
+  @override
+  String reportPreviousNone(int days) {
+    return 'پچھلے $days دنوں میں کوئی کمائی نہیں';
+  }
+
+  @override
   String get reportProblem => 'مسئلہ رپورٹ کریں';
+
+  @override
+  String reportRefundShares(Object amount) {
+    return 'رقم کی واپسی میں آپ کا حصہ کٹا: $amount';
+  }
+
+  @override
+  String get reportUnpaid => 'ابھی ادائیگی نہیں ہوئی';
 
   @override
   String get request => 'درخواست';
@@ -2015,6 +2111,9 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get startingPriceOptional => 'ابتدائی قیمت (اختیاری)';
+
+  @override
+  String get statementReady => 'اسٹیٹمنٹ ڈاؤن لوڈ ہو گئی۔';
 
   @override
   String get statusAccepted => 'قبول';
@@ -2351,6 +2450,11 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get walletYouOwe => 'آپ کے ذمے کام ناؤ کے';
+
+  @override
+  String weekOf(Object date) {
+    return '$date کا ہفتہ';
+  }
 
   @override
   String get whatHelp => 'آپ کو کس کام میں مدد چاہیے؟';

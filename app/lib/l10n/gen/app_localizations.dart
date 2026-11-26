@@ -1154,6 +1154,12 @@ abstract class AppLocalizations {
   /// **'Download failed.'**
   String get downloadFailed;
 
+  /// No description provided for @downloadStatement.
+  ///
+  /// In en, this message translates to:
+  /// **'Download statement (CSV)'**
+  String get downloadStatement;
+
   /// No description provided for @durationHours.
   ///
   /// In en, this message translates to:
@@ -1177,6 +1183,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Earnings'**
   String get earnings;
+
+  /// No description provided for @earningsReports.
+  ///
+  /// In en, this message translates to:
+  /// **'Earnings reports'**
+  String get earningsReports;
+
+  /// No description provided for @earningsReportsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'By week or month, by service, cash and online, with a statement to download'**
+  String get earningsReportsHint;
 
   /// No description provided for @editAddress.
   ///
@@ -2558,6 +2576,42 @@ abstract class AppLocalizations {
   /// **'Send it to'**
   String get payoutTo;
 
+  /// No description provided for @periodCustom.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose dates'**
+  String get periodCustom;
+
+  /// No description provided for @periodLastMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Last month'**
+  String get periodLastMonth;
+
+  /// No description provided for @periodRange.
+  ///
+  /// In en, this message translates to:
+  /// **'{start} to {end}'**
+  String periodRange(Object start, Object end);
+
+  /// No description provided for @periodThisMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'This month'**
+  String get periodThisMonth;
+
+  /// No description provided for @periodThisWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'This week'**
+  String get periodThisWeek;
+
+  /// No description provided for @periodThisYear.
+  ///
+  /// In en, this message translates to:
+  /// **'This year'**
+  String get periodThisYear;
+
   /// No description provided for @phoneNumber.
   ///
   /// In en, this message translates to:
@@ -2924,11 +2978,83 @@ abstract class AppLocalizations {
   /// **'Customers who want you every time'**
   String get repeatingJobsWorkerHint;
 
+  /// No description provided for @reportAverage.
+  ///
+  /// In en, this message translates to:
+  /// **'Average per job'**
+  String get reportAverage;
+
   /// No description provided for @reportBooking.
   ///
   /// In en, this message translates to:
   /// **'Report booking #{id}'**
   String reportBooking(Object id);
+
+  /// No description provided for @reportByPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'How customers paid'**
+  String get reportByPayment;
+
+  /// No description provided for @reportByService.
+  ///
+  /// In en, this message translates to:
+  /// **'By service'**
+  String get reportByService;
+
+  /// No description provided for @reportByTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Earnings over time'**
+  String get reportByTime;
+
+  /// No description provided for @reportCash.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash (you hold it)'**
+  String get reportCash;
+
+  /// No description provided for @reportChangeDown.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}% less than the {days} days before'**
+  String reportChangeDown(Object percent, int days);
+
+  /// No description provided for @reportChangeUp.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}% more than the {days} days before'**
+  String reportChangeUp(Object percent, int days);
+
+  /// No description provided for @reportEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No completed jobs in these dates.'**
+  String get reportEmpty;
+
+  /// No description provided for @reportJobs.
+  ///
+  /// In en, this message translates to:
+  /// **'Jobs done'**
+  String get reportJobs;
+
+  /// No description provided for @reportJobsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 job} other{{count} jobs}}'**
+  String reportJobsCount(int count);
+
+  /// No description provided for @reportNet.
+  ///
+  /// In en, this message translates to:
+  /// **'You earned'**
+  String get reportNet;
+
+  /// No description provided for @reportNoChange.
+  ///
+  /// In en, this message translates to:
+  /// **'Same as the {days} days before'**
+  String reportNoChange(int days);
 
   /// No description provided for @reportNoShow.
   ///
@@ -2936,11 +3062,35 @@ abstract class AppLocalizations {
   /// **'Report and cancel'**
   String get reportNoShow;
 
+  /// No description provided for @reportOnline.
+  ///
+  /// In en, this message translates to:
+  /// **'Online (KaamNow holds it)'**
+  String get reportOnline;
+
+  /// No description provided for @reportPreviousNone.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing earned in the {days} days before'**
+  String reportPreviousNone(int days);
+
   /// No description provided for @reportProblem.
   ///
   /// In en, this message translates to:
   /// **'Report a problem'**
   String get reportProblem;
+
+  /// No description provided for @reportRefundShares.
+  ///
+  /// In en, this message translates to:
+  /// **'Refund shares taken: {amount}'**
+  String reportRefundShares(Object amount);
+
+  /// No description provided for @reportUnpaid.
+  ///
+  /// In en, this message translates to:
+  /// **'Not paid yet'**
+  String get reportUnpaid;
 
   /// No description provided for @request.
   ///
@@ -3463,6 +3613,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Starting price (optional)'**
   String get startingPriceOptional;
+
+  /// No description provided for @statementReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Statement downloaded.'**
+  String get statementReady;
 
   /// No description provided for @statusAccepted.
   ///
@@ -4075,6 +4231,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'You owe KaamNow'**
   String get walletYouOwe;
+
+  /// No description provided for @weekOf.
+  ///
+  /// In en, this message translates to:
+  /// **'Week of {date}'**
+  String weekOf(Object date);
 
   /// No description provided for @whatHelp.
   ///

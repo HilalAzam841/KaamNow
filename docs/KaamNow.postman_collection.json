@@ -3570,6 +3570,62 @@
           }
         },
         {
+          "name": "Worker: earnings report for November",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/payments/earnings/report/?start=2026-11-01&end=2026-11-30",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "payments",
+                "earnings",
+                "report",
+                "?start=2026-11-01&end=2026-11-30"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{worker_access}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Worker: CSV statement for November",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/payments/earnings/statement/?start=2026-11-01&end=2026-11-30",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "payments",
+                "earnings",
+                "statement",
+                "?start=2026-11-01&end=2026-11-30"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{worker_access}}"
+                }
+              ]
+            }
+          }
+        },
+        {
           "name": "Worker wallet (balance with KaamNow)",
           "request": {
             "method": "GET",

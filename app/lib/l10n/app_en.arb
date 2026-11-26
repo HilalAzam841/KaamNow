@@ -368,6 +368,7 @@
   },
   "done": "Done",
   "downloadFailed": "Download failed.",
+  "downloadStatement": "Download statement (CSV)",
   "durationHours": "{hours, plural, =1{1 hour} other{{hours} hours}}",
   "@durationHours": {
     "placeholders": {
@@ -396,6 +397,8 @@
     }
   },
   "earnings": "Earnings",
+  "earningsReports": "Earnings reports",
+  "earningsReportsHint": "By week or month, by service, cash and online, with a statement to download",
   "editAddress": "Edit address",
   "editCaption": "Edit caption",
   "editProfile": "Edit profile",
@@ -896,6 +899,18 @@
   },
   "payoutRequested": "Payout requested. We will send it soon.",
   "payoutTo": "Send it to",
+  "periodCustom": "Choose dates",
+  "periodLastMonth": "Last month",
+  "periodRange": "{start} to {end}",
+  "@periodRange": {
+    "placeholders": {
+      "start": {},
+      "end": {}
+    }
+  },
+  "periodThisMonth": "This month",
+  "periodThisWeek": "This week",
+  "periodThisYear": "This year",
   "phoneNumber": "Phone number",
   "photoAdded": "Photo added.",
   "photoCaptionLabel": "What is in the photo? (optional)",
@@ -1030,14 +1045,72 @@
   "repeatingJobs": "Repeating jobs",
   "repeatingJobsCustomerHint": "Jobs that repeat with the same worker",
   "repeatingJobsWorkerHint": "Customers who want you every time",
+  "reportAverage": "Average per job",
   "reportBooking": "Report booking #{id}",
   "@reportBooking": {
     "placeholders": {
       "id": {}
     }
   },
+  "reportByPayment": "How customers paid",
+  "reportByService": "By service",
+  "reportByTime": "Earnings over time",
+  "reportCash": "Cash (you hold it)",
+  "reportChangeDown": "{percent}% less than the {days} days before",
+  "@reportChangeDown": {
+    "placeholders": {
+      "percent": {},
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "reportChangeUp": "{percent}% more than the {days} days before",
+  "@reportChangeUp": {
+    "placeholders": {
+      "percent": {},
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "reportEmpty": "No completed jobs in these dates.",
+  "reportJobs": "Jobs done",
+  "reportJobsCount": "{count, plural, =1{1 job} other{{count} jobs}}",
+  "@reportJobsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reportNet": "You earned",
+  "reportNoChange": "Same as the {days} days before",
+  "@reportNoChange": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
   "reportNoShow": "Report and cancel",
+  "reportOnline": "Online (KaamNow holds it)",
+  "reportPreviousNone": "Nothing earned in the {days} days before",
+  "@reportPreviousNone": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
   "reportProblem": "Report a problem",
+  "reportRefundShares": "Refund shares taken: {amount}",
+  "@reportRefundShares": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
+  "reportUnpaid": "Not paid yet",
   "request": "Request",
   "requestCancelled": "Request cancelled.",
   "requestFailed": "Request failed.",
@@ -1210,6 +1283,7 @@
   "startRepeating": "Start repeating",
   "startWork": "Start work",
   "startingPriceOptional": "Starting price (optional)",
+  "statementReady": "Statement downloaded.",
   "statusAccepted": "Accepted",
   "statusActive": "Active",
   "statusArrived": "Arrived",
@@ -1382,6 +1456,12 @@
   "walletOwedToYou": "KaamNow owes you",
   "walletSettled": "All settled",
   "walletYouOwe": "You owe KaamNow",
+  "weekOf": "Week of {date}",
+  "@weekOf": {
+    "placeholders": {
+      "date": {}
+    }
+  },
   "whatHelp": "What do you need help with?",
   "whatWentWrong": "What went wrong?",
   "whenWorkerFree": "When {name} is free on {day}",

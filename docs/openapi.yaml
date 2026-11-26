@@ -4175,6 +4175,70 @@ paths:
               schema:
                 $ref: '#/components/schemas/EarningsSummary'
           description: ''
+  /api/v1/payments/earnings/report/:
+    get:
+      operationId: payments_earnings_report_retrieve
+      summary: 'Worker: earnings for a date range, compared with the range before,
+        by day/week/month, service and payment method'
+      parameters:
+      - in: query
+        name: end
+        schema:
+          type: string
+          format: date
+        description: 'Last day, at most 366 days after start. Default: today.'
+      - in: query
+        name: group
+        schema:
+          type: string
+          enum:
+          - day
+          - month
+          - week
+        description: 'Series step. Default: day up to 31 days, week up to 120, then
+          month.'
+      - in: query
+        name: start
+        schema:
+          type: string
+          format: date
+        description: 'First day (Pakistan date). Default: the 1st of this month.'
+      tags:
+      - payments
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EarningsReport'
+          description: ''
+  /api/v1/payments/earnings/statement/:
+    get:
+      operationId: payments_earnings_statement_retrieve
+      summary: 'Worker: download a CSV statement of jobs and refund shares in a date
+        range'
+      parameters:
+      - in: query
+        name: end
+        schema:
+          type: string
+          format: date
+        description: 'Last day, at most 366 days after start. Default: today.'
+      - in: query
+        name: start
+        schema:
+          type: string
+          format: date
+        description: 'First day (Pakistan date). Default: the 1st of this month.'
+      tags:
+      - payments
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: CSV statement, one row per job
   /api/v1/payments/payouts/:
     post:
       operationId: payments_payouts_create
@@ -7536,6 +7600,45 @@ components:
         * `cnic_back` - CNIC back
         * `certificate` - Skill certificate
         * `other` - Other
+    EarningsReport:
+      type: object
+      properties:
+        start:
+          type: string
+          format: date
+        end:
+          type: string
+          format: date
+        group:
+          $ref: '#/components/schemas/GroupEnum'
+        totals:
+          $ref: '#/components/schemas/ReportTotals'
+        average_per_job:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,2})?$
+        previous:
+          $ref: '#/components/schemas/PreviousTotals'
+        series:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReportBucket'
+        by_service:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReportService'
+        by_payment:
+          $ref: '#/components/schemas/ReportByPayment'
+      required:
+      - average_per_job
+      - by_payment
+      - by_service
+      - end
+      - group
+      - previous
+      - series
+      - start
+      - totals
     EarningsSummary:
       type: object
       properties:
@@ -7834,6 +7937,16 @@ components:
         * `weekly` - Every week
         * `biweekly` - Every two weeks
         * `monthly` - Every month
+    GroupEnum:
+      enum:
+      - day
+      - week
+      - month
+      type: string
+      description: |-
+        * `day` - Day
+        * `week` - Week
+        * `month` - Month
     HandleSosRequest:
       type: object
       properties:
@@ -9652,6 +9765,51 @@ components:
           description: A job you finished on KaamNow that this photo is from.
       required:
       - image
+    PreviousTotals:
+      type: object
+      properties:
+        jobs:
+          type: integer
+        gross:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,2})?$
+        commission:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,2})?$
+        discount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,2})?$
+        earnings:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,2})?$
+        adjustments:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,2})?$
+        net:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,2})?$
+        start:
+          type: string
+          format: date
+        end:
+          type: string
+          format: date
+      required:
+      - adjustments
+      - commission
+      - discount
+      - earnings
+      - end
+      - gross
+      - jobs
+      - net
+      - start
     PromoCheckRequest:
       type: object
       properties:
@@ -10294,6 +10452,117 @@ components:
           maxItems: 50
       required:
       - ids
+    ReportBucket:
+      type: object
+      properties:
+        start:
+          type: string
+          format: date
+        jobs:
+          type: integer
+        gross:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,2})?$
+        net:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,2})?$
+      required:
+      - gross
+      - jobs
+      - net
+      - start
+    ReportByPayment:
+      type: object
+      properties:
+        cash:
+          $ref: '#/components/schemas/ReportPaymentSplit'
+        online:
+          $ref: '#/components/schemas/ReportPaymentSplit'
+        unpaid:
+          $ref: '#/components/schemas/ReportPaymentSplit'
+      required:
+      - cash
+      - online
+      - unpaid
+    ReportPaymentSplit:
+      type: object
+      properties:
+        jobs:
+          type: integer
+        gross:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,2})?$
+        net:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,2})?$
+      required:
+      - gross
+      - jobs
+      - net
+    ReportService:
+      type: object
+      properties:
+        category:
+          type: integer
+        name:
+          type: string
+        jobs:
+          type: integer
+        gross:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,2})?$
+        net:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,2})?$
+      required:
+      - category
+      - gross
+      - jobs
+      - name
+      - net
+    ReportTotals:
+      type: object
+      properties:
+        jobs:
+          type: integer
+        gross:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,2})?$
+        commission:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,2})?$
+        discount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,2})?$
+        earnings:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,2})?$
+        adjustments:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,2})?$
+        net:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,2})?$
+      required:
+      - adjustments
+      - commission
+      - discount
+      - earnings
+      - gross
+      - jobs
+      - net
     ResolutionEnum:
       enum:
       - accept

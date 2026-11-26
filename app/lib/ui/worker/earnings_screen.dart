@@ -1,3 +1,4 @@
+import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
@@ -44,6 +45,17 @@ class EarningsScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(16),
                 children: [
                   WalletCard(wallet: wallet, onChanged: reload),
+                  const SizedBox(height: 8),
+                  Card(
+                    child: ListTile(
+                      key: const Key('open-earnings-report'),
+                      leading: const Icon(Icons.bar_chart),
+                      title: Text(context.t.earningsReports),
+                      subtitle: Text(context.t.earningsReportsHint),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () => context.push('/worker/earnings/report'),
+                    ),
+                  ),
                   const SizedBox(height: 8),
                   Row(
                     children: [

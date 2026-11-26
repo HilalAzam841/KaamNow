@@ -624,6 +624,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get downloadFailed => 'Download failed.';
 
   @override
+  String get downloadStatement => 'Download statement (CSV)';
+
+  @override
   String durationHours(int hours) {
     String _temp0 = intl.Intl.pluralLogic(
       hours,
@@ -646,6 +649,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get earnings => 'Earnings';
+
+  @override
+  String get earningsReports => 'Earnings reports';
+
+  @override
+  String get earningsReportsHint =>
+      'By week or month, by service, cash and online, with a statement to download';
 
   @override
   String get editAddress => 'Edit address';
@@ -1481,6 +1491,26 @@ class AppLocalizationsEn extends AppLocalizations {
   String get payoutTo => 'Send it to';
 
   @override
+  String get periodCustom => 'Choose dates';
+
+  @override
+  String get periodLastMonth => 'Last month';
+
+  @override
+  String periodRange(Object start, Object end) {
+    return '$start to $end';
+  }
+
+  @override
+  String get periodThisMonth => 'This month';
+
+  @override
+  String get periodThisWeek => 'This week';
+
+  @override
+  String get periodThisYear => 'This year';
+
+  @override
   String get phoneNumber => 'Phone number';
 
   @override
@@ -1697,15 +1727,81 @@ class AppLocalizationsEn extends AppLocalizations {
   String get repeatingJobsWorkerHint => 'Customers who want you every time';
 
   @override
+  String get reportAverage => 'Average per job';
+
+  @override
   String reportBooking(Object id) {
     return 'Report booking #$id';
+  }
+
+  @override
+  String get reportByPayment => 'How customers paid';
+
+  @override
+  String get reportByService => 'By service';
+
+  @override
+  String get reportByTime => 'Earnings over time';
+
+  @override
+  String get reportCash => 'Cash (you hold it)';
+
+  @override
+  String reportChangeDown(Object percent, int days) {
+    return '$percent% less than the $days days before';
+  }
+
+  @override
+  String reportChangeUp(Object percent, int days) {
+    return '$percent% more than the $days days before';
+  }
+
+  @override
+  String get reportEmpty => 'No completed jobs in these dates.';
+
+  @override
+  String get reportJobs => 'Jobs done';
+
+  @override
+  String reportJobsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count jobs',
+      one: '1 job',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get reportNet => 'You earned';
+
+  @override
+  String reportNoChange(int days) {
+    return 'Same as the $days days before';
   }
 
   @override
   String get reportNoShow => 'Report and cancel';
 
   @override
+  String get reportOnline => 'Online (KaamNow holds it)';
+
+  @override
+  String reportPreviousNone(int days) {
+    return 'Nothing earned in the $days days before';
+  }
+
+  @override
   String get reportProblem => 'Report a problem';
+
+  @override
+  String reportRefundShares(Object amount) {
+    return 'Refund shares taken: $amount';
+  }
+
+  @override
+  String get reportUnpaid => 'Not paid yet';
 
   @override
   String get request => 'Request';
@@ -2011,6 +2107,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get startingPriceOptional => 'Starting price (optional)';
+
+  @override
+  String get statementReady => 'Statement downloaded.';
 
   @override
   String get statusAccepted => 'Accepted';
@@ -2345,6 +2444,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get walletYouOwe => 'You owe KaamNow';
+
+  @override
+  String weekOf(Object date) {
+    return 'Week of $date';
+  }
 
   @override
   String get whatHelp => 'What do you need help with?';

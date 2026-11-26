@@ -203,6 +203,7 @@ REST_FRAMEWORK = {
         "location": env("THROTTLE_LOCATION", "120/min"),
         "payment_callback": env("THROTTLE_PAYMENT_CALLBACK", "120/min"),
         "payout": env("THROTTLE_PAYOUT", "20/hour"),
+        "statement": env("THROTTLE_STATEMENT", "30/hour"),
         "promo": env("THROTTLE_PROMO", "20/min"),
         "sos": env("THROTTLE_SOS", "10/min"),
         "share": env("THROTTLE_SHARE", "60/min"),
