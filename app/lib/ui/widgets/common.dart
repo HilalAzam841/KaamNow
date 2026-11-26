@@ -208,20 +208,23 @@ Future<bool> confirm(BuildContext context, String title, String message, {String
 
 /// Asks for one line of text. Returns null if cancelled.
 Future<String?> promptText(BuildContext context, String title,
-    {String label = '', String? ok, bool required = false, TextInputType? keyboard, String initial = ''}) {
+    {String label = '', String? ok, bool required = false, TextInputType? keyboard, String initial = '', String? message}) {
   final ctrl = TextEditingController(text: initial);
   return showDialog<String>(
     context: context,
     builder: (c) => StatefulBuilder(builder: (c, setState) {
       return AlertDialog(
         title: Text(title),
-        content: TextField(
-          controller: ctrl,
-          autofocus: true,
-          keyboardType: keyboard,
-          decoration: InputDecoration(labelText: label),
-          onChanged: (_) => setState(() {}),
-        ),
+        content: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+          if (message != null) ...[Text(message, key: const Key('prompt-message')), const SizedBox(height: 8)],
+          TextField(
+            controller: ctrl,
+            autofocus: true,
+            keyboardType: keyboard,
+            decoration: InputDecoration(labelText: label),
+            onChanged: (_) => setState(() {}),
+          ),
+        ]),
         actions: [
           TextButton(onPressed: () => Navigator.pop(c), child: Text(c.t.cancel)),
           FilledButton(

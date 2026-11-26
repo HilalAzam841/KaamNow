@@ -14,7 +14,7 @@ later, and talks to the backend only through the REST API and the booking WebSoc
 
 **Stage 1 (Backend MVP), Stage 2 (Advanced features) and Stage 3 (Flutter web client) are done,
 and Stage 4 adds the admin dashboard to the web app.** Every backend feature below has its business logic, REST endpoint(s), validation and
-automated tests. All 629 backend tests pass against PostgreSQL 16, and the Flutter app has 166
+automated tests. All 647 backend tests pass against PostgreSQL 16, and the Flutter app has 177
 unit and widget tests plus a browser end-to-end run (see `app/README.md`).
 
 ### Stage 1: Backend MVP
@@ -356,6 +356,19 @@ time the worker is free and the booking is confirmed straight away, with no offe
 | Paused packages, packages for a service the worker dropped, and packages of unverified or suspended workers are never shown or bookable. Deleting a package keeps its bookings | |
 | Admins can hide a misleading package with a reason (audited); the worker is told why and sees it on the package | `GET admin/packages/`, `POST admin/packages/{id}/hide/` and `unhide/`, app: Admin → **Service packages** |
 
+### Stage 28: late cancellation fee
+
+Customers who cancel late pay a small fee that goes to the worker, less the usual commission, for the time they set aside or spent travelling. Workers never pay it.
+
+| Feature | Where |
+|---|---|
+| Rules, all set by admins: free within 5 minutes of booking; free more than 2 hours before the start; **Rs 200** when cancelling inside those 2 hours; **Rs 300** once the worker is on the way or has arrived; free when the start time has passed and the worker has not set off. Never more than the job price. Can be switched off | `PlatformSettings`, `apps/cancellations/services.py`, app: Admin → **Settings** |
+| Before cancelling, the customer sees what it would cost, or until when it is free | `GET bookings/{id}/cancel-fee/`, app: cancel dialog |
+| Cancelling late creates the fee in the same transaction and tells both sides. The booking shows it | `cancellation_fee` on bookings |
+| The customer pays online (JazzCash or Easypaisa). The fee is settled only after the gateway callback is verified on the server; the worker's share goes to their wallet and the ledger records it. A receipt is available | `GET cancellation-fees/`, `POST cancellation-fees/{id}/pay/` |
+| While online payment is available, a customer with an unpaid fee cannot post or book a new job (402, `cancellation_fee_unpaid`). Before the gateways are set up nobody is blocked, and admins collect or waive fees | |
+| Admins can waive a fee or record one paid at the office, both audited | `GET admin/cancellation-fees/`, `POST admin/cancellation-fees/{id}/waive/` and `record-received/`, app: Admin → **Cancellation fees** |
+
 **Before going live with online payments:** the JazzCash and Easypaisa adapters follow each
 gateway's published integration scheme and are covered by tests with simulated gateway responses.
 They have **not** been run against the real sandboxes yet, because that needs your merchant
@@ -401,6 +414,7 @@ apps/
   addresses/            SavedAddress (Home, Work and named places)
   levels/               worker levels and badges (stored on WorkerProfile), nightly refresh
   packages/             ServicePackage (fixed-price jobs booked without bidding)
+  cancellations/        CancellationFee (late cancellation fees paid to workers)
 docs/                   openapi.yaml, Postman collection
 scripts/                generate_postman.py
 app/                    Flutter client (web, Android, iPhone): lib/, test/, e2e/, integration_test/
@@ -476,7 +490,7 @@ docker compose up --build
 pytest -q
 ```
 
-The suite has 629 tests and needs a running PostgreSQL (Redis is not needed for tests). It uses the database settings from your
+The suite has 647 tests and needs a running PostgreSQL (Redis is not needed for tests). It uses the database settings from your
 `.env` and creates a separate `test_kaamnow` database. Coverage includes:
 
 - **Authentication**: registration validation, login, suspended accounts, token refresh rotation, logout blacklisting, password reset (single-use token, no account enumeration), throttling.
@@ -564,7 +578,7 @@ Endpoints added beyond the original list, because the flow needs them: `password
 `bookings/{id}/completion-otp/`, `payments/{id}/confirm/`, `payments/earnings/`,
 the notification helpers, and the admin users, suspension, requests, commission settings and audit log endpoints.
 
-Postman: import `docs/KaamNow.postman_collection.json` (164 requests in 12 folders that follow the
+Postman: import `docs/KaamNow.postman_collection.json` (170 requests in 12 folders that follow the
 full flow; test scripts store tokens and ids automatically). Regenerate it with
 `python scripts/generate_postman.py`.
 

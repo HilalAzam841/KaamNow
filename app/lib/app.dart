@@ -14,6 +14,7 @@ import 'ui/worker/packages_screen.dart';
 import 'ui/customer/packages_screen.dart';
 import 'ui/customer/book_package_screen.dart';
 import 'ui/admin/packages_screen.dart';
+import 'ui/admin/cancellation_fees_screen.dart';
 import 'ui/payments/receipt_screen.dart';
 import 'ui/customer/addresses_screen.dart';
 import 'ui/account/account_screen.dart';
@@ -101,6 +102,7 @@ GoRouter buildRouter(Session session) {
           GoRoute(path: '/admin/sos', builder: (_, _) => const AdminSosScreen()),
           GoRoute(path: '/admin/portfolio', builder: (_, _) => const AdminPortfolioScreen()),
           GoRoute(path: '/admin/packages', builder: (_, _) => const AdminPackagesScreen()),
+          GoRoute(path: '/admin/cancellation-fees', builder: (_, _) => const AdminCancellationFeesScreen()),
           GoRoute(path: '/admin/settings', builder: (_, _) => const AdminSettingsScreen()),
           GoRoute(path: '/admin/audit', builder: (_, _) => const AdminAuditScreen()),
         ],

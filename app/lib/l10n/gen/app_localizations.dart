@@ -548,6 +548,24 @@ abstract class AppLocalizations {
   /// **'Cancel this booking?'**
   String get cancelBookingQ;
 
+  /// No description provided for @cancelFeeLate.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelling now costs {amount}, because the job starts soon. It goes to the worker for the time they set aside.'**
+  String cancelFeeLate(Object amount);
+
+  /// No description provided for @cancelFeeOnTheWay.
+  ///
+  /// In en, this message translates to:
+  /// **'The worker is already on the way, so cancelling now costs {amount}. It goes to the worker for their trip.'**
+  String cancelFeeOnTheWay(Object amount);
+
+  /// No description provided for @cancelFreeUntil.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelling is free until {time}. After that it costs {amount}.'**
+  String cancelFreeUntil(Object time, Object amount);
+
   /// No description provided for @cancelPayout.
   ///
   /// In en, this message translates to:
@@ -1435,6 +1453,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'~{n} min'**
   String etaMinutes(Object n);
+
+  /// No description provided for @feeCustomerOwed.
+  ///
+  /// In en, this message translates to:
+  /// **'Late cancellation fee: {amount}. Please pay it before booking again.'**
+  String feeCustomerOwed(Object amount);
+
+  /// No description provided for @feeCustomerPaid.
+  ///
+  /// In en, this message translates to:
+  /// **'Late cancellation fee of {amount} paid. Thank you.'**
+  String feeCustomerPaid(Object amount);
+
+  /// No description provided for @feeOwedHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to pay it. You can book again once it is paid.'**
+  String get feeOwedHint;
+
+  /// No description provided for @feeOwedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'You owe a late cancellation fee of {amount}'**
+  String feeOwedTitle(Object amount);
+
+  /// No description provided for @feePayOffice.
+  ///
+  /// In en, this message translates to:
+  /// **'Online payment is not available yet. Pay at the KaamNow office or contact support.'**
+  String get feePayOffice;
+
+  /// No description provided for @feeWaived.
+  ///
+  /// In en, this message translates to:
+  /// **'The cancellation fee was waived.'**
+  String get feeWaived;
+
+  /// No description provided for @feeWorkerOwed.
+  ///
+  /// In en, this message translates to:
+  /// **'You get {amount} once the customer pays the late cancellation fee.'**
+  String feeWorkerOwed(Object amount);
+
+  /// No description provided for @feeWorkerPaid.
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} cancellation fee added to your wallet.'**
+  String feeWorkerPaid(Object amount);
 
   /// No description provided for @filterActive.
   ///

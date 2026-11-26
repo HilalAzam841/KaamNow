@@ -99,7 +99,10 @@ def book_package(customer, package, *, preferred_time, latitude, longitude, addr
     from apps.offers.models import Party, WorkerOffer
     from apps.offers.services import accept_offer
 
+    from apps.cancellations.services import check_no_unpaid_fee
+
     require_verified(customer)
+    check_no_unpaid_fee(customer)
     with transaction.atomic():
         package = (
             ServicePackage.objects.select_for_update(of=("self",))

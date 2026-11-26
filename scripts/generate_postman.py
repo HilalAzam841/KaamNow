@@ -246,6 +246,16 @@ folders = [
             token="worker_access"),
         req("Stop repeating", "POST", "/recurring-jobs/{{recurring_id}}/cancel/"),
         req("Cancel booking", "POST", "/bookings/{{booking_id}}/cancel/", {"reason": "Plans changed"}),
+        req("What cancelling would cost now", "GET", "/bookings/{{booking_id}}/cancel-fee/"),
+        req("My late cancellation fees", "GET", "/cancellation-fees/?status=owed"),
+        req("Pay a late cancellation fee online", "POST", "/cancellation-fees/{{cancellation_fee_id}}/pay/",
+            {"method": "jazzcash"}),
+        req("Admin: late cancellation fees", "GET", "/admin/cancellation-fees/?status=owed", token="admin_access"),
+        req("Admin: waive a fee (audited)", "POST", "/admin/cancellation-fees/{{cancellation_fee_id}}/waive/",
+            {"reason": "Worker agreed it was not the customer's fault"}, token="admin_access"),
+        req("Admin: record a fee paid at the office (audited)", "POST",
+            "/admin/cancellation-fees/{{cancellation_fee_id}}/record-received/", {"reference": "Office receipt 42"},
+            token="admin_access"),
     ]),
     ("7. Payment, review, notifications", [
         req("Customer records cash payment", "POST", "/payments/", {"booking": "{{booking_id}}", "method": "cash"},
@@ -351,6 +361,7 @@ collection = {
         {"key": k, "value": ""} for k in (
             "customer_access", "customer_refresh", "worker_access", "admin_access", "worker_id", "request_id",
             "offer_id", "booking_id", "recurring_id", "share_url", "photo_id", "otp", "payment_id", "time_off_id", "direct_request_id",
+            "package_id", "package_booking_id", "cancellation_fee_id",
         )
     ],
     "item": [{"name": name, "item": items} for name, items in folders],

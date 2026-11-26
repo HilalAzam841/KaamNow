@@ -174,7 +174,9 @@ class PlatformSettings {
   PlatformSettings({required this.commissionPercent, required this.emergencyFee, required this.emergencyEnabled,
       this.minPayout = '500.00', this.commissionDebtLimit = '0.00', this.referralReward = '0.00',
       this.referralWelcomeCredit = '0.00', this.referralMinBooking = '0.00', this.maxDiscountPercent = '50.00',
-      this.reminderSmsEnabled = false, this.noShowGraceMinutes = 30, this.updatedAt});
+      this.reminderSmsEnabled = false, this.noShowGraceMinutes = 30, this.cancellationFeeEnabled = true,
+      this.cancellationFreeMinutes = 5, this.cancellationWindowMinutes = 120, this.lateCancellationFee = '200.00',
+      this.onTheWayCancellationFee = '300.00', this.updatedAt});
   factory PlatformSettings.fromJson(Map<String, dynamic> j) => PlatformSettings(
       commissionPercent: str(j['commission_percent']),
       emergencyFee: str(j['emergency_fee']),
@@ -187,7 +189,17 @@ class PlatformSettings {
       maxDiscountPercent: j['max_discount_percent'] == null ? '50.00' : str(j['max_discount_percent']),
       reminderSmsEnabled: j['reminder_sms_enabled'] == true,
       noShowGraceMinutes: parseInt(j['no_show_grace_minutes'], 30),
+      cancellationFeeEnabled: j['cancellation_fee_enabled'] != false,
+      cancellationFreeMinutes: parseInt(j['cancellation_free_minutes'], 5),
+      cancellationWindowMinutes: parseInt(j['cancellation_window_minutes'], 120),
+      lateCancellationFee: j['late_cancellation_fee'] == null ? '200.00' : str(j['late_cancellation_fee']),
+      onTheWayCancellationFee: j['on_the_way_cancellation_fee'] == null ? '300.00' : str(j['on_the_way_cancellation_fee']),
       updatedAt: parseDate(j['updated_at']));
+  final bool cancellationFeeEnabled;
+  final int cancellationFreeMinutes;
+  final int cancellationWindowMinutes;
+  final String lateCancellationFee;
+  final String onTheWayCancellationFee;
   final bool reminderSmsEnabled;
   final int noShowGraceMinutes;
   final String referralReward;
@@ -399,5 +411,36 @@ class AdminSosAlert {
   final int contactsTexted;
   final String? handledByName;
   final String adminNote;
+  final DateTime? createdAt;
+}
+
+/// A late cancellation fee as admins see it.
+class AdminCancellationFee {
+  AdminCancellationFee({required this.id, required this.bookingId, this.bookingTitle = '', required this.reason,
+      required this.amount, required this.workerShare, required this.status, this.customerName = '',
+      this.workerName = '', this.waivedReason = '', this.createdAt});
+  factory AdminCancellationFee.fromJson(Map<String, dynamic> j) => AdminCancellationFee(
+        id: parseInt(j['id']),
+        bookingId: parseInt(j['booking']),
+        bookingTitle: str(j['booking_title']),
+        reason: str(j['reason']),
+        amount: str(j['amount']),
+        workerShare: str(j['worker_share']),
+        status: str(j['status']),
+        customerName: str(j['customer_name']),
+        workerName: str(j['worker_name']),
+        waivedReason: str(j['waived_reason']),
+        createdAt: parseDate(j['created_at']),
+      );
+  final int id;
+  final int bookingId;
+  final String bookingTitle;
+  final String reason;
+  final String amount;
+  final String workerShare;
+  final String status;
+  final String customerName;
+  final String workerName;
+  final String waivedReason;
   final DateTime? createdAt;
 }

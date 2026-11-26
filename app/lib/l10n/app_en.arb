@@ -154,6 +154,25 @@
   "cancel": "Cancel",
   "cancelBooking": "Cancel booking",
   "cancelBookingQ": "Cancel this booking?",
+  "cancelFeeLate": "Cancelling now costs {amount}, because the job starts soon. It goes to the worker for the time they set aside.",
+  "@cancelFeeLate": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
+  "cancelFeeOnTheWay": "The worker is already on the way, so cancelling now costs {amount}. It goes to the worker for their trip.",
+  "@cancelFeeOnTheWay": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
+  "cancelFreeUntil": "Cancelling is free until {time}. After that it costs {amount}.",
+  "@cancelFreeUntil": {
+    "placeholders": {
+      "time": {},
+      "amount": {}
+    }
+  },
   "cancelPayout": "Cancel request",
   "cancelRequest": "Cancel request",
   "cancelRequestQ": "Cancel this request?",
@@ -459,6 +478,39 @@
   "@etaMinutes": {
     "placeholders": {
       "n": {}
+    }
+  },
+  "feeCustomerOwed": "Late cancellation fee: {amount}. Please pay it before booking again.",
+  "@feeCustomerOwed": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
+  "feeCustomerPaid": "Late cancellation fee of {amount} paid. Thank you.",
+  "@feeCustomerPaid": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
+  "feeOwedHint": "Tap to pay it. You can book again once it is paid.",
+  "feeOwedTitle": "You owe a late cancellation fee of {amount}",
+  "@feeOwedTitle": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
+  "feePayOffice": "Online payment is not available yet. Pay at the KaamNow office or contact support.",
+  "feeWaived": "The cancellation fee was waived.",
+  "feeWorkerOwed": "You get {amount} once the customer pays the late cancellation fee.",
+  "@feeWorkerOwed": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
+  "feeWorkerPaid": "{amount} cancellation fee added to your wallet.",
+  "@feeWorkerPaid": {
+    "placeholders": {
+      "amount": {}
     }
   },
   "filterActive": "Active",

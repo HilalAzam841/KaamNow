@@ -262,6 +262,7 @@ class BookingSerializer(serializers.ModelSerializer):
     has_review = serializers.SerializerMethodField()
     no_show = serializers.SerializerMethodField()
     safety = serializers.SerializerMethodField()
+    cancellation_fee = serializers.SerializerMethodField()
 
     class Meta:
         model = Booking
@@ -271,13 +272,21 @@ class BookingSerializer(serializers.ModelSerializer):
             "total_amount", "status",
             "worker", "customer_name", "contact", "on_the_way_at", "arrived_at", "started_at", "completed_at",
             "cancelled_at", "cancel_reason", "completed_via", "status_history", "commission", "has_review",
-            "no_show", "safety", "created_at", "updated_at",
+            "no_show", "safety", "cancellation_fee", "created_at", "updated_at",
         ]
         read_only_fields = fields
 
     def _viewer(self):
         request = self.context.get("request")
         return request.user if request else None
+
+    def get_cancellation_fee(self, obj) -> dict | None:
+        """The late cancellation fee charged on this booking (id, amount, worker_share, status, reason), or null."""
+        fee = getattr(obj, "cancellation_fee", None) if hasattr(obj, "cancellation_fee") else None
+        if fee is None:
+            return None
+        return {"id": fee.pk, "amount": f"{fee.amount:.2f}", "worker_share": f"{fee.worker_share:.2f}",
+                "status": fee.status, "reason": fee.reason}
 
     def get_no_show(self, obj) -> dict:
         """reported: who was reported absent (worker or customer), or null.

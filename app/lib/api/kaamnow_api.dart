@@ -277,6 +277,18 @@ class KaamNowApi {
   Future<Booking> booking(int id) async => Booking.fromJson(asMap(await client.get('/bookings/$id/')));
   Future<Booking> updateBookingStatus(int id, String status, {String note = ''}) async =>
       Booking.fromJson(asMap(await client.post('/bookings/$id/status/', body: {'status': status, 'note': note})));
+  Future<CancellationQuote> cancelQuote(int id) async =>
+      CancellationQuote.fromJson(asMap(await client.get('/bookings/$id/cancel-fee/')));
+  Future<List<CancellationFeeInfo>> cancellationFees({String? status}) async => Paged.parse(
+          await client.get('/cancellation-fees/', query: {'status': status}), CancellationFeeInfo.fromJson)
+      .results;
+
+  /// Starts an online payment of a late cancellation fee; open the returned checkout.
+  Future<Checkout?> payCancellationFee(int id, String method) async {
+    final payment = asMap(await client.post('/cancellation-fees/$id/pay/', body: {'method': method}));
+    return payment['checkout'] == null ? null : Checkout.fromJson(asMap(payment['checkout']));
+  }
+
   Future<Booking> cancelBooking(int id, String reason) async =>
       Booking.fromJson(asMap(await client.post('/bookings/$id/cancel/', body: {'reason': reason})));
 

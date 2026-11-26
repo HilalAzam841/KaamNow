@@ -7,6 +7,7 @@ from rest_framework.decorators import action
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
 
+from apps.cancellations.serializers import CancellationQuoteSerializer
 from apps.accounts.serializers import NearbyWorkerSerializer
 from apps.common.exceptions import BusinessRuleError
 from apps.common.permissions import IsCustomer, IsPlatformAdmin, IsWorker
@@ -203,7 +204,8 @@ class BookingViewSet(viewsets.ReadOnlyModelViewSet):
             return Booking.objects.none()
         user = self.request.user
         qs = Booking.objects.select_related(
-            "request__category", "customer", "worker__user", "commission", "review", "no_show"
+            "request__category", "customer", "worker__user", "commission", "review", "no_show",
+            "cancellation_fee",
         ).prefetch_related("status_logs", "worker__services__category", "worker__working_hours")
         if is_admin(self.request):
             return qs
@@ -273,7 +275,17 @@ class BookingViewSet(viewsets.ReadOnlyModelViewSet):
         report_no_show(booking, request.user, serializer.validated_data["note"])
         return Response(BookingSerializer(self.get_queryset().get(pk=booking.pk), context={"request": request}).data)
 
-    @extend_schema(tags=["bookings"], request=BookingCancelSerializer, responses={200: BookingSerializer})
+    @extend_schema(tags=["bookings"], responses={200: CancellationQuoteSerializer},
+                   summary="What cancelling this booking now would cost you, and until when it is free.")
+    @action(detail=True, methods=["get"], url_path="cancel-fee")
+    def cancel_fee(self, request, pk=None):
+        from apps.cancellations.services import assess
+
+        return Response(CancellationQuoteSerializer(assess(self.get_object(), request.user)).data)
+
+    @extend_schema(tags=["bookings"], request=BookingCancelSerializer, responses={200: BookingSerializer},
+                   summary="Cancel a booking. A customer who cancels late is charged the late cancellation fee "
+                           "(see cancel-fee); it shows as cancellation_fee on the booking.")
     @action(detail=True, methods=["post"])
     def cancel(self, request, pk=None):
         booking = self.get_object()
