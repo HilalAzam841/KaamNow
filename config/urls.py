@@ -4,6 +4,7 @@ from django.contrib import admin
 from django.urls import include, path
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 
+from apps.levels.views import MyLevelView
 from apps.accounts.urls import auth_urlpatterns, worker_urlpatterns
 from apps.billing.urls import featured_urlpatterns, payment_urlpatterns, subscription_urlpatterns
 from apps.chat.views import BookingMessagesReadView, BookingMessagesView
@@ -28,6 +29,7 @@ api_v1 = [
     path("workers/me/portfolio/reorder/", MyPortfolioReorderView.as_view(), name="worker-portfolio-reorder"),
     path("workers/me/portfolio/<int:pk>/", MyPortfolioPhotoView.as_view(), name="worker-portfolio-photo"),
     path("workers/<int:pk>/portfolio/", WorkerPortfolioView.as_view(), name="worker-public-portfolio"),
+    path("workers/me/level/", MyLevelView.as_view(), name="worker-level"),
     path("workers/me/time-off/", MyTimeOffView.as_view(), name="worker-time-off"),
     path("workers/me/time-off/<int:pk>/", MyTimeOffDetailView.as_view(), name="worker-time-off-detail"),
     path("workers/", include(worker_urlpatterns)),

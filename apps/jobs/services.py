@@ -376,6 +376,10 @@ def cancel_booking(booking, user, reason):
         status=ServiceRequest.Status.CANCELLED, cancelled_at=timezone.now(), cancel_reason=f"Booking cancelled: {reason}"
     )
     _log(booking, old, Booking.Status.CANCELLED, user, reason)
+    if user.pk == booking.worker.user_id:
+        from apps.levels.services import refresh as refresh_level
+
+        refresh_level(booking.worker_id)
     other = booking.worker.user if user.pk == booking.customer_id else booking.customer
     notify(
         other, Notification.Type.BOOKING_CANCELLED, t("Booking cancelled"),
@@ -440,6 +444,9 @@ def _finalize_completion(booking, user, via):
     ])
     WorkerProfile.objects.filter(pk=booking.worker_id).update(completed_jobs_count=F("completed_jobs_count") + 1)
     _log(booking, old, Booking.Status.COMPLETED, user, f"Completed via {via}")
+    from apps.levels.services import refresh as refresh_level
+
+    refresh_level(booking.worker_id)
     record_commission(booking)
     for recipient in (booking.customer, booking.worker.user):
         notify(

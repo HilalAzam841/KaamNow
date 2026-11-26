@@ -18,6 +18,9 @@ def refresh_worker_rating(worker_id):
     stats = Review.objects.filter(worker_id=worker_id, is_visible=True).aggregate(avg=Avg("rating"), n=Count("id"))
     avg = Decimal(stats["avg"] or 0).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
     WorkerProfile.objects.filter(pk=worker_id).update(average_rating=avg, rating_count=stats["n"])
+    from apps.levels.services import refresh as refresh_level
+
+    refresh_level(worker_id)
 
 
 @transaction.atomic

@@ -35,6 +35,8 @@ class WorkerServiceSerializer(serializers.ModelSerializer):
     worker_experience_years = serializers.IntegerField(source="worker.experience_years", read_only=True)
     worker_is_verified = serializers.BooleanField(source="worker.is_verified", read_only=True)
     worker_service_area = serializers.CharField(source="worker.service_area", read_only=True)
+    worker_level = serializers.CharField(source="worker.level", read_only=True)
+    worker_badges = serializers.ListField(source="worker.badges", child=serializers.CharField(), read_only=True)
     is_sponsored = serializers.BooleanField(
         read_only=True, default=False, help_text="Paid featured placement. The app must label it 'Sponsored'."
     )
@@ -44,7 +46,7 @@ class WorkerServiceSerializer(serializers.ModelSerializer):
         fields = [
             "id", "category", "category_name", "description", "starting_price", "is_active",
             "worker_id", "worker_name", "worker_rating", "worker_completed_jobs", "worker_experience_years",
-            "worker_is_verified", "worker_service_area", "is_sponsored", "created_at",
+            "worker_is_verified", "worker_service_area", "worker_level", "worker_badges", "is_sponsored", "created_at",
         ]
         read_only_fields = ["id", "created_at"]
 
