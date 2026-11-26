@@ -1212,12 +1212,14 @@ paths:
           - commission
           - featured_listing
           - subscription
+          - tip
         description: |-
           * `booking` - Booking
           * `subscription` - Worker subscription
           * `featured_listing` - Featured listing
           * `commission` - Commission owed by a worker
           * `cancellation_fee` - Late cancellation fee
+          * `tip` - Tip for a worker
       - in: query
         name: refunded
         schema:
@@ -2365,6 +2367,70 @@ paths:
               schema:
                 $ref: '#/components/schemas/WorkerSubscription'
           description: ''
+  /api/v1/admin/tips/:
+    get:
+      operationId: admin_tips_list
+      description: Every tip, newest first.
+      parameters:
+      - in: query
+        name: customer
+        schema:
+          type: integer
+      - in: query
+        name: method
+        schema:
+          type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - cancelled
+          - paid
+          - pending
+        description: |-
+          * `pending` - Waiting for payment or for the worker to confirm cash
+          * `paid` - Paid
+          * `cancelled` - Cancelled
+      - in: query
+        name: worker
+        schema:
+          type: integer
+      tags:
+      - admin
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAdminTipList'
+          description: ''
   /api/v1/admin/users/:
     get:
       operationId: admin_users_list
@@ -3422,6 +3488,42 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Booking'
+          description: ''
+  /api/v1/bookings/{id}/tip/:
+    post:
+      operationId: bookings_tip_create
+      summary: 'Tip the worker after a completed job. Cash: the worker confirms it.
+        Online: open `checkout`; the tip is confirmed after the gateway callback is
+        verified.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this booking.
+        required: true
+      tags:
+      - bookings
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GiveTipRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/GiveTipRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/GiveTipRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TipWithCheckout'
           description: ''
   /api/v1/cancellation-fees/:
     get:
@@ -4483,12 +4585,14 @@ paths:
           - commission
           - featured_listing
           - subscription
+          - tip
         description: |-
           * `booking` - Booking
           * `subscription` - Worker subscription
           * `featured_listing` - Featured listing
           * `commission` - Commission owed by a worker
           * `cancellation_fee` - Late cancellation fee
+          * `tip` - Tip for a worker
       - name: search
         required: false
         in: query
@@ -6060,6 +6164,148 @@ paths:
                 items:
                   $ref: '#/components/schemas/SubscriptionPlan'
           description: ''
+  /api/v1/tips/:
+    get:
+      operationId: tips_list
+      description: Tips you gave (customer) or got (worker). Give a tip with POST
+        /bookings/{id}/tip/.
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - cancelled
+          - paid
+          - pending
+        description: |-
+          * `pending` - Waiting for payment or for the worker to confirm cash
+          * `paid` - Paid
+          * `cancelled` - Cancelled
+      tags:
+      - tips
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedTipList'
+          description: ''
+  /api/v1/tips/{id}/:
+    get:
+      operationId: tips_retrieve
+      description: Tips you gave (customer) or got (worker). Give a tip with POST
+        /bookings/{id}/tip/.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this tip.
+        required: true
+      tags:
+      - tips
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tip'
+          description: ''
+  /api/v1/tips/{id}/confirm-cash/:
+    post:
+      operationId: tips_confirm_cash_create
+      description: Tips you gave (customer) or got (worker). Give a tip with POST
+        /bookings/{id}/tip/.
+      summary: Worker confirms a cash tip was received.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this tip.
+        required: true
+      tags:
+      - tips
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tip'
+          description: ''
+  /api/v1/tips/{id}/not-received/:
+    post:
+      operationId: tips_not_received_create
+      description: Tips you gave (customer) or got (worker). Give a tip with POST
+        /bookings/{id}/tip/.
+      summary: Worker says a cash tip never reached them. The tip is cancelled and
+        the customer told.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this tip.
+        required: true
+      tags:
+      - tips
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tip'
+          description: ''
+  /api/v1/tips/summary/:
+    get:
+      operationId: tips_summary_retrieve
+      description: Tips you gave (customer) or got (worker). Give a tip with POST
+        /bookings/{id}/tip/.
+      summary: 'A worker''s paid tips: how many and the total.'
+      tags:
+      - tips
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TipSummary'
+          description: ''
   /api/v1/workers/{id}/:
     get:
       operationId: workers_retrieve
@@ -7439,6 +7685,73 @@ components:
       - raised_by_phone
       - role
       - status
+    AdminTip:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        booking:
+          type: integer
+          readOnly: true
+        booking_title:
+          type: string
+          readOnly: true
+        customer_name:
+          type: string
+          readOnly: true
+        worker_name:
+          type: string
+          readOnly: true
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          readOnly: true
+        method:
+          type: string
+          readOnly: true
+        message:
+          type: string
+          readOnly: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/TipStatusEnum'
+          readOnly: true
+        payment_id:
+          type: integer
+          readOnly: true
+          nullable: true
+        paid_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        customer:
+          type: integer
+          readOnly: true
+        worker:
+          type: integer
+          readOnly: true
+      required:
+      - amount
+      - booking
+      - booking_title
+      - created_at
+      - customer
+      - customer_name
+      - id
+      - message
+      - method
+      - paid_at
+      - payment_id
+      - status
+      - worker
+      - worker_name
     AdminUser:
       type: object
       properties:
@@ -7647,6 +7960,8 @@ components:
           $ref: '#/components/schemas/AppConfigEmergency'
         cancellation:
           $ref: '#/components/schemas/AppConfigCancellation'
+        tips:
+          $ref: '#/components/schemas/AppConfigTips'
         offer_price:
           $ref: '#/components/schemas/AppConfigOfferPrice'
         payment_methods:
@@ -7679,6 +7994,7 @@ components:
       - phone_verification
       - push_enabled
       - support
+      - tips
       - web_push
       - websocket_path
     AppConfigCancellation:
@@ -7767,6 +8083,27 @@ components:
       required:
       - email
       - phone
+    AppConfigTips:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+        min:
+          type: string
+        max:
+          type: string
+        window_days:
+          type: integer
+        suggestions:
+          type: array
+          items:
+            type: string
+      required:
+      - enabled
+      - max
+      - min
+      - suggestions
+      - window_days
     AppConfigWebPush:
       type: object
       properties:
@@ -8054,6 +8391,17 @@ components:
           description: The late cancellation fee charged on this booking (id, amount,
             worker_share, status, reason), or null.
           readOnly: true
+        tip:
+          type: object
+          additionalProperties: {}
+          nullable: true
+          description: The tip on this booking (id, amount, method, status, message),
+            or null. A cancelled tip shows as null.
+          readOnly: true
+        can_tip:
+          type: boolean
+          description: Whether the viewer can give (or change an unpaid) tip now.
+          readOnly: true
         created_at:
           type: string
           format: date-time
@@ -8065,6 +8413,7 @@ components:
       required:
       - agreed_price
       - arrived_at
+      - can_tip
       - cancel_reason
       - cancellation_fee
       - cancelled_at
@@ -8088,6 +8437,7 @@ components:
       - started_at
       - status
       - status_history
+      - tip
       - title
       - total_amount
       - updated_at
@@ -9018,6 +9368,34 @@ components:
         * `weekly` - Every week
         * `biweekly` - Every two weeks
         * `monthly` - Every month
+    GiveTipMethodEnum:
+      enum:
+      - cash
+      - jazzcash
+      - easypaisa
+      type: string
+      description: |-
+        * `cash` - cash
+        * `jazzcash` - jazzcash
+        * `easypaisa` - easypaisa
+    GiveTipRequest:
+      type: object
+      properties:
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          description: Checked against the minimum and tip_max_amount on the server.
+        method:
+          $ref: '#/components/schemas/GiveTipMethodEnum'
+        message:
+          type: string
+          default: ''
+          description: An optional thank-you note shown to the worker.
+          maxLength: 200
+      required:
+      - amount
+      - method
     GroupEnum:
       enum:
       - day
@@ -9976,6 +10354,25 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/AdminSosAlert'
+    PaginatedAdminTipList:
+      type: object
+      properties:
+        count:
+          type: integer
+        page:
+          type: integer
+        total_pages:
+          type: integer
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdminTip'
     PaginatedAdminUserList:
       type: object
       properties:
@@ -10299,6 +10696,25 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Settlement'
+    PaginatedTipList:
+      type: object
+      properties:
+        count:
+          type: integer
+        page:
+          type: integer
+        total_pages:
+          type: integer
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tip'
     PaginatedWorkerOfferList:
       type: object
       properties:
@@ -10633,6 +11049,20 @@ components:
           pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
           description: Fee for cancelling after the worker set off or arrived. 0 turns
             it off.
+        tips_enabled:
+          type: boolean
+          description: Customers can tip the worker after a job. The whole tip goes
+            to the worker.
+        tip_max_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          description: The largest tip a customer can give for one job.
+        tip_window_days:
+          type: integer
+          maximum: 60
+          minimum: 1
+          description: Customers can tip for this many days after a job is completed.
     PatchedPortfolioUpdateRequest:
       type: object
       properties:
@@ -11237,6 +11667,20 @@ components:
           pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
           description: Fee for cancelling after the worker set off or arrived. 0 turns
             it off.
+        tips_enabled:
+          type: boolean
+          description: Customers can tip the worker after a job. The whole tip goes
+            to the worker.
+        tip_max_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          description: The largest tip a customer can give for one job.
+        tip_window_days:
+          type: integer
+          maximum: 60
+          minimum: 1
+          description: Customers can tip for this many days after a job is completed.
         updated_at:
           type: string
           format: date-time
@@ -11577,6 +12021,7 @@ components:
       - featured_listing
       - commission
       - cancellation_fee
+      - tip
       type: string
       description: |-
         * `booking` - Booking
@@ -11584,6 +12029,7 @@ components:
         * `featured_listing` - Featured listing
         * `commission` - Commission owed by a worker
         * `cancellation_fee` - Late cancellation fee
+        * `tip` - Tip for a worker
     Quote:
       type: object
       properties:
@@ -13311,6 +13757,100 @@ components:
       required:
       - end_date
       - start_date
+    Tip:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        booking:
+          type: integer
+          readOnly: true
+        booking_title:
+          type: string
+          readOnly: true
+        customer_name:
+          type: string
+          description: The customer's first name only.
+          readOnly: true
+        worker_name:
+          type: string
+          readOnly: true
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          readOnly: true
+        method:
+          type: string
+          readOnly: true
+        message:
+          type: string
+          readOnly: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/TipStatusEnum'
+          readOnly: true
+        payment_id:
+          type: integer
+          readOnly: true
+          nullable: true
+        paid_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - amount
+      - booking
+      - booking_title
+      - created_at
+      - customer_name
+      - id
+      - message
+      - method
+      - paid_at
+      - payment_id
+      - status
+      - worker_name
+    TipStatusEnum:
+      enum:
+      - pending
+      - paid
+      - cancelled
+      type: string
+      description: |-
+        * `pending` - Waiting for payment or for the worker to confirm cash
+        * `paid` - Paid
+        * `cancelled` - Cancelled
+    TipSummary:
+      type: object
+      properties:
+        count:
+          type: integer
+          description: Paid tips received.
+        total:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+      required:
+      - count
+      - total
+    TipWithCheckout:
+      type: object
+      properties:
+        tip:
+          $ref: '#/components/schemas/Tip'
+        checkout:
+          nullable: true
+          description: Gateway form to open for online tips, else null.
+      required:
+      - checkout
+      - tip
     TokenRefresh:
       type: object
       properties:

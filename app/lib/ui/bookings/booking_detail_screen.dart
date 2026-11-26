@@ -19,6 +19,7 @@ import '../widgets/offer_widgets.dart';
 import '../recurring/recurring_screen.dart';
 import '../safety/safety.dart';
 import 'promo_box.dart';
+import 'tip_widgets.dart';
 import '../../l10n/l10n.dart';
 
 /// One booking, for either side: status, contact, live tracking, completion, payment, review.
@@ -361,6 +362,7 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
                   if (b.isActive) ..._tracking(b),
                   ..._actions(b),
                   if (b.isCompleted) ..._payment(b),
+                  if (b.isCompleted) TipPanel(booking: b, isWorker: _isWorker, onChanged: _load),
                   if (b.isCompleted && !_isWorker && !b.hasReview) ...[
                     const SizedBox(height: 12),
                     FilledButton.tonalIcon(

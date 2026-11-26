@@ -157,6 +157,9 @@ class AdminApi {
       asMap(await client.post('/admin/no-shows/$id/review/', body: {'review': review, 'note': note})));
 
   // ---- cancellation fees -----------------------------------------------------
+  Future<Paged<TipInfo>> tips({String? status, int page = 1}) async =>
+      Paged.parse(await client.get('/admin/tips/', query: {'status': status, 'page': page}), TipInfo.fromJson);
+
   Future<Paged<AdminCancellationFee>> cancellationFees({String? status, int page = 1}) async => Paged.parse(
       await client.get('/admin/cancellation-fees/', query: {'status': status, 'page': page}),
       AdminCancellationFee.fromJson);

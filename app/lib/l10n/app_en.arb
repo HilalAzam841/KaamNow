@@ -762,6 +762,8 @@
   "myPortfolioHint": "Show customers what you have done",
   "myScheduleSubtitle": "Days and times you take jobs, and days off",
   "myScheduleTitle": "My working hours",
+  "myTips": "My tips",
+  "myTipsHint": "Tips customers gave you",
   "myWorkerProfile": "My worker profile",
   "myWorkers": "My workers",
   "myWorkersHomeHint": "Book a worker you liked again",
@@ -884,6 +886,7 @@
   "noShowWorkerReported": "Reported: the worker did not come.",
   "noSlotsLeft": "No time slots left on this day. Choose another day.",
   "noTimeOff": "No days off planned.",
+  "noTips": "No tips yet. Great work and a friendly word often bring one.",
   "noWorkersYet": "No workers yet",
   "noWorkersYetHint": "Tap the heart on a worker you liked to save them. Workers who finish a job for you also show here.",
   "noneFree": "none free",
@@ -1601,6 +1604,85 @@
     }
   },
   "timeline": "Timeline",
+  "tipCancelled": "Tip cancelled.",
+  "tipCashOption": "Cash, handed to the worker",
+  "tipCashSent": "Thanks! The worker will confirm they got the cash.",
+  "tipChange": "Change tip",
+  "tipConfirmed": "Tip confirmed. Thank you!",
+  "tipGotIt": "I got it",
+  "tipHint": "The whole tip goes to {name}. KaamNow keeps nothing.",
+  "@tipHint": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "tipHow": "How will you pay?",
+  "tipMessage": "Note for the worker (optional)",
+  "tipNotReceived": "Not received",
+  "tipNotReceivedBody": "The tip will be cancelled and the customer told.",
+  "tipNotReceivedQ": "Cash tip not received?",
+  "tipOther": "Other amount (Rs)",
+  "tipPaidCustomer": "You tipped {amount}. Thank you!",
+  "@tipPaidCustomer": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
+  "tipPendingCash": "Your cash tip of {amount} is waiting for the worker to confirm.",
+  "@tipPendingCash": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
+  "tipPendingOnline": "Your tip of {amount} is not paid yet.",
+  "@tipPendingOnline": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
+  "tipRange": "Enter {min} to {max}",
+  "@tipRange": {
+    "placeholders": {
+      "min": {},
+      "max": {}
+    }
+  },
+  "tipSend": "Send tip",
+  "tipStatusCancelled": "Cancelled",
+  "tipStatusPaid": "Received",
+  "tipStatusPending": "Waiting",
+  "tipTitle": "Say thanks with a tip",
+  "tipWorker": "Tip {name}",
+  "@tipWorker": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "tipWorkerPaid": "You got a tip of {amount}!",
+  "@tipWorkerPaid": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
+  "tipWorkerPending": "The customer says they gave you a cash tip of {amount}.",
+  "@tipWorkerPending": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
+  "tipWorkerPendingOnline": "The customer started an online tip of {amount}.",
+  "@tipWorkerPendingOnline": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
+  "tipsTotal": "Tips received: {count} · Total {amount}",
+  "@tipsTotal": {
+    "placeholders": {
+      "count": {},
+      "amount": {}
+    }
+  },
   "titleHint": "e.g. Ceiling fan not working",
   "titleLabel": "Title",
   "titleTooShort": "Title is too short.",

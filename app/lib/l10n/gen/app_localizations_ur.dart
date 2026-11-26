@@ -1273,6 +1273,12 @@ class AppLocalizationsUr extends AppLocalizations {
   String get myScheduleTitle => 'میرے کام کے اوقات';
 
   @override
+  String get myTips => 'میری ٹپس';
+
+  @override
+  String get myTipsHint => 'گاہکوں کی دی ہوئی ٹپس';
+
+  @override
   String get myWorkerProfile => 'میرا کاریگر پروفائل';
 
   @override
@@ -1475,6 +1481,10 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get noTimeOff => 'کوئی چھٹی طے نہیں۔';
+
+  @override
+  String get noTips =>
+      'ابھی کوئی ٹپ نہیں۔ اچھا کام اور خوش اخلاقی سے اکثر ٹپ ملتی ہے۔';
 
   @override
   String get noWorkersYet => 'ابھی کوئی ورکر نہیں';
@@ -2670,6 +2680,108 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get timeline => 'ٹائم لائن';
+
+  @override
+  String get tipCancelled => 'ٹپ منسوخ ہو گئی۔';
+
+  @override
+  String get tipCashOption => 'نقد، کاریگر کو ہاتھ میں';
+
+  @override
+  String get tipCashSent => 'شکریہ! کاریگر نقد ملنے کی تصدیق کرے گا۔';
+
+  @override
+  String get tipChange => 'ٹپ بدلیں';
+
+  @override
+  String get tipConfirmed => 'ٹپ کی تصدیق ہو گئی۔ شکریہ!';
+
+  @override
+  String get tipGotIt => 'مل گئی';
+
+  @override
+  String tipHint(Object name) {
+    return 'پوری ٹپ $name کو جاتی ہے۔ KaamNow کچھ نہیں رکھتا۔';
+  }
+
+  @override
+  String get tipHow => 'آپ کیسے ادا کریں گے؟';
+
+  @override
+  String get tipMessage => 'کاریگر کے لیے پیغام (اختیاری)';
+
+  @override
+  String get tipNotReceived => 'نہیں ملی';
+
+  @override
+  String get tipNotReceivedBody =>
+      'ٹپ منسوخ کر دی جائے گی اور گاہک کو بتا دیا جائے گا۔';
+
+  @override
+  String get tipNotReceivedQ => 'نقد ٹپ نہیں ملی؟';
+
+  @override
+  String get tipOther => 'دوسری رقم (روپے)';
+
+  @override
+  String tipPaidCustomer(Object amount) {
+    return 'آپ نے $amount ٹپ دی۔ شکریہ!';
+  }
+
+  @override
+  String tipPendingCash(Object amount) {
+    return 'آپ کی $amount کی نقد ٹپ کاریگر کی تصدیق کی منتظر ہے۔';
+  }
+
+  @override
+  String tipPendingOnline(Object amount) {
+    return 'آپ کی $amount کی ٹپ ابھی ادا نہیں ہوئی۔';
+  }
+
+  @override
+  String tipRange(Object min, Object max) {
+    return '$min سے $max تک لکھیں';
+  }
+
+  @override
+  String get tipSend => 'ٹپ بھیجیں';
+
+  @override
+  String get tipStatusCancelled => 'منسوخ';
+
+  @override
+  String get tipStatusPaid => 'موصول';
+
+  @override
+  String get tipStatusPending => 'منتظر';
+
+  @override
+  String get tipTitle => 'ٹپ دے کر شکریہ ادا کریں';
+
+  @override
+  String tipWorker(Object name) {
+    return '$name کو ٹپ دیں';
+  }
+
+  @override
+  String tipWorkerPaid(Object amount) {
+    return 'آپ کو $amount ٹپ ملی!';
+  }
+
+  @override
+  String tipWorkerPending(Object amount) {
+    return 'گاہک کہتا ہے کہ اس نے آپ کو $amount نقد ٹپ دی۔';
+  }
+
+  @override
+  String tipWorkerPendingOnline(Object amount) {
+    return 'گاہک نے $amount کی آن لائن ٹپ شروع کی ہے۔';
+  }
+
+  @override
+  String tipsTotal(Object count, Object amount) {
+    return 'موصول ٹپس: $count · کل $amount';
+  }
 
   @override
   String get titleHint => 'مثلاً چھت کا پنکھا نہیں چل رہا';

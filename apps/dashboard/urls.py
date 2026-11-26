@@ -7,6 +7,7 @@ from apps.safety.views import AdminSosAlertViewSet
 from apps.portfolio.views import AdminPortfolioPhotoViewSet
 from apps.packages.views import AdminPackageViewSet
 from apps.cancellations.views import AdminCancellationFeeViewSet
+from apps.tips.views import AdminTipViewSet
 
 from . import views
 
@@ -23,6 +24,7 @@ router.register("sos-alerts", AdminSosAlertViewSet, basename="admin-sos-alert")
 router.register("portfolio-photos", AdminPortfolioPhotoViewSet, basename="admin-portfolio-photo")
 router.register("packages", AdminPackageViewSet, basename="admin-package")
 router.register("cancellation-fees", AdminCancellationFeeViewSet, basename="admin-cancellation-fee")
+router.register("tips", AdminTipViewSet, basename="admin-tip")
 router.register("settlements", views.AdminSettlementViewSet, basename="admin-settlement")
 
 urlpatterns = [

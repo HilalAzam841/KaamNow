@@ -51,6 +51,12 @@ AppConfigSerializer = inline_serializer(
                     "window_minutes": serializers.IntegerField(), "late_fee": serializers.CharField(),
                     "on_the_way_fee": serializers.CharField()},
         ),
+        "tips": inline_serializer(
+            name="AppConfigTips",
+            fields={"enabled": serializers.BooleanField(), "min": serializers.CharField(),
+                    "max": serializers.CharField(), "window_days": serializers.IntegerField(),
+                    "suggestions": serializers.ListField(child=serializers.CharField())},
+        ),
         "offer_price": inline_serializer(
             name="AppConfigOfferPrice", fields={"min": serializers.CharField(), "max": serializers.CharField()}
         ),
@@ -93,6 +99,8 @@ def app_config(request):
     from apps.billing.models import PlatformSettings
     from apps.notifications import fcm, webpush
     from apps.common import sms
+    from apps.tips.models import MIN_TIP
+    from apps.tips.services import suggestions as tip_suggestions
 
     platform = PlatformSettings.load()
     app = settings.KAAMNOW_APP
@@ -113,6 +121,13 @@ def app_config(request):
                 "window_minutes": platform.cancellation_window_minutes,
                 "late_fee": f"{platform.late_cancellation_fee:.2f}",
                 "on_the_way_fee": f"{platform.on_the_way_cancellation_fee:.2f}",
+            },
+            "tips": {
+                "enabled": platform.tips_enabled,
+                "min": f"{MIN_TIP:.2f}",
+                "max": f"{platform.tip_max_amount:.2f}",
+                "window_days": platform.tip_window_days,
+                "suggestions": [f"{x:.2f}" for x in tip_suggestions(platform)],
             },
             "offer_price": {
                 "min": settings.KAAMNOW["MIN_OFFER_PRICE"],

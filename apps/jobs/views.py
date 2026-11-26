@@ -8,6 +8,7 @@ from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
 
 from apps.cancellations.serializers import CancellationQuoteSerializer
+from apps.tips.serializers import GiveTipSerializer, TipWithCheckoutSerializer
 from apps.accounts.serializers import NearbyWorkerSerializer
 from apps.common.exceptions import BusinessRuleError
 from apps.common.permissions import IsCustomer, IsPlatformAdmin, IsWorker
@@ -205,7 +206,7 @@ class BookingViewSet(viewsets.ReadOnlyModelViewSet):
         user = self.request.user
         qs = Booking.objects.select_related(
             "request__category", "customer", "worker__user", "commission", "review", "no_show",
-            "cancellation_fee",
+            "cancellation_fee", "tip",
         ).prefetch_related("status_logs", "worker__services__category", "worker__working_hours")
         if is_admin(self.request):
             return qs
@@ -282,6 +283,18 @@ class BookingViewSet(viewsets.ReadOnlyModelViewSet):
         from apps.cancellations.services import assess
 
         return Response(CancellationQuoteSerializer(assess(self.get_object(), request.user)).data)
+
+    @extend_schema(tags=["bookings"], request=GiveTipSerializer, responses={201: TipWithCheckoutSerializer},
+                   summary="Tip the worker after a completed job. Cash: the worker confirms it. Online: open "
+                           "`checkout`; the tip is confirmed after the gateway callback is verified.")
+    @action(detail=True, methods=["post"])
+    def tip(self, request, pk=None):
+        from apps.tips.services import give_tip
+
+        serializer = GiveTipSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        tip, checkout = give_tip(self.get_object(), request.user, **serializer.validated_data)
+        return Response(TipWithCheckoutSerializer({"tip": tip, "checkout": checkout}).data, status=201)
 
     @extend_schema(tags=["bookings"], request=BookingCancelSerializer, responses={200: BookingSerializer},
                    summary="Cancel a booking. A customer who cancels late is charged the late cancellation fee "

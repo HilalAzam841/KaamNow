@@ -75,6 +75,7 @@ INSTALLED_APPS = [
     "apps.levels",
     "apps.packages",
     "apps.cancellations",
+    "apps.tips",
     "apps.scheduling",
 ]
 
@@ -256,6 +257,7 @@ SPECTACULAR_SETTINGS = {
         "RecurringStatusEnum": "apps.recurring.models.RecurringJob.Status",
         "SosStatusEnum": "apps.safety.models.SosAlert.Status",
         "CancellationFeeStatusEnum": "apps.cancellations.models.CancellationFee.Status",
+        "TipStatusEnum": "apps.tips.models.Tip.Status",
     },
 }
 

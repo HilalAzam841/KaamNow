@@ -11,10 +11,12 @@ import 'core/session.dart';
 import 'l10n/l10n.dart';
 import 'ui/worker/level_screen.dart';
 import 'ui/worker/packages_screen.dart';
+import 'ui/worker/tips_screen.dart';
 import 'ui/customer/packages_screen.dart';
 import 'ui/customer/book_package_screen.dart';
 import 'ui/admin/packages_screen.dart';
 import 'ui/admin/cancellation_fees_screen.dart';
+import 'ui/admin/tips_screen.dart';
 import 'ui/payments/receipt_screen.dart';
 import 'ui/customer/addresses_screen.dart';
 import 'ui/account/account_screen.dart';
@@ -103,6 +105,7 @@ GoRouter buildRouter(Session session) {
           GoRoute(path: '/admin/portfolio', builder: (_, _) => const AdminPortfolioScreen()),
           GoRoute(path: '/admin/packages', builder: (_, _) => const AdminPackagesScreen()),
           GoRoute(path: '/admin/cancellation-fees', builder: (_, _) => const AdminCancellationFeesScreen()),
+          GoRoute(path: '/admin/tips', builder: (_, _) => const AdminTipsScreen()),
           GoRoute(path: '/admin/settings', builder: (_, _) => const AdminSettingsScreen()),
           GoRoute(path: '/admin/audit', builder: (_, _) => const AdminAuditScreen()),
         ],
@@ -149,6 +152,7 @@ GoRouter buildRouter(Session session) {
           builder: (_, s) => ReceiptScreen(paymentId: int.parse(s.pathParameters['id']!))),
       GoRoute(path: '/worker/level', builder: (_, _) => const LevelScreen()),
       GoRoute(path: '/worker/packages', builder: (_, _) => const MyPackagesScreen()),
+      GoRoute(path: '/worker/tips', builder: (_, _) => const TipsScreen()),
       GoRoute(
         path: '/packages',
         builder: (_, s) => PackagesScreen(categoryId: int.tryParse(s.uri.queryParameters['category'] ?? '')),
