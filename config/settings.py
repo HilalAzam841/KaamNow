@@ -204,6 +204,7 @@ REST_FRAMEWORK = {
         "payment_callback": env("THROTTLE_PAYMENT_CALLBACK", "120/min"),
         "payout": env("THROTTLE_PAYOUT", "20/hour"),
         "statement": env("THROTTLE_STATEMENT", "30/hour"),
+        "receipt": env("THROTTLE_RECEIPT", "60/hour"),
         "promo": env("THROTTLE_PROMO", "20/min"),
         "sos": env("THROTTLE_SOS", "10/min"),
         "share": env("THROTTLE_SHARE", "60/min"),
@@ -422,3 +423,8 @@ LOGGING = {
     "handlers": {"console": {"class": "logging.StreamHandler"}},
     "root": {"handlers": ["console"], "level": env("LOG_LEVEL", "INFO")},
 }
+
+# Receipts (PDF and in the app). The tax number line is left out while empty.
+RECEIPT_COMPANY = env("RECEIPT_COMPANY", "KaamNow")
+RECEIPT_ADDRESS = env("RECEIPT_ADDRESS", "Lahore, Pakistan")
+RECEIPT_TAX_NUMBER = env("RECEIPT_TAX_NUMBER", "")

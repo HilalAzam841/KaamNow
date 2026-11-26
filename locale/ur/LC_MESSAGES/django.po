@@ -170,6 +170,125 @@ msgstr "آپ دفتر کا پتہ پہلے ہی محفوظ کر چکے ہیں۔ 
 msgid "You can save up to 10 addresses. Delete one first."
 msgstr "آپ زیادہ سے زیادہ 10 پتے محفوظ کر سکتے ہیں۔ پہلے کوئی ایک حذف کریں۔"
 
+#: apps/billing/receipts.py
+#, python-brace-format
+msgid "Rs {amount}"
+msgstr "{amount} روپے"
+
+#: apps/billing/receipts.py
+msgid "Cash"
+msgstr "نقد"
+
+#: apps/billing/receipts.py
+msgid "A receipt is ready once the payment has gone through."
+msgstr "ادائیگی مکمل ہونے کے بعد رسید ملے گی۔"
+
+#: apps/billing/receipts.py
+msgid "Job price"
+msgstr "کام کی قیمت"
+
+#: apps/billing/receipts.py
+msgid "Emergency fee"
+msgstr "ایمرجنسی فیس"
+
+#: apps/billing/receipts.py
+#, python-brace-format
+msgid "Discount ({code})"
+msgstr "رعایت ({code})"
+
+#: apps/billing/receipts.py
+msgid "Discount"
+msgstr "رعایت"
+
+#: apps/billing/receipts.py
+#, python-brace-format
+msgid "{plan} plan"
+msgstr "{plan} پلان"
+
+#: apps/billing/receipts.py
+#, python-brace-format
+msgid "Featured listing: {plan}"
+msgstr "نمایاں فہرست: {plan}"
+
+#: apps/billing/receipts.py
+msgid "Commission owed to KaamNow"
+msgstr "KaamNow کا واجب کمیشن"
+
+#: apps/billing/receipts.py
+msgid "Payment"
+msgstr "ادائیگی"
+
+#: apps/billing/receipts.py
+#, python-brace-format
+msgid "Receipt {number}"
+msgstr "رسید {number}"
+
+#: apps/billing/receipts.py
+#, python-brace-format
+msgid "Tax number: {number}"
+msgstr "ٹیکس نمبر: {number}"
+
+#: apps/billing/receipts.py
+msgid "Receipt"
+msgstr "رسید"
+
+#: apps/billing/receipts.py
+msgid "Receipt (refunded)"
+msgstr "رسید (رقم واپس)"
+
+#: apps/billing/receipts.py
+msgid "Receipt number"
+msgstr "رسید نمبر"
+
+#: apps/billing/receipts.py
+msgid "Date"
+msgstr "تاریخ"
+
+#: apps/billing/receipts.py
+msgid "Booking"
+msgstr "بکنگ"
+
+#: apps/billing/receipts.py
+msgid "Billed to"
+msgstr "گاہک"
+
+#: apps/billing/receipts.py
+msgid "Work done by"
+msgstr "کام کرنے والا"
+
+#: apps/billing/receipts.py
+msgid "Service"
+msgstr "سروس"
+
+#: apps/billing/receipts.py
+msgid "Job"
+msgstr "کام"
+
+#: apps/billing/receipts.py
+msgid "Total paid"
+msgstr "کل ادائیگی"
+
+#: apps/billing/receipts.py
+msgid "Paid by"
+msgstr "ادائیگی کا طریقہ"
+
+#: apps/billing/receipts.py
+msgid "Transaction ID"
+msgstr "ٹرانزیکشن آئی ڈی"
+
+#: apps/billing/receipts.py
+#, python-brace-format
+msgid "Refund on {date}"
+msgstr "{date} کو رقم واپس"
+
+#: apps/billing/receipts.py
+msgid "Paid after refunds"
+msgstr "واپسی کے بعد ادائیگی"
+
+#: apps/billing/receipts.py
+msgid "Thank you for using KaamNow. This receipt was made by computer and needs no signature."
+msgstr "KaamNow استعمال کرنے کا شکریہ۔ یہ رسید کمپیوٹر سے بنی ہے اور اس پر دستخط کی ضرورت نہیں۔"
+
 #: apps/billing/refunds.py
 msgid "This complaint is about a different booking."
 msgstr "یہ شکایت کسی اور بکنگ کے بارے میں ہے۔"
@@ -244,30 +363,6 @@ msgid "Choose a range of at most {days} days."
 msgstr "زیادہ سے زیادہ {days} دن کی مدت منتخب کریں۔"
 
 #: apps/billing/reports.py
-msgid "Date"
-msgstr "تاریخ"
-
-#: apps/billing/reports.py
-msgid "Booking"
-msgstr "بکنگ"
-
-#: apps/billing/reports.py
-msgid "Service"
-msgstr "سروس"
-
-#: apps/billing/reports.py
-msgid "Job"
-msgstr "کام"
-
-#: apps/billing/reports.py
-msgid "Paid by"
-msgstr "ادائیگی کا طریقہ"
-
-#: apps/billing/reports.py
-msgid "Job price"
-msgstr "کام کی قیمت"
-
-#: apps/billing/reports.py
 msgid "Customer discount"
 msgstr "گاہک کی رعایت"
 
@@ -282,10 +377,6 @@ msgstr "کمیشن"
 #: apps/billing/reports.py
 msgid "Your earnings"
 msgstr "آپ کی کمائی"
-
-#: apps/billing/reports.py
-msgid "Cash"
-msgstr "نقد"
 
 #: apps/billing/reports.py
 msgid "Not paid yet"

@@ -4074,6 +4074,56 @@ paths:
               schema:
                 $ref: '#/components/schemas/Payment'
           description: ''
+  /api/v1/payments/{id}/receipt/:
+    get:
+      operationId: payments_receipt_retrieve
+      summary: 'Receipt for a completed (or refunded) payment: the payer, the booking''s
+        worker or an admin. Labels follow Accept-Language.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this payment.
+        required: true
+      tags:
+      - payments
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Receipt'
+          description: ''
+  /api/v1/payments/{id}/receipt/pdf/:
+    get:
+      operationId: payments_receipt_pdf_retrieve
+      summary: Download the receipt as a PDF in English or Urdu
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this payment.
+        required: true
+      - in: query
+        name: lang
+        schema:
+          type: string
+          enum:
+          - en
+          - ur
+        description: 'Receipt language. Default: Accept-Language, then the user''s
+          language.'
+      tags:
+      - payments
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: The receipt as a PDF (A5)
   /api/v1/payments/callbacks/easypaisa/:
     get:
       operationId: payments_callbacks_easypaisa_retrieve
@@ -10054,6 +10104,110 @@ components:
       - promo_description
       - promo_discount
       - total
+    Receipt:
+      type: object
+      properties:
+        number:
+          type: string
+        issued_at:
+          type: string
+          format: date-time
+        status:
+          type: string
+        purpose:
+          type: string
+        booking:
+          type: integer
+          nullable: true
+        title:
+          type: string
+        service:
+          type: string
+        billed_to:
+          type: string
+        worker:
+          type: string
+        method:
+          type: string
+        method_label:
+          type: string
+        transaction_id:
+          type: string
+        lines:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReceiptLine'
+        total:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        refunds:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReceiptRefund'
+        refunded:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        net_paid:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        company:
+          type: string
+        company_address:
+          type: string
+        tax_number:
+          type: string
+      required:
+      - billed_to
+      - booking
+      - company
+      - company_address
+      - issued_at
+      - lines
+      - method
+      - method_label
+      - net_paid
+      - number
+      - purpose
+      - refunded
+      - refunds
+      - service
+      - status
+      - tax_number
+      - title
+      - total
+      - transaction_id
+      - worker
+    ReceiptLine:
+      type: object
+      properties:
+        label:
+          type: string
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+      required:
+      - amount
+      - label
+    ReceiptRefund:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        reference:
+          type: string
+      required:
+      - amount
+      - date
+      - reference
     RecordCommissionRequest:
       type: object
       properties:
