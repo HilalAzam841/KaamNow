@@ -146,6 +146,38 @@ class KaamNowApi {
   Future<List<PortfolioPhoto>> reorderPortfolio(List<int> ids) async =>
       parseList(await client.post('/workers/me/portfolio/reorder/', body: {'ids': ids}), PortfolioPhoto.fromJson);
 
+  // ---- Fixed-price packages ------------------------------------------------
+  Future<List<ServicePackage>> myPackages() async =>
+      parseList(await client.get('/workers/me/packages/'), ServicePackage.fromJson);
+  Future<ServicePackage> createPackage(Map<String, dynamic> fields) async =>
+      ServicePackage.fromJson(asMap(await client.post('/workers/me/packages/', body: fields)));
+  Future<ServicePackage> updatePackage(int id, Map<String, dynamic> fields) async =>
+      ServicePackage.fromJson(asMap(await client.patch('/workers/me/packages/$id/', body: fields)));
+  Future<void> deletePackage(int id) => client.delete('/workers/me/packages/$id/');
+  Future<List<ServicePackage>> workerPackages(int workerId) async =>
+      parseList(await client.get('/workers/$workerId/packages/'), ServicePackage.fromJson);
+  Future<Paged<ServicePackage>> packages({int? category, double? lat, double? lng, int page = 1}) async =>
+      Paged.parse(
+          await client.get('/packages/', query: {'category': category, 'latitude': lat, 'longitude': lng, 'page': page}),
+          ServicePackage.fromJson);
+  Future<ServicePackage> package(int id) async => ServicePackage.fromJson(asMap(await client.get('/packages/$id/')));
+
+  /// Books [packageId] at its fixed price. Pass a saved address id, or a pin and address.
+  Future<Booking> bookPackage(int packageId,
+          {required DateTime preferredTime, int? savedAddress, double? latitude, double? longitude,
+          String address = '', String area = '', String notes = ''}) async =>
+      Booking.fromJson(asMap(await client.post('/packages/$packageId/book/', body: {
+        'preferred_time': preferredTime.toUtc().toIso8601String(),
+        'saved_address': ?savedAddress,
+        if (savedAddress == null) ...{
+          'latitude': latitude?.toStringAsFixed(6),
+          'longitude': longitude?.toStringAsFixed(6),
+          'address': address,
+          'area': area,
+        },
+        if (notes.isNotEmpty) 'notes': notes,
+      })));
+
   // ---- Safety --------------------------------------------------------------
   Future<List<EmergencyContact>> emergencyContacts() async =>
       parseList(await client.get('/safety/contacts/'), EmergencyContact.fromJson);

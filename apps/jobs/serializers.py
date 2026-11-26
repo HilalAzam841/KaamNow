@@ -117,7 +117,7 @@ class ServiceRequestSerializer(serializers.ModelSerializer):
             "id", "category", "category_name", "title", "description", "latitude", "longitude", "address", "area",
             "preferred_time", "duration_minutes", "budget", "is_emergency", "emergency_fee", "status", "images",
             "offers_count",
-            "booking_id", "matched_workers_count", "invited_worker",
+            "booking_id", "matched_workers_count", "invited_worker", "package",
             "cancel_reason", "cancelled_at", "created_at", "updated_at",
         ]
         read_only_fields = fields
@@ -250,6 +250,9 @@ class BookingSerializer(serializers.ModelSerializer):
     category_name = serializers.CharField(source="request.category.display_name", read_only=True)
     preferred_time = serializers.DateTimeField(source="request.preferred_time", read_only=True)
     duration_minutes = serializers.IntegerField(source="request.duration_minutes", read_only=True)
+    package_id = serializers.IntegerField(
+        source="request.package_id", read_only=True, allow_null=True,
+        help_text="The fixed-price package this booking came from, or null for a bid job.")
     worker = PublicWorkerSerializer(read_only=True)
     customer_name = serializers.CharField(source="customer.full_name", read_only=True)
     contact = serializers.SerializerMethodField()
@@ -264,7 +267,7 @@ class BookingSerializer(serializers.ModelSerializer):
         model = Booking
         fields = [
             "id", "request_id", "title", "category_name", "preferred_time", "duration_minutes", "agreed_price",
-            "emergency_fee",
+            "emergency_fee", "package_id",
             "total_amount", "status",
             "worker", "customer_name", "contact", "on_the_way_at", "arrived_at", "started_at", "completed_at",
             "cancelled_at", "cancel_reason", "completed_via", "status_history", "commission", "has_review",

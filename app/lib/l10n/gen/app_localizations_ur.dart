@@ -33,6 +33,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String get addContact => 'رابطہ شامل کریں';
 
   @override
+  String get addPackage => 'پیکج شامل کریں';
+
+  @override
   String get addPhoto => 'تصویر شامل کریں';
 
   @override
@@ -85,6 +88,9 @@ class AppLocalizationsUr extends AppLocalizations {
   @override
   String get allBusyHint =>
       'اس دن کوئی موزوں ورکر فارغ نہیں۔ آپ پھر بھی کام پوسٹ کر سکتے ہیں، یا دوسرا دن چنیں۔';
+
+  @override
+  String get allServices => 'سب';
 
   @override
   String get allServicesOffered => 'آپ پہلے ہی تمام خدمات پیش کر رہے ہیں۔';
@@ -195,6 +201,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String bookFor(Object price) {
     return '$price میں بک کریں';
   }
+
+  @override
+  String get bookPackage => 'بک کریں';
 
   @override
   String get bookThisWorker => 'اس ورکر کو بک کریں';
@@ -446,6 +455,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String get confirmAction => 'کنفرم کریں';
 
   @override
+  String get confirmBooking => 'بکنگ کی تصدیق کریں';
+
+  @override
   String confirmCashAmount(Object amount) {
     return 'تصدیق کریں کہ آپ کو $amount نقد مل گئے۔';
   }
@@ -591,7 +603,16 @@ class AppLocalizationsUr extends AppLocalizations {
   String get defaultAddress => 'مستقل پتہ';
 
   @override
+  String get delete => 'حذف کریں';
+
+  @override
   String get deleteAddressQ => 'یہ پتہ حذف کریں؟';
+
+  @override
+  String get deletePackageBody => 'اس سے پہلے سے کی گئی بکنگز برقرار رہیں گی۔';
+
+  @override
+  String get deletePackageQ => 'یہ پیکج حذف کریں؟';
 
   @override
   String get deletePhotoBody => 'گاہک اسے مزید نہیں دیکھ سکیں گے۔';
@@ -674,10 +695,16 @@ class AppLocalizationsUr extends AppLocalizations {
       'ہفتے یا مہینے کے حساب سے، سروس، نقد اور آن لائن کے لحاظ سے، اور ڈاؤن لوڈ کے لیے اسٹیٹمنٹ';
 
   @override
+  String get edit => 'تبدیل کریں';
+
+  @override
   String get editAddress => 'پتہ بدلیں';
 
   @override
   String get editCaption => 'عنوان بدلیں';
+
+  @override
+  String get editPackage => 'پیکج میں تبدیلی';
 
   @override
   String get editProfile => 'پروفائل میں ترمیم';
@@ -766,6 +793,12 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get firstVisit => 'پہلی بار';
+
+  @override
+  String get fixedPricePackage => 'مقررہ قیمت والا پیکج';
+
+  @override
+  String get fixedPricePackages => 'مقررہ قیمت والے پیکجز';
 
   @override
   String forgotCodeHint(String phone) {
@@ -1169,6 +1202,13 @@ class AppLocalizationsUr extends AppLocalizations {
   String get myLevelHint => 'آپ کا درجہ، بیجز، اور اگلے درجے تک کیسے پہنچیں';
 
   @override
+  String get myPackages => 'میرے پیکجز';
+
+  @override
+  String get myPackagesHint =>
+      'مقررہ قیمت والے کام جو گاہک فوراً بک کر سکتے ہیں';
+
+  @override
   String get myPortfolio => 'میرے کام کی تصاویر';
 
   @override
@@ -1309,6 +1349,16 @@ class AppLocalizationsUr extends AppLocalizations {
   @override
   String get noOpenJobsHint =>
       'آپ کے علاقے اور خدمات کے نئے کام یہاں نظر آئیں گے، اور آپ کو اطلاع ملے گی۔';
+
+  @override
+  String get noPackagesFound => 'یہاں ابھی کوئی پیکج نہیں';
+
+  @override
+  String get noPackagesFoundHint =>
+      'اس کے بجائے کام پوسٹ کریں، قریبی کاریگر آپ کو پیشکشیں بھیجیں گے۔';
+
+  @override
+  String get noPackagesYet => 'ابھی کوئی پیکج نہیں';
 
   @override
   String get noPortfolioHint =>
@@ -1465,6 +1515,129 @@ class AppLocalizationsUr extends AppLocalizations {
   String get otherDay => 'دوسرا دن';
 
   @override
+  String get packageBooked => 'بک ہو گیا! کاریگر کو اطلاع دے دی گئی ہے۔';
+
+  @override
+  String packageBookedTimes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count بار بک ہوا',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get packageChooseAddress => 'پتہ چنیں، یا اپنی لوکیشن استعمال کریں۔';
+
+  @override
+  String get packageDeleted => 'پیکج حذف ہو گیا۔';
+
+  @override
+  String get packageDescription => 'تفصیل (اختیاری)';
+
+  @override
+  String get packageDuration => 'کتنا وقت لگتا ہے';
+
+  @override
+  String get packageFixedPriceNote =>
+      'گاہک بالکل یہی قیمت ادا کرتے ہیں۔ جو پرزے یا اضافی کام درج نہیں، وہ کام شروع کرنے سے پہلے چیٹ میں طے کریں۔';
+
+  @override
+  String packageHiddenByAdmin(Object reason) {
+    return 'KaamNow نے چھپا دیا: $reason';
+  }
+
+  @override
+  String get packageIncludes => 'کیا شامل ہے (ہر لائن میں ایک)';
+
+  @override
+  String get packageIncludesHint => 'فلٹر کی دھلائی\nگیس پریشر چیک';
+
+  @override
+  String get packageIncludesTooLong => 'ہر لائن 80 حروف سے کم رکھیں۔';
+
+  @override
+  String get packageIncludesTooMany => 'زیادہ سے زیادہ 8 چیزیں لکھیں۔';
+
+  @override
+  String get packageLive => 'پیکج دوبارہ چالو ہے۔';
+
+  @override
+  String get packageNoBidding =>
+      'مقررہ قیمت۔ کوئی پیشکش یا مول تول نہیں۔ کام مکمل ہونے کے بعد ادائیگی کریں۔';
+
+  @override
+  String get packageNotes => 'کاریگر کے لیے ہدایات (اختیاری)';
+
+  @override
+  String get packageNotesHint => 'مثلاً گیٹ کوڈ، اے سی کا برانڈ، منزل';
+
+  @override
+  String get packagePaused => 'پیکج روک دیا گیا۔ اب گاہک اسے نہیں دیکھتے۔';
+
+  @override
+  String get packagePausedLabel => 'روکا ہوا';
+
+  @override
+  String get packagePrice => 'مقررہ قیمت';
+
+  @override
+  String get packagePriceLabel => 'پیکج کی قیمت';
+
+  @override
+  String get packageSaved => 'پیکج محفوظ ہو گیا۔';
+
+  @override
+  String get packageShown => 'گاہکوں کو دکھایا جا رہا ہے';
+
+  @override
+  String get packageTitle => 'پیکج کا نام';
+
+  @override
+  String get packageTitleHint => 'مثلاً اے سی سروس (1 یونٹ)';
+
+  @override
+  String packageTotal(Object amount) {
+    return 'کل: $amount';
+  }
+
+  @override
+  String get packageWhen => 'کب';
+
+  @override
+  String get packageWhere => 'کہاں';
+
+  @override
+  String get packageWriteAddress => 'پورا پتہ لکھیں (مکان، گلی، بلاک)۔';
+
+  @override
+  String get packagesBrowseIntro =>
+      'ہر پیکج کی قیمت مقرر ہے۔ ایسا وقت چنیں جب کاریگر فارغ ہو، اور آپ کی بکنگ فوراً پکی ہو جائے گی۔';
+
+  @override
+  String get packagesHomeHint =>
+      'طے شدہ کام، طے شدہ قیمت پر بک کریں، بغیر مول تول کے';
+
+  @override
+  String get packagesIntro =>
+      'طے شدہ کام طے شدہ قیمت پر پیش کریں، جیسے \"اے سی سروس، 2,500 روپے\"۔ گاہک آپ کے فارغ وقت پر بغیر مول تول کے بک کرتے ہیں۔';
+
+  @override
+  String packagesLimit(int n) {
+    return 'آپ زیادہ سے زیادہ $n پیکج رکھ سکتے ہیں۔';
+  }
+
+  @override
+  String packagesNear(Object place) {
+    return 'وہ کاریگر دکھائے جا رہے ہیں جو $place آتے ہیں';
+  }
+
+  @override
+  String get packagesNeedService =>
+      'پہلے اپنی پروفائل میں سروس شامل کریں، پھر اس کے پیکج بنائیں۔';
+
+  @override
   String paidAmount(Object amount) {
     return '$amount ادا ہو گئے';
   }
@@ -1600,6 +1773,9 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get photosOptional => 'تصاویر (اختیاری)';
+
+  @override
+  String get pickATime => 'پہلے وقت چنیں۔';
 
   @override
   String get pinPlaced => 'پن لگ گیا۔ جگہ بدلنے کے لیے نقشے پر ٹیپ کریں۔';
@@ -2169,6 +2345,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String get shortBio => 'مختصر تعارف';
 
   @override
+  String get showMore => 'مزید دکھائیں';
+
+  @override
   String get sixDigitCode => 'گاہک سے ملا 6 ہندسوں کا کوڈ';
 
   @override
@@ -2446,6 +2625,9 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get titleLabel => 'عنوان';
+
+  @override
+  String get titleTooShort => 'عنوان بہت چھوٹا ہے۔';
 
   @override
   String get toWord => 'سے';

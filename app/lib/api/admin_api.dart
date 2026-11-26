@@ -156,6 +156,15 @@ class AdminApi {
   Future<AdminNoShow> reviewNoShow(int id, String review, {String note = ''}) async => AdminNoShow.fromJson(
       asMap(await client.post('/admin/no-shows/$id/review/', body: {'review': review, 'note': note})));
 
+  // ---- service packages ------------------------------------------------------
+  Future<Paged<ServicePackage>> packages({bool? hidden, int page = 1}) async => Paged.parse(
+      await client.get('/admin/packages/', query: {'is_hidden': hidden?.toString(), 'page': page}),
+      ServicePackage.fromJson);
+  Future<ServicePackage> hidePackage(int id, String reason) async =>
+      ServicePackage.fromJson(asMap(await client.post('/admin/packages/$id/hide/', body: {'reason': reason})));
+  Future<ServicePackage> unhidePackage(int id) async =>
+      ServicePackage.fromJson(asMap(await client.post('/admin/packages/$id/unhide/')));
+
   // ---- portfolio photos -------------------------------------------------------
   Future<Paged<PortfolioPhoto>> portfolioPhotos({bool? hidden, int page = 1}) async => Paged.parse(
       await client.get('/admin/portfolio-photos/', query: {'is_hidden': hidden?.toString(), 'page': page}),

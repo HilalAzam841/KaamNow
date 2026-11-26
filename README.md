@@ -14,7 +14,7 @@ later, and talks to the backend only through the REST API and the booking WebSoc
 
 **Stage 1 (Backend MVP), Stage 2 (Advanced features) and Stage 3 (Flutter web client) are done,
 and Stage 4 adds the admin dashboard to the web app.** Every backend feature below has its business logic, REST endpoint(s), validation and
-automated tests. All 610 backend tests pass against PostgreSQL 16, and the Flutter app has 156
+automated tests. All 629 backend tests pass against PostgreSQL 16, and the Flutter app has 166
 unit and widget tests plus a browser end-to-end run (see `app/README.md`).
 
 ### Stage 1: Backend MVP
@@ -342,6 +342,20 @@ Good workers earn a level that customers see, and every worker can see what the 
 | Customers see the level on offers and worker profiles, and badges on profiles. Listings can be filtered and sorted by level | `level`, `badges` on `GET workers/{id}/` and offers, `worker_level` on `GET services/workers/`, `?min_level=`, `?ordering=-worker__level_rank` |
 | Workers see their level, badges and a checklist for the next level with their own numbers | `GET workers/me/level/`, app: Account → **My level** |
 
+### Stage 27: fixed-price service packages
+
+Workers can sell set jobs at a set price, like "AC service, Rs 2,500, 90 minutes". Customers book a
+time the worker is free and the booking is confirmed straight away, with no offers or bargaining.
+
+| Feature | Where |
+|---|---|
+| Workers add up to 10 packages, each for a service they offer: name, fixed price (within the usual offer limits), 30 to 480 minutes, up to 8 "what's included" lines and a description. They can edit, pause or delete them | `GET/POST workers/me/packages/`, `PATCH/DELETE workers/me/packages/{id}/`, app: Account → **My packages** |
+| Customers see packages on worker profiles and can browse them by service. With a default saved address, only workers who cover it are listed. Best levels and ratings come first | `GET workers/{id}/packages/`, `GET packages/?category=&latitude=&longitude=&max_price=`, `GET packages/{id}/`, app: Home → **Fixed-price packages** |
+| Booking a package checks everything a normal booking does in one transaction: verified phone, worker verified and available, the address inside their radius, the time free (working hours, days off, other bookings), at most 3 active bookings, and no double booking of the same package and time. If any check fails nothing is saved | `POST packages/{id}/book/` (throttled like offers) |
+| A package booking is an ordinary booking underneath (request, offer and booking rows at the package price), so tracking, chat, completion code, payment, promo codes, receipts, reviews and cancellations all work unchanged. The worker gets a "New package booking" notice in their language | `package` on requests, `package_id` on bookings |
+| Paused packages, packages for a service the worker dropped, and packages of unverified or suspended workers are never shown or bookable. Deleting a package keeps its bookings | |
+| Admins can hide a misleading package with a reason (audited); the worker is told why and sees it on the package | `GET admin/packages/`, `POST admin/packages/{id}/hide/` and `unhide/`, app: Admin → **Service packages** |
+
 **Before going live with online payments:** the JazzCash and Easypaisa adapters follow each
 gateway's published integration scheme and are covered by tests with simulated gateway responses.
 They have **not** been run against the real sandboxes yet, because that needs your merchant
@@ -386,6 +400,7 @@ apps/
   portfolio/            PortfolioPhoto (work photos, EXIF removed on upload)
   addresses/            SavedAddress (Home, Work and named places)
   levels/               worker levels and badges (stored on WorkerProfile), nightly refresh
+  packages/             ServicePackage (fixed-price jobs booked without bidding)
 docs/                   openapi.yaml, Postman collection
 scripts/                generate_postman.py
 app/                    Flutter client (web, Android, iPhone): lib/, test/, e2e/, integration_test/
@@ -461,7 +476,7 @@ docker compose up --build
 pytest -q
 ```
 
-The suite has 610 tests and needs a running PostgreSQL (Redis is not needed for tests). It uses the database settings from your
+The suite has 629 tests and needs a running PostgreSQL (Redis is not needed for tests). It uses the database settings from your
 `.env` and creates a separate `test_kaamnow` database. Coverage includes:
 
 - **Authentication**: registration validation, login, suspended accounts, token refresh rotation, logout blacklisting, password reset (single-use token, no account enumeration), throttling.
@@ -549,7 +564,7 @@ Endpoints added beyond the original list, because the flow needs them: `password
 `bookings/{id}/completion-otp/`, `payments/{id}/confirm/`, `payments/earnings/`,
 the notification helpers, and the admin users, suspension, requests, commission settings and audit log endpoints.
 
-Postman: import `docs/KaamNow.postman_collection.json` (157 requests in 12 folders that follow the
+Postman: import `docs/KaamNow.postman_collection.json` (164 requests in 12 folders that follow the
 full flow; test scripts store tokens and ids automatically). Regenerate it with
 `python scripts/generate_postman.py`.
 

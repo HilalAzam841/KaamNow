@@ -12,6 +12,7 @@
   "addAService": "Add a service",
   "addAddress": "Add address",
   "addContact": "Add contact",
+  "addPackage": "Add package",
   "addPhoto": "Add photo",
   "addServicesToSeeJobs": "Add the services you offer to see matching jobs.",
   "addTimeOff": "Add days off",
@@ -38,6 +39,7 @@
   "agreedPrice": "Agreed price",
   "all": "All",
   "allBusyHint": "No matching workers are free on this day. You can still post: workers may free up, or choose another day.",
+  "allServices": "All",
   "allServicesOffered": "You already offer every service.",
   "amountDue": "Amount due: {amount}",
   "@amountDue": {
@@ -101,6 +103,7 @@
       "price": {}
     }
   },
+  "bookPackage": "Book",
   "bookThisWorker": "Book this worker",
   "bookWorkerQ": "Book {name}?",
   "@bookWorkerQ": {
@@ -255,6 +258,7 @@
   "completionCodeHint": "Give this code to the worker only when the job is done to your satisfaction.",
   "confirm": "Confirm",
   "confirmAction": "Confirm",
+  "confirmBooking": "Confirm booking",
   "confirmCashAmount": "Confirm you received {amount} in cash.",
   "@confirmCashAmount": {
     "placeholders": {
@@ -349,7 +353,10 @@
     }
   },
   "defaultAddress": "Default address",
+  "delete": "Delete",
   "deleteAddressQ": "Delete this address?",
+  "deletePackageBody": "Bookings already made from it are kept.",
+  "deletePackageQ": "Delete this package?",
   "deletePhotoBody": "Customers will no longer see it.",
   "deletePhotoQ": "Delete this photo?",
   "describeProblem": "Describe the problem",
@@ -405,8 +412,10 @@
   "earnings": "Earnings",
   "earningsReports": "Earnings reports",
   "earningsReportsHint": "By week or month, by service, cash and online, with a statement to download",
+  "edit": "Edit",
   "editAddress": "Edit address",
   "editCaption": "Edit caption",
+  "editPackage": "Edit package",
   "editProfile": "Edit profile",
   "email": "Email",
   "emailOptional": "Email (optional, for password reset)",
@@ -455,6 +464,8 @@
   "filterActive": "Active",
   "finishPayingNewTab": "Finish paying in the new tab. Your plan activates once it is confirmed.",
   "firstVisit": "First visit",
+  "fixedPricePackage": "Fixed-price package",
+  "fixedPricePackages": "Fixed-price packages",
   "forgotCodeHint": "If {phone} has a KaamNow account, we have sent it a code by SMS.",
   "@forgotCodeHint": {
     "placeholders": {
@@ -693,6 +704,8 @@
   "moveLater": "Move later",
   "myLevel": "My level",
   "myLevelHint": "Your level and badges, and how to reach the next level",
+  "myPackages": "My packages",
+  "myPackagesHint": "Fixed-price jobs customers can book straight away",
   "myPortfolio": "My work photos",
   "myPortfolioHint": "Show customers what you have done",
   "myScheduleSubtitle": "Days and times you take jobs, and days off",
@@ -790,6 +803,9 @@
   "noOffersHereHint": "Offers you send on jobs appear here.",
   "noOpenJobs": "No open jobs right now",
   "noOpenJobsHint": "New jobs in your area and services will show up here, and you will get an alert.",
+  "noPackagesFound": "No packages here yet",
+  "noPackagesFoundHint": "Post a job instead and workers nearby will send you offers.",
+  "noPackagesYet": "No packages yet",
   "noPortfolioHint": "Add up to 12 photos of jobs you did. Customers see them on your profile. Location and camera details are removed from each photo.",
   "noPortfolioYet": "No work photos yet",
   "noRepeatingJobs": "No repeating jobs",
@@ -866,6 +882,69 @@
   "openBooking": "Open booking",
   "osmCredit": "© OpenStreetMap contributors",
   "otherDay": "Other day",
+  "packageBooked": "Booked! The worker has been told.",
+  "packageBookedTimes": "{count, plural, =1{Booked once} other{Booked {count} times}}",
+  "@packageBookedTimes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "packageChooseAddress": "Choose an address, or use your location.",
+  "packageDeleted": "Package deleted.",
+  "packageDescription": "Description (optional)",
+  "packageDuration": "How long it takes",
+  "packageFixedPriceNote": "Customers pay exactly this price. Parts or extra work not listed are agreed in chat before you start.",
+  "packageHiddenByAdmin": "Hidden by KaamNow: {reason}",
+  "@packageHiddenByAdmin": {
+    "placeholders": {
+      "reason": {}
+    }
+  },
+  "packageIncludes": "What's included (one per line)",
+  "packageIncludesHint": "Filter wash\nGas pressure check",
+  "packageIncludesTooLong": "Keep each line under 80 characters.",
+  "packageIncludesTooMany": "List up to 8 things.",
+  "packageLive": "Package is live again.",
+  "packageNoBidding": "Fixed price. No offers or bargaining. You pay after the job is done.",
+  "packageNotes": "Notes for the worker (optional)",
+  "packageNotesHint": "e.g. gate code, AC brand, floor",
+  "packagePaused": "Package paused. Customers no longer see it.",
+  "packagePausedLabel": "Paused",
+  "packagePrice": "Fixed price",
+  "packagePriceLabel": "Package price",
+  "packageSaved": "Package saved.",
+  "packageShown": "Shown to customers",
+  "packageTitle": "Package name",
+  "packageTitleHint": "e.g. AC service (1 unit)",
+  "packageTotal": "Total: {amount}",
+  "@packageTotal": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
+  "packageWhen": "When",
+  "packageWhere": "Where",
+  "packageWriteAddress": "Write the full address (house, street, block).",
+  "packagesBrowseIntro": "Each package has a fixed price. Pick a time the worker is free and your booking is confirmed straight away.",
+  "packagesHomeHint": "Book a set job at a set price, no bargaining",
+  "packagesIntro": "Offer set jobs at a set price, like \"AC service, Rs 2,500\". Customers book a time you are free, with no bargaining.",
+  "packagesLimit": "You can have up to {n} packages.",
+  "@packagesLimit": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "packagesNear": "Showing workers who come to {place}",
+  "@packagesNear": {
+    "placeholders": {
+      "place": {}
+    }
+  },
+  "packagesNeedService": "Add a service to your profile first, then make packages for it.",
   "paidAmount": "Paid {amount}",
   "@paidAmount": {
     "placeholders": {
@@ -959,6 +1038,7 @@
     }
   },
   "photosOptional": "Photos (optional)",
+  "pickATime": "Pick a time first.",
   "pinPlaced": "Pin placed. Tap the map to move it.",
   "placeNameHint": "e.g. Ammi's house",
   "placeNameLabel": "Name of this place",
@@ -1343,6 +1423,7 @@
   },
   "sharingStopped": "Sharing stopped. The link no longer works.",
   "shortBio": "Short bio",
+  "showMore": "Show more",
   "sixDigitCode": "6-digit code from the customer",
   "skipNextVisit": "Skip next visit",
   "skippedNextVisit": "Next visit skipped.",
@@ -1470,6 +1551,7 @@
   "timeline": "Timeline",
   "titleHint": "e.g. Ceiling fan not working",
   "titleLabel": "Title",
+  "titleTooShort": "Title is too short.",
   "toWord": "to",
   "topLevelReached": "You are at the top level. Keep it up!",
   "total": "Total",

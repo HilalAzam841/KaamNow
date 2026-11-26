@@ -140,6 +140,12 @@ abstract class AppLocalizations {
   /// **'Add contact'**
   String get addContact;
 
+  /// No description provided for @addPackage.
+  ///
+  /// In en, this message translates to:
+  /// **'Add package'**
+  String get addPackage;
+
   /// No description provided for @addPhoto.
   ///
   /// In en, this message translates to:
@@ -235,6 +241,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No matching workers are free on this day. You can still post: workers may free up, or choose another day.'**
   String get allBusyHint;
+
+  /// No description provided for @allServices.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get allServices;
 
   /// No description provided for @allServicesOffered.
   ///
@@ -427,6 +439,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Book for {price}'**
   String bookFor(Object price);
+
+  /// No description provided for @bookPackage.
+  ///
+  /// In en, this message translates to:
+  /// **'Book'**
+  String get bookPackage;
 
   /// No description provided for @bookThisWorker.
   ///
@@ -848,6 +866,12 @@ abstract class AppLocalizations {
   /// **'Confirm'**
   String get confirmAction;
 
+  /// No description provided for @confirmBooking.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm booking'**
+  String get confirmBooking;
+
   /// No description provided for @confirmCashAmount.
   ///
   /// In en, this message translates to:
@@ -1100,11 +1124,29 @@ abstract class AppLocalizations {
   /// **'Default address'**
   String get defaultAddress;
 
+  /// No description provided for @delete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get delete;
+
   /// No description provided for @deleteAddressQ.
   ///
   /// In en, this message translates to:
   /// **'Delete this address?'**
   String get deleteAddressQ;
+
+  /// No description provided for @deletePackageBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Bookings already made from it are kept.'**
+  String get deletePackageBody;
+
+  /// No description provided for @deletePackageQ.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this package?'**
+  String get deletePackageQ;
 
   /// No description provided for @deletePhotoBody.
   ///
@@ -1232,6 +1274,12 @@ abstract class AppLocalizations {
   /// **'By week or month, by service, cash and online, with a statement to download'**
   String get earningsReportsHint;
 
+  /// No description provided for @edit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get edit;
+
   /// No description provided for @editAddress.
   ///
   /// In en, this message translates to:
@@ -1243,6 +1291,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Edit caption'**
   String get editCaption;
+
+  /// No description provided for @editPackage.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit package'**
+  String get editPackage;
 
   /// No description provided for @editProfile.
   ///
@@ -1399,6 +1453,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'First visit'**
   String get firstVisit;
+
+  /// No description provided for @fixedPricePackage.
+  ///
+  /// In en, this message translates to:
+  /// **'Fixed-price package'**
+  String get fixedPricePackage;
+
+  /// No description provided for @fixedPricePackages.
+  ///
+  /// In en, this message translates to:
+  /// **'Fixed-price packages'**
+  String get fixedPricePackages;
 
   /// No description provided for @forgotCodeHint.
   ///
@@ -2060,6 +2126,18 @@ abstract class AppLocalizations {
   /// **'Your level and badges, and how to reach the next level'**
   String get myLevelHint;
 
+  /// No description provided for @myPackages.
+  ///
+  /// In en, this message translates to:
+  /// **'My packages'**
+  String get myPackages;
+
+  /// No description provided for @myPackagesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Fixed-price jobs customers can book straight away'**
+  String get myPackagesHint;
+
   /// No description provided for @myPortfolio.
   ///
   /// In en, this message translates to:
@@ -2287,6 +2365,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'New jobs in your area and services will show up here, and you will get an alert.'**
   String get noOpenJobsHint;
+
+  /// No description provided for @noPackagesFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No packages here yet'**
+  String get noPackagesFound;
+
+  /// No description provided for @noPackagesFoundHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Post a job instead and workers nearby will send you offers.'**
+  String get noPackagesFoundHint;
+
+  /// No description provided for @noPackagesYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No packages yet'**
+  String get noPackagesYet;
 
   /// No description provided for @noPortfolioHint.
   ///
@@ -2540,6 +2636,210 @@ abstract class AppLocalizations {
   /// **'Other day'**
   String get otherDay;
 
+  /// No description provided for @packageBooked.
+  ///
+  /// In en, this message translates to:
+  /// **'Booked! The worker has been told.'**
+  String get packageBooked;
+
+  /// No description provided for @packageBookedTimes.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Booked once} other{Booked {count} times}}'**
+  String packageBookedTimes(int count);
+
+  /// No description provided for @packageChooseAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose an address, or use your location.'**
+  String get packageChooseAddress;
+
+  /// No description provided for @packageDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Package deleted.'**
+  String get packageDeleted;
+
+  /// No description provided for @packageDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Description (optional)'**
+  String get packageDescription;
+
+  /// No description provided for @packageDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'How long it takes'**
+  String get packageDuration;
+
+  /// No description provided for @packageFixedPriceNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Customers pay exactly this price. Parts or extra work not listed are agreed in chat before you start.'**
+  String get packageFixedPriceNote;
+
+  /// No description provided for @packageHiddenByAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Hidden by KaamNow: {reason}'**
+  String packageHiddenByAdmin(Object reason);
+
+  /// No description provided for @packageIncludes.
+  ///
+  /// In en, this message translates to:
+  /// **'What\'s included (one per line)'**
+  String get packageIncludes;
+
+  /// No description provided for @packageIncludesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter wash\nGas pressure check'**
+  String get packageIncludesHint;
+
+  /// No description provided for @packageIncludesTooLong.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep each line under 80 characters.'**
+  String get packageIncludesTooLong;
+
+  /// No description provided for @packageIncludesTooMany.
+  ///
+  /// In en, this message translates to:
+  /// **'List up to 8 things.'**
+  String get packageIncludesTooMany;
+
+  /// No description provided for @packageLive.
+  ///
+  /// In en, this message translates to:
+  /// **'Package is live again.'**
+  String get packageLive;
+
+  /// No description provided for @packageNoBidding.
+  ///
+  /// In en, this message translates to:
+  /// **'Fixed price. No offers or bargaining. You pay after the job is done.'**
+  String get packageNoBidding;
+
+  /// No description provided for @packageNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes for the worker (optional)'**
+  String get packageNotes;
+
+  /// No description provided for @packageNotesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. gate code, AC brand, floor'**
+  String get packageNotesHint;
+
+  /// No description provided for @packagePaused.
+  ///
+  /// In en, this message translates to:
+  /// **'Package paused. Customers no longer see it.'**
+  String get packagePaused;
+
+  /// No description provided for @packagePausedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Paused'**
+  String get packagePausedLabel;
+
+  /// No description provided for @packagePrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Fixed price'**
+  String get packagePrice;
+
+  /// No description provided for @packagePriceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Package price'**
+  String get packagePriceLabel;
+
+  /// No description provided for @packageSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Package saved.'**
+  String get packageSaved;
+
+  /// No description provided for @packageShown.
+  ///
+  /// In en, this message translates to:
+  /// **'Shown to customers'**
+  String get packageShown;
+
+  /// No description provided for @packageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Package name'**
+  String get packageTitle;
+
+  /// No description provided for @packageTitleHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. AC service (1 unit)'**
+  String get packageTitleHint;
+
+  /// No description provided for @packageTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Total: {amount}'**
+  String packageTotal(Object amount);
+
+  /// No description provided for @packageWhen.
+  ///
+  /// In en, this message translates to:
+  /// **'When'**
+  String get packageWhen;
+
+  /// No description provided for @packageWhere.
+  ///
+  /// In en, this message translates to:
+  /// **'Where'**
+  String get packageWhere;
+
+  /// No description provided for @packageWriteAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Write the full address (house, street, block).'**
+  String get packageWriteAddress;
+
+  /// No description provided for @packagesBrowseIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Each package has a fixed price. Pick a time the worker is free and your booking is confirmed straight away.'**
+  String get packagesBrowseIntro;
+
+  /// No description provided for @packagesHomeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Book a set job at a set price, no bargaining'**
+  String get packagesHomeHint;
+
+  /// No description provided for @packagesIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Offer set jobs at a set price, like \"AC service, Rs 2,500\". Customers book a time you are free, with no bargaining.'**
+  String get packagesIntro;
+
+  /// No description provided for @packagesLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'You can have up to {n} packages.'**
+  String packagesLimit(int n);
+
+  /// No description provided for @packagesNear.
+  ///
+  /// In en, this message translates to:
+  /// **'Showing workers who come to {place}'**
+  String packagesNear(Object place);
+
+  /// No description provided for @packagesNeedService.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a service to your profile first, then make packages for it.'**
+  String get packagesNeedService;
+
   /// No description provided for @paidAmount.
   ///
   /// In en, this message translates to:
@@ -2767,6 +3067,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Photos (optional)'**
   String get photosOptional;
+
+  /// No description provided for @pickATime.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a time first.'**
+  String get pickATime;
 
   /// No description provided for @pinPlaced.
   ///
@@ -3710,6 +4016,12 @@ abstract class AppLocalizations {
   /// **'Short bio'**
   String get shortBio;
 
+  /// No description provided for @showMore.
+  ///
+  /// In en, this message translates to:
+  /// **'Show more'**
+  String get showMore;
+
   /// No description provided for @sixDigitCode.
   ///
   /// In en, this message translates to:
@@ -4219,6 +4531,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Title'**
   String get titleLabel;
+
+  /// No description provided for @titleTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Title is too short.'**
+  String get titleTooShort;
 
   /// No description provided for @toWord.
   ///

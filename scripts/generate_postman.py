@@ -99,6 +99,15 @@ folders = [
         req("My level and what the next one needs", "GET", "/workers/me/level/", token="worker_access"),
         req("Trusted or better electricians, best level first", "GET",
             "/services/workers/?category=1&min_level=trusted&ordering=-worker__level_rank", token=None),
+        req("Add a fixed-price package", "POST", "/workers/me/packages/", {
+            "category": 1, "title": "Ceiling fan fitting", "price": "1500", "duration_minutes": 60,
+            "description": "Fit one new ceiling fan on an existing hook.",
+            "includes": ["Fitting and balancing", "Regulator connection", "Test run"],
+        }, token="worker_access", tests=[save("package_id", ".id")]),
+        req("My packages", "GET", "/workers/me/packages/", token="worker_access"),
+        req("Change or pause a package", "PATCH", "/workers/me/packages/{{package_id}}/", {"price": "1400"},
+            token="worker_access"),
+        req("Admin: packages to check", "GET", "/admin/packages/?is_hidden=false", token="admin_access"),
         req("My working hours", "GET", "/workers/me/schedule/", token="worker_access"),
         req("Set working hours (Mon-Sat 9 to 6)", "PUT", "/workers/me/schedule/", {"hours": [
             {"weekday": d, "start": "09:00", "end": "18:00"} for d in range(6)
@@ -175,6 +184,13 @@ folders = [
         req("Request detail", "GET", "/requests/{{request_id}}/"),
         req("Matching workers for request", "GET", "/requests/{{request_id}}/nearby-workers/"),
         req("Edit request", "PATCH", "/requests/{{request_id}}/", {"title": "Two ceiling fans not working"}),
+        req("Fixed-price packages near me", "GET",
+            "/packages/?category=1&latitude=31.512000&longitude=74.345000", token=None),
+        req("A worker's packages (public)", "GET", "/workers/{{worker_id}}/packages/", token=None),
+        req("Book a package (confirmed straight away)", "POST", "/packages/{{package_id}}/book/", {
+            "preferred_time": "2026-12-03T11:00:00+05:00", "latitude": "31.512000", "longitude": "74.345000",
+            "address": "House 12, Street 4, Gulberg III", "area": "Gulberg III", "notes": "Fan box is in the store room",
+        }, tests=[save("package_booking_id", ".id")]),
     ]),
     ("5. Offers & negotiation", [
         req("Worker feed (nearby open requests)", "GET", "/requests/", token="worker_access"),

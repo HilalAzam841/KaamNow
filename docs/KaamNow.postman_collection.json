@@ -968,6 +968,144 @@
           }
         },
         {
+          "name": "Add a fixed-price package",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/workers/me/packages/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "workers",
+                "me",
+                "packages"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{worker_access}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"category\": 1,\n  \"title\": \"Ceiling fan fitting\",\n  \"price\": \"1500\",\n  \"duration_minutes\": 60,\n  \"description\": \"Fit one new ceiling fan on an existing hook.\",\n  \"includes\": [\n    \"Fitting and balancing\",\n    \"Regulator connection\",\n    \"Test run\"\n  ]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set('package_id', pm.response.json().data.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "My packages",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/workers/me/packages/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "workers",
+                "me",
+                "packages"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{worker_access}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Change or pause a package",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/workers/me/packages/{{package_id}}/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "workers",
+                "me",
+                "packages",
+                "{{package_id}}"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{worker_access}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"price\": \"1400\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Admin: packages to check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/packages/?is_hidden=false",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "packages",
+                "?is_hidden=false"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_access}}"
+                }
+              ]
+            }
+          }
+        },
+        {
           "name": "My working hours",
           "request": {
             "method": "GET",
@@ -2297,6 +2435,94 @@
               "raw": "{\n  \"title\": \"Two ceiling fans not working\"\n}"
             }
           }
+        },
+        {
+          "name": "Fixed-price packages near me",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/packages/?category=1&latitude=31.512000&longitude=74.345000",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "packages",
+                "?category=1&latitude=31.512000&longitude=74.345000"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "A worker's packages (public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/workers/{{worker_id}}/packages/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "workers",
+                "{{worker_id}}",
+                "packages"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "Book a package (confirmed straight away)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/packages/{{package_id}}/book/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "packages",
+                "{{package_id}}",
+                "book"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{customer_access}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"preferred_time\": \"2026-12-03T11:00:00+05:00\",\n  \"latitude\": \"31.512000\",\n  \"longitude\": \"74.345000\",\n  \"address\": \"House 12, Street 4, Gulberg III\",\n  \"area\": \"Gulberg III\",\n  \"notes\": \"Fan box is in the store room\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set('package_booking_id', pm.response.json().data.id);"
+                ]
+              }
+            }
+          ]
         }
       ]
     },

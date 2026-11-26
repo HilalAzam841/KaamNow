@@ -105,6 +105,13 @@ class AccountScreen extends StatelessWidget {
               onTap: () => context.push('/worker/level'),
             ),
             ListTile(
+              key: const Key('account-packages'),
+              leading: const Icon(Icons.sell_outlined),
+              title: Text(context.t.myPackages),
+              subtitle: Text(context.t.myPackagesHint),
+              onTap: () => context.push('/worker/packages'),
+            ),
+            ListTile(
               key: const Key('account-portfolio'),
               leading: const Icon(Icons.photo_library),
               title: Text(context.t.myPortfolio),

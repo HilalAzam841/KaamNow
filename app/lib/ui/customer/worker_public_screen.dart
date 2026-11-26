@@ -12,6 +12,8 @@ import '../worker/schedule_screen.dart' show hoursSummary;
 import 'my_workers_screen.dart';
 import '../../l10n/l10n.dart';
 import '../widgets/level_widgets.dart';
+import '../widgets/package_widgets.dart';
+import 'package:go_router/go_router.dart';
 
 class WorkerPublicScreen extends StatelessWidget {
   const WorkerPublicScreen({super.key, required this.id});
@@ -22,10 +24,15 @@ class WorkerPublicScreen extends StatelessWidget {
     final api = context.read<Session>().api;
     return Scaffold(
       appBar: AppBar(title: Text(context.t.workerProfile), actions: const [LanguageButton()]),
-      body: Loader<(PublicWorker, Paged<Review>)>(
-        load: () async => (await api.worker(id), await api.workerReviews(id)),
+      body: Loader<(PublicWorker, Paged<Review>, List<ServicePackage>)>(
+        load: () async => (
+          await api.worker(id),
+          await api.workerReviews(id),
+          // Packages are extra: the profile still opens if they fail to load.
+          await api.workerPackages(id).catchError((_) => <ServicePackage>[]),
+        ),
         builder: (context, data, reload) {
-          final (w, reviews) = data;
+          final (w, reviews, packages) = data;
           final theme = Theme.of(context);
           final isCustomer = context.read<Session>().user?.isCustomer == true;
           return PageBody(
@@ -43,6 +50,14 @@ class WorkerPublicScreen extends StatelessWidget {
                   icon: const Icon(Icons.event_available),
                   label: Text(context.t.bookThisWorker),
                 ),
+              ],
+              if (packages.isNotEmpty) ...[
+                SectionTitle(context.t.fixedPricePackages),
+                for (final p in packages)
+                  PackageCard(
+                    package: p,
+                    onBook: isCustomer ? () => context.push('/packages/${p.id}/book') : null,
+                  ),
               ],
               if (w.bio.isNotEmpty) ...[const SizedBox(height: 16), Text(w.bio)],
               if (w.portfolio.isNotEmpty) ...[

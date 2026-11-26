@@ -33,6 +33,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addContact => 'Add contact';
 
   @override
+  String get addPackage => 'Add package';
+
+  @override
   String get addPhoto => 'Add photo';
 
   @override
@@ -86,6 +89,9 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get allBusyHint =>
       'No matching workers are free on this day. You can still post: workers may free up, or choose another day.';
+
+  @override
+  String get allServices => 'All';
 
   @override
   String get allServicesOffered => 'You already offer every service.';
@@ -196,6 +202,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String bookFor(Object price) {
     return 'Book for $price';
   }
+
+  @override
+  String get bookPackage => 'Book';
 
   @override
   String get bookThisWorker => 'Book this worker';
@@ -447,6 +456,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get confirmAction => 'Confirm';
 
   @override
+  String get confirmBooking => 'Confirm booking';
+
+  @override
   String confirmCashAmount(Object amount) {
     return 'Confirm you received $amount in cash.';
   }
@@ -592,7 +604,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get defaultAddress => 'Default address';
 
   @override
+  String get delete => 'Delete';
+
+  @override
   String get deleteAddressQ => 'Delete this address?';
+
+  @override
+  String get deletePackageBody => 'Bookings already made from it are kept.';
+
+  @override
+  String get deletePackageQ => 'Delete this package?';
 
   @override
   String get deletePhotoBody => 'Customers will no longer see it.';
@@ -676,10 +697,16 @@ class AppLocalizationsEn extends AppLocalizations {
       'By week or month, by service, cash and online, with a statement to download';
 
   @override
+  String get edit => 'Edit';
+
+  @override
   String get editAddress => 'Edit address';
 
   @override
   String get editCaption => 'Edit caption';
+
+  @override
+  String get editPackage => 'Edit package';
 
   @override
   String get editProfile => 'Edit profile';
@@ -767,6 +794,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get firstVisit => 'First visit';
+
+  @override
+  String get fixedPricePackage => 'Fixed-price package';
+
+  @override
+  String get fixedPricePackages => 'Fixed-price packages';
 
   @override
   String forgotCodeHint(String phone) {
@@ -1170,6 +1203,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'Your level and badges, and how to reach the next level';
 
   @override
+  String get myPackages => 'My packages';
+
+  @override
+  String get myPackagesHint =>
+      'Fixed-price jobs customers can book straight away';
+
+  @override
   String get myPortfolio => 'My work photos';
 
   @override
@@ -1308,6 +1348,16 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get noOpenJobsHint =>
       'New jobs in your area and services will show up here, and you will get an alert.';
+
+  @override
+  String get noPackagesFound => 'No packages here yet';
+
+  @override
+  String get noPackagesFoundHint =>
+      'Post a job instead and workers nearby will send you offers.';
+
+  @override
+  String get noPackagesYet => 'No packages yet';
 
   @override
   String get noPortfolioHint =>
@@ -1464,6 +1514,130 @@ class AppLocalizationsEn extends AppLocalizations {
   String get otherDay => 'Other day';
 
   @override
+  String get packageBooked => 'Booked! The worker has been told.';
+
+  @override
+  String packageBookedTimes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Booked $count times',
+      one: 'Booked once',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get packageChooseAddress => 'Choose an address, or use your location.';
+
+  @override
+  String get packageDeleted => 'Package deleted.';
+
+  @override
+  String get packageDescription => 'Description (optional)';
+
+  @override
+  String get packageDuration => 'How long it takes';
+
+  @override
+  String get packageFixedPriceNote =>
+      'Customers pay exactly this price. Parts or extra work not listed are agreed in chat before you start.';
+
+  @override
+  String packageHiddenByAdmin(Object reason) {
+    return 'Hidden by KaamNow: $reason';
+  }
+
+  @override
+  String get packageIncludes => 'What\'s included (one per line)';
+
+  @override
+  String get packageIncludesHint => 'Filter wash\nGas pressure check';
+
+  @override
+  String get packageIncludesTooLong => 'Keep each line under 80 characters.';
+
+  @override
+  String get packageIncludesTooMany => 'List up to 8 things.';
+
+  @override
+  String get packageLive => 'Package is live again.';
+
+  @override
+  String get packageNoBidding =>
+      'Fixed price. No offers or bargaining. You pay after the job is done.';
+
+  @override
+  String get packageNotes => 'Notes for the worker (optional)';
+
+  @override
+  String get packageNotesHint => 'e.g. gate code, AC brand, floor';
+
+  @override
+  String get packagePaused => 'Package paused. Customers no longer see it.';
+
+  @override
+  String get packagePausedLabel => 'Paused';
+
+  @override
+  String get packagePrice => 'Fixed price';
+
+  @override
+  String get packagePriceLabel => 'Package price';
+
+  @override
+  String get packageSaved => 'Package saved.';
+
+  @override
+  String get packageShown => 'Shown to customers';
+
+  @override
+  String get packageTitle => 'Package name';
+
+  @override
+  String get packageTitleHint => 'e.g. AC service (1 unit)';
+
+  @override
+  String packageTotal(Object amount) {
+    return 'Total: $amount';
+  }
+
+  @override
+  String get packageWhen => 'When';
+
+  @override
+  String get packageWhere => 'Where';
+
+  @override
+  String get packageWriteAddress =>
+      'Write the full address (house, street, block).';
+
+  @override
+  String get packagesBrowseIntro =>
+      'Each package has a fixed price. Pick a time the worker is free and your booking is confirmed straight away.';
+
+  @override
+  String get packagesHomeHint => 'Book a set job at a set price, no bargaining';
+
+  @override
+  String get packagesIntro =>
+      'Offer set jobs at a set price, like \"AC service, Rs 2,500\". Customers book a time you are free, with no bargaining.';
+
+  @override
+  String packagesLimit(int n) {
+    return 'You can have up to $n packages.';
+  }
+
+  @override
+  String packagesNear(Object place) {
+    return 'Showing workers who come to $place';
+  }
+
+  @override
+  String get packagesNeedService =>
+      'Add a service to your profile first, then make packages for it.';
+
+  @override
   String paidAmount(Object amount) {
     return 'Paid $amount';
   }
@@ -1598,6 +1772,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get photosOptional => 'Photos (optional)';
+
+  @override
+  String get pickATime => 'Pick a time first.';
 
   @override
   String get pinPlaced => 'Pin placed. Tap the map to move it.';
@@ -2168,6 +2345,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get shortBio => 'Short bio';
 
   @override
+  String get showMore => 'Show more';
+
+  @override
   String get sixDigitCode => '6-digit code from the customer';
 
   @override
@@ -2444,6 +2624,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get titleLabel => 'Title';
+
+  @override
+  String get titleTooShort => 'Title is too short.';
 
   @override
   String get toWord => 'to';
