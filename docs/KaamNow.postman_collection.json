@@ -920,6 +920,54 @@
           }
         },
         {
+          "name": "My level and what the next one needs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/workers/me/level/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "workers",
+                "me",
+                "level"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{worker_access}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Trusted or better electricians, best level first",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/services/workers/?category=1&min_level=trusted&ordering=-worker__level_rank",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "services",
+                "workers",
+                "?category=1&min_level=trusted&ordering=-worker__level_rank"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
           "name": "My working hours",
           "request": {
             "method": "GET",

@@ -9,6 +9,7 @@ import 'core/push/push_controller.dart';
 import 'core/push/push_platform.dart';
 import 'core/session.dart';
 import 'l10n/l10n.dart';
+import 'ui/worker/level_screen.dart';
 import 'ui/payments/receipt_screen.dart';
 import 'ui/customer/addresses_screen.dart';
 import 'ui/account/account_screen.dart';
@@ -139,6 +140,7 @@ GoRouter buildRouter(Session session) {
       GoRoute(
           path: '/payments/:id/receipt',
           builder: (_, s) => ReceiptScreen(paymentId: int.parse(s.pathParameters['id']!))),
+      GoRoute(path: '/worker/level', builder: (_, _) => const LevelScreen()),
       GoRoute(path: '/worker/earnings', builder: (_, _) => const EarningsScreen()),
       GoRoute(path: '/worker/earnings/report', builder: (_, _) => const EarningsReportScreen()),
       GoRoute(path: '/worker/plans', builder: (_, _) => const PlansScreen()),

@@ -96,6 +96,9 @@ folders = [
         req("Admin: hide a work photo (audited)", "POST", "/admin/portfolio-photos/{{photo_id}}/hide/",
             {"reason": "Not a photo of work"}, token="admin_access"),
         req("Admin: show it again", "POST", "/admin/portfolio-photos/{{photo_id}}/unhide/", token="admin_access"),
+        req("My level and what the next one needs", "GET", "/workers/me/level/", token="worker_access"),
+        req("Trusted or better electricians, best level first", "GET",
+            "/services/workers/?category=1&min_level=trusted&ordering=-worker__level_rank", token=None),
         req("My working hours", "GET", "/workers/me/schedule/", token="worker_access"),
         req("Set working hours (Mon-Sat 9 to 6)", "PUT", "/workers/me/schedule/", {"hours": [
             {"weekday": d, "start": "09:00", "end": "18:00"} for d in range(6)

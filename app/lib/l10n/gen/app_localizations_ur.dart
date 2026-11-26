@@ -151,6 +151,21 @@ class AppLocalizationsUr extends AppLocalizations {
   String get backToLogin => 'لاگ ان پر واپس جائیں';
 
   @override
+  String get badgeAlwaysOnTime => 'ہمیشہ وقت پر';
+
+  @override
+  String get badgeCustomerFavourite => 'گاہکوں کا پسندیدہ';
+
+  @override
+  String get badgeExperienced => '5+ سال تجربہ';
+
+  @override
+  String get badgeJobs100 => '100+ کام';
+
+  @override
+  String get badgeVerified => 'تصدیق شدہ';
+
+  @override
   String get bankTransfer => 'بینک ٹرانسفر';
 
   @override
@@ -1021,6 +1036,29 @@ class AppLocalizationsUr extends AppLocalizations {
   String get leftRepeating => 'ہو گیا۔ اب آپ کو یہ کام نہیں ملیں گے۔';
 
   @override
+  String get levelHelp => 'KaamNow درجہ: مکمل کام، ریٹنگ اور وقت کی پابندی سے';
+
+  @override
+  String get levelNeedsVerification =>
+      'اکاؤنٹ کی تصدیق کے بعد درجے شروع ہوتے ہیں۔';
+
+  @override
+  String get levelNew => 'نیا';
+
+  @override
+  String get levelRising => 'ابھرتا ہوا';
+
+  @override
+  String get levelShownHint =>
+      'گاہک آپ کا درجہ آپ کی پیشکشوں اور پروفائل پر دیکھتے ہیں۔';
+
+  @override
+  String get levelTopRated => 'سب سے بہترین';
+
+  @override
+  String get levelTrusted => 'قابلِ اعتماد';
+
+  @override
   String get linkCopied => 'لنک کاپی ہو گیا۔';
 
   @override
@@ -1125,6 +1163,12 @@ class AppLocalizationsUr extends AppLocalizations {
   String get moveLater => 'بعد میں کریں';
 
   @override
+  String get myLevel => 'میرا درجہ';
+
+  @override
+  String get myLevelHint => 'آپ کا درجہ، بیجز، اور اگلے درجے تک کیسے پہنچیں';
+
+  @override
   String get myPortfolio => 'میرے کام کی تصاویر';
 
   @override
@@ -1194,6 +1238,11 @@ class AppLocalizationsUr extends AppLocalizations {
   String get newPassword => 'نیا پاس ورڈ';
 
   @override
+  String nextLevelIs(Object level) {
+    return '$level بننے کے لیے';
+  }
+
+  @override
   String nextVisitOn(String when) {
     return 'اگلی بار: $when';
   }
@@ -1206,6 +1255,10 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get noAlertsYet => 'ابھی کوئی اطلاع نہیں';
+
+  @override
+  String get noBadgesYet =>
+      'ابھی کوئی بیج نہیں۔ یہ تجربے، گاہکوں کے محفوظ کرنے اور ہمیشہ وقت پر آنے سے ملتے ہیں۔';
 
   @override
   String get noBookingsCustomerHint =>
@@ -1866,6 +1919,31 @@ class AppLocalizationsUr extends AppLocalizations {
   String get reportUnpaid => 'ابھی ادائیگی نہیں ہوئی';
 
   @override
+  String reqCancelRate(int days, Object value, Object target) {
+    return '$days دنوں میں آپ کی منسوخ کردہ بکنگز: $value% (زیادہ سے زیادہ $target%)';
+  }
+
+  @override
+  String reqJobs(Object value, Object target) {
+    return 'مکمل کام: $target میں سے $value';
+  }
+
+  @override
+  String reqNoShows(int days, Object value, Object target) {
+    return '$days دنوں میں تصدیق شدہ غیر حاضری: $value (زیادہ سے زیادہ $target)';
+  }
+
+  @override
+  String reqRating(Object value, Object target) {
+    return 'اوسط ریٹنگ: $value (کم از کم $target)';
+  }
+
+  @override
+  String reqReviews(Object value, Object target) {
+    return 'ریویوز: $target میں سے $value';
+  }
+
+  @override
   String get request => 'درخواست';
 
   @override
@@ -2373,6 +2451,10 @@ class AppLocalizationsUr extends AppLocalizations {
   String get toWord => 'سے';
 
   @override
+  String get topLevelReached =>
+      'آپ سب سے اونچے درجے پر ہیں۔ یوں ہی جاری رکھیں!';
+
+  @override
   String get total => 'کل';
 
   @override
@@ -2629,7 +2711,13 @@ class AppLocalizationsUr extends AppLocalizations {
   }
 
   @override
+  String get yourBadges => 'آپ کے بیجز';
+
+  @override
   String get yourInviteCode => 'آپ کا دعوتی کوڈ';
+
+  @override
+  String get yourLevelIs => 'آپ کا درجہ';
 
   @override
   String get yourOffer => 'آپ کی پیشکش';

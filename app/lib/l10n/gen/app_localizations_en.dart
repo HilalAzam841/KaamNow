@@ -152,6 +152,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get backToLogin => 'Back to log in';
 
   @override
+  String get badgeAlwaysOnTime => 'Always on time';
+
+  @override
+  String get badgeCustomerFavourite => 'Customer favourite';
+
+  @override
+  String get badgeExperienced => '5+ years experience';
+
+  @override
+  String get badgeJobs100 => '100+ jobs';
+
+  @override
+  String get badgeVerified => 'Verified';
+
+  @override
   String get bankTransfer => 'Bank transfer';
 
   @override
@@ -1022,6 +1037,30 @@ class AppLocalizationsEn extends AppLocalizations {
   String get leftRepeating => 'Done. You will not get these visits any more.';
 
   @override
+  String get levelHelp =>
+      'KaamNow level, from jobs done, ratings and reliability';
+
+  @override
+  String get levelNeedsVerification =>
+      'Levels start once your account is verified.';
+
+  @override
+  String get levelNew => 'New';
+
+  @override
+  String get levelRising => 'Rising';
+
+  @override
+  String get levelShownHint =>
+      'Customers see your level on your offers and profile.';
+
+  @override
+  String get levelTopRated => 'Top rated';
+
+  @override
+  String get levelTrusted => 'Trusted';
+
+  @override
   String get linkCopied => 'Link copied.';
 
   @override
@@ -1124,6 +1163,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get moveLater => 'Move later';
 
   @override
+  String get myLevel => 'My level';
+
+  @override
+  String get myLevelHint =>
+      'Your level and badges, and how to reach the next level';
+
+  @override
   String get myPortfolio => 'My work photos';
 
   @override
@@ -1191,6 +1237,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get newPassword => 'New password';
 
   @override
+  String nextLevelIs(Object level) {
+    return 'To become $level';
+  }
+
+  @override
   String nextVisitOn(String when) {
     return 'Next visit: $when';
   }
@@ -1203,6 +1254,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noAlertsYet => 'No alerts yet';
+
+  @override
+  String get noBadgesYet =>
+      'No badges yet. They come with experience, saved-by customers and always being on time.';
 
   @override
   String get noBookingsCustomerHint =>
@@ -1863,6 +1918,31 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reportUnpaid => 'Not paid yet';
 
   @override
+  String reqCancelRate(int days, Object value, Object target) {
+    return 'Bookings you cancelled in $days days: $value% (at most $target%)';
+  }
+
+  @override
+  String reqJobs(Object value, Object target) {
+    return 'Jobs done: $value of $target';
+  }
+
+  @override
+  String reqNoShows(int days, Object value, Object target) {
+    return 'Confirmed no-shows in $days days: $value (at most $target)';
+  }
+
+  @override
+  String reqRating(Object value, Object target) {
+    return 'Average rating: $value (needs $target)';
+  }
+
+  @override
+  String reqReviews(Object value, Object target) {
+    return 'Reviews: $value of $target';
+  }
+
+  @override
   String get request => 'Request';
 
   @override
@@ -2369,6 +2449,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get toWord => 'to';
 
   @override
+  String get topLevelReached => 'You are at the top level. Keep it up!';
+
+  @override
   String get total => 'Total';
 
   @override
@@ -2624,7 +2707,13 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get yourBadges => 'Your badges';
+
+  @override
   String get yourInviteCode => 'Your invite code';
+
+  @override
+  String get yourLevelIs => 'Your level';
 
   @override
   String get yourOffer => 'Your offer';
