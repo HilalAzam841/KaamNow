@@ -95,6 +95,65 @@ class EarningsSummarySerializer(serializers.Serializer):
     recent = CommissionSerializer(many=True)
 
 
+# --- Earnings reports ------------------------------------------------------------
+def _money():
+    return serializers.DecimalField(max_digits=14, decimal_places=2)
+
+
+class ReportTotalsSerializer(serializers.Serializer):
+    jobs = serializers.IntegerField()
+    gross = _money()
+    commission = _money()
+    discount = _money()
+    earnings = _money()
+    adjustments = _money()
+    net = _money()
+
+
+class PreviousTotalsSerializer(ReportTotalsSerializer):
+    start = serializers.DateField()
+    end = serializers.DateField()
+
+
+class ReportBucketSerializer(serializers.Serializer):
+    start = serializers.DateField()
+    jobs = serializers.IntegerField()
+    gross = _money()
+    net = _money()
+
+
+class ReportServiceSerializer(serializers.Serializer):
+    category = serializers.IntegerField()
+    name = serializers.CharField()
+    jobs = serializers.IntegerField()
+    gross = _money()
+    net = _money()
+
+
+class ReportPaymentSplitSerializer(serializers.Serializer):
+    jobs = serializers.IntegerField()
+    gross = _money()
+    net = _money()
+
+
+class ReportByPaymentSerializer(serializers.Serializer):
+    cash = ReportPaymentSplitSerializer()
+    online = ReportPaymentSplitSerializer()
+    unpaid = ReportPaymentSplitSerializer()
+
+
+class EarningsReportSerializer(serializers.Serializer):
+    start = serializers.DateField()
+    end = serializers.DateField()
+    group = serializers.ChoiceField(choices=[("day", "Day"), ("week", "Week"), ("month", "Month")])
+    totals = ReportTotalsSerializer()
+    average_per_job = _money()
+    previous = PreviousTotalsSerializer()
+    series = ReportBucketSerializer(many=True)
+    by_service = ReportServiceSerializer(many=True)
+    by_payment = ReportByPaymentSerializer()
+
+
 # --- Subscriptions -------------------------------------------------------------
 class SubscriptionPlanSerializer(serializers.ModelSerializer):
     class Meta:

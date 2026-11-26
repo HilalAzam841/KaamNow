@@ -4,7 +4,8 @@ from decimal import Decimal
 from django.db.models import Count, Q, Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
-from drf_spectacular.utils import OpenApiResponse, extend_schema, extend_schema_view
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_schema, extend_schema_view
 from rest_framework import generics, mixins, permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
@@ -13,7 +14,7 @@ from rest_framework.views import APIView
 
 from apps.common.permissions import IsCustomer, IsPlatformAdmin, IsWorker
 
-from . import services, wallet
+from . import reports, services, wallet
 from .gateways import GatewayError, SignatureError
 from .models import (
     Commission,
@@ -27,6 +28,7 @@ from .models import (
 from .serializers import (
     CommissionPaymentResponseSerializer,
     CommissionPaymentSerializer,
+    EarningsReportSerializer,
     EarningsSummarySerializer,
     FeaturedListingSerializer,
     FeaturedPlanSerializer,
@@ -167,6 +169,45 @@ class WorkerEarningsView(APIView):
             "recent": qs.select_related("worker__user")[:20],
         }
         return Response(EarningsSummarySerializer(data).data)
+
+
+_REPORT_PARAMS = [
+    OpenApiParameter("start", OpenApiTypes.DATE, description="First day (Pakistan date). Default: the 1st of this month."),
+    OpenApiParameter("end", OpenApiTypes.DATE, description="Last day, at most 366 days after start. Default: today."),
+]
+
+
+class EarningsReportView(APIView):
+    permission_classes = [IsWorker]
+
+    @extend_schema(
+        tags=["payments"], responses={200: EarningsReportSerializer},
+        parameters=[*_REPORT_PARAMS, OpenApiParameter(
+            "group", OpenApiTypes.STR, enum=list(reports.GROUPS),
+            description="Series step. Default: day up to 31 days, week up to 120, then month.")],
+        summary="Worker: earnings for a date range, compared with the range before, by day/week/month, "
+                "service and payment method",
+    )
+    def get(self, request):
+        start, end, group = reports.parse_dates(request.query_params)
+        data = reports.report(request.user.worker_profile, start, end, group)
+        return Response(EarningsReportSerializer(data).data)
+
+
+class EarningsStatementView(APIView):
+    permission_classes = [IsWorker]
+    throttle_scope = "statement"
+
+    @extend_schema(tags=["payments"], parameters=_REPORT_PARAMS,
+                   responses={(200, "text/csv"): OpenApiResponse(description="CSV statement, one row per job")},
+                   summary="Worker: download a CSV statement of jobs and refund shares in a date range")
+    def get(self, request):
+        start, end, _group = reports.parse_dates(request.query_params)
+        body = reports.statement_csv(request.user.worker_profile, start, end)
+        response = HttpResponse(body, content_type="text/csv; charset=utf-8")
+        response["Content-Disposition"] = f'attachment; filename="kaamnow-earnings-{start}-to-{end}.csv"'
+        response["Cache-Control"] = "private, no-store"
+        return response
 
 
 # --------------------------------------------------------------------------

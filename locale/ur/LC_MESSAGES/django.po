@@ -234,6 +234,88 @@ msgstr "ہم نے ادائیگی {reference} چیک کی، کام ناؤ کو ک
 msgid "Unknown resolution."
 msgstr "نامعلوم فیصلہ۔"
 
+#: apps/billing/reports.py
+msgid "The start date must be on or before the end date."
+msgstr "شروع کی تاریخ آخری تاریخ سے پہلے یا اسی دن ہونی چاہیے۔"
+
+#: apps/billing/reports.py
+#, python-brace-format
+msgid "Choose a range of at most {days} days."
+msgstr "زیادہ سے زیادہ {days} دن کی مدت منتخب کریں۔"
+
+#: apps/billing/reports.py
+msgid "Date"
+msgstr "تاریخ"
+
+#: apps/billing/reports.py
+msgid "Booking"
+msgstr "بکنگ"
+
+#: apps/billing/reports.py
+msgid "Service"
+msgstr "سروس"
+
+#: apps/billing/reports.py
+msgid "Job"
+msgstr "کام"
+
+#: apps/billing/reports.py
+msgid "Paid by"
+msgstr "ادائیگی کا طریقہ"
+
+#: apps/billing/reports.py
+msgid "Job price"
+msgstr "کام کی قیمت"
+
+#: apps/billing/reports.py
+msgid "Customer discount"
+msgstr "گاہک کی رعایت"
+
+#: apps/billing/reports.py
+msgid "Commission %"
+msgstr "کمیشن %"
+
+#: apps/billing/reports.py
+msgid "Commission"
+msgstr "کمیشن"
+
+#: apps/billing/reports.py
+msgid "Your earnings"
+msgstr "آپ کی کمائی"
+
+#: apps/billing/reports.py
+msgid "Cash"
+msgstr "نقد"
+
+#: apps/billing/reports.py
+msgid "Not paid yet"
+msgstr "ابھی ادائیگی نہیں ہوئی"
+
+#: apps/billing/reports.py
+msgid "Online"
+msgstr "آن لائن"
+
+#: apps/billing/reports.py
+msgid "Adjustment"
+msgstr "ردوبدل"
+
+#: apps/billing/reports.py
+msgid "Total"
+msgstr "کل"
+
+#: apps/billing/reports.py
+#, python-brace-format
+msgid "{n} jobs"
+msgstr "{n} کام"
+
+#: apps/billing/reports.py
+msgid "Dates must look like 2026-12-31."
+msgstr "تاریخ اس طرح لکھیں: 2026-12-31"
+
+#: apps/billing/reports.py
+msgid "Group by day, week or month."
+msgstr "دن، ہفتے یا مہینے کے حساب سے دکھائیں۔"
+
 #: apps/billing/serializers.py
 msgid "Benefits must be a list of short strings."
 msgstr "فوائد مختصر جملوں کی فہرست ہونی چاہیے۔"
@@ -1441,10 +1523,6 @@ msgstr "لوکیشن درست نہیں۔"
 #: apps/tracking/services.py
 msgid "Live location is only shared during an active booking."
 msgstr "لائیو لوکیشن صرف جاری بکنگ کے دوران شیئر ہوتی ہے۔"
-
-#: apps/billing/models.py
-msgid "Cash"
-msgstr "نقد"
 
 #: apps/billing/models.py
 msgid "JazzCash"
