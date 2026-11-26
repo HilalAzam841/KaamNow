@@ -5,6 +5,7 @@ from django.urls import include, path
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 
 from apps.levels.views import MyLevelView
+from apps.packages.views import MyPackageDetailView, MyPackagesView, WorkerPackagesView
 from apps.accounts.urls import auth_urlpatterns, worker_urlpatterns
 from apps.billing.urls import featured_urlpatterns, payment_urlpatterns, subscription_urlpatterns
 from apps.chat.views import BookingMessagesReadView, BookingMessagesView
@@ -30,10 +31,14 @@ api_v1 = [
     path("workers/me/portfolio/<int:pk>/", MyPortfolioPhotoView.as_view(), name="worker-portfolio-photo"),
     path("workers/<int:pk>/portfolio/", WorkerPortfolioView.as_view(), name="worker-public-portfolio"),
     path("workers/me/level/", MyLevelView.as_view(), name="worker-level"),
+    path("workers/me/packages/", MyPackagesView.as_view(), name="worker-packages"),
+    path("workers/me/packages/<int:pk>/", MyPackageDetailView.as_view(), name="worker-package"),
+    path("workers/<int:pk>/packages/", WorkerPackagesView.as_view(), name="worker-public-packages"),
     path("workers/me/time-off/", MyTimeOffView.as_view(), name="worker-time-off"),
     path("workers/me/time-off/<int:pk>/", MyTimeOffDetailView.as_view(), name="worker-time-off-detail"),
     path("workers/", include(worker_urlpatterns)),
     path("services/", include("apps.catalog.urls")),
+    path("packages/", include("apps.packages.urls")),
     path("requests/slots/", SlotsView.as_view(), name="request-slots"),
     path("requests/", include(request_offer_urlpatterns)),
     path("requests/", include(requests_router.urls)),

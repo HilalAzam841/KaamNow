@@ -351,7 +351,7 @@ class Booking {
       required this.status, required this.worker, required this.customerName, this.contact = const {},
       this.cancelReason = '', this.completedAt, this.statusHistory = const [], this.commission,
       this.hasReview = false, this.createdAt, this.durationMinutes = 120, this.noShowReported,
-      this.canReportNoShow, this.noShowOpensAt, this.canSos = false, this.sosStatus, this.sharingUntil});
+      this.canReportNoShow, this.noShowOpensAt, this.canSos = false, this.sosStatus, this.sharingUntil, this.packageId});
 
   factory Booking.fromJson(Map<String, dynamic> j) => Booking(
         id: parseInt(j['id']),
@@ -378,11 +378,15 @@ class Booking {
         canSos: asMap(j['safety'])['can_sos'] == true,
         sosStatus: asMap(j['safety'])['sos_status'] as String?,
         sharingUntil: parseDate(asMap(j['safety'])['sharing_until']),
+        packageId: j['package_id'] == null ? null : parseInt(j['package_id']),
         createdAt: parseDate(j['created_at']),
       );
 
   final int id;
   final int requestId;
+
+  /// The fixed-price package this booking came from, or null for a bid job.
+  final int? packageId;
   final String title;
   final String categoryName;
   final DateTime? preferredTime;
@@ -1355,4 +1359,72 @@ class LevelProgress {
   final List<LevelRequirement> requirements;
   final bool verified;
   final int windowDays;
+}
+
+/// A fixed-price job a worker offers. Customers book it at a free time with no bidding.
+class ServicePackage {
+  ServicePackage({required this.id, required this.title, this.description = '', this.includes = const [],
+      required this.price, this.durationMinutes = 60, required this.category, this.categoryName = '',
+      this.timesBooked = 0, this.isActive = true, this.isHidden = false, this.hiddenReason = '', this.worker,
+      this.workerName = ''});
+
+  factory ServicePackage.fromJson(Map<String, dynamic> j) => ServicePackage(
+        id: parseInt(j['id']),
+        title: str(j['title']),
+        description: str(j['description']),
+        includes: [for (final x in (j['includes'] as List? ?? const [])) '$x'],
+        price: str(j['price']),
+        durationMinutes: parseInt(j['duration_minutes'], 60),
+        category: parseInt(j['category']),
+        categoryName: str(j['category_name']),
+        timesBooked: parseInt(j['times_booked']),
+        isActive: j['is_active'] != false,
+        isHidden: j['is_hidden'] == true,
+        hiddenReason: str(j['hidden_reason']),
+        worker: j['worker'] is Map ? PackageWorker.fromJson(asMap(j['worker'])) : null,
+        workerName: str(j['worker_name']),
+      );
+
+  final int id;
+  final String title;
+  final String description;
+  final List<String> includes;
+  final String price;
+  final int durationMinutes;
+  final int category;
+  final String categoryName;
+  final int timesBooked;
+  final bool isActive;
+  final bool isHidden;
+  final String hiddenReason;
+
+  /// Set on the customer-facing lists.
+  final PackageWorker? worker;
+
+  /// Set on the admin list.
+  final String workerName;
+}
+
+/// The worker on a package card.
+class PackageWorker {
+  PackageWorker({required this.id, required this.fullName, this.profilePicture, this.averageRating = '0',
+      this.ratingCount = 0, this.completedJobs = 0, this.level = 'new'});
+
+  factory PackageWorker.fromJson(Map<String, dynamic> j) => PackageWorker(
+        id: parseInt(j['id']),
+        fullName: str(j['full_name']),
+        profilePicture: j['profile_picture'] as String?,
+        averageRating: str(j['average_rating']),
+        ratingCount: parseInt(j['rating_count']),
+        completedJobs: parseInt(j['completed_jobs_count']),
+        level: j['level'] == null ? 'new' : str(j['level']),
+      );
+
+  final int id;
+  final String fullName;
+  final String? profilePicture;
+  final String averageRating;
+  final int ratingCount;
+  final int completedJobs;
+  final String level;
 }

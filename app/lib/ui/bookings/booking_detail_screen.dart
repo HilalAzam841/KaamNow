@@ -346,7 +346,16 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
           else
             WorkerSummary(worker: b.worker, onTap: () => context.push('/workers/${b.worker.id}')),
           const Divider(height: 24),
-          _priceRow(context.t.agreedPrice, rs(b.agreedPrice)),
+          if (b.packageId != null)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 4),
+              child: Row(key: const Key('booking-package'), children: [
+                Icon(Icons.sell, size: 18, color: theme.colorScheme.primary),
+                const SizedBox(width: 6),
+                Text(context.t.fixedPricePackage, style: theme.textTheme.labelLarge),
+              ]),
+            ),
+          _priceRow(b.packageId != null ? context.t.packagePriceLabel : context.t.agreedPrice, rs(b.agreedPrice)),
           if ((double.tryParse(b.emergencyFee) ?? 0) > 0) _priceRow(context.t.emergencyFeeLabel, rs(b.emergencyFee)),
           _priceRow(context.t.total, rs(b.totalAmount), bold: true),
           if (_isWorker && b.commission != null) ...[

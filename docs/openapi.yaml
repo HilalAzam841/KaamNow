@@ -156,6 +156,7 @@ paths:
           - document_viewed
           - featured_cancelled
           - no_show_reviewed
+          - package_moderated
           - payment_disputed
           - payment_refunded
           - payment_resolved
@@ -194,6 +195,7 @@ paths:
           * `no_show_reviewed` - No-show report reviewed
           * `sos_handled` - SOS alert handled
           * `portfolio_moderated` - Portfolio photo hidden or shown
+          * `package_moderated` - Service package hidden or shown
       - in: query
         name: actor
         schema:
@@ -896,6 +898,121 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AdminNoShow'
+          description: ''
+  /api/v1/admin/packages/:
+    get:
+      operationId: admin_packages_list
+      description: Every worker package, newest first, to check and hide anything
+        unsuitable.
+      parameters:
+      - in: query
+        name: category
+        schema:
+          type: integer
+      - in: query
+        name: is_active
+        schema:
+          type: boolean
+      - in: query
+        name: is_hidden
+        schema:
+          type: boolean
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: worker
+        schema:
+          type: integer
+      tags:
+      - admin
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAdminPackageList'
+          description: ''
+  /api/v1/admin/packages/{id}/hide/:
+    post:
+      operationId: admin_packages_hide_create
+      description: Every worker package, newest first, to check and hide anything
+        unsuitable.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this service package.
+        required: true
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HideRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/HideRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/HideRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminPackage'
+          description: ''
+  /api/v1/admin/packages/{id}/unhide/:
+    post:
+      operationId: admin_packages_unhide_create
+      description: Every worker package, newest first, to check and hide anything
+        unsuitable.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this service package.
+        required: true
+      tags:
+      - admin
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminPackage'
           description: ''
   /api/v1/admin/payments/:
     get:
@@ -3917,6 +4034,123 @@ paths:
               schema:
                 $ref: '#/components/schemas/WorkerOffer'
           description: ''
+  /api/v1/packages/:
+    get:
+      operationId: packages_list
+      description: Fixed-price packages to book straight away, best workers first.
+      parameters:
+      - in: query
+        name: category
+        schema:
+          type: integer
+        description: Only this service category.
+      - in: query
+        name: latitude
+        schema:
+          type: number
+          format: double
+        description: 'With longitude: only workers who cover this place.'
+      - in: query
+        name: longitude
+        schema:
+          type: number
+          format: double
+      - in: query
+        name: max_price
+        schema:
+          type: number
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - packages
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedPackageList'
+          description: ''
+  /api/v1/packages/{id}/:
+    get:
+      operationId: packages_retrieve
+      summary: One package that can be booked now.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - packages
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Package'
+          description: ''
+  /api/v1/packages/{id}/book/:
+    post:
+      operationId: packages_book_create
+      summary: Book a package at its fixed price. The worker must be free then and
+        cover the address.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - packages
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookPackageRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BookPackageRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BookPackageRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+          description: ''
   /api/v1/payments/:
     get:
       operationId: payments_list
@@ -5561,6 +5795,30 @@ paths:
               schema:
                 $ref: '#/components/schemas/PublicWorkerDetail'
           description: ''
+  /api/v1/workers/{id}/packages/:
+    get:
+      operationId: workers_packages_list
+      summary: A verified worker's packages that can be booked now.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - packages
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Package'
+          description: ''
   /api/v1/workers/{id}/portfolio/:
     get:
       operationId: workers_portfolio_list
@@ -5791,6 +6049,97 @@ paths:
               schema:
                 $ref: '#/components/schemas/LevelProgress'
           description: ''
+  /api/v1/workers/me/packages/:
+    get:
+      operationId: workers_me_packages_list
+      summary: Your fixed-price packages, including paused and hidden ones.
+      tags:
+      - packages
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MyPackage'
+          description: ''
+    post:
+      operationId: workers_me_packages_create
+      summary: Add a fixed-price package (up to 10) for a service you offer.
+      tags:
+      - packages
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MyPackageRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MyPackageRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MyPackageRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MyPackage'
+          description: ''
+  /api/v1/workers/me/packages/{id}/:
+    patch:
+      operationId: workers_me_packages_partial_update
+      summary: Change a package, or pause it with is_active false.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - packages
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedMyPackageRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedMyPackageRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedMyPackageRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MyPackage'
+          description: ''
+    delete:
+      operationId: workers_me_packages_destroy
+      summary: Delete a package. Bookings made from it are kept.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - packages
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
   /api/v1/workers/me/portfolio/:
     get:
       operationId: workers_me_portfolio_list
@@ -6205,6 +6554,84 @@ components:
         * `open` - Not reviewed
         * `confirmed` - Confirmed
         * `dismissed` - Dismissed
+    AdminPackage:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        worker:
+          type: integer
+          readOnly: true
+        worker_name:
+          type: string
+          readOnly: true
+        title:
+          type: string
+          readOnly: true
+        description:
+          type: string
+          readOnly: true
+        includes:
+          readOnly: true
+          description: Short lines of what the price covers.
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          readOnly: true
+        duration_minutes:
+          type: integer
+          readOnly: true
+        category:
+          type: integer
+          readOnly: true
+        category_name:
+          type: string
+          readOnly: true
+        is_active:
+          type: boolean
+          readOnly: true
+          description: Paused packages are not shown to customers.
+        times_booked:
+          type: integer
+          readOnly: true
+        is_hidden:
+          type: boolean
+          readOnly: true
+          description: Hidden by an admin.
+        hidden_reason:
+          type: string
+          readOnly: true
+        hidden_by_name:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - category
+      - category_name
+      - created_at
+      - description
+      - duration_minutes
+      - hidden_by_name
+      - hidden_reason
+      - id
+      - includes
+      - is_active
+      - is_hidden
+      - price
+      - times_booked
+      - title
+      - updated_at
+      - worker
+      - worker_name
     AdminPayment:
       type: object
       properties:
@@ -7029,6 +7456,7 @@ components:
       - no_show_reviewed
       - sos_handled
       - portfolio_moderated
+      - package_moderated
       type: string
       description: |-
         * `worker_verified` - Worker verified
@@ -7053,6 +7481,7 @@ components:
         * `no_show_reviewed` - No-show report reviewed
         * `sos_handled` - SOS alert handled
         * `portfolio_moderated` - Portfolio photo hidden or shown
+        * `package_moderated` - Service package hidden or shown
     AuthResponse:
       type: object
       properties:
@@ -7072,6 +7501,40 @@ components:
           type: boolean
       required:
       - is_available
+    BookPackageRequest:
+      type: object
+      properties:
+        preferred_time:
+          type: string
+          format: date-time
+          description: Start time. Pick a free slot from workers/{id}/slots/.
+        latitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+        longitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+        address:
+          type: string
+          minLength: 1
+          maxLength: 255
+        area:
+          type: string
+          default: ''
+          maxLength: 100
+        saved_address:
+          type: integer
+          description: One of your saved addresses. Fills latitude, longitude, address
+            and area.
+        notes:
+          type: string
+          default: ''
+          description: Anything the worker should know, e.g. gate code or AC brand.
+          maxLength: 500
+      required:
+      - preferred_time
     Booking:
       type: object
       description: |-
@@ -7109,6 +7572,12 @@ components:
           format: decimal
           pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
           readOnly: true
+        package_id:
+          type: integer
+          readOnly: true
+          nullable: true
+          description: The fixed-price package this booking came from, or null for
+            a bid job.
         total_amount:
           type: string
           format: decimal
@@ -7214,6 +7683,7 @@ components:
       - id
       - no_show
       - on_the_way_at
+      - package_id
       - preferred_time
       - request_id
       - safety
@@ -8303,6 +8773,104 @@ components:
           maxLength: 100
       required:
       - reference
+    MyPackage:
+      type: object
+      description: A package as its worker sees and edits it.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 80
+        description:
+          type: string
+          maxLength: 600
+        includes:
+          type: array
+          items:
+            type: string
+            maxLength: 80
+          maxItems: 8
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        duration_minutes:
+          type: integer
+          maximum: 480
+          minimum: 30
+        category:
+          type: integer
+        category_name:
+          type: string
+          readOnly: true
+        is_active:
+          type: boolean
+          description: Paused packages are not shown to customers.
+        times_booked:
+          type: integer
+          readOnly: true
+        is_hidden:
+          type: boolean
+          readOnly: true
+          description: Hidden by an admin.
+        hidden_reason:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - category
+      - category_name
+      - created_at
+      - hidden_reason
+      - id
+      - is_hidden
+      - price
+      - times_booked
+      - title
+      - updated_at
+    MyPackageRequest:
+      type: object
+      description: A package as its worker sees and edits it.
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 80
+        description:
+          type: string
+          maxLength: 600
+        includes:
+          type: array
+          items:
+            type: string
+            maxLength: 80
+          maxItems: 8
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        duration_minutes:
+          type: integer
+          maximum: 480
+          minimum: 30
+        category:
+          type: integer
+        is_active:
+          type: boolean
+          description: Paused packages are not shown to customers.
+      required:
+      - category
+      - price
+      - title
     MyPortfolioPhoto:
       type: object
       description: The worker's own view, with whether an admin hid it and why.
@@ -8668,6 +9236,99 @@ components:
       description: |-
         * `jazzcash` - JazzCash
         * `easypaisa` - Easypaisa
+    Package:
+      type: object
+      description: A package as customers see it.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          readOnly: true
+        description:
+          type: string
+          readOnly: true
+        includes:
+          readOnly: true
+          description: Short lines of what the price covers.
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          readOnly: true
+        duration_minutes:
+          type: integer
+          readOnly: true
+        category:
+          type: integer
+          readOnly: true
+        category_name:
+          type: string
+          readOnly: true
+        times_booked:
+          type: integer
+          readOnly: true
+        worker:
+          allOf:
+          - $ref: '#/components/schemas/PackageWorker'
+          readOnly: true
+      required:
+      - category
+      - category_name
+      - description
+      - duration_minutes
+      - id
+      - includes
+      - price
+      - times_booked
+      - title
+      - worker
+    PackageWorker:
+      type: object
+      description: 'The worker on a package card: public details only.'
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        full_name:
+          type: string
+          readOnly: true
+        profile_picture:
+          type: string
+          format: uri
+          nullable: true
+          readOnly: true
+        average_rating:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,1}(?:\.\d{0,2})?$
+          readOnly: true
+        rating_count:
+          type: integer
+          readOnly: true
+        completed_jobs_count:
+          type: integer
+          readOnly: true
+        level:
+          allOf:
+          - $ref: '#/components/schemas/WorkerLevelEnum'
+          readOnly: true
+          description: |-
+            Worked out from jobs, ratings and reliability (apps.levels). Not set by hand.
+
+            * `new` - New
+            * `rising` - Rising
+            * `trusted` - Trusted
+            * `top_rated` - Top rated
+      required:
+      - average_rating
+      - completed_jobs_count
+      - full_name
+      - id
+      - level
+      - profile_picture
+      - rating_count
     PaginatedAdminComplaintList:
       type: object
       properties:
@@ -8706,6 +9367,25 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/AdminNoShow'
+    PaginatedAdminPackageList:
+      type: object
+      properties:
+        count:
+          type: integer
+        page:
+          type: integer
+        total_pages:
+          type: integer
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdminPackage'
     PaginatedAdminPaymentList:
       type: object
       properties:
@@ -8972,6 +9652,25 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Notification'
+    PaginatedPackageList:
+      type: object
+      properties:
+        count:
+          type: integer
+        page:
+          type: integer
+        total_pages:
+          type: integer
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Package'
     PaginatedPaymentList:
       type: object
       properties:
@@ -9267,6 +9966,36 @@ components:
           pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
         is_active:
           type: boolean
+    PatchedMyPackageRequest:
+      type: object
+      description: A package as its worker sees and edits it.
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 80
+        description:
+          type: string
+          maxLength: 600
+        includes:
+          type: array
+          items:
+            type: string
+            maxLength: 80
+          maxItems: 8
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        duration_minutes:
+          type: integer
+          maximum: 480
+          minimum: 30
+        category:
+          type: integer
+        is_active:
+          type: boolean
+          description: Paused packages are not shown to customers.
     PatchedOfferUpdateRequest:
       type: object
       properties:
@@ -11308,6 +12037,12 @@ components:
           description: The one worker this job was sent to (book again), or null when
             it is open to everyone.
           readOnly: true
+        package:
+          type: integer
+          readOnly: true
+          nullable: true
+          description: Set when the customer booked one of the worker's fixed-price
+            packages.
         cancel_reason:
           type: string
           readOnly: true
@@ -11345,6 +12080,7 @@ components:
       - longitude
       - matched_workers_count
       - offers_count
+      - package
       - preferred_time
       - status
       - title

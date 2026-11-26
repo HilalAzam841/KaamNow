@@ -42,6 +42,10 @@ class ServiceRequest(TimeStampedModel):
         help_text="Set when the customer books one worker directly (book again). Only this worker sees the job "
                   "until it is opened to everyone.",
     )
+    package = models.ForeignKey(
+        "packages.ServicePackage", on_delete=models.SET_NULL, null=True, blank=True, related_name="requests",
+        help_text="Set when the customer booked one of the worker's fixed-price packages.",
+    )
     cancelled_at = models.DateTimeField(null=True, blank=True)
     cancel_reason = models.CharField(max_length=255, blank=True)
 

@@ -191,7 +191,7 @@ def negotiate(offer, user, *, action, amount=None, message=""):
     raise BusinessRuleError(_("Unknown negotiation action."))
 
 
-def accept_offer(offer, customer_user, message=""):
+def accept_offer(offer, customer_user, message="", *, notify_worker=True):
     """
     Turns an offer into a booking.
 
@@ -251,12 +251,13 @@ def accept_offer(offer, customer_user, message=""):
             WorkerOffer.objects.filter(pk__in=[o.pk for o in others]).update(
                 status=WorkerOffer.Status.CLOSED, updated_at=timezone.now()
             )
-            notify(
-                worker.user, Notification.Type.OFFER_ACCEPTED, t("Offer accepted"),
-                t("Your offer of {amount} was accepted. Booking #{id} is confirmed.",
-                  amount=money(offer.current_price), id=booking.pk),
-                {"booking_id": booking.pk, "offer_id": offer.pk},
-            )
+            if notify_worker:
+                notify(
+                    worker.user, Notification.Type.OFFER_ACCEPTED, t("Offer accepted"),
+                    t("Your offer of {amount} was accepted. Booking #{id} is confirmed.",
+                      amount=money(offer.current_price), id=booking.pk),
+                    {"booking_id": booking.pk, "offer_id": offer.pk},
+                )
             if others:
                 notify_many(
                     [o.worker.user for o in others], Notification.Type.OFFER_CLOSED, t("Request booked"),

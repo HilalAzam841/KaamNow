@@ -73,6 +73,7 @@ INSTALLED_APPS = [
     "apps.portfolio",
     "apps.addresses",
     "apps.levels",
+    "apps.packages",
     "apps.scheduling",
 ]
 

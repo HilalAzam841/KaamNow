@@ -1184,6 +1184,56 @@ msgstr "پیشکش مسترد ہو گئی"
 msgid "Offer withdrawn"
 msgstr "پیشکش واپس لے لی گئی"
 
+#: apps/packages/services.py
+#, python-brace-format
+msgid "Add {category} to your services before making a package for it."
+msgstr "پیکج بنانے سے پہلے {category} کو اپنی سروسز میں شامل کریں۔"
+
+#: apps/packages/services.py
+#, python-brace-format
+msgid "List up to {n} things the price covers."
+msgstr "قیمت میں شامل زیادہ سے زیادہ {n} چیزیں لکھیں۔"
+
+#: apps/packages/services.py
+msgid "Keep each line under 80 characters."
+msgstr "ہر لائن 80 حروف سے کم رکھیں۔"
+
+#: apps/packages/services.py
+#, python-brace-format
+msgid "You can have up to {n} packages. Delete one to add another."
+msgstr "آپ زیادہ سے زیادہ {n} پیکج رکھ سکتے ہیں۔ نیا شامل کرنے کے لیے ایک حذف کریں۔"
+
+#: apps/packages/services.py
+msgid "This package is not available right now."
+msgstr "یہ پیکج اس وقت دستیاب نہیں۔"
+
+#: apps/packages/services.py
+msgid "You already booked this package for that time."
+msgstr "آپ اس وقت کے لیے یہ پیکج پہلے ہی بک کر چکے ہیں۔"
+
+#: apps/packages/services.py
+#, python-brace-format
+msgid "Customer notes: {notes}"
+msgstr "گاہک کی ہدایات: {notes}"
+
+#: apps/packages/services.py
+msgid "New package booking"
+msgstr "پیکج کی نئی بکنگ"
+
+#: apps/packages/services.py
+#, python-brace-format
+msgid "{name} booked your package '{title}' for {amount}. Booking #{id} is confirmed."
+msgstr "{name} نے آپ کا پیکج '{title}' {amount} میں بک کیا۔ بکنگ #{id} پکی ہو گئی ہے۔"
+
+#: apps/packages/services.py
+msgid "Package hidden"
+msgstr "پیکج چھپا دیا گیا"
+
+#: apps/packages/services.py
+#, python-brace-format
+msgid "An admin hid your package '{title}': {reason}"
+msgstr "ایڈمن نے آپ کا پیکج '{title}' چھپا دیا: {reason}"
+
 #: apps/portfolio/serializers.py
 msgid "Say why, so the worker knows."
 msgstr "وجہ لکھیں تاکہ ورکر کو معلوم ہو۔"
