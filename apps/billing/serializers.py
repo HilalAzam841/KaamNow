@@ -46,6 +46,40 @@ class PaymentSerializer(serializers.ModelSerializer):
         read_only_fields = fields
 
 
+class ReceiptLineSerializer(serializers.Serializer):
+    label = serializers.CharField()
+    amount = serializers.DecimalField(max_digits=12, decimal_places=2)
+
+
+class ReceiptRefundSerializer(serializers.Serializer):
+    date = serializers.DateField()
+    amount = serializers.DecimalField(max_digits=12, decimal_places=2)
+    reference = serializers.CharField()
+
+
+class ReceiptSerializer(serializers.Serializer):
+    number = serializers.CharField()
+    issued_at = serializers.DateTimeField()
+    status = serializers.CharField()
+    purpose = serializers.CharField()
+    booking = serializers.IntegerField(allow_null=True)
+    title = serializers.CharField()
+    service = serializers.CharField()
+    billed_to = serializers.CharField()
+    worker = serializers.CharField()
+    method = serializers.CharField()
+    method_label = serializers.CharField()
+    transaction_id = serializers.CharField()
+    lines = ReceiptLineSerializer(many=True)
+    total = serializers.DecimalField(max_digits=12, decimal_places=2)
+    refunds = ReceiptRefundSerializer(many=True)
+    refunded = serializers.DecimalField(max_digits=12, decimal_places=2)
+    net_paid = serializers.DecimalField(max_digits=12, decimal_places=2)
+    company = serializers.CharField()
+    company_address = serializers.CharField()
+    tax_number = serializers.CharField()
+
+
 class PaymentWithCheckoutSerializer(PaymentSerializer):
     checkout = CheckoutSerializer(
         read_only=True, allow_null=True,

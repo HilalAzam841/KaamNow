@@ -8,6 +8,9 @@ django-cors-headers==4.9.0
 psycopg[binary]==3.3.9
 python-dotenv==1.2.4
 Pillow==13.0.0
+# PDF receipts (uharfbuzz shapes Urdu text)
+fpdf2==2.9.0
+uharfbuzz==0.57.0
 argon2-cffi==25.1.0
 
 # Real-time (WebSockets), background jobs, push, payment gateways

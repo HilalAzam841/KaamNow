@@ -14,7 +14,7 @@ from rest_framework.views import APIView
 
 from apps.common.permissions import IsCustomer, IsPlatformAdmin, IsWorker
 
-from . import reports, services, wallet
+from . import receipts, reports, services, wallet
 from .gateways import GatewayError, SignatureError
 from .models import (
     Commission,
@@ -29,6 +29,7 @@ from .serializers import (
     CommissionPaymentResponseSerializer,
     CommissionPaymentSerializer,
     EarningsReportSerializer,
+    ReceiptSerializer,
     EarningsSummarySerializer,
     FeaturedListingSerializer,
     FeaturedPlanSerializer,
@@ -54,6 +55,11 @@ logger = logging.getLogger(__name__)
 class PaymentViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     serializer_class = PaymentSerializer
     filterset_fields = ["status", "method", "booking", "purpose"]
+
+    def get_throttles(self):
+        if self.action == "receipt_pdf":
+            self.throttle_scope = "receipt"
+        return super().get_throttles()
 
     def get_queryset(self):
         if getattr(self, "swagger_fake_view", False):
@@ -89,6 +95,31 @@ class PaymentViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.
         payment = self.get_object()
         payment = services.confirm_cash_payment(payment, request.user)
         return Response(PaymentSerializer(payment).data)
+
+    @extend_schema(tags=["payments"], responses={200: ReceiptSerializer},
+                   summary="Receipt for a completed (or refunded) payment: the payer, the booking's worker or an admin. "
+                           "Labels follow Accept-Language.")
+    @action(detail=True, methods=["get"])
+    def receipt(self, request, pk=None):
+        return Response(ReceiptSerializer(receipts.receipt_data(self.get_object())).data)
+
+    @extend_schema(
+        tags=["payments"],
+        parameters=[OpenApiParameter("lang", OpenApiTypes.STR, enum=["en", "ur"],
+                                     description="Receipt language. Default: Accept-Language, then the user's language.")],
+        responses={(200, "application/pdf"): OpenApiResponse(description="The receipt as a PDF (A5)")},
+        summary="Download the receipt as a PDF in English or Urdu",
+    )
+    @action(detail=True, methods=["get"], url_path="receipt/pdf")
+    def receipt_pdf(self, request, pk=None):
+        payment = self.get_object()
+        receipts.check_ready(payment)
+        lang = receipts.pick_language(request, request.query_params.get("lang", ""))
+        body = receipts.render_pdf(payment, lang)
+        response = HttpResponse(body, content_type="application/pdf")
+        response["Content-Disposition"] = f'attachment; filename="kaamnow-receipt-{payment.reference}.pdf"'
+        response["Cache-Control"] = "private, no-store"
+        return response
 
 
 class GatewayCallbackView(APIView):

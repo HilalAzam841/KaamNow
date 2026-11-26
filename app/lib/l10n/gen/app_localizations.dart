@@ -1154,6 +1154,12 @@ abstract class AppLocalizations {
   /// **'Download failed.'**
   String get downloadFailed;
 
+  /// No description provided for @downloadReceiptPdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Download PDF'**
+  String get downloadReceiptPdf;
+
   /// No description provided for @downloadStatement.
   ///
   /// In en, this message translates to:
@@ -2846,6 +2852,108 @@ abstract class AppLocalizations {
   /// **'Reason (optional)'**
   String get reasonOptional;
 
+  /// No description provided for @receiptBilledTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Billed to'**
+  String get receiptBilledTo;
+
+  /// No description provided for @receiptBooking.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking'**
+  String get receiptBooking;
+
+  /// No description provided for @receiptDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get receiptDate;
+
+  /// No description provided for @receiptDownloaded.
+  ///
+  /// In en, this message translates to:
+  /// **'Receipt downloaded.'**
+  String get receiptDownloaded;
+
+  /// No description provided for @receiptFooter.
+  ///
+  /// In en, this message translates to:
+  /// **'This receipt was made by computer and needs no signature.'**
+  String get receiptFooter;
+
+  /// No description provided for @receiptJob.
+  ///
+  /// In en, this message translates to:
+  /// **'Job'**
+  String get receiptJob;
+
+  /// No description provided for @receiptNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Receipt number'**
+  String get receiptNumber;
+
+  /// No description provided for @receiptPaidAfterRefunds.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid after refunds'**
+  String get receiptPaidAfterRefunds;
+
+  /// No description provided for @receiptPaidBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid by'**
+  String get receiptPaidBy;
+
+  /// No description provided for @receiptRefundOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Refund on {date}'**
+  String receiptRefundOn(Object date);
+
+  /// No description provided for @receiptRefundedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Receipt (refunded)'**
+  String get receiptRefundedTitle;
+
+  /// No description provided for @receiptService.
+  ///
+  /// In en, this message translates to:
+  /// **'Service'**
+  String get receiptService;
+
+  /// No description provided for @receiptTaxNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Tax number: {number}'**
+  String receiptTaxNumber(Object number);
+
+  /// No description provided for @receiptTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Receipt'**
+  String get receiptTitle;
+
+  /// No description provided for @receiptTotalPaid.
+  ///
+  /// In en, this message translates to:
+  /// **'Total paid'**
+  String get receiptTotalPaid;
+
+  /// No description provided for @receiptTransactionId.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction ID'**
+  String get receiptTransactionId;
+
+  /// No description provided for @receiptWorkDoneBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Work done by'**
+  String get receiptWorkDoneBy;
+
   /// No description provided for @received.
   ///
   /// In en, this message translates to:
@@ -4111,6 +4219,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Verified by KaamNow'**
   String get verifiedByKaamnow;
+
+  /// No description provided for @viewReceipt.
+  ///
+  /// In en, this message translates to:
+  /// **'Receipt'**
+  String get viewReceipt;
 
   /// No description provided for @visitFailed.
   ///

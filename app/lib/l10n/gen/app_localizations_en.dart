@@ -624,6 +624,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get downloadFailed => 'Download failed.';
 
   @override
+  String get downloadReceiptPdf => 'Download PDF';
+
+  @override
   String get downloadStatement => 'Download statement (CSV)';
 
   @override
@@ -1647,6 +1650,62 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reasonOptional => 'Reason (optional)';
 
   @override
+  String get receiptBilledTo => 'Billed to';
+
+  @override
+  String get receiptBooking => 'Booking';
+
+  @override
+  String get receiptDate => 'Date';
+
+  @override
+  String get receiptDownloaded => 'Receipt downloaded.';
+
+  @override
+  String get receiptFooter =>
+      'This receipt was made by computer and needs no signature.';
+
+  @override
+  String get receiptJob => 'Job';
+
+  @override
+  String get receiptNumber => 'Receipt number';
+
+  @override
+  String get receiptPaidAfterRefunds => 'Paid after refunds';
+
+  @override
+  String get receiptPaidBy => 'Paid by';
+
+  @override
+  String receiptRefundOn(Object date) {
+    return 'Refund on $date';
+  }
+
+  @override
+  String get receiptRefundedTitle => 'Receipt (refunded)';
+
+  @override
+  String get receiptService => 'Service';
+
+  @override
+  String receiptTaxNumber(Object number) {
+    return 'Tax number: $number';
+  }
+
+  @override
+  String get receiptTitle => 'Receipt';
+
+  @override
+  String get receiptTotalPaid => 'Total paid';
+
+  @override
+  String get receiptTransactionId => 'Transaction ID';
+
+  @override
+  String get receiptWorkDoneBy => 'Work done by';
+
+  @override
   String get received => 'Received';
 
   @override
@@ -2376,6 +2435,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get verifiedByKaamnow => 'Verified by KaamNow';
+
+  @override
+  String get viewReceipt => 'Receipt';
 
   @override
   String get visitFailed => 'Could not be posted';

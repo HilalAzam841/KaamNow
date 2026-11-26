@@ -232,6 +232,8 @@ folders = [
         req("Customer records cash payment", "POST", "/payments/", {"booking": "{{booking_id}}", "method": "cash"},
             tests=[save("payment_id", ".id")]),
         req("Worker confirms cash received", "POST", "/payments/{{payment_id}}/confirm/", token="worker_access"),
+        req("Receipt for the payment", "GET", "/payments/{{payment_id}}/receipt/"),
+        req("Receipt as a PDF (Urdu)", "GET", "/payments/{{payment_id}}/receipt/pdf/?lang=ur"),
         req("My payments", "GET", "/payments/"),
         req("Worker earnings", "GET", "/payments/earnings/", token="worker_access"),
         req("Worker: earnings report for November", "GET",
