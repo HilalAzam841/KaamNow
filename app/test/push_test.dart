@@ -66,6 +66,10 @@ Map<String, dynamic> pushConfig({bool enabled = true, bool phone = false}) => {
 
 Future<Harness> pumpSignedIn(WidgetTester tester, PushController push,
     {bool enabled = true, bool phone = false, String role = 'customer'}) async {
+  // Tall enough that every Account tile is built without scrolling.
+  tester.view.physicalSize = const Size(1200, 3200);
+  tester.view.devicePixelRatio = 1;
+  addTearDown(tester.view.reset);
   final h = Harness(access: 'A', refresh: 'R');
   h.backend.on('GET /app/config/', (_) => ok(pushConfig(enabled: enabled, phone: phone)));
   h.backend.on('GET /auth/me/', (_) => ok(userJson(role: role)));
@@ -118,9 +122,6 @@ void main() {
   });
 
   testWidgets('the account switch turns them off and tells the server', (tester) async {
-    tester.view.physicalSize = const Size(1200, 2400);
-    tester.view.devicePixelRatio = 1;
-    addTearDown(tester.view.reset);
     final platform = FakePushPlatform(permission: 'granted', existing: subscriptionJson());
     final h = await pumpSignedIn(tester, PushController(platform: platform));
     expect(h.backend.callsTo('POST /notifications/web-push/subscribe/'), hasLength(1),

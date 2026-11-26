@@ -14,7 +14,7 @@ later, and talks to the backend only through the REST API and the booking WebSoc
 
 **Stage 1 (Backend MVP), Stage 2 (Advanced features) and Stage 3 (Flutter web client) are done,
 and Stage 4 adds the admin dashboard to the web app.** Every backend feature below has its business logic, REST endpoint(s), validation and
-automated tests. All 557 backend tests pass against PostgreSQL 16, and the Flutter app has 137
+automated tests. All 564 backend tests pass against PostgreSQL 16, and the Flutter app has 144
 unit and widget tests plus a browser end-to-end run (see `app/README.md`).
 
 ### Stage 1: Backend MVP
@@ -296,6 +296,17 @@ Customers choose between offers mostly on trust, so workers can show real photos
 | Customers see **Past work** on a verified worker's profile and can open each photo full screen | `portfolio` on `GET workers/{id}/`, `GET workers/{id}/portfolio/` |
 | Admins see every photo, newest first, and hide anything unsuitable with a reason. The worker is told why and still sees the photo marked as hidden; customers don't. Hiding and showing are audited | `GET admin/portfolio-photos/`, `POST admin/portfolio-photos/{id}/hide/`, `/unhide/`, app: admin **Portfolio photos** page |
 
+### Stage 23: saved addresses
+
+Most customers post from the same few places, so they can save them once and pick one with a tap.
+
+| Feature | Where |
+|---|---|
+| Customers save up to 10 places: one **Home**, one **Work** and any number of named places (like "Ammi's house"), each with its map pin, address and area. Only the owner can see, change or delete them | `GET/POST addresses/`, `GET/PATCH/DELETE addresses/{id}/`, app: Account → **Saved addresses** |
+| One address is used first. The first one saved gets this automatically, the customer can choose another, and when it is deleted the oldest remaining one takes over | `POST addresses/{id}/make-default/`, `make_default` on create and edit |
+| **Post a job** starts at the address used first and shows each saved place as a chip that fills in the pin, address and area. Moving the pin or typing a new address offers **Save this place**. A job opened from the map keeps that pin | app: Post a job → Location |
+| The API can post a job straight from a saved address. The server fills the pin, address and area from it, and refuses another customer's address | `saved_address` on `POST requests/` |
+
 **Before going live with online payments:** the JazzCash and Easypaisa adapters follow each
 gateway's published integration scheme and are covered by tests with simulated gateway responses.
 They have **not** been run against the real sandboxes yet, because that needs your merchant
@@ -338,6 +349,7 @@ apps/
   recurring/            RecurringJob, RecurringVisit, task that posts each visit
   safety/               EmergencyContact, SosAlert, TripShare (SOS and share links)
   portfolio/            PortfolioPhoto (work photos, EXIF removed on upload)
+  addresses/            SavedAddress (Home, Work and named places)
 docs/                   openapi.yaml, Postman collection
 scripts/                generate_postman.py
 app/                    Flutter client (web, Android, iPhone): lib/, test/, e2e/, integration_test/
@@ -413,7 +425,7 @@ docker compose up --build
 pytest -q
 ```
 
-The suite has 557 tests and needs a running PostgreSQL (Redis is not needed for tests). It uses the database settings from your
+The suite has 564 tests and needs a running PostgreSQL (Redis is not needed for tests). It uses the database settings from your
 `.env` and creates a separate `test_kaamnow` database. Coverage includes:
 
 - **Authentication**: registration validation, login, suspended accounts, token refresh rotation, logout blacklisting, password reset (single-use token, no account enumeration), throttling.
@@ -436,6 +448,7 @@ The suite has 557 tests and needs a running PostgreSQL (Redis is not needed for 
 - **Repeating jobs**: repeat only your own, not-cancelled booking; first-visit limits; each visit posted once, two days ahead, to the usual worker or to everyone when they are not free (nothing half-made left behind); failures reported; missed visits skipped after downtime or a pause; pause, resume, skip, change and stop; the worker sees no address and can step away; notices in each user's language; monthly dates at month ends.
 - **Safety**: emergency contacts (limits, own number, other people's lists); SOS alerts admins, texts contacts with a working link, never tells the other side, uses the worker's last position, survives SMS failures, one open alert at a time, only for the booking's two people and only during the job or an hour after; admin handling with audit; share links store only a hash, show no phone numbers or address, show the worker's position only while on the way, expire, are replaced and turned off; SMS in the user's language.
 - **Portfolio**: uploads lose GPS and camera data, are turned upright and shrunk; fake or wrong files are refused; 12-photo limit; service and finished-job links checked; caption, reorder and delete (file removed) only by the owner; hidden photos never public but shown to the worker with the reason; admin hide/show audited and the worker told in their language; no public portfolio for unverified workers.
+- **Saved addresses**: one Home and one Work; the 10-place limit; exactly one used first, moved to the oldest when it is deleted; names required for other places; only customers, and never another customer's addresses; posting a job from your own saved address fills the location, and someone else's is refused.
 - **Complaints** and **scheduled tasks** (including a check that every beat entry points to a registered task).
 
 CI (`.github/workflows/tests.yml`) runs lint, checks for missing migrations, validates the
@@ -476,6 +489,7 @@ be probed), `409` state conflict (already booked, wrong turn, and so on), `429` 
 | Requests | `POST requests/` · `GET requests/` · `GET/PATCH requests/{id}/` · `POST requests/{id}/cancel/` · `GET requests/{id}/nearby-workers/` · `GET requests/slots/?category=&latitude=&longitude=&date=` · `POST requests/{id}/open-to-all/` · `POST requests/{id}/decline/` |
 | Favourites | `GET/POST favourites/` · `DELETE favourites/{worker_id}/` · `GET favourites/recent/` |
 | Portfolio | `GET/POST workers/me/portfolio/` · `PATCH/DELETE workers/me/portfolio/{id}/` · `POST workers/me/portfolio/reorder/` · `GET workers/{id}/portfolio/` (public) · `portfolio` on `GET workers/{id}/` |
+| Saved addresses | `GET/POST addresses/` · `GET/PATCH/DELETE addresses/{id}/` · `POST addresses/{id}/make-default/` · `saved_address` on `POST requests/` |
 | Safety | `GET/POST safety/contacts/` · `DELETE safety/contacts/{id}/` · `POST bookings/{id}/sos/` · `POST/DELETE bookings/{id}/share/` · `GET safety/shared/{token}/` (public) |
 | Repeating jobs | `GET recurring-jobs/` · `GET/PATCH recurring-jobs/{id}/` · `POST recurring-jobs/from-booking/` · `POST recurring-jobs/{id}/pause/` · `POST recurring-jobs/{id}/resume/` · `POST recurring-jobs/{id}/skip-next/` · `POST recurring-jobs/{id}/cancel/` · `POST recurring-jobs/{id}/leave/` (worker) |
 | Offers | `GET/POST requests/{id}/offers/` · `GET offers/` (worker's own, `?status=`) · `GET/PATCH offers/{id}/` · `POST offers/{id}/accept/` · `POST offers/{id}/reject/` · `POST offers/{id}/negotiate/` · `GET offers/{id}/negotiations/` |
@@ -496,7 +510,7 @@ Endpoints added beyond the original list, because the flow needs them: `password
 `bookings/{id}/completion-otp/`, `payments/{id}/confirm/`, `payments/earnings/`,
 the notification helpers, and the admin users, suspension, requests, commission settings and audit log endpoints.
 
-Postman: import `docs/KaamNow.postman_collection.json` (145 requests in 12 folders that follow the
+Postman: import `docs/KaamNow.postman_collection.json` (151 requests in 12 folders that follow the
 full flow; test scripts store tokens and ids automatically). Regenerate it with
 `python scripts/generate_postman.py`.
 

@@ -52,6 +52,7 @@ api_v1 = [
     path("favourites/", include("apps.favourites.urls")),
     path("recurring-jobs/", include("apps.recurring.urls")),
     path("safety/", include("apps.safety.urls")),
+    path("addresses/", include("apps.addresses.urls")),
     path("referrals/", include(referral_urlpatterns)),
     path("admin/", include("apps.dashboard.urls")),
 ]

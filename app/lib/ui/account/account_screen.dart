@@ -81,7 +81,7 @@ class AccountScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text(context.t.tabAccount), actions: const [LanguageButton()]),
       body: PageBody(
-        child: ListView(children: [
+        child: ListView(key: const Key('account-list'), children: [
           ListTile(
             key: const Key('account-profile'),
             leading: Avatar(name: u.fullName, url: u.avatar),
@@ -120,6 +120,14 @@ class AccountScreen extends StatelessWidget {
               leading: const Icon(Icons.favorite_border),
               title: Text(context.t.myWorkers),
               onTap: () => context.push('/my-workers'),
+            ),
+          if (u.isCustomer)
+            ListTile(
+              key: const Key('account-addresses'),
+              leading: const Icon(Icons.bookmark_border),
+              title: Text(context.t.savedAddresses),
+              subtitle: Text(context.t.savedAddressesHint),
+              onTap: () => context.push('/addresses'),
             ),
           ListTile(
             key: const Key('account-safety'),

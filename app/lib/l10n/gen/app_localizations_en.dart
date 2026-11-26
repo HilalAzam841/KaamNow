@@ -27,6 +27,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addAService => 'Add a service';
 
   @override
+  String get addAddress => 'Add address';
+
+  @override
   String get addContact => 'Add contact';
 
   @override
@@ -47,7 +50,16 @@ class AppLocalizationsEn extends AppLocalizations {
       'The exact address is shared once you are booked.';
 
   @override
+  String get addressDefaultBadge => 'Default';
+
+  @override
+  String get addressDeleted => 'Address deleted.';
+
+  @override
   String get addressHelper => 'Only the worker you book will see it';
+
+  @override
+  String get addressSaved => 'Address saved.';
 
   @override
   String get agree => 'Agree';
@@ -565,6 +577,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get defaultAddress => 'Default address';
 
   @override
+  String get deleteAddressQ => 'Delete this address?';
+
+  @override
   String get deletePhotoBody => 'Customers will no longer see it.';
 
   @override
@@ -631,6 +646,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get earnings => 'Earnings';
+
+  @override
+  String get editAddress => 'Edit address';
 
   @override
   String get editCaption => 'Edit caption';
@@ -952,6 +970,15 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get labelHome => 'Home';
+
+  @override
+  String get labelOther => 'Other';
+
+  @override
+  String get labelWork => 'Work';
+
+  @override
   String get language => 'Language';
 
   @override
@@ -1017,10 +1044,16 @@ class AppLocalizationsEn extends AppLocalizations {
       'You can log in with your new password now.';
 
   @override
+  String get makeDefault => 'Use first';
+
+  @override
   String get markAllRead => 'Mark all read';
 
   @override
   String get markCompleteQ => 'Mark the job as complete?';
+
+  @override
+  String get maxAddressesReached => 'You have 10 addresses, the most allowed.';
 
   @override
   String get maxContactsReached => 'You have 3 contacts, the most allowed.';
@@ -1234,6 +1267,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noReviewsYet => 'No reviews yet.';
+
+  @override
+  String get noSavedAddresses => 'No saved addresses';
+
+  @override
+  String get noSavedAddressesHint =>
+      'Save Home, Work and other places (up to 10) to post jobs faster, with the pin in the right place.';
 
   @override
   String get noService => 'None';
@@ -1473,6 +1513,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pinPlaced => 'Pin placed. Tap the map to move it.';
+
+  @override
+  String get placeNameHint => 'e.g. Ammi\'s house';
+
+  @override
+  String get placeNameLabel => 'Name of this place';
 
   @override
   String get planPaymentWindowClosed =>
@@ -1746,7 +1792,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get saveProfile => 'Save profile';
 
   @override
+  String get saveThisPlace => 'Save this place';
+
+  @override
   String get saveToFavourites => 'Save worker';
+
+  @override
+  String get savedAddresses => 'Saved addresses';
+
+  @override
+  String get savedAddressesHint => 'Home, work and other places you book from';
+
+  @override
+  String get savedPlaces => 'Your places';
 
   @override
   String get savedWorkers => 'Saved';
@@ -1821,6 +1879,9 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get setLocationFirst =>
       'Set the job location on the map, or use your current location.';
+
+  @override
+  String get setPinFirst => 'Put the pin on the map first.';
 
   @override
   String get settlementCollection => 'Commission paid';
@@ -2193,6 +2254,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String useCredit(Object amount) {
     return 'Use my credit ($amount)';
   }
+
+  @override
+  String get useFirstSwitch => 'Use this address first when posting a job';
 
   @override
   String get useMyLocation => 'Use my location';

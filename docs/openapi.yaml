@@ -7,6 +7,139 @@ info:
 
     All responses use the envelope `{success, data, message}` on success and `{success: false, error: {code, message, details}}` on failure.
 paths:
+  /api/v1/addresses/:
+    get:
+      operationId: addresses_list
+      summary: Your saved addresses, the default first.
+      tags:
+      - addresses
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SavedAddress'
+          description: ''
+    post:
+      operationId: addresses_create
+      summary: Save an address (up to 10; one Home and one Work). The first one becomes
+        the default.
+      tags:
+      - addresses
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SavedAddressRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SavedAddressRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SavedAddressRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SavedAddress'
+          description: ''
+  /api/v1/addresses/{id}/:
+    get:
+      operationId: addresses_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - addresses
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SavedAddress'
+          description: ''
+    patch:
+      operationId: addresses_partial_update
+      summary: Change a saved address.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - addresses
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedSavedAddressRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedSavedAddressRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedSavedAddressRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SavedAddress'
+          description: ''
+    delete:
+      operationId: addresses_destroy
+      summary: Delete a saved address. If it was the default, the oldest one left
+        becomes the default.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - addresses
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/addresses/{id}/make-default/:
+    post:
+      operationId: addresses_make_default_create
+      summary: Use this address first when posting a job.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - addresses
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SavedAddress'
+          description: ''
   /api/v1/admin/audit-logs/:
     get:
       operationId: admin_audit_logs_list
@@ -7729,6 +7862,16 @@ components:
           maxLength: 255
       required:
       - reason
+    LabelEnum:
+      enum:
+      - home
+      - work
+      - other
+      type: string
+      description: |-
+        * `home` - Home
+        * `work` - Work
+        * `other` - Other
     LanguageEnum:
       enum:
       - en
@@ -8904,6 +9047,35 @@ components:
           format: decimal
           pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
           nullable: true
+    PatchedSavedAddressRequest:
+      type: object
+      properties:
+        label:
+          $ref: '#/components/schemas/LabelEnum'
+        name:
+          type: string
+          description: 'For Other: e.g. "Ammi''s house".'
+          maxLength: 40
+        address:
+          type: string
+          minLength: 1
+          maxLength: 255
+        area:
+          type: string
+          maxLength: 100
+        latitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+        longitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+        make_default:
+          type: boolean
+          writeOnly: true
+          default: false
+          description: Use this address first when posting a job.
     PatchedServiceCategoryRequest:
       type: object
       properties:
@@ -10232,6 +10404,86 @@ components:
       description: |-
         * `confirmed` - confirmed
         * `dismissed` - dismissed
+    SavedAddress:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        label:
+          $ref: '#/components/schemas/LabelEnum'
+        name:
+          type: string
+          description: 'For Other: e.g. "Ammi''s house".'
+          maxLength: 40
+        address:
+          type: string
+          maxLength: 255
+        area:
+          type: string
+          maxLength: 100
+        latitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+        longitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+        is_default:
+          type: boolean
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - address
+      - created_at
+      - id
+      - is_default
+      - label
+      - latitude
+      - longitude
+      - updated_at
+    SavedAddressRequest:
+      type: object
+      properties:
+        label:
+          $ref: '#/components/schemas/LabelEnum'
+        name:
+          type: string
+          description: 'For Other: e.g. "Ammi''s house".'
+          maxLength: 40
+        address:
+          type: string
+          minLength: 1
+          maxLength: 255
+        area:
+          type: string
+          maxLength: 100
+        latitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+        longitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+        make_default:
+          type: boolean
+          writeOnly: true
+          default: false
+          description: Use this address first when posting a job.
+      required:
+      - address
+      - label
+      - latitude
+      - longitude
     Schedule:
       type: object
       properties:
@@ -10521,12 +10773,14 @@ components:
           description: 'Book one worker again: only this worker sees the job, at a
             time they are free. Leave out to send the job to every matching worker
             nearby.'
+        saved_address:
+          type: integer
+          writeOnly: true
+          description: One of your saved addresses. Fills latitude, longitude, address
+            and area (they can be left out).
       required:
-      - address
       - category
       - description
-      - latitude
-      - longitude
       - preferred_time
       - title
     ServiceRequestImage:

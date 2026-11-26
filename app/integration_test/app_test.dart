@@ -53,9 +53,10 @@ void main() {
 
   Future<void> logOut(WidgetTester tester) async {
     await tapAndWait(tester, find.text('Account').last, find.byKey(const Key('account-profile')));
-    // On a phone screen the worker's account list is longer than the screen.
+    // On a phone screen the account list is longer than the screen. Find the list by its own key:
+    // the top row is dropped from the tree once it scrolls far enough away, so it can't anchor the scroll.
     await tester.scrollUntilVisible(find.byKey(const Key('logout')), 200,
-        scrollable: find.ancestor(of: find.byKey(const Key('account-profile')), matching: find.byType(Scrollable)).first);
+        scrollable: find.descendant(of: find.byKey(const Key('account-list')), matching: find.byType(Scrollable)).first);
     await tester.ensureVisible(find.byKey(const Key('logout')));
     await tester.pump(const Duration(milliseconds: 500));
     await tester.tap(find.byKey(const Key('logout')).hitTestable());

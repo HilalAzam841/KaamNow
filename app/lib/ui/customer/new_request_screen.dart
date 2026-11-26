@@ -10,6 +10,7 @@ import '../../core/format.dart';
 import '../../core/location.dart';
 import '../../core/session.dart';
 import '../../models/models.dart';
+import 'addresses_screen.dart';
 import '../widgets/common.dart';
 import '../widgets/language_button.dart';
 import '../widgets/map_view.dart';
@@ -50,6 +51,10 @@ class _NewRequestScreenState extends State<NewRequestScreen> {
   bool _busy = false;
   bool _locating = false;
   Map<String, String> _fieldErrors = {};
+  List<SavedAddress> _saved = [];
+
+  /// The saved place the location fields came from; cleared when the customer changes them.
+  int? _savedId;
 
   @override
   void initState() {
@@ -58,6 +63,12 @@ class _NewRequestScreenState extends State<NewRequestScreen> {
     _pin = widget.initialPin;
     final session = context.read<Session>();
     _address.text = session.user?.defaultAddress ?? '';
+    session.api.savedAddresses().then((list) {
+      if (!mounted) return;
+      setState(() => _saved = list);
+      final first = list.where((a) => a.isDefault).firstOrNull;
+      if (widget.initialPin == null && _pin == null && first != null) _useSaved(first);
+    }).catchError((_) {});
     session.api.categories().then((c) {
       if (mounted) setState(() => _categories = c);
     }).catchError((_) {});
@@ -188,13 +199,62 @@ class _NewRequestScreenState extends State<NewRequestScreen> {
     ]);
   }
 
+  void _useSaved(SavedAddress a) {
+    setState(() {
+      _savedId = a.id;
+      _pin = LatLng(a.latitude, a.longitude);
+      _address.text = a.address;
+      _area.text = a.area;
+    });
+    _loadSlots();
+  }
+
+  Future<void> _saveThisPlace() async {
+    final saved = await editAddress(context, pin: _pin, address: _address.text.trim(), area: _area.text.trim());
+    if (saved == null || !mounted) return;
+    setState(() {
+      _saved = [..._saved.where((a) => a.id != saved.id), saved];
+      _savedId = saved.id;
+      _pin = LatLng(saved.latitude, saved.longitude);
+      _address.text = saved.address;
+      _area.text = saved.area;
+    });
+  }
+
+  Widget _savedPlaces(BuildContext context) {
+    final t = context.t;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Wrap(spacing: 8, runSpacing: 4, crossAxisAlignment: WrapCrossAlignment.center, children: [
+        for (final a in _saved)
+          ChoiceChip(
+            key: Key('saved-addr-${a.id}'),
+            avatar: Icon(addressIcon(a.label), size: 18),
+            label: Text(addressTitle(context, a)),
+            selected: _savedId == a.id,
+            onSelected: (_) => _useSaved(a),
+          ),
+        if (_pin != null && _savedId == null && _saved.length < maxSavedAddresses)
+          ActionChip(
+            key: const Key('save-this-place'),
+            avatar: const Icon(Icons.bookmark_add_outlined, size: 18),
+            label: Text(t.saveThisPlace),
+            onPressed: _saveThisPlace,
+          ),
+      ]),
+    );
+  }
+
   Future<void> _useMyLocation() async {
     setState(() => _locating = true);
     final (fix, error) = await LocationService().current();
     if (!mounted) return;
     setState(() {
       _locating = false;
-      if (fix != null) _pin = LatLng(fix.latitude, fix.longitude);
+      if (fix != null) {
+        _pin = LatLng(fix.latitude, fix.longitude);
+        _savedId = null;
+      }
     });
     if (fix != null) _loadSlots();
     if (error != null) showInfo(context, error);
@@ -309,13 +369,17 @@ class _NewRequestScreenState extends State<NewRequestScreen> {
                   (v ?? '').trim().length < 10 ? 'Add a little more detail (10+ characters)' : _fieldErrors['description'],
             ),
             SectionTitle(context.t.location),
+            _savedPlaces(context),
             KaamMap(
               center: center,
               zoom: _pin == null ? 12 : 15,
               key: ValueKey(_pin),
               pins: [if (_pin != null) MapPin(_pin!, icon: Icons.location_pin, color: Colors.red, label: context.t.jobLocation)],
               onTap: (p) {
-                setState(() => _pin = p);
+                setState(() {
+                  _pin = p;
+                  _savedId = null;
+                });
                 _loadSlots();
               },
             ),
@@ -337,6 +401,9 @@ class _NewRequestScreenState extends State<NewRequestScreen> {
             TextFormField(
               key: const Key('req-address'),
               controller: _address,
+              onChanged: (_) {
+                if (_savedId != null) setState(() => _savedId = null);
+              },
               decoration: InputDecoration(labelText: context.t.address, helperText: context.t.addressHelper),
               validator: (v) => (v ?? '').trim().length < 5 ? context.t.enterAddress : _fieldErrors['address'],
             ),

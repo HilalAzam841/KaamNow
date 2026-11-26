@@ -117,6 +117,17 @@ class KaamNowApi {
   /// Invited worker: cannot take this job. It goes to other workers nearby.
   Future<void> declineRequest(int requestId) => client.post('/requests/$requestId/decline/');
 
+  // ---- Saved addresses -----------------------------------------------------
+  Future<List<SavedAddress>> savedAddresses() async =>
+      parseList(await client.get('/addresses/'), SavedAddress.fromJson);
+  Future<SavedAddress> addAddress(Map<String, dynamic> fields) async =>
+      SavedAddress.fromJson(asMap(await client.post('/addresses/', body: fields)));
+  Future<SavedAddress> updateAddress(int id, Map<String, dynamic> fields) async =>
+      SavedAddress.fromJson(asMap(await client.patch('/addresses/$id/', body: fields)));
+  Future<void> deleteAddress(int id) => client.delete('/addresses/$id/');
+  Future<SavedAddress> makeDefaultAddress(int id) async =>
+      SavedAddress.fromJson(asMap(await client.post('/addresses/$id/make-default/')));
+
   // ---- Portfolio -----------------------------------------------------------
   Future<List<PortfolioPhoto>> myPortfolio() async =>
       parseList(await client.get('/workers/me/portfolio/'), PortfolioPhoto.fromJson);

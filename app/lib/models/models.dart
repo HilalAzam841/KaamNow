@@ -1132,3 +1132,29 @@ class PortfolioPhoto {
   final String workerName;
   final DateTime? createdAt;
 }
+
+/// A place the customer posts jobs from. Only its owner sees it.
+class SavedAddress {
+  SavedAddress({required this.id, required this.label, this.name = '', required this.address, this.area = '',
+      required this.latitude, required this.longitude, this.isDefault = false});
+  factory SavedAddress.fromJson(Map<String, dynamic> j) => SavedAddress(
+        id: parseInt(j['id']),
+        label: str(j['label']),
+        name: str(j['name']),
+        address: str(j['address']),
+        area: str(j['area']),
+        latitude: double.tryParse(str(j['latitude'])) ?? 0,
+        longitude: double.tryParse(str(j['longitude'])) ?? 0,
+        isDefault: j['is_default'] == true,
+      );
+  final int id;
+
+  /// home, work or other.
+  final String label;
+  final String name;
+  final String address;
+  final String area;
+  final double latitude;
+  final double longitude;
+  final bool isDefault;
+}

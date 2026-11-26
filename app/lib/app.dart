@@ -9,6 +9,7 @@ import 'core/push/push_controller.dart';
 import 'core/push/push_platform.dart';
 import 'core/session.dart';
 import 'l10n/l10n.dart';
+import 'ui/customer/addresses_screen.dart';
 import 'ui/account/account_screen.dart';
 import 'ui/admin/admin_shell.dart';
 import 'ui/admin/audit_screen.dart';
@@ -130,6 +131,7 @@ GoRouter buildRouter(Session session) {
       GoRoute(path: '/worker/portfolio', builder: (_, _) => const PortfolioScreen()),
       GoRoute(path: '/my-workers', builder: (_, _) => const MyWorkersScreen()),
       GoRoute(path: '/recurring', builder: (_, _) => const RecurringJobsScreen()),
+      GoRoute(path: '/addresses', builder: (_, _) => const AddressesScreen()),
       GoRoute(path: '/safety/contacts', builder: (_, _) => const EmergencyContactsScreen()),
       GoRoute(path: '/share/:token', builder: (_, s) => SharedJobScreen(token: s.pathParameters['token']!)),
       GoRoute(path: '/worker/earnings', builder: (_, _) => const EarningsScreen()),

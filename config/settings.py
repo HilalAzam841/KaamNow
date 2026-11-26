@@ -71,6 +71,7 @@ INSTALLED_APPS = [
     "apps.recurring",
     "apps.safety",
     "apps.portfolio",
+    "apps.addresses",
     "apps.scheduling",
 ]
 
