@@ -299,6 +299,8 @@ class KaamNowApi {
       PaymentQuote.fromJson(asMap(await client.post('/promos/check/',
           body: {'booking': bookingId, 'promo_code': promoCode, 'use_credit': useCredit})));
   Future<ReferralSummary> referralSummary() async => ReferralSummary.fromJson(asMap(await client.get('/referrals/me/')));
+  Future<LevelProgress> myLevel() async => LevelProgress.fromJson(asMap(await client.get('/workers/me/level/')));
+
   Future<Receipt> receipt(int paymentId) async =>
       Receipt.fromJson(asMap(await client.get('/payments/$paymentId/receipt/')));
 

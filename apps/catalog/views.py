@@ -58,10 +58,19 @@ class ServiceCategoryViewSet(viewsets.ModelViewSet):
 class WorkerServiceFilter(django_filters.FilterSet):
     category = django_filters.NumberFilter(field_name="category_id")
     min_rating = django_filters.NumberFilter(field_name="worker__average_rating", lookup_expr="gte")
+    min_level = django_filters.ChoiceFilter(
+        choices=[("rising", "Rising"), ("trusted", "Trusted"), ("top_rated", "Top rated")], method="filter_min_level",
+        help_text="Only workers at this level or higher.",
+    )
 
     class Meta:
         model = WorkerService
-        fields = ["category", "min_rating"]
+        fields = ["category", "min_rating", "min_level"]
+
+    def filter_min_level(self, qs, name, value):
+        from apps.levels.services import RANK
+
+        return qs.filter(worker__level_rank__gte=RANK[value])
 
 
 @extend_schema_view(
@@ -78,7 +87,7 @@ class WorkerServiceFilter(django_filters.FilterSet):
 class WorkerServiceViewSet(viewsets.ModelViewSet):
     serializer_class = WorkerServiceSerializer
     filterset_class = WorkerServiceFilter
-    ordering_fields = ["starting_price", "worker__average_rating", "worker__completed_jobs_count"]
+    ordering_fields = ["starting_price", "worker__average_rating", "worker__completed_jobs_count", "worker__level_rank"]
     http_method_names = ["get", "post", "patch", "delete"]
 
     def get_permissions(self):

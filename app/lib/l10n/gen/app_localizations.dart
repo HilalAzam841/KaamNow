@@ -350,6 +350,36 @@ abstract class AppLocalizations {
   /// **'Back to log in'**
   String get backToLogin;
 
+  /// No description provided for @badgeAlwaysOnTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Always on time'**
+  String get badgeAlwaysOnTime;
+
+  /// No description provided for @badgeCustomerFavourite.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer favourite'**
+  String get badgeCustomerFavourite;
+
+  /// No description provided for @badgeExperienced.
+  ///
+  /// In en, this message translates to:
+  /// **'5+ years experience'**
+  String get badgeExperienced;
+
+  /// No description provided for @badgeJobs100.
+  ///
+  /// In en, this message translates to:
+  /// **'100+ jobs'**
+  String get badgeJobs100;
+
+  /// No description provided for @badgeVerified.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified'**
+  String get badgeVerified;
+
   /// No description provided for @bankTransfer.
   ///
   /// In en, this message translates to:
@@ -1796,6 +1826,48 @@ abstract class AppLocalizations {
   /// **'Done. You will not get these visits any more.'**
   String get leftRepeating;
 
+  /// No description provided for @levelHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'KaamNow level, from jobs done, ratings and reliability'**
+  String get levelHelp;
+
+  /// No description provided for @levelNeedsVerification.
+  ///
+  /// In en, this message translates to:
+  /// **'Levels start once your account is verified.'**
+  String get levelNeedsVerification;
+
+  /// No description provided for @levelNew.
+  ///
+  /// In en, this message translates to:
+  /// **'New'**
+  String get levelNew;
+
+  /// No description provided for @levelRising.
+  ///
+  /// In en, this message translates to:
+  /// **'Rising'**
+  String get levelRising;
+
+  /// No description provided for @levelShownHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Customers see your level on your offers and profile.'**
+  String get levelShownHint;
+
+  /// No description provided for @levelTopRated.
+  ///
+  /// In en, this message translates to:
+  /// **'Top rated'**
+  String get levelTopRated;
+
+  /// No description provided for @levelTrusted.
+  ///
+  /// In en, this message translates to:
+  /// **'Trusted'**
+  String get levelTrusted;
+
   /// No description provided for @linkCopied.
   ///
   /// In en, this message translates to:
@@ -1976,6 +2048,18 @@ abstract class AppLocalizations {
   /// **'Move later'**
   String get moveLater;
 
+  /// No description provided for @myLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'My level'**
+  String get myLevel;
+
+  /// No description provided for @myLevelHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Your level and badges, and how to reach the next level'**
+  String get myLevelHint;
+
   /// No description provided for @myPortfolio.
   ///
   /// In en, this message translates to:
@@ -2078,6 +2162,12 @@ abstract class AppLocalizations {
   /// **'New password'**
   String get newPassword;
 
+  /// No description provided for @nextLevelIs.
+  ///
+  /// In en, this message translates to:
+  /// **'To become {level}'**
+  String nextLevelIs(Object level);
+
   /// No description provided for @nextVisitOn.
   ///
   /// In en, this message translates to:
@@ -2101,6 +2191,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No alerts yet'**
   String get noAlertsYet;
+
+  /// No description provided for @noBadgesYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No badges yet. They come with experience, saved-by customers and always being on time.'**
+  String get noBadgesYet;
 
   /// No description provided for @noBookingsCustomerHint.
   ///
@@ -3200,6 +3296,36 @@ abstract class AppLocalizations {
   /// **'Not paid yet'**
   String get reportUnpaid;
 
+  /// No description provided for @reqCancelRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Bookings you cancelled in {days} days: {value}% (at most {target}%)'**
+  String reqCancelRate(int days, Object value, Object target);
+
+  /// No description provided for @reqJobs.
+  ///
+  /// In en, this message translates to:
+  /// **'Jobs done: {value} of {target}'**
+  String reqJobs(Object value, Object target);
+
+  /// No description provided for @reqNoShows.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirmed no-shows in {days} days: {value} (at most {target})'**
+  String reqNoShows(int days, Object value, Object target);
+
+  /// No description provided for @reqRating.
+  ///
+  /// In en, this message translates to:
+  /// **'Average rating: {value} (needs {target})'**
+  String reqRating(Object value, Object target);
+
+  /// No description provided for @reqReviews.
+  ///
+  /// In en, this message translates to:
+  /// **'Reviews: {value} of {target}'**
+  String reqReviews(Object value, Object target);
+
   /// No description provided for @request.
   ///
   /// In en, this message translates to:
@@ -4100,6 +4226,12 @@ abstract class AppLocalizations {
   /// **'to'**
   String get toWord;
 
+  /// No description provided for @topLevelReached.
+  ///
+  /// In en, this message translates to:
+  /// **'You are at the top level. Keep it up!'**
+  String get topLevelReached;
+
   /// No description provided for @total.
   ///
   /// In en, this message translates to:
@@ -4544,11 +4676,23 @@ abstract class AppLocalizations {
   /// **'You pay {amount}'**
   String youPay(Object amount);
 
+  /// No description provided for @yourBadges.
+  ///
+  /// In en, this message translates to:
+  /// **'Your badges'**
+  String get yourBadges;
+
   /// No description provided for @yourInviteCode.
   ///
   /// In en, this message translates to:
   /// **'Your invite code'**
   String get yourInviteCode;
+
+  /// No description provided for @yourLevelIs.
+  ///
+  /// In en, this message translates to:
+  /// **'Your level'**
+  String get yourLevelIs;
 
   /// No description provided for @yourOffer.
   ///

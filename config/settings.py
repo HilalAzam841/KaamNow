@@ -72,6 +72,7 @@ INSTALLED_APPS = [
     "apps.safety",
     "apps.portfolio",
     "apps.addresses",
+    "apps.levels",
     "apps.scheduling",
 ]
 
@@ -235,6 +236,7 @@ SPECTACULAR_SETTINGS = {
     "COMPONENT_SPLIT_REQUEST": True,
     "SCHEMA_PATH_PREFIX": r"/api/v1",
     "ENUM_NAME_OVERRIDES": {
+        "WorkerLevelEnum": "apps.levels.serializers.LEVEL_CHOICES",
         "UserRoleEnum": "apps.accounts.models.User.Role",
         "PartyEnum": "apps.offers.models.Party",
         "PaymentMethodEnum": "apps.billing.models.Payment.Method",
@@ -279,6 +281,7 @@ CELERY_BEAT_SCHEDULE = {
     "expire-subscriptions-and-featured": {"task": "apps.billing.tasks.expire_subscriptions_and_featured", "schedule": 30 * 60},
     "purge-old-locations": {"task": "apps.tracking.tasks.purge_old_locations", "schedule": 24 * 60 * 60},
     "purge-old-phone-codes": {"task": "apps.accounts.tasks.purge_old_phone_codes", "schedule": 6 * 60 * 60},
+    "refresh-worker-levels": {"task": "apps.levels.tasks.refresh_worker_levels", "schedule": 24 * 60 * 60},
     "send-booking-reminders": {"task": "apps.reminders.tasks.send_booking_reminders", "schedule": 5 * 60},
     "create-recurring-visits": {"task": "apps.recurring.tasks.create_recurring_visits", "schedule": 15 * 60},
 }

@@ -14,7 +14,7 @@ later, and talks to the backend only through the REST API and the booking WebSoc
 
 **Stage 1 (Backend MVP), Stage 2 (Advanced features) and Stage 3 (Flutter web client) are done,
 and Stage 4 adds the admin dashboard to the web app.** Every backend feature below has its business logic, REST endpoint(s), validation and
-automated tests. All 588 backend tests pass against PostgreSQL 16, and the Flutter app has 151
+automated tests. All 610 backend tests pass against PostgreSQL 16, and the Flutter app has 156
 unit and widget tests plus a browser end-to-end run (see `app/README.md`).
 
 ### Stage 1: Backend MVP
@@ -330,6 +330,18 @@ Every payment that has gone through gets a receipt, in the app and as a PDF.
 | Only the payer, the booking's worker and admins can open a receipt, and only once the payment has gone through. Receipts show no phone numbers, addresses or commission | |
 | The company name, address and an optional tax number (NTN) on receipts are settings | `RECEIPT_COMPANY`, `RECEIPT_ADDRESS`, `RECEIPT_TAX_NUMBER` |
 
+### Stage 26: worker levels and badges
+
+Good workers earn a level that customers see, and every worker can see what the next level needs.
+
+| Feature | Where |
+|---|---|
+| Four levels, worked out by the server (never set by hand), each needing everything below it: **New**; **Rising** (3 jobs, rating 4.0+ once rated); **Trusted** (15 jobs, 4.3+ from at least 5 reviews, at most 1 confirmed no-show and at most 10% of bookings cancelled by the worker in the last 90 days); **Top rated** (50 jobs, 4.7+ from at least 20 reviews, no confirmed no-shows and at most 5% cancelled in 90 days). Only verified workers go above New | `apps/levels/services.py` |
+| Badges: Verified, 100+ jobs, 5+ years experience, Customer favourite (saved by 5+ customers), Always on time (10+ jobs in 90 days with no confirmed no-show) | `badges` on workers |
+| Levels refresh when a job is completed or reviewed, when the worker cancels, when a no-show is confirmed, on verification or rejection, and every night (old no-shows and cancellations drop out of the 90 days). Moving up sends a notice in the worker's language; moving down is silent | beat `refresh-worker-levels` |
+| Customers see the level on offers and worker profiles, and badges on profiles. Listings can be filtered and sorted by level | `level`, `badges` on `GET workers/{id}/` and offers, `worker_level` on `GET services/workers/`, `?min_level=`, `?ordering=-worker__level_rank` |
+| Workers see their level, badges and a checklist for the next level with their own numbers | `GET workers/me/level/`, app: Account → **My level** |
+
 **Before going live with online payments:** the JazzCash and Easypaisa adapters follow each
 gateway's published integration scheme and are covered by tests with simulated gateway responses.
 They have **not** been run against the real sandboxes yet, because that needs your merchant
@@ -373,6 +385,7 @@ apps/
   safety/               EmergencyContact, SosAlert, TripShare (SOS and share links)
   portfolio/            PortfolioPhoto (work photos, EXIF removed on upload)
   addresses/            SavedAddress (Home, Work and named places)
+  levels/               worker levels and badges (stored on WorkerProfile), nightly refresh
 docs/                   openapi.yaml, Postman collection
 scripts/                generate_postman.py
 app/                    Flutter client (web, Android, iPhone): lib/, test/, e2e/, integration_test/
@@ -448,7 +461,7 @@ docker compose up --build
 pytest -q
 ```
 
-The suite has 588 tests and needs a running PostgreSQL (Redis is not needed for tests). It uses the database settings from your
+The suite has 610 tests and needs a running PostgreSQL (Redis is not needed for tests). It uses the database settings from your
 `.env` and creates a separate `test_kaamnow` database. Coverage includes:
 
 - **Authentication**: registration validation, login, suspended accounts, token refresh rotation, logout blacklisting, password reset (single-use token, no account enumeration), throttling.
@@ -474,6 +487,7 @@ The suite has 588 tests and needs a running PostgreSQL (Redis is not needed for 
 - **Saved addresses**: one Home and one Work; the 10-place limit; exactly one used first, moved to the oldest when it is deleted; names required for other places; only customers, and never another customer's addresses; posting a job from your own saved address fills the location, and someone else's is refused.
 - **Earnings reports**: totals, the previous period, zero-filled day/week/month series (weeks start Monday), split by service and payment method, refund shares, Pakistan dates at midnight, this month by default, only the worker's own earnings, range and date checks; the CSV statement's rows, order, totals, formula safety, Urdu headers and no customer details.
 - **Receipts**: lines for the job price, emergency fee and discount; refunds and the amount after them; worker plan receipts; who can open them (payer, worker, admin) and nobody else; no receipt before the payment goes through; no phone numbers, addresses or commission; Urdu labels; English and Urdu PDFs (the Urdu font is embedded) chosen by `lang`, the app language or the saved language.
+- **Levels**: each level's thresholds, unverified workers stay New, confirmed (not dismissed) no-shows and worker cancellations within 90 days, badges, a notice only when moving up (also in Urdu), refreshes on completion, review, worker cancellation, confirmed no-show and the nightly task, the progress checklist, public level and badges, and filtering and sorting listings by level.
 - **Complaints** and **scheduled tasks** (including a check that every beat entry points to a registered task).
 
 CI (`.github/workflows/tests.yml`) runs lint, checks for missing migrations, validates the
@@ -509,7 +523,7 @@ be probed), `409` state conflict (already booked, wrong turn, and so on), `429` 
 |---|---|
 | App | `GET app/config/` (public: minimum app versions, emergency fee, offer price limits, which payment methods are configured, WebSocket path) |
 | Auth | `POST auth/register/` · `POST auth/login/` · `POST auth/token/refresh/` · `POST auth/logout/` · `GET/PATCH auth/me/` · `POST auth/password-reset/` · `POST auth/password-reset/confirm/` · `POST auth/password-reset/sms-confirm/` · `POST auth/phone/send-code/` · `POST auth/phone/verify/` · `POST auth/password-change/` |
-| Workers | `GET/PATCH workers/me/` · `GET/POST workers/documents/` · `GET workers/nearby/?category=&latitude=&longitude=` · `POST workers/availability/` · `GET/PUT workers/me/schedule/` · `POST workers/me/time-off/` · `DELETE workers/me/time-off/{id}/` · `GET workers/{id}/` · `GET workers/{id}/reviews/` |
+| Workers | `GET/PATCH workers/me/` · `GET/POST workers/documents/` · `GET workers/nearby/?category=&latitude=&longitude=` · `POST workers/availability/` · `GET/PUT workers/me/schedule/` · `GET workers/me/level/` · `POST workers/me/time-off/` · `DELETE workers/me/time-off/{id}/` · `GET workers/{id}/` · `GET workers/{id}/reviews/` |
 | Services | `GET services/categories/` · `GET services/categories/{id}/` · admin `POST`/`PATCH` on categories · `GET/POST services/workers/` · `PATCH/DELETE services/workers/{id}/` |
 | Requests | `POST requests/` · `GET requests/` · `GET/PATCH requests/{id}/` · `POST requests/{id}/cancel/` · `GET requests/{id}/nearby-workers/` · `GET requests/slots/?category=&latitude=&longitude=&date=` · `POST requests/{id}/open-to-all/` · `POST requests/{id}/decline/` |
 | Favourites | `GET/POST favourites/` · `DELETE favourites/{worker_id}/` · `GET favourites/recent/` |
@@ -535,7 +549,7 @@ Endpoints added beyond the original list, because the flow needs them: `password
 `bookings/{id}/completion-otp/`, `payments/{id}/confirm/`, `payments/earnings/`,
 the notification helpers, and the admin users, suspension, requests, commission settings and audit log endpoints.
 
-Postman: import `docs/KaamNow.postman_collection.json` (155 requests in 12 folders that follow the
+Postman: import `docs/KaamNow.postman_collection.json` (157 requests in 12 folders that follow the
 full flow; test scripts store tokens and ids automatically). Regenerate it with
 `python scripts/generate_postman.py`.
 

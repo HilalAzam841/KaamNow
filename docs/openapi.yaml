@@ -3502,6 +3502,7 @@ paths:
           - chat_message
           - complaint
           - featured
+          - level
           - negotiation
           - new_offer
           - new_request
@@ -3540,6 +3541,7 @@ paths:
           * `no_show` - No-show report
           * `recurring` - Repeating job
           * `safety` - Safety alert
+          * `level` - Worker level
           * `system` - System
       tags:
       - notifications
@@ -5275,6 +5277,20 @@ paths:
         schema:
           type: number
       - in: query
+        name: min_level
+        schema:
+          type: string
+          enum:
+          - rising
+          - top_rated
+          - trusted
+        description: |-
+          Only workers at this level or higher.
+
+          * `rising` - Rising
+          * `trusted` - Trusted
+          * `top_rated` - Top rated
+      - in: query
         name: min_rating
         schema:
           type: number
@@ -5759,6 +5775,21 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/WorkerProfile'
+          description: ''
+  /api/v1/workers/me/level/:
+    get:
+      operationId: workers_me_level_retrieve
+      summary: 'Worker: my level, badges, and what the next level needs'
+      tags:
+      - workers
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LevelProgress'
           description: ''
   /api/v1/workers/me/portfolio/:
     get:
@@ -6667,7 +6698,6 @@ components:
       - suspended_reason
     AdminWorker:
       type: object
-      description: The worker's own profile (private view).
       properties:
         id:
           type: integer
@@ -6739,6 +6769,22 @@ components:
         completed_jobs_count:
           type: integer
           readOnly: true
+        level:
+          allOf:
+          - $ref: '#/components/schemas/WorkerLevelEnum'
+          readOnly: true
+          description: |-
+            Worked out from jobs, ratings and reliability (apps.levels). Not set by hand.
+
+            * `new` - New
+            * `rising` - Rising
+            * `trusted` - Trusted
+            * `top_rated` - Top rated
+        badges:
+          type: array
+          items:
+            type: string
+          readOnly: true
         services:
           type: array
           items:
@@ -6766,6 +6812,7 @@ components:
           readOnly: true
       required:
       - average_rating
+      - badges
       - base_latitude
       - base_longitude
       - bio
@@ -6779,6 +6826,7 @@ components:
       - full_name
       - id
       - is_available
+      - level
       - phone
       - profile_picture
       - rating_count
@@ -7800,6 +7848,22 @@ components:
         completed_jobs_count:
           type: integer
           readOnly: true
+        level:
+          allOf:
+          - $ref: '#/components/schemas/WorkerLevelEnum'
+          readOnly: true
+          description: |-
+            Worked out from jobs, ratings and reliability (apps.levels). Not set by hand.
+
+            * `new` - New
+            * `rising` - Rising
+            * `trusted` - Trusted
+            * `top_rated` - Top rated
+        badges:
+          type: array
+          items:
+            type: string
+          readOnly: true
         plan_badge:
           type: string
           readOnly: true
@@ -7831,6 +7895,7 @@ components:
           nullable: true
       required:
       - average_rating
+      - badges
       - bio
       - completed_jobs_count
       - experience_years
@@ -7839,6 +7904,7 @@ components:
       - is_favourite
       - is_verified
       - last_booked_at
+      - level
       - plan_badge
       - profile_picture
       - rating_count
@@ -8025,6 +8091,20 @@ components:
           maxLength: 255
       required:
       - reason
+    KeyEnum:
+      enum:
+      - jobs
+      - rating
+      - reviews
+      - no_shows
+      - cancel_rate
+      type: string
+      description: |-
+        * `jobs` - Jobs done
+        * `rating` - Average rating
+        * `reviews` - Reviews
+        * `no_shows` - Confirmed no-shows (90 days)
+        * `cancel_rate` - Cancelled by you, % (90 days)
     LabelEnum:
       enum:
       - home
@@ -8058,6 +8138,61 @@ components:
       - account_number
       - account_title
       - method
+    LevelProgress:
+      type: object
+      properties:
+        level:
+          $ref: '#/components/schemas/WorkerLevelEnum'
+        badges:
+          type: array
+          items:
+            type: string
+        next_level:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/WorkerLevelEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        requirements:
+          type: array
+          items:
+            $ref: '#/components/schemas/Requirement'
+        verified:
+          type: boolean
+        window_days:
+          type: integer
+        stats:
+          $ref: '#/components/schemas/LevelStats'
+      required:
+      - badges
+      - level
+      - next_level
+      - requirements
+      - stats
+      - verified
+      - window_days
+    LevelStats:
+      type: object
+      properties:
+        jobs:
+          type: integer
+        rating:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,1}(?:\.\d{0,2})?$
+        reviews:
+          type: integer
+        no_shows:
+          type: integer
+        cancel_rate:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,1})?$
+      required:
+      - cancel_rate
+      - jobs
+      - no_shows
+      - rating
+      - reviews
     LiveLocation:
       type: object
       properties:
@@ -8290,6 +8425,22 @@ components:
         completed_jobs_count:
           type: integer
           readOnly: true
+        level:
+          allOf:
+          - $ref: '#/components/schemas/WorkerLevelEnum'
+          readOnly: true
+          description: |-
+            Worked out from jobs, ratings and reliability (apps.levels). Not set by hand.
+
+            * `new` - New
+            * `rising` - Rising
+            * `trusted` - Trusted
+            * `top_rated` - Top rated
+        badges:
+          type: array
+          items:
+            type: string
+          readOnly: true
         plan_badge:
           type: string
           readOnly: true
@@ -8320,6 +8471,7 @@ components:
           description: Paid featured placement. The app must label it 'Sponsored'.
       required:
       - average_rating
+      - badges
       - bio
       - completed_jobs_count
       - distance_km
@@ -8329,6 +8481,7 @@ components:
       - is_available
       - is_sponsored
       - is_verified
+      - level
       - plan_badge
       - profile_picture
       - rating_count
@@ -8468,6 +8621,9 @@ components:
       - read_at
       - title
       - type
+    NullEnum:
+      enum:
+      - null
     OfferAcceptRequest:
       type: object
       properties:
@@ -9380,7 +9536,6 @@ components:
           description: Send reminders the day before and an hour before a booked job.
     PatchedWorkerProfileRequest:
       type: object
-      description: The worker's own profile (private view).
       properties:
         cnic_number:
           type: string
@@ -9921,6 +10076,22 @@ components:
         completed_jobs_count:
           type: integer
           readOnly: true
+        level:
+          allOf:
+          - $ref: '#/components/schemas/WorkerLevelEnum'
+          readOnly: true
+          description: |-
+            Worked out from jobs, ratings and reliability (apps.levels). Not set by hand.
+
+            * `new` - New
+            * `rising` - Rising
+            * `trusted` - Trusted
+            * `top_rated` - Top rated
+        badges:
+          type: array
+          items:
+            type: string
+          readOnly: true
         plan_badge:
           type: string
           readOnly: true
@@ -9939,12 +10110,14 @@ components:
           readOnly: true
       required:
       - average_rating
+      - badges
       - bio
       - completed_jobs_count
       - experience_years
       - full_name
       - id
       - is_verified
+      - level
       - plan_badge
       - profile_picture
       - rating_count
@@ -9990,6 +10163,22 @@ components:
         completed_jobs_count:
           type: integer
           readOnly: true
+        level:
+          allOf:
+          - $ref: '#/components/schemas/WorkerLevelEnum'
+          readOnly: true
+          description: |-
+            Worked out from jobs, ratings and reliability (apps.levels). Not set by hand.
+
+            * `new` - New
+            * `rising` - Rising
+            * `trusted` - Trusted
+            * `top_rated` - Top rated
+        badges:
+          type: array
+          items:
+            type: string
+          readOnly: true
         plan_badge:
           type: string
           readOnly: true
@@ -10020,6 +10209,7 @@ components:
           readOnly: true
       required:
       - average_rating
+      - badges
       - bio
       - completed_jobs_count
       - experience_years
@@ -10027,6 +10217,7 @@ components:
       - id
       - is_favourite
       - is_verified
+      - level
       - plan_badge
       - portfolio
       - profile_picture
@@ -10717,6 +10908,27 @@ components:
       - gross
       - jobs
       - net
+    Requirement:
+      type: object
+      properties:
+        key:
+          $ref: '#/components/schemas/KeyEnum'
+        target:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,5}(?:\.\d{0,1})?$
+          description: Minimum, or maximum for no-shows and cancellations.
+        value:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,6}(?:\.\d{0,2})?$
+        met:
+          type: boolean
+      required:
+      - key
+      - met
+      - target
+      - value
     ResolutionEnum:
       enum:
       - accept
@@ -11795,6 +12007,7 @@ components:
       - no_show
       - recurring
       - safety
+      - level
       - system
       type: string
       description: |-
@@ -11819,6 +12032,7 @@ components:
         * `no_show` - No-show report
         * `recurring` - Repeating job
         * `safety` - Safety alert
+        * `level` - Worker level
         * `system` - System
     User:
       type: object
@@ -12093,6 +12307,18 @@ components:
         * `pending` - Pending
         * `approved` - Approved
         * `rejected` - Rejected
+    WorkerLevelEnum:
+      enum:
+      - new
+      - rising
+      - trusted
+      - top_rated
+      type: string
+      description: |-
+        * `new` - New
+        * `rising` - Rising
+        * `trusted` - Trusted
+        * `top_rated` - Top rated
     WorkerOffer:
       type: object
       properties:
@@ -12194,7 +12420,6 @@ components:
         * `closed` - Closed
     WorkerProfile:
       type: object
-      description: The worker's own profile (private view).
       properties:
         id:
           type: integer
@@ -12263,6 +12488,22 @@ components:
         completed_jobs_count:
           type: integer
           readOnly: true
+        level:
+          allOf:
+          - $ref: '#/components/schemas/WorkerLevelEnum'
+          readOnly: true
+          description: |-
+            Worked out from jobs, ratings and reliability (apps.levels). Not set by hand.
+
+            * `new` - New
+            * `rising` - Rising
+            * `trusted` - Trusted
+            * `top_rated` - Top rated
+        badges:
+          type: array
+          items:
+            type: string
+          readOnly: true
         services:
           type: array
           items:
@@ -12279,6 +12520,7 @@ components:
           readOnly: true
       required:
       - average_rating
+      - badges
       - cnic_number
       - completed_jobs_count
       - created_at
@@ -12286,6 +12528,7 @@ components:
       - full_name
       - id
       - is_available
+      - level
       - phone
       - rating_count
       - rejection_reason
@@ -12336,6 +12579,14 @@ components:
         worker_service_area:
           type: string
           readOnly: true
+        worker_level:
+          type: string
+          readOnly: true
+        worker_badges:
+          type: array
+          items:
+            type: string
+          readOnly: true
         is_sponsored:
           type: boolean
           readOnly: true
@@ -12351,10 +12602,12 @@ components:
       - created_at
       - id
       - is_sponsored
+      - worker_badges
       - worker_completed_jobs
       - worker_experience_years
       - worker_id
       - worker_is_verified
+      - worker_level
       - worker_name
       - worker_rating
       - worker_service_area

@@ -4,6 +4,7 @@ import '../../core/format.dart';
 import '../../models/models.dart';
 import 'common.dart';
 import '../../l10n/l10n.dart';
+import 'level_widgets.dart';
 
 String _negotiationLine(AppLocalizations t, String action, String who, String amount) => switch (action) {
       'offer' => t.negOffer(who, amount),
@@ -121,6 +122,10 @@ class WorkerSummary extends StatelessWidget {
               if (worker.isVerified) ...[
                 const SizedBox(width: 4),
                 Tooltip(message: context.t.verifiedByKaamnow, child: Icon(Icons.verified, size: 18, color: theme.colorScheme.primary)),
+              ],
+              if (worker.level != 'new') ...[
+                const SizedBox(width: 6),
+                LevelChip(worker.level),
               ],
               if (worker.planBadge.isNotEmpty) ...[
                 const SizedBox(width: 6),

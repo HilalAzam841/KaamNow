@@ -11,6 +11,7 @@ import '../widgets/offer_widgets.dart';
 import '../worker/schedule_screen.dart' show hoursSummary;
 import 'my_workers_screen.dart';
 import '../../l10n/l10n.dart';
+import '../widgets/level_widgets.dart';
 
 class WorkerPublicScreen extends StatelessWidget {
   const WorkerPublicScreen({super.key, required this.id});
@@ -33,6 +34,7 @@ class WorkerPublicScreen extends StatelessWidget {
                 worker: w,
                 trailing: isCustomer ? FavouriteButton(workerId: w.id, initial: w.isFavourite) : null,
               ),
+              if (w.badges.any((b) => b != 'verified')) ...[const SizedBox(height: 8), BadgeRow(w.badges)],
               if (isCustomer && w.activeServices.isNotEmpty) ...[
                 const SizedBox(height: 12),
                 FilledButton.icon(

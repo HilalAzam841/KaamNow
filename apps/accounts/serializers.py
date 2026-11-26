@@ -167,6 +167,7 @@ class WorkerServiceInlineSerializer(serializers.ModelSerializer):
 
 
 class WorkerProfileSerializer(serializers.ModelSerializer):
+    badges = serializers.ListField(child=serializers.CharField(), read_only=True)
     """The worker's own profile (private view)."""
 
     full_name = serializers.CharField(source="user.full_name", read_only=True)
@@ -180,11 +181,11 @@ class WorkerProfileSerializer(serializers.ModelSerializer):
             "id", "full_name", "phone", "cnic_number", "bio", "experience_years", "profile_picture",
             "base_latitude", "base_longitude", "service_area", "service_radius_km", "is_available",
             "verification_status", "rejection_reason", "verified_at", "average_rating", "rating_count",
-            "completed_jobs_count", "services", "documents_uploaded", "created_at",
+            "completed_jobs_count", "level", "badges", "services", "documents_uploaded", "created_at",
         ]
         read_only_fields = [
             "id", "is_available", "verification_status", "rejection_reason", "verified_at", "average_rating",
-            "rating_count", "completed_jobs_count", "created_at",
+            "rating_count", "completed_jobs_count", "level", "badges", "created_at",
         ]
 
     def get_documents_uploaded(self, obj) -> list[str]:
@@ -225,12 +226,14 @@ class PublicWorkerSerializer(serializers.ModelSerializer):
     services = WorkerServiceInlineSerializer(many=True, read_only=True)
     plan_badge = serializers.SerializerMethodField()
     working_hours = serializers.SerializerMethodField()
+    badges = serializers.ListField(child=serializers.CharField(), read_only=True)
 
     class Meta:
         model = WorkerProfile
         fields = [
             "id", "full_name", "profile_picture", "bio", "experience_years", "service_area", "is_verified",
-            "average_rating", "rating_count", "completed_jobs_count", "plan_badge", "services", "working_hours",
+            "average_rating", "rating_count", "completed_jobs_count", "level", "badges", "plan_badge", "services",
+            "working_hours",
         ]
         read_only_fields = fields
 

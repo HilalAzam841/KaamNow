@@ -189,4 +189,8 @@ def review_no_show(report, admin_user, *, review, note=""):
     report.reviewed_by = admin_user
     report.reviewed_at = timezone.now()
     report.save(update_fields=["review", "admin_note", "reviewed_by", "reviewed_at"])
+    if report.side == NoShowReport.Side.WORKER:
+        from apps.levels.services import refresh as refresh_level
+
+        refresh_level(report.booking.worker_id)
     return report

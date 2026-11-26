@@ -72,6 +72,11 @@
   "availableAnyTimeHelp": "Turn off to set the days and hours you work.",
   "back": "Back",
   "backToLogin": "Back to log in",
+  "badgeAlwaysOnTime": "Always on time",
+  "badgeCustomerFavourite": "Customer favourite",
+  "badgeExperienced": "5+ years experience",
+  "badgeJobs100": "100+ jobs",
+  "badgeVerified": "Verified",
   "bankTransfer": "Bank transfer",
   "baseLocation": "Base location",
   "baseLocationHint": "Jobs are matched by distance from here. Customers never see it.",
@@ -628,6 +633,13 @@
   },
   "leaveRepeatingQ": "Stop doing this job?",
   "leftRepeating": "Done. You will not get these visits any more.",
+  "levelHelp": "KaamNow level, from jobs done, ratings and reliability",
+  "levelNeedsVerification": "Levels start once your account is verified.",
+  "levelNew": "New",
+  "levelRising": "Rising",
+  "levelShownHint": "Customers see your level on your offers and profile.",
+  "levelTopRated": "Top rated",
+  "levelTrusted": "Trusted",
   "linkCopied": "Link copied.",
   "linkExpired": "This link has expired or was turned off.",
   "live": "Live",
@@ -679,6 +691,8 @@
   "moreDetail": "Please give a bit more detail (20+ characters)",
   "moveEarlier": "Move earlier",
   "moveLater": "Move later",
+  "myLevel": "My level",
+  "myLevelHint": "Your level and badges, and how to reach the next level",
   "myPortfolio": "My work photos",
   "myPortfolioHint": "Show customers what you have done",
   "myScheduleSubtitle": "Days and times you take jobs, and days off",
@@ -743,6 +757,12 @@
   },
   "networkError": "Could not reach KaamNow. Check your connection.",
   "newPassword": "New password",
+  "nextLevelIs": "To become {level}",
+  "@nextLevelIs": {
+    "placeholders": {
+      "level": {}
+    }
+  },
   "nextVisitOn": "Next visit: {when}",
   "@nextVisitOn": {
     "placeholders": {
@@ -754,6 +774,7 @@
   "no": "No",
   "noActiveBookings": "No active bookings",
   "noAlertsYet": "No alerts yet",
+  "noBadgesYet": "No badges yet. They come with experience, saved-by customers and always being on time.",
   "noBookingsCustomerHint": "Accept an offer on one of your requests to book a worker.",
   "noBookingsWorkerHint": "When a customer accepts your offer, the job appears here.",
   "noCancelledBookings": "No cancelled bookings",
@@ -1139,6 +1160,47 @@
     }
   },
   "reportUnpaid": "Not paid yet",
+  "reqCancelRate": "Bookings you cancelled in {days} days: {value}% (at most {target}%)",
+  "@reqCancelRate": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      },
+      "value": {},
+      "target": {}
+    }
+  },
+  "reqJobs": "Jobs done: {value} of {target}",
+  "@reqJobs": {
+    "placeholders": {
+      "value": {},
+      "target": {}
+    }
+  },
+  "reqNoShows": "Confirmed no-shows in {days} days: {value} (at most {target})",
+  "@reqNoShows": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      },
+      "value": {},
+      "target": {}
+    }
+  },
+  "reqRating": "Average rating: {value} (needs {target})",
+  "@reqRating": {
+    "placeholders": {
+      "value": {},
+      "target": {}
+    }
+  },
+  "reqReviews": "Reviews: {value} of {target}",
+  "@reqReviews": {
+    "placeholders": {
+      "value": {},
+      "target": {}
+    }
+  },
   "request": "Request",
   "requestCancelled": "Request cancelled.",
   "requestFailed": "Request failed.",
@@ -1409,6 +1471,7 @@
   "titleHint": "e.g. Ceiling fan not working",
   "titleLabel": "Title",
   "toWord": "to",
+  "topLevelReached": "You are at the top level. Keep it up!",
   "total": "Total",
   "trackingStarts": "Tracking starts when the worker sets off.",
   "tryAgain": "Try again",
@@ -1561,7 +1624,9 @@
       "amount": {}
     }
   },
+  "yourBadges": "Your badges",
   "yourInviteCode": "Your invite code",
+  "yourLevelIs": "Your level",
   "yourOffer": "Your offer",
   "yourPhoneNumber": "Your phone number",
   "yourPlan": "Your plan",

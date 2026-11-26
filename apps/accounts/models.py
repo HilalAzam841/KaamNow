@@ -170,6 +170,14 @@ class WorkerProfile(TimeStampedModel):
     average_rating = models.DecimalField(max_digits=3, decimal_places=2, default=Decimal("0.00"))
     rating_count = models.PositiveIntegerField(default=0)
     completed_jobs_count = models.PositiveIntegerField(default=0)
+    level = models.CharField(
+        max_length=10, default="new", db_index=True,
+        choices=[("new", "New"), ("rising", "Rising"), ("trusted", "Trusted"), ("top_rated", "Top rated")],
+        help_text="Worked out from jobs, ratings and reliability (apps.levels). Not set by hand.",
+    )
+    level_rank = models.PositiveSmallIntegerField(default=0, help_text="0 new, 1 rising, 2 trusted, 3 top rated.")
+    level_since = models.DateTimeField(null=True, blank=True)
+    badges = models.JSONField(default=list, blank=True)
 
     class Meta:
         ordering = ["-created_at"]

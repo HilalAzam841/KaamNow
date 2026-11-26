@@ -82,7 +82,8 @@ class PublicWorker {
       this.experienceYears = 0, this.serviceArea = '', this.isVerified = false, this.averageRating = '0.00',
       this.ratingCount = 0, this.completedJobs = 0, this.planBadge = '', this.services = const [],
       this.distanceKm, this.isAvailable, this.isSponsored = false, this.workingHours = const [],
-      this.isFavourite = false, this.lastBookedAt, this.portfolio = const []});
+      this.isFavourite = false, this.lastBookedAt, this.portfolio = const [], this.level = 'new',
+      this.badges = const []});
 
   factory PublicWorker.fromJson(Map<String, dynamic> j) => PublicWorker(
         id: parseInt(j['id']),
@@ -104,10 +105,16 @@ class PublicWorker {
         isFavourite: j['is_favourite'] == true,
         portfolio: parseList(j['portfolio'], PortfolioPhoto.fromJson),
         lastBookedAt: parseDate(j['last_booked_at']),
+        level: str(j['level']).isEmpty ? 'new' : str(j['level']),
+        badges: [for (final b in (j['badges'] as List? ?? const [])) str(b)],
       );
 
   final int id;
   final String fullName;
+
+  /// new, rising, trusted or top_rated (worked out by the server).
+  final String level;
+  final List<String> badges;
   final String? profilePicture;
   final String bio;
   final int experienceYears;
@@ -1309,4 +1316,43 @@ class Receipt {
   final String company;
   final String companyAddress;
   final String taxNumber;
+}
+
+class LevelRequirement {
+  LevelRequirement({required this.key, required this.target, required this.value, required this.met});
+  factory LevelRequirement.fromJson(Map<String, dynamic> j) => LevelRequirement(
+      key: str(j['key']), target: str(j['target']), value: str(j['value']), met: j['met'] == true);
+
+  /// jobs, rating, reviews, no_shows or cancel_rate.
+  final String key;
+  final String target;
+  final String value;
+  final bool met;
+
+  /// How far along, 0 to 1 (for jobs and reviews; the others are met or not).
+  double get progress {
+    final v = double.tryParse(value) ?? 0, tgt = double.tryParse(target) ?? 0;
+    if (met) return 1;
+    if ((key == 'jobs' || key == 'reviews' || key == 'rating') && tgt > 0) return (v / tgt).clamp(0, 1);
+    return 0;
+  }
+}
+
+class LevelProgress {
+  LevelProgress({required this.level, this.badges = const [], this.nextLevel, this.requirements = const [],
+      this.verified = true, this.windowDays = 90});
+  factory LevelProgress.fromJson(Map<String, dynamic> j) => LevelProgress(
+        level: str(j['level']),
+        badges: [for (final b in (j['badges'] as List? ?? const [])) str(b)],
+        nextLevel: j['next_level'] == null ? null : str(j['next_level']),
+        requirements: parseList(j['requirements'], LevelRequirement.fromJson),
+        verified: j['verified'] != false,
+        windowDays: parseInt(j['window_days']),
+      );
+  final String level;
+  final List<String> badges;
+  final String? nextLevel;
+  final List<LevelRequirement> requirements;
+  final bool verified;
+  final int windowDays;
 }

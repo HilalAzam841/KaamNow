@@ -980,6 +980,27 @@ msgstr "صرف بکنگ کے فریق ہی غیر حاضری کی رپورٹ ک�
 msgid "Only booking participants can cancel."
 msgstr "صرف بکنگ کے فریقین منسوخ کر سکتے ہیں۔"
 
+#: apps/levels/services.py
+msgid "Rising"
+msgstr "ابھرتا ہوا"
+
+#: apps/levels/services.py
+msgid "Trusted"
+msgstr "قابلِ اعتماد"
+
+#: apps/levels/services.py
+msgid "Top rated"
+msgstr "سب سے بہترین"
+
+#: apps/levels/services.py
+msgid "You moved up a level"
+msgstr "آپ کا درجہ بڑھ گیا"
+
+#: apps/levels/services.py
+#, python-brace-format
+msgid "You are now {level} on KaamNow. Customers see it on your offers and profile."
+msgstr "اب آپ KaamNow پر {level} ہیں۔ گاہک اسے آپ کی پیشکشوں اور پروفائل پر دیکھتے ہیں۔"
+
 #: apps/notifications/serializers.py
 msgid "Invalid device token."
 msgstr "ڈیوائس ٹوکن درست نہیں۔"

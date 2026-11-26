@@ -48,7 +48,9 @@ def verify_worker(worker: WorkerProfile, admin_user, request=None):
         worker.user, Notification.Type.VERIFICATION, t("Account verified"),
         t("Your KaamNow service provider account is verified. You can now go online and receive jobs."),
     )
-    return worker
+    from apps.levels.services import refresh as refresh_level
+
+    return refresh_level(worker, notify_change=False)
 
 
 @transaction.atomic
@@ -70,7 +72,9 @@ def reject_worker(worker: WorkerProfile, admin_user, reason, request=None):
         worker.user, Notification.Type.VERIFICATION, t("Verification unsuccessful"),
         t("Your verification was not approved: {reason}", reason=reason),
     )
-    return worker
+    from apps.levels.services import refresh as refresh_level
+
+    return refresh_level(worker, notify_change=False)
 
 
 def set_availability(worker: WorkerProfile, is_available: bool):
