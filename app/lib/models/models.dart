@@ -1243,3 +1243,70 @@ class EarningsReport {
 
   int get days => end.difference(start).inDays + 1;
 }
+
+class ReceiptLine {
+  ReceiptLine(this.label, this.amount);
+  final String label;
+  final String amount;
+}
+
+class ReceiptRefund {
+  ReceiptRefund({required this.date, required this.amount, this.reference = ''});
+  final DateTime date;
+  final String amount;
+  final String reference;
+}
+
+/// A receipt for a completed payment. Labels in [lines] come from the server in the app's language.
+class Receipt {
+  Receipt({required this.number, this.issuedAt, required this.status, required this.purpose, this.bookingId,
+      this.title = '', this.service = '', this.billedTo = '', this.worker = '', required this.method,
+      this.methodLabel = '', this.transactionId = '', this.lines = const [], required this.total,
+      this.refunds = const [], this.refunded = '0.00', required this.netPaid, this.company = 'KaamNow',
+      this.companyAddress = '', this.taxNumber = ''});
+  factory Receipt.fromJson(Map<String, dynamic> j) => Receipt(
+        number: str(j['number']),
+        issuedAt: parseDate(j['issued_at']),
+        status: str(j['status']),
+        purpose: str(j['purpose']),
+        bookingId: j['booking'] == null ? null : parseInt(j['booking']),
+        title: str(j['title']),
+        service: str(j['service']),
+        billedTo: str(j['billed_to']),
+        worker: str(j['worker']),
+        method: str(j['method']),
+        methodLabel: str(j['method_label']),
+        transactionId: str(j['transaction_id']),
+        lines: [for (final l in (j['lines'] as List? ?? const [])) ReceiptLine(str(l['label']), str(l['amount']))],
+        total: str(j['total']),
+        refunds: [
+          for (final r in (j['refunds'] as List? ?? const []))
+            ReceiptRefund(date: DateTime.parse(str(r['date'])), amount: str(r['amount']), reference: str(r['reference']))
+        ],
+        refunded: str(j['refunded']),
+        netPaid: str(j['net_paid']),
+        company: str(j['company']),
+        companyAddress: str(j['company_address']),
+        taxNumber: str(j['tax_number']),
+      );
+  final String number;
+  final DateTime? issuedAt;
+  final String status;
+  final String purpose;
+  final int? bookingId;
+  final String title;
+  final String service;
+  final String billedTo;
+  final String worker;
+  final String method;
+  final String methodLabel;
+  final String transactionId;
+  final List<ReceiptLine> lines;
+  final String total;
+  final List<ReceiptRefund> refunds;
+  final String refunded;
+  final String netPaid;
+  final String company;
+  final String companyAddress;
+  final String taxNumber;
+}

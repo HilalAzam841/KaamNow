@@ -299,6 +299,13 @@ class KaamNowApi {
       PaymentQuote.fromJson(asMap(await client.post('/promos/check/',
           body: {'booking': bookingId, 'promo_code': promoCode, 'use_credit': useCredit})));
   Future<ReferralSummary> referralSummary() async => ReferralSummary.fromJson(asMap(await client.get('/referrals/me/')));
+  Future<Receipt> receipt(int paymentId) async =>
+      Receipt.fromJson(asMap(await client.get('/payments/$paymentId/receipt/')));
+
+  /// The receipt PDF in [lang] (en or ur): bytes and content type.
+  Future<(Uint8List, String)> receiptPdf(int paymentId, String lang) =>
+      client.getBytes('/payments/$paymentId/receipt/pdf/', query: {'lang': lang});
+
   Future<List<Payment>> paymentsForBooking(int bookingId) async =>
       Paged.parse(await client.get('/payments/', query: {'booking': bookingId}), Payment.fromJson).results;
   Future<Payment> confirmCashPayment(int paymentId) async =>

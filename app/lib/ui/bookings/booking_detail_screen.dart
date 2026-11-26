@@ -532,6 +532,12 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
                   ? context.t.refundedToCustomer(rs(current.refundedAmount))
                   : context.t.refundedToYou(rs(current.refundedAmount)),
           ].join('\n'), key: const Key('payment-done-detail')),
+          trailing: TextButton.icon(
+            key: const Key('payment-receipt'),
+            onPressed: () => context.push('/payments/${current.id}/receipt'),
+            icon: const Icon(Icons.receipt_long),
+            label: Text(context.t.viewReceipt),
+          ),
         ),
       ));
     } else if (current != null) {
@@ -554,6 +560,15 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
       final refunded = _payments.where((p) => p.status == 'refunded');
       if (refunded.isNotEmpty) {
         widgets.add(Text(context.t.paymentRefunded(rs(refunded.first.amount)), key: const Key('payment-refunded')));
+        widgets.add(Align(
+          alignment: AlignmentDirectional.centerStart,
+          child: TextButton.icon(
+            key: const Key('refunded-receipt'),
+            onPressed: () => context.push('/payments/${refunded.first.id}/receipt'),
+            icon: const Icon(Icons.receipt_long),
+            label: Text(context.t.viewReceipt),
+          ),
+        ));
       } else if (failed.isNotEmpty) {
         widgets.add(Text(context.t.lastAttempt(statusLabel(failed.first.status), failed.first.failureReason),
             style: TextStyle(color: theme.colorScheme.error)));

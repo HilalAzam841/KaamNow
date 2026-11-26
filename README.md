@@ -14,7 +14,7 @@ later, and talks to the backend only through the REST API and the booking WebSoc
 
 **Stage 1 (Backend MVP), Stage 2 (Advanced features) and Stage 3 (Flutter web client) are done,
 and Stage 4 adds the admin dashboard to the web app.** Every backend feature below has its business logic, REST endpoint(s), validation and
-automated tests. All 576 backend tests pass against PostgreSQL 16, and the Flutter app has 147
+automated tests. All 588 backend tests pass against PostgreSQL 16, and the Flutter app has 151
 unit and widget tests plus a browser end-to-end run (see `app/README.md`).
 
 ### Stage 1: Backend MVP
@@ -319,6 +319,17 @@ Workers can see how much they earned in any week, month or date range, where it 
 | A CSV statement with one row per job and per refund share, oldest first, and a total row. It has no customer names, phone numbers or addresses, follows the app language (Urdu headers open correctly in Excel), and a job title can't run as a spreadsheet formula. The web app downloads it; the phone app opens the share sheet to save it or send it | `GET payments/earnings/statement/`, `THROTTLE_STATEMENT` |
 | Days follow Pakistan time, so a job finished at 1 AM counts on the new day | |
 
+### Stage 25: customer receipts
+
+Every payment that has gone through gets a receipt, in the app and as a PDF.
+
+| Feature | Where |
+|---|---|
+| A receipt with its number, date, booking, who paid, who did the work, the service and job, the job price, emergency fee and discount (with the promo code), the total, how it was paid and the gateway transaction ID. Refunds are listed with the amount paid after them. Worker plan and featured-listing payments get one too | `GET payments/{id}/receipt/`, app: booking → Payment → **Receipt** |
+| The PDF (A5) is in English or Urdu. Urdu receipts are right to left in Noto Nastaliq Urdu, with numbers and IDs kept left to right. The language comes from `?lang=`, then the app's language, then the user's saved language | `GET payments/{id}/receipt/pdf/`, app: **Download PDF** (browser download on the web, share sheet on phones), `THROTTLE_RECEIPT` |
+| Only the payer, the booking's worker and admins can open a receipt, and only once the payment has gone through. Receipts show no phone numbers, addresses or commission | |
+| The company name, address and an optional tax number (NTN) on receipts are settings | `RECEIPT_COMPANY`, `RECEIPT_ADDRESS`, `RECEIPT_TAX_NUMBER` |
+
 **Before going live with online payments:** the JazzCash and Easypaisa adapters follow each
 gateway's published integration scheme and are covered by tests with simulated gateway responses.
 They have **not** been run against the real sandboxes yet, because that needs your merchant
@@ -437,7 +448,7 @@ docker compose up --build
 pytest -q
 ```
 
-The suite has 576 tests and needs a running PostgreSQL (Redis is not needed for tests). It uses the database settings from your
+The suite has 588 tests and needs a running PostgreSQL (Redis is not needed for tests). It uses the database settings from your
 `.env` and creates a separate `test_kaamnow` database. Coverage includes:
 
 - **Authentication**: registration validation, login, suspended accounts, token refresh rotation, logout blacklisting, password reset (single-use token, no account enumeration), throttling.
@@ -462,6 +473,7 @@ The suite has 576 tests and needs a running PostgreSQL (Redis is not needed for 
 - **Portfolio**: uploads lose GPS and camera data, are turned upright and shrunk; fake or wrong files are refused; 12-photo limit; service and finished-job links checked; caption, reorder and delete (file removed) only by the owner; hidden photos never public but shown to the worker with the reason; admin hide/show audited and the worker told in their language; no public portfolio for unverified workers.
 - **Saved addresses**: one Home and one Work; the 10-place limit; exactly one used first, moved to the oldest when it is deleted; names required for other places; only customers, and never another customer's addresses; posting a job from your own saved address fills the location, and someone else's is refused.
 - **Earnings reports**: totals, the previous period, zero-filled day/week/month series (weeks start Monday), split by service and payment method, refund shares, Pakistan dates at midnight, this month by default, only the worker's own earnings, range and date checks; the CSV statement's rows, order, totals, formula safety, Urdu headers and no customer details.
+- **Receipts**: lines for the job price, emergency fee and discount; refunds and the amount after them; worker plan receipts; who can open them (payer, worker, admin) and nobody else; no receipt before the payment goes through; no phone numbers, addresses or commission; Urdu labels; English and Urdu PDFs (the Urdu font is embedded) chosen by `lang`, the app language or the saved language.
 - **Complaints** and **scheduled tasks** (including a check that every beat entry points to a registered task).
 
 CI (`.github/workflows/tests.yml`) runs lint, checks for missing migrations, validates the
@@ -510,7 +522,7 @@ be probed), `409` state conflict (already booked, wrong turn, and so on), `429` 
 | Chat | `GET/POST bookings/{id}/messages/` · `POST bookings/{id}/messages/read/` |
 | Tracking | `POST bookings/{id}/location/` (worker) · `GET bookings/{id}/location/` |
 | Promotions | `POST promos/check/` · `GET referrals/me/` |
-| Payments | `POST payments/` (cash, jazzcash, easypaisa; optional `promo_code`, `use_credit`) · `GET payments/` · `GET payments/{id}/` · `POST payments/{id}/confirm/` · `GET payments/earnings/` · `GET payments/earnings/report/?start=&end=&group=` · `GET payments/earnings/statement/?start=&end=` (CSV) · `GET payments/wallet/` · `POST payments/payouts/` · `POST payments/payouts/{id}/cancel/` · `POST payments/commission/pay/` · `POST/GET payments/callbacks/jazzcash/` · `POST/GET payments/callbacks/easypaisa/` |
+| Payments | `POST payments/` (cash, jazzcash, easypaisa; optional `promo_code`, `use_credit`) · `GET payments/` · `GET payments/{id}/` · `POST payments/{id}/confirm/` · `GET payments/{id}/receipt/` · `GET payments/{id}/receipt/pdf/?lang=` · `GET payments/earnings/` · `GET payments/earnings/report/?start=&end=&group=` · `GET payments/earnings/statement/?start=&end=` (CSV) · `GET payments/wallet/` · `POST payments/payouts/` · `POST payments/payouts/{id}/cancel/` · `POST payments/commission/pay/` · `POST/GET payments/callbacks/jazzcash/` · `POST/GET payments/callbacks/easypaisa/` |
 | Subscriptions | `GET subscriptions/plans/` · `POST subscriptions/` · `GET subscriptions/my-subscription/` · `GET subscriptions/history/` |
 | Featured | `GET featured/plans/` · `GET/POST featured/` |
 | Complaints | `POST complaints/` · `GET complaints/` · `GET complaints/{id}/` |
@@ -523,7 +535,7 @@ Endpoints added beyond the original list, because the flow needs them: `password
 `bookings/{id}/completion-otp/`, `payments/{id}/confirm/`, `payments/earnings/`,
 the notification helpers, and the admin users, suspension, requests, commission settings and audit log endpoints.
 
-Postman: import `docs/KaamNow.postman_collection.json` (153 requests in 12 folders that follow the
+Postman: import `docs/KaamNow.postman_collection.json` (155 requests in 12 folders that follow the
 full flow; test scripts store tokens and ids automatically). Regenerate it with
 `python scripts/generate_postman.py`.
 

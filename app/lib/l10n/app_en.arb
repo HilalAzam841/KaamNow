@@ -368,6 +368,7 @@
   },
   "done": "Done",
   "downloadFailed": "Download failed.",
+  "downloadReceiptPdf": "Download PDF",
   "downloadStatement": "Download statement (CSV)",
   "durationHours": "{hours, plural, =1{1 hour} other{{hours} hours}}",
   "@durationHours": {
@@ -989,6 +990,33 @@
     }
   },
   "reasonOptional": "Reason (optional)",
+  "receiptBilledTo": "Billed to",
+  "receiptBooking": "Booking",
+  "receiptDate": "Date",
+  "receiptDownloaded": "Receipt downloaded.",
+  "receiptFooter": "This receipt was made by computer and needs no signature.",
+  "receiptJob": "Job",
+  "receiptNumber": "Receipt number",
+  "receiptPaidAfterRefunds": "Paid after refunds",
+  "receiptPaidBy": "Paid by",
+  "receiptRefundOn": "Refund on {date}",
+  "@receiptRefundOn": {
+    "placeholders": {
+      "date": {}
+    }
+  },
+  "receiptRefundedTitle": "Receipt (refunded)",
+  "receiptService": "Service",
+  "receiptTaxNumber": "Tax number: {number}",
+  "@receiptTaxNumber": {
+    "placeholders": {
+      "number": {}
+    }
+  },
+  "receiptTitle": "Receipt",
+  "receiptTotalPaid": "Total paid",
+  "receiptTransactionId": "Transaction ID",
+  "receiptWorkDoneBy": "Work done by",
   "received": "Received",
   "recentJobs": "Recent jobs",
   "recentVisits": "Recent visits",
@@ -1421,6 +1449,7 @@
   "verificationRejected": "Verification was rejected",
   "verifiedByKaamNow": "Verified by KaamNow",
   "verifiedByKaamnow": "Verified by KaamNow",
+  "viewReceipt": "Receipt",
   "visitFailed": "Could not be posted",
   "visitSentToAll": "Sent to workers nearby",
   "visitSentToWorker": "Sent to your worker",

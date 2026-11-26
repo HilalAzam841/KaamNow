@@ -623,6 +623,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String get downloadFailed => 'ڈاؤن لوڈ نہیں ہو سکا۔';
 
   @override
+  String get downloadReceiptPdf => 'PDF ڈاؤن لوڈ کریں';
+
+  @override
   String get downloadStatement => 'اسٹیٹمنٹ ڈاؤن لوڈ کریں (CSV)';
 
   @override
@@ -1651,6 +1654,62 @@ class AppLocalizationsUr extends AppLocalizations {
   String get reasonOptional => 'وجہ (اختیاری)';
 
   @override
+  String get receiptBilledTo => 'گاہک';
+
+  @override
+  String get receiptBooking => 'بکنگ';
+
+  @override
+  String get receiptDate => 'تاریخ';
+
+  @override
+  String get receiptDownloaded => 'رسید ڈاؤن لوڈ ہو گئی۔';
+
+  @override
+  String get receiptFooter =>
+      'یہ رسید کمپیوٹر سے بنی ہے اور اس پر دستخط کی ضرورت نہیں۔';
+
+  @override
+  String get receiptJob => 'کام';
+
+  @override
+  String get receiptNumber => 'رسید نمبر';
+
+  @override
+  String get receiptPaidAfterRefunds => 'واپسی کے بعد ادائیگی';
+
+  @override
+  String get receiptPaidBy => 'ادائیگی کا طریقہ';
+
+  @override
+  String receiptRefundOn(Object date) {
+    return '$date کو رقم واپس';
+  }
+
+  @override
+  String get receiptRefundedTitle => 'رسید (رقم واپس)';
+
+  @override
+  String get receiptService => 'سروس';
+
+  @override
+  String receiptTaxNumber(Object number) {
+    return 'ٹیکس نمبر: $number';
+  }
+
+  @override
+  String get receiptTitle => 'رسید';
+
+  @override
+  String get receiptTotalPaid => 'کل ادائیگی';
+
+  @override
+  String get receiptTransactionId => 'ٹرانزیکشن آئی ڈی';
+
+  @override
+  String get receiptWorkDoneBy => 'کام کرنے والا';
+
+  @override
   String get received => 'مل گئے';
 
   @override
@@ -2382,6 +2441,9 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get verifiedByKaamnow => 'کام ناؤ سے تصدیق شدہ';
+
+  @override
+  String get viewReceipt => 'رسید';
 
   @override
   String get visitFailed => 'پوسٹ نہیں ہو سکا';
