@@ -289,6 +289,26 @@ class KaamNowApi {
     return payment['checkout'] == null ? null : Checkout.fromJson(asMap(payment['checkout']));
   }
 
+  /// Tips the worker after a completed job. Returns the gateway checkout for online methods, else null.
+  Future<(TipInfo, Checkout?)> giveTip(int bookingId, {required String amount, required String method,
+      String message = ''}) async {
+    final r = asMap(await client.post('/bookings/$bookingId/tip/',
+        body: {'amount': amount, 'method': method, if (message.isNotEmpty) 'message': message}));
+    return (TipInfo.fromJson(asMap(r['tip'])), r['checkout'] == null ? null : Checkout.fromJson(asMap(r['checkout'])));
+  }
+
+  Future<List<TipInfo>> tips({String? status}) async =>
+      Paged.parse(await client.get('/tips/', query: {'status': status}), TipInfo.fromJson).results;
+  Future<({int count, String total})> tipSummary() async {
+    final j = asMap(await client.get('/tips/summary/'));
+    return (count: parseInt(j['count']), total: j['total'] == null ? '0.00' : str(j['total']));
+  }
+
+  Future<TipInfo> confirmCashTip(int id) async =>
+      TipInfo.fromJson(asMap(await client.post('/tips/$id/confirm-cash/')));
+  Future<TipInfo> cashTipNotReceived(int id) async =>
+      TipInfo.fromJson(asMap(await client.post('/tips/$id/not-received/')));
+
   Future<Booking> cancelBooking(int id, String reason) async =>
       Booking.fromJson(asMap(await client.post('/bookings/$id/cancel/', body: {'reason': reason})));
 

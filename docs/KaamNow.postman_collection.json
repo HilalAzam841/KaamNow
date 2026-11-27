@@ -80,6 +80,10 @@
     {
       "key": "cancellation_fee_id",
       "value": ""
+    },
+    {
+      "key": "tip_id",
+      "value": ""
     }
   ],
   "item": [
@@ -4045,6 +4049,221 @@
                 {
                   "key": "token",
                   "value": "{{customer_access}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Tip the worker (cash; the worker confirms)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/bookings/{{booking_id}}/tip/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "bookings",
+                "{{booking_id}}",
+                "tip"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{customer_access}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": \"200\",\n  \"method\": \"cash\",\n  \"message\": \"Great work, thank you\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set('tip_id', pm.response.json().data.tip.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Tip the worker online",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/bookings/{{booking_id}}/tip/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "bookings",
+                "{{booking_id}}",
+                "tip"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{customer_access}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": \"300\",\n  \"method\": \"jazzcash\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Tips I gave or got",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/tips/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "tips"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{customer_access}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Worker: tips summary",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/tips/summary/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "tips",
+                "summary"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{worker_access}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Worker: confirm a cash tip",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/tips/{{tip_id}}/confirm-cash/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "tips",
+                "{{tip_id}}",
+                "confirm-cash"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{worker_access}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Worker: cash tip not received",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/tips/{{tip_id}}/not-received/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "tips",
+                "{{tip_id}}",
+                "not-received"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{worker_access}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Admin: tips",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/tips/?status=paid",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "tips",
+                "?status=paid"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_access}}"
                 }
               ]
             }

@@ -1273,6 +1273,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get myScheduleTitle => 'My working hours';
 
   @override
+  String get myTips => 'My tips';
+
+  @override
+  String get myTipsHint => 'Tips customers gave you';
+
+  @override
   String get myWorkerProfile => 'My worker profile';
 
   @override
@@ -1474,6 +1480,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noTimeOff => 'No days off planned.';
+
+  @override
+  String get noTips =>
+      'No tips yet. Great work and a friendly word often bring one.';
 
   @override
   String get noWorkersYet => 'No workers yet';
@@ -2669,6 +2679,109 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get timeline => 'Timeline';
+
+  @override
+  String get tipCancelled => 'Tip cancelled.';
+
+  @override
+  String get tipCashOption => 'Cash, handed to the worker';
+
+  @override
+  String get tipCashSent =>
+      'Thanks! The worker will confirm they got the cash.';
+
+  @override
+  String get tipChange => 'Change tip';
+
+  @override
+  String get tipConfirmed => 'Tip confirmed. Thank you!';
+
+  @override
+  String get tipGotIt => 'I got it';
+
+  @override
+  String tipHint(Object name) {
+    return 'The whole tip goes to $name. KaamNow keeps nothing.';
+  }
+
+  @override
+  String get tipHow => 'How will you pay?';
+
+  @override
+  String get tipMessage => 'Note for the worker (optional)';
+
+  @override
+  String get tipNotReceived => 'Not received';
+
+  @override
+  String get tipNotReceivedBody =>
+      'The tip will be cancelled and the customer told.';
+
+  @override
+  String get tipNotReceivedQ => 'Cash tip not received?';
+
+  @override
+  String get tipOther => 'Other amount (Rs)';
+
+  @override
+  String tipPaidCustomer(Object amount) {
+    return 'You tipped $amount. Thank you!';
+  }
+
+  @override
+  String tipPendingCash(Object amount) {
+    return 'Your cash tip of $amount is waiting for the worker to confirm.';
+  }
+
+  @override
+  String tipPendingOnline(Object amount) {
+    return 'Your tip of $amount is not paid yet.';
+  }
+
+  @override
+  String tipRange(Object min, Object max) {
+    return 'Enter $min to $max';
+  }
+
+  @override
+  String get tipSend => 'Send tip';
+
+  @override
+  String get tipStatusCancelled => 'Cancelled';
+
+  @override
+  String get tipStatusPaid => 'Received';
+
+  @override
+  String get tipStatusPending => 'Waiting';
+
+  @override
+  String get tipTitle => 'Say thanks with a tip';
+
+  @override
+  String tipWorker(Object name) {
+    return 'Tip $name';
+  }
+
+  @override
+  String tipWorkerPaid(Object amount) {
+    return 'You got a tip of $amount!';
+  }
+
+  @override
+  String tipWorkerPending(Object amount) {
+    return 'The customer says they gave you a cash tip of $amount.';
+  }
+
+  @override
+  String tipWorkerPendingOnline(Object amount) {
+    return 'The customer started an online tip of $amount.';
+  }
+
+  @override
+  String tipsTotal(Object count, Object amount) {
+    return 'Tips received: $count · Total $amount';
+  }
 
   @override
   String get titleHint => 'e.g. Ceiling fan not working';

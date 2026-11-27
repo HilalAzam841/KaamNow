@@ -112,6 +112,13 @@ class AccountScreen extends StatelessWidget {
               onTap: () => context.push('/worker/packages'),
             ),
             ListTile(
+              key: const Key('account-tips'),
+              leading: const Icon(Icons.volunteer_activism_outlined),
+              title: Text(context.t.myTips),
+              subtitle: Text(context.t.myTipsHint),
+              onTap: () => context.push('/worker/tips'),
+            ),
+            ListTile(
               key: const Key('account-portfolio'),
               leading: const Icon(Icons.photo_library),
               title: Text(context.t.myPortfolio),

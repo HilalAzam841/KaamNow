@@ -176,7 +176,8 @@ class PlatformSettings {
       this.referralWelcomeCredit = '0.00', this.referralMinBooking = '0.00', this.maxDiscountPercent = '50.00',
       this.reminderSmsEnabled = false, this.noShowGraceMinutes = 30, this.cancellationFeeEnabled = true,
       this.cancellationFreeMinutes = 5, this.cancellationWindowMinutes = 120, this.lateCancellationFee = '200.00',
-      this.onTheWayCancellationFee = '300.00', this.updatedAt});
+      this.onTheWayCancellationFee = '300.00', this.tipsEnabled = true, this.tipMaxAmount = '5000.00',
+      this.tipWindowDays = 7, this.updatedAt});
   factory PlatformSettings.fromJson(Map<String, dynamic> j) => PlatformSettings(
       commissionPercent: str(j['commission_percent']),
       emergencyFee: str(j['emergency_fee']),
@@ -194,12 +195,18 @@ class PlatformSettings {
       cancellationWindowMinutes: parseInt(j['cancellation_window_minutes'], 120),
       lateCancellationFee: j['late_cancellation_fee'] == null ? '200.00' : str(j['late_cancellation_fee']),
       onTheWayCancellationFee: j['on_the_way_cancellation_fee'] == null ? '300.00' : str(j['on_the_way_cancellation_fee']),
+      tipsEnabled: j['tips_enabled'] != false,
+      tipMaxAmount: j['tip_max_amount'] == null ? '5000.00' : str(j['tip_max_amount']),
+      tipWindowDays: parseInt(j['tip_window_days'], 7),
       updatedAt: parseDate(j['updated_at']));
   final bool cancellationFeeEnabled;
   final int cancellationFreeMinutes;
   final int cancellationWindowMinutes;
   final String lateCancellationFee;
   final String onTheWayCancellationFee;
+  final bool tipsEnabled;
+  final String tipMaxAmount;
+  final int tipWindowDays;
   final bool reminderSmsEnabled;
   final int noShowGraceMinutes;
   final String referralReward;

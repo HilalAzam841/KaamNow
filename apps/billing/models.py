@@ -76,6 +76,15 @@ class PlatformSettings(TimeStampedModel):
         max_digits=10, decimal_places=2, default=Decimal("300.00"),
         validators=[MinValueValidator(Decimal("0")), MaxValueValidator(Decimal("5000"))],
         help_text="Fee for cancelling after the worker set off or arrived. 0 turns it off.")
+    tips_enabled = models.BooleanField(
+        default=True, help_text="Customers can tip the worker after a job. The whole tip goes to the worker.")
+    tip_max_amount = models.DecimalField(
+        max_digits=10, decimal_places=2, default=Decimal("5000.00"),
+        validators=[MinValueValidator(Decimal("100")), MaxValueValidator(Decimal("50000"))],
+        help_text="The largest tip a customer can give for one job.")
+    tip_window_days = models.PositiveSmallIntegerField(
+        default=7, validators=[MinValueValidator(1), MaxValueValidator(60)],
+        help_text="Customers can tip for this many days after a job is completed.")
     updated_by = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name="+"
     )
@@ -148,6 +157,7 @@ class Payment(TimeStampedModel):
         FEATURED_LISTING = "featured_listing", "Featured listing"
         COMMISSION = "commission", "Commission owed by a worker"
         CANCELLATION_FEE = "cancellation_fee", "Late cancellation fee"
+        TIP = "tip", "Tip for a worker"
 
     class Method(models.TextChoices):
         CASH = "cash", "Cash"
@@ -230,6 +240,7 @@ class LedgerEntry(models.Model):
         CUSTOMER_REFUND = "customer_refund", "Refund to customer"
         PROMO_DISCOUNT = "promo_discount", "Promo and credit discount"
         CANCELLATION_FEE = "cancellation_fee", "Late cancellation fee paid by a customer"
+        TIP = "tip", "Tip for a worker (no commission)"
 
     payment = models.ForeignKey(
         Payment, on_delete=models.PROTECT, related_name="ledger_entries", null=True, blank=True

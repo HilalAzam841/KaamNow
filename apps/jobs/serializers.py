@@ -263,6 +263,8 @@ class BookingSerializer(serializers.ModelSerializer):
     no_show = serializers.SerializerMethodField()
     safety = serializers.SerializerMethodField()
     cancellation_fee = serializers.SerializerMethodField()
+    tip = serializers.SerializerMethodField()
+    can_tip = serializers.SerializerMethodField()
 
     class Meta:
         model = Booking
@@ -272,7 +274,7 @@ class BookingSerializer(serializers.ModelSerializer):
             "total_amount", "status",
             "worker", "customer_name", "contact", "on_the_way_at", "arrived_at", "started_at", "completed_at",
             "cancelled_at", "cancel_reason", "completed_via", "status_history", "commission", "has_review",
-            "no_show", "safety", "cancellation_fee", "created_at", "updated_at",
+            "no_show", "safety", "cancellation_fee", "tip", "can_tip", "created_at", "updated_at",
         ]
         read_only_fields = fields
 
@@ -287,6 +289,26 @@ class BookingSerializer(serializers.ModelSerializer):
             return None
         return {"id": fee.pk, "amount": f"{fee.amount:.2f}", "worker_share": f"{fee.worker_share:.2f}",
                 "status": fee.status, "reason": fee.reason}
+
+    def get_tip(self, obj) -> dict | None:
+        """The tip on this booking (id, amount, method, status, message), or null. A cancelled tip shows as null."""
+        tip = getattr(obj, "tip", None) if hasattr(obj, "tip") else None
+        if tip is None or tip.status == "cancelled":
+            return None
+        return {"id": tip.pk, "amount": f"{tip.amount:.2f}", "method": tip.method, "status": tip.status,
+                "message": tip.message}
+
+    def get_can_tip(self, obj) -> bool:
+        """Whether the viewer can give (or change an unpaid) tip now."""
+        from apps.tips.services import can_tip
+
+        user = self._viewer()
+        if user is None or not user.is_authenticated:
+            return False
+        tip = getattr(obj, "tip", None) if hasattr(obj, "tip") else None
+        if tip is not None and tip.status == "paid":
+            return False
+        return can_tip(obj, user)
 
     def get_no_show(self, obj) -> dict:
         """reported: who was reported absent (worker or customer), or null.

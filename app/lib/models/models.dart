@@ -351,7 +351,7 @@ class Booking {
       required this.status, required this.worker, required this.customerName, this.contact = const {},
       this.cancelReason = '', this.completedAt, this.statusHistory = const [], this.commission,
       this.hasReview = false, this.createdAt, this.durationMinutes = 120, this.noShowReported,
-      this.canReportNoShow, this.noShowOpensAt, this.canSos = false, this.sosStatus, this.sharingUntil, this.packageId, this.cancellationFee});
+      this.canReportNoShow, this.noShowOpensAt, this.canSos = false, this.sosStatus, this.sharingUntil, this.packageId, this.cancellationFee, this.tip, this.canTip = false});
 
   factory Booking.fromJson(Map<String, dynamic> j) => Booking(
         id: parseInt(j['id']),
@@ -380,6 +380,8 @@ class Booking {
         sharingUntil: parseDate(asMap(j['safety'])['sharing_until']),
         packageId: j['package_id'] == null ? null : parseInt(j['package_id']),
         cancellationFee: j['cancellation_fee'] is Map ? CancellationFeeInfo.fromJson(asMap(j['cancellation_fee'])) : null,
+        tip: j['tip'] is Map ? TipInfo.fromJson(asMap(j['tip'])) : null,
+        canTip: j['can_tip'] == true,
         createdAt: parseDate(j['created_at']),
       );
 
@@ -391,6 +393,12 @@ class Booking {
 
   /// The late cancellation fee charged on this booking, if any.
   final CancellationFeeInfo? cancellationFee;
+
+  /// The tip on this booking (pending or paid), or null.
+  final TipInfo? tip;
+
+  /// Whether the viewer can give a tip, or change an unpaid one, now.
+  final bool canTip;
   final String title;
   final String categoryName;
   final DateTime? preferredTime;
@@ -696,7 +704,7 @@ class ClientConfig {
       required this.minWebVersion, this.supportEmail = '', this.supportPhone = '',
       this.webPushEnabled = false, this.webPushPublicKey = '', this.phonePushEnabled = false,
       this.phoneVerificationRequired = false,
-      this.smsAvailable = false, this.googleMapsBrowserKey = ''});
+      this.smsAvailable = false, this.googleMapsBrowserKey = '', this.tips = const TipSettings()});
   factory ClientConfig.fromJson(Map<String, dynamic> j) {
     final city = asMap(j['city']);
     final em = asMap(j['emergency']);
@@ -716,6 +724,7 @@ class ClientConfig {
       googleMapsBrowserKey: str(asMap(j['maps'])['google_browser_key']),
       phoneVerificationRequired: asMap(j['phone_verification'])['required'] == true,
       smsAvailable: asMap(j['phone_verification'])['sms_available'] == true,
+      tips: j['tips'] is Map ? TipSettings.fromJson(asMap(j['tips'])) : const TipSettings(),
     );
   }
   static ClientConfig fallback() => ClientConfig(cityLat: 31.5204, cityLng: 74.3587, emergencyEnabled: false,
@@ -744,6 +753,9 @@ class ClientConfig {
 
   /// The server can send SMS codes (also used for "Forgot password").
   final bool smsAvailable;
+
+  /// Tip limits and suggested amounts.
+  final TipSettings tips;
 }
 
 /// A payout to a worker, or a commission payment from one (see the server's wallet.py).
@@ -1458,6 +1470,62 @@ class CancellationFeeInfo {
   final int? bookingId;
   final String bookingTitle;
   bool get isOwed => status == 'owed';
+}
+
+/// A tip from a customer to a worker: on a booking, or in a list of tips.
+class TipInfo {
+  TipInfo({required this.id, required this.amount, this.method = 'cash', this.message = '', required this.status,
+      this.bookingId, this.bookingTitle = '', this.customerName = '', this.workerName = '', this.paidAt,
+      this.createdAt});
+  factory TipInfo.fromJson(Map<String, dynamic> j) => TipInfo(
+        id: parseInt(j['id']),
+        amount: str(j['amount']),
+        method: j['method'] == null ? 'cash' : str(j['method']),
+        message: str(j['message']),
+        status: str(j['status']),
+        bookingId: j['booking'] == null ? null : parseInt(j['booking']),
+        bookingTitle: str(j['booking_title']),
+        customerName: str(j['customer_name']),
+        workerName: str(j['worker_name']),
+        paidAt: parseDate(j['paid_at']),
+        createdAt: parseDate(j['created_at']),
+      );
+  final int id;
+  final String amount;
+
+  /// cash, jazzcash or easypaisa.
+  final String method;
+  final String message;
+
+  /// pending, paid or cancelled.
+  final String status;
+  final int? bookingId;
+  final String bookingTitle;
+  final String customerName;
+  final String workerName;
+  final DateTime? paidAt;
+  final DateTime? createdAt;
+  bool get isPaid => status == 'paid';
+  bool get isPending => status == 'pending';
+  bool get isCash => method == 'cash';
+}
+
+/// Tip settings from the app config.
+class TipSettings {
+  const TipSettings({this.enabled = true, this.min = '50.00', this.max = '5000.00', this.windowDays = 7,
+      this.suggestions = const ['100.00', '200.00', '500.00']});
+  factory TipSettings.fromJson(Map<String, dynamic> j) => TipSettings(
+        enabled: j['enabled'] != false,
+        min: j['min'] == null ? '50.00' : str(j['min']),
+        max: j['max'] == null ? '5000.00' : str(j['max']),
+        windowDays: parseInt(j['window_days'], 7),
+        suggestions: (j['suggestions'] is List) ? [for (final s in j['suggestions'] as List) '$s'] : const [],
+      );
+  final bool enabled;
+  final String min;
+  final String max;
+  final int windowDays;
+  final List<String> suggestions;
 }
 
 /// What cancelling a booking now would cost, and until when it is free.

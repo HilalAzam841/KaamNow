@@ -14,7 +14,7 @@ later, and talks to the backend only through the REST API and the booking WebSoc
 
 **Stage 1 (Backend MVP), Stage 2 (Advanced features) and Stage 3 (Flutter web client) are done,
 and Stage 4 adds the admin dashboard to the web app.** Every backend feature below has its business logic, REST endpoint(s), validation and
-automated tests. All 647 backend tests pass against PostgreSQL 16, and the Flutter app has 177
+automated tests. All 663 backend tests pass against PostgreSQL 16, and the Flutter app has 185
 unit and widget tests plus a browser end-to-end run (see `app/README.md`).
 
 ### Stage 1: Backend MVP
@@ -374,6 +374,19 @@ gateway's published integration scheme and are covered by tests with simulated g
 They have **not** been run against the real sandboxes yet, because that needs your merchant
 credentials. Run one sandbox payment per gateway before launch (see section 8).
 
+### Stage 29: tips for workers
+
+After a job, customers can thank the worker with a tip. The whole tip goes to the worker; KaamNow takes no commission.
+
+| Feature | Where |
+|---|---|
+| The customer tips from the completed booking: a suggested amount (Rs 100, 200 or 500) or their own, with an optional note. Only the booking's customer, only once the job is completed, and only for 7 days after it (admins set the window, the largest tip, and can switch tips off) | `POST bookings/{id}/tip/`, `can_tip` and `tip` on bookings, app: booking screen |
+| The amount is checked on the server (at least Rs 50, at most the admin limit), never trusted from the app. One tip per booking; an unpaid tip can be changed | `apps/tips/services.py` |
+| **Online** (JazzCash or Easypaisa): the tip is settled only after the gateway callback is verified on the server, then added to the worker's wallet and paid out with their earnings. A receipt is available | `Payment.Purpose.TIP`, ledger entry `tip` |
+| **Cash**: the customer records it and the worker confirms they got it, or says it never arrived (the tip is cancelled and the customer told) | `POST tips/{id}/confirm-cash/`, `POST tips/{id}/not-received/` |
+| Workers see every tip, the note, and their total | `GET tips/`, `GET tips/summary/`, app: Account → **My tips** |
+| Admins see every tip and set the limits | `GET admin/tips/`, app: Admin → **Tips** and **Settings** |
+
 ---
 
 **Keys and accounts to add later** (payments, SMS, Firebase, Google Maps, app stores) and every `.env` value: [`docs/API_KEYS.md`](docs/API_KEYS.md).
@@ -490,7 +503,7 @@ docker compose up --build
 pytest -q
 ```
 
-The suite has 647 tests and needs a running PostgreSQL (Redis is not needed for tests). It uses the database settings from your
+The suite has 663 tests and needs a running PostgreSQL (Redis is not needed for tests). It uses the database settings from your
 `.env` and creates a separate `test_kaamnow` database. Coverage includes:
 
 - **Authentication**: registration validation, login, suspended accounts, token refresh rotation, logout blacklisting, password reset (single-use token, no account enumeration), throttling.
@@ -578,7 +591,7 @@ Endpoints added beyond the original list, because the flow needs them: `password
 `bookings/{id}/completion-otp/`, `payments/{id}/confirm/`, `payments/earnings/`,
 the notification helpers, and the admin users, suspension, requests, commission settings and audit log endpoints.
 
-Postman: import `docs/KaamNow.postman_collection.json` (170 requests in 12 folders that follow the
+Postman: import `docs/KaamNow.postman_collection.json` (177 requests in 12 folders that follow the
 full flow; test scripts store tokens and ids automatically). Regenerate it with
 `python scripts/generate_postman.py`.
 

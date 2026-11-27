@@ -78,6 +78,12 @@ def receipt_data(payment):
             title = _("Late cancellation fee")
             service = _category_name(booking.request.category)
             worker = booking.worker.user.full_name
+        elif payment.purpose == Payment.Purpose.TIP:
+            booking = payment.tip.booking
+            booking_id = booking.pk
+            title = _("Tip for the worker")
+            service = _category_name(booking.request.category)
+            worker = booking.worker.user.full_name
         lines.append({"label": title or _("Payment"), "amount": payment.amount})
     refunds = [{"date": timezone.localtime(r.created_at).date(), "amount": r.amount, "reference": r.reference}
                for r in payment.refunds.order_by("created_at")]

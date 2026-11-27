@@ -2228,6 +2228,18 @@ abstract class AppLocalizations {
   /// **'My working hours'**
   String get myScheduleTitle;
 
+  /// No description provided for @myTips.
+  ///
+  /// In en, this message translates to:
+  /// **'My tips'**
+  String get myTips;
+
+  /// No description provided for @myTipsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tips customers gave you'**
+  String get myTipsHint;
+
   /// No description provided for @myWorkerProfile.
   ///
   /// In en, this message translates to:
@@ -2563,6 +2575,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No days off planned.'**
   String get noTimeOff;
+
+  /// No description provided for @noTips.
+  ///
+  /// In en, this message translates to:
+  /// **'No tips yet. Great work and a friendly word often bring one.'**
+  String get noTips;
 
   /// No description provided for @noWorkersYet.
   ///
@@ -4585,6 +4603,168 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Timeline'**
   String get timeline;
+
+  /// No description provided for @tipCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Tip cancelled.'**
+  String get tipCancelled;
+
+  /// No description provided for @tipCashOption.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash, handed to the worker'**
+  String get tipCashOption;
+
+  /// No description provided for @tipCashSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Thanks! The worker will confirm they got the cash.'**
+  String get tipCashSent;
+
+  /// No description provided for @tipChange.
+  ///
+  /// In en, this message translates to:
+  /// **'Change tip'**
+  String get tipChange;
+
+  /// No description provided for @tipConfirmed.
+  ///
+  /// In en, this message translates to:
+  /// **'Tip confirmed. Thank you!'**
+  String get tipConfirmed;
+
+  /// No description provided for @tipGotIt.
+  ///
+  /// In en, this message translates to:
+  /// **'I got it'**
+  String get tipGotIt;
+
+  /// No description provided for @tipHint.
+  ///
+  /// In en, this message translates to:
+  /// **'The whole tip goes to {name}. KaamNow keeps nothing.'**
+  String tipHint(Object name);
+
+  /// No description provided for @tipHow.
+  ///
+  /// In en, this message translates to:
+  /// **'How will you pay?'**
+  String get tipHow;
+
+  /// No description provided for @tipMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Note for the worker (optional)'**
+  String get tipMessage;
+
+  /// No description provided for @tipNotReceived.
+  ///
+  /// In en, this message translates to:
+  /// **'Not received'**
+  String get tipNotReceived;
+
+  /// No description provided for @tipNotReceivedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The tip will be cancelled and the customer told.'**
+  String get tipNotReceivedBody;
+
+  /// No description provided for @tipNotReceivedQ.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash tip not received?'**
+  String get tipNotReceivedQ;
+
+  /// No description provided for @tipOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other amount (Rs)'**
+  String get tipOther;
+
+  /// No description provided for @tipPaidCustomer.
+  ///
+  /// In en, this message translates to:
+  /// **'You tipped {amount}. Thank you!'**
+  String tipPaidCustomer(Object amount);
+
+  /// No description provided for @tipPendingCash.
+  ///
+  /// In en, this message translates to:
+  /// **'Your cash tip of {amount} is waiting for the worker to confirm.'**
+  String tipPendingCash(Object amount);
+
+  /// No description provided for @tipPendingOnline.
+  ///
+  /// In en, this message translates to:
+  /// **'Your tip of {amount} is not paid yet.'**
+  String tipPendingOnline(Object amount);
+
+  /// No description provided for @tipRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter {min} to {max}'**
+  String tipRange(Object min, Object max);
+
+  /// No description provided for @tipSend.
+  ///
+  /// In en, this message translates to:
+  /// **'Send tip'**
+  String get tipSend;
+
+  /// No description provided for @tipStatusCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get tipStatusCancelled;
+
+  /// No description provided for @tipStatusPaid.
+  ///
+  /// In en, this message translates to:
+  /// **'Received'**
+  String get tipStatusPaid;
+
+  /// No description provided for @tipStatusPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting'**
+  String get tipStatusPending;
+
+  /// No description provided for @tipTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Say thanks with a tip'**
+  String get tipTitle;
+
+  /// No description provided for @tipWorker.
+  ///
+  /// In en, this message translates to:
+  /// **'Tip {name}'**
+  String tipWorker(Object name);
+
+  /// No description provided for @tipWorkerPaid.
+  ///
+  /// In en, this message translates to:
+  /// **'You got a tip of {amount}!'**
+  String tipWorkerPaid(Object amount);
+
+  /// No description provided for @tipWorkerPending.
+  ///
+  /// In en, this message translates to:
+  /// **'The customer says they gave you a cash tip of {amount}.'**
+  String tipWorkerPending(Object amount);
+
+  /// No description provided for @tipWorkerPendingOnline.
+  ///
+  /// In en, this message translates to:
+  /// **'The customer started an online tip of {amount}.'**
+  String tipWorkerPendingOnline(Object amount);
+
+  /// No description provided for @tipsTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Tips received: {count} · Total {amount}'**
+  String tipsTotal(Object count, Object amount);
 
   /// No description provided for @titleHint.
   ///

@@ -51,6 +51,7 @@ api_v1 = [
     path("bookings/", include(bookings_router.urls)),
     path("payments/", include(payment_urlpatterns)),
     path("cancellation-fees/", include("apps.cancellations.urls")),
+    path("tips/", include("apps.tips.urls")),
     path("subscriptions/", include(subscription_urlpatterns)),
     path("featured/", include(featured_urlpatterns)),
     path("reviews/", ReviewCreateView.as_view(), name="review-create"),

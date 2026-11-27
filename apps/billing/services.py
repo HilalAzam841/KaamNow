@@ -225,6 +225,11 @@ def _complete_payment(payment, confirmed_by=None):
         from apps.cancellations.services import on_payment_completed
 
         on_payment_completed(payment)
+
+    elif payment.purpose == Payment.Purpose.TIP:
+        from apps.tips.services import on_payment_completed as tip_paid
+
+        tip_paid(payment)
     return payment
 
 

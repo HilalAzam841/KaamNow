@@ -45,6 +45,9 @@ class _SettingsFormState extends State<_SettingsForm> {
   late final _window = TextEditingController(text: '${widget.settings.cancellationWindowMinutes}');
   late final _lateFee = TextEditingController(text: widget.settings.lateCancellationFee);
   late final _onTheWayFee = TextEditingController(text: widget.settings.onTheWayCancellationFee);
+  late bool _tips = widget.settings.tipsEnabled;
+  late final _tipMax = TextEditingController(text: widget.settings.tipMaxAmount);
+  late final _tipDays = TextEditingController(text: '${widget.settings.tipWindowDays}');
   bool _saving = false;
 
   String? _number(String? v, {double max = 1e9}) {
@@ -76,6 +79,9 @@ class _SettingsFormState extends State<_SettingsForm> {
       if (_lateFee.text.trim() != s.lateCancellationFee) 'late_cancellation_fee': _lateFee.text.trim(),
       if (_onTheWayFee.text.trim() != s.onTheWayCancellationFee)
         'on_the_way_cancellation_fee': _onTheWayFee.text.trim(),
+      if (_tips != s.tipsEnabled) 'tips_enabled': _tips,
+      if (_tipMax.text.trim() != s.tipMaxAmount) 'tip_max_amount': _tipMax.text.trim(),
+      if (_tipDays.text.trim() != '${s.tipWindowDays}') 'tip_window_days': int.parse(_tipDays.text.trim()),
     };
     if (changes.isEmpty) return;
     if (changes.containsKey('commission_percent') &&
@@ -251,6 +257,37 @@ class _SettingsFormState extends State<_SettingsForm> {
                     labelText: 'Fee once the worker is on the way (Rs)', helperText: 'Or has arrived. 0 = off'),
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
                 validator: (v) => _number(v, max: 5000),
+              ),
+              const SizedBox(height: 24),
+              Text('Tips', style: Theme.of(context).textTheme.titleMedium),
+              SwitchListTile(
+                key: const Key('tips-enabled'),
+                contentPadding: EdgeInsets.zero,
+                title: const Text('Customers can tip workers'),
+                subtitle: const Text('The whole tip goes to the worker. KaamNow takes no commission.'),
+                value: _tips,
+                onChanged: (v) => setState(() => _tips = v),
+              ),
+              TextFormField(
+                key: const Key('tip-max'),
+                controller: _tipMax,
+                decoration: const InputDecoration(labelText: 'Largest tip for one job (Rs)'),
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                validator: (v) {
+                  final n = double.tryParse((v ?? '').trim());
+                  return n == null || n < 100 || n > 50000 ? 'Enter 100 to 50000' : null;
+                },
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                key: const Key('tip-days'),
+                controller: _tipDays,
+                decoration: const InputDecoration(labelText: 'Days after the job a customer can tip'),
+                keyboardType: TextInputType.number,
+                validator: (v) {
+                  final n = int.tryParse((v ?? '').trim());
+                  return n == null || n < 1 || n > 60 ? 'Enter 1 to 60' : null;
+                },
               ),
               const SizedBox(height: 16),
               FilledButton(

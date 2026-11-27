@@ -219,6 +219,10 @@ msgid "Late cancellation fee"
 msgstr "دیر سے منسوخی کی فیس"
 
 #: apps/billing/receipts.py
+msgid "Tip for the worker"
+msgstr "کاریگر کے لیے ٹپ"
+
+#: apps/billing/receipts.py
 msgid "Payment"
 msgstr "ادائیگی"
 
@@ -1735,6 +1739,93 @@ msgstr "آپ کی شکایت دوبارہ کھل گئی ہے۔"
 #: apps/support/services.py
 msgid "A resolution note is required."
 msgstr "حل کا نوٹ ضروری ہے۔"
+
+#: apps/tips/services.py
+msgid "Enter a valid amount."
+msgstr "درست رقم لکھیں۔"
+
+#: apps/tips/services.py
+#, python-brace-format
+msgid "A tip must be at least {amount}."
+msgstr "ٹپ کم از کم {amount} ہونی چاہیے۔"
+
+#: apps/tips/services.py
+#, python-brace-format
+msgid "A tip can be at most {amount}."
+msgstr "ٹپ زیادہ سے زیادہ {amount} ہو سکتی ہے۔"
+
+#: apps/tips/services.py
+msgid "Only the customer can tip for this job."
+msgstr "اس کام کے لیے صرف گاہک ٹپ دے سکتا ہے۔"
+
+#: apps/tips/services.py
+msgid "Tips are switched off right now."
+msgstr "ٹپ کی سہولت ابھی بند ہے۔"
+
+#: apps/tips/services.py
+msgid "You can tip once the job is completed."
+msgstr "کام مکمل ہونے کے بعد آپ ٹپ دے سکتے ہیں۔"
+
+#: apps/tips/services.py
+#, python-brace-format
+msgid "Tips can be given up to {days} days after the job."
+msgstr "ٹپ کام کے {days} دن بعد تک دی جا سکتی ہے۔"
+
+#: apps/tips/services.py
+msgid "Choose how you want to pay the tip."
+msgstr "منتخب کریں کہ آپ ٹپ کیسے ادا کریں گے۔"
+
+#: apps/tips/services.py
+msgid "You already tipped for this job. Thank you!"
+msgstr "آپ اس کام کے لیے ٹپ دے چکے ہیں۔ شکریہ!"
+
+#: apps/tips/services.py
+msgid "Confirm your cash tip"
+msgstr "اپنی نقد ٹپ کی تصدیق کریں"
+
+#: apps/tips/services.py
+#, python-brace-format
+msgid "{name} gave you a tip of {amount} in cash for booking #{id}. Please confirm you received it."
+msgstr "{name} نے بکنگ #{id} کے لیے آپ کو {amount} نقد ٹپ دی۔ براہ کرم تصدیق کریں کہ آپ کو مل گئی۔"
+
+#: apps/tips/services.py
+msgid "Only the worker who got the tip can do this."
+msgstr "یہ صرف وہی کاریگر کر سکتا ہے جسے ٹپ ملی۔"
+
+#: apps/tips/services.py
+msgid "This tip is already settled."
+msgstr "یہ ٹپ پہلے ہی طے ہو چکی ہے۔"
+
+#: apps/tips/services.py
+msgid "Online tips are confirmed automatically by the payment gateway."
+msgstr "آن لائن ٹپ کی تصدیق ادائیگی گیٹ وے خود کرتا ہے۔"
+
+#: apps/tips/services.py
+msgid "Cash tip not received"
+msgstr "نقد ٹپ نہیں ملی"
+
+#: apps/tips/services.py
+#, python-brace-format
+msgid "The worker says they did not receive your cash tip of {amount} for booking #{id}."
+msgstr "کاریگر کہتا ہے کہ بکنگ #{id} کے لیے آپ کی {amount} کی نقد ٹپ انہیں نہیں ملی۔"
+
+#: apps/tips/services.py
+msgid "You got a tip!"
+msgstr "آپ کو ٹپ ملی!"
+
+#: apps/tips/services.py
+#, python-brace-format
+msgid "{name} tipped you {amount} for booking #{id}."
+msgstr "{name} نے بکنگ #{id} کے لیے آپ کو {amount} ٹپ دی۔"
+
+#: apps/tips/services.py
+msgid "Tip sent"
+msgstr "ٹپ بھیج دی گئی"
+
+#: apps/tips/services.py
+#, python-brace-format
+msgid "Thank you! Your tip of {amount} went to the worker."
+msgstr "شکریہ! آپ کی {amount} کی ٹپ کاریگر کو پہنچ گئی۔"
 
 #: apps/tracking/services.py
 msgid "Only the assigned worker can share location."
