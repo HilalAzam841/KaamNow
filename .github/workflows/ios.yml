@@ -105,14 +105,33 @@ jobs:
           xcrun simctl bootstatus "$UDID" -b
           echo "SIM_UDID=$UDID" >> "$GITHUB_ENV"
       - name: Run the app on the iPhone simulator
-        timeout-minutes: 35
+        timeout-minutes: 45
         working-directory: app
+        # Sometimes the app builds but flutter drive never connects to it on the simulator, and the job
+        # hung until its time limit with no output. Each attempt now has its own 15-minute limit; if the
+        # first one times out (exit 124, nothing ran), the simulator log is printed, the simulator is
+        # restarted and the test runs once more with verbose output. A failing test is never retried.
         run: |
           mkdir -p build/android-shots
-          flutter drive -d "$SIM_UDID" --driver=test_driver/integration_test.dart \
-            --target=integration_test/app_test.dart --dart-define=API_BASE_URL=http://localhost:8000 \
-            2>&1 | tee build/android-shots/drive.log
-          exit ${PIPESTATUS[0]}
+          brew list coreutils > /dev/null 2>&1 || brew install coreutils
+          status=1
+          for attempt in 1 2; do
+            extra=""
+            [ "$attempt" = 2 ] && extra="--verbose"
+            gtimeout --kill-after=30s 15m flutter drive -d "$SIM_UDID" --driver=test_driver/integration_test.dart \
+              --target=integration_test/app_test.dart --dart-define=API_BASE_URL=http://localhost:8000 $extra \
+              2>&1 | tee "build/android-shots/drive-$attempt.log"
+            status=${PIPESTATUS[0]}
+            if [ "$status" != 124 ] && [ "$status" != 137 ]; then break; fi
+            echo "::warning::flutter drive did not finish within 15 minutes (attempt $attempt)."
+            echo "--- simulator log for the app ---"
+            xcrun simctl spawn "$SIM_UDID" log show --last 15m --style compact \
+              --predicate 'process == "Runner" OR eventMessage CONTAINS "Runner"' 2>/dev/null | tail -150 || true
+            xcrun simctl shutdown "$SIM_UDID" || true
+            xcrun simctl boot "$SIM_UDID"
+            xcrun simctl bootstatus "$SIM_UDID" -b
+          done
+          exit "$status"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
