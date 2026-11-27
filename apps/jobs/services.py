@@ -143,6 +143,9 @@ def create_service_request(customer, images=None, **data):
     from apps.billing.models import PlatformSettings
 
     require_verified(customer)
+    from apps.cancellations.services import check_no_unpaid_fee
+
+    check_no_unpaid_fee(customer)
 
     category = data["category"]
     if not category.is_active:
@@ -363,6 +366,9 @@ def cancel_booking(booking, user, reason):
         raise BusinessRuleError(
             _("This booking can no longer be cancelled."), status_code=http_status.HTTP_409_CONFLICT
         )
+    from apps.cancellations.services import charge as charge_cancellation_fee
+
+    charge_cancellation_fee(booking, user)  # before the status changes: the fee depends on it
     old = booking.status
     booking.status = Booking.Status.CANCELLED
     booking.cancelled_at = timezone.now()

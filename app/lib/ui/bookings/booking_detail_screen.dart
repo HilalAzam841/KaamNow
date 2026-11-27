@@ -197,7 +197,20 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
   }
 
   Future<void> _cancel() async {
-    final reason = await promptText(context, context.t.cancelBookingQ, label: context.t.reason, ok: context.t.cancelBooking, required: true);
+    final t = context.t;
+    String? message;
+    if (!_isWorker) {
+      // What cancelling now costs. If the check fails, the server still applies the rules.
+      final q = await api.cancelQuote(widget.id).then<CancellationQuote?>((q) => q, onError: (_) => null);
+      if (!mounted) return;
+      if (q != null && !q.isFree) {
+        message = q.reason == 'late' ? t.cancelFeeLate(rs(q.fee)) : t.cancelFeeOnTheWay(rs(q.fee));
+      } else if (q?.freeUntil != null && q?.feeAfter != null) {
+        message = t.cancelFreeUntil(when(q!.freeUntil), rs(q.feeAfter!));
+      }
+    }
+    final reason = await promptText(context, t.cancelBookingQ,
+        label: t.reason, ok: t.cancelBooking, required: true, message: message);
     if (reason == null || !mounted) return;
     final b = await runAction(context, () => api.cancelBooking(widget.id, reason), success: context.t.bookingCancelled);
     if (b != null) _load();
@@ -233,6 +246,58 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
     } else {
       showInfo(context, context.t.payCash);
     }
+    _load();
+  }
+
+  List<Widget> _feePanel(CancellationFeeInfo f) {
+    final t = context.t;
+    final theme = Theme.of(context);
+    final String text;
+    if (_isWorker) {
+      text = switch (f.status) {
+        'paid' => t.feeWorkerPaid(rs(f.workerShare)),
+        'waived' => t.feeWaived,
+        _ => t.feeWorkerOwed(rs(f.workerShare)),
+      };
+    } else {
+      text = switch (f.status) {
+        'paid' => t.feeCustomerPaid(rs(f.amount)),
+        'waived' => t.feeWaived,
+        _ => t.feeCustomerOwed(rs(f.amount)),
+      };
+    }
+    final online = context.read<Session>().config.paymentMethods.where((m) => m.code != 'cash' && m.available);
+    return [
+      const SizedBox(height: 8),
+      Text(text, key: const Key('cancel-fee-status'),
+          style: f.isOwed && !_isWorker ? TextStyle(color: theme.colorScheme.error) : theme.textTheme.bodyMedium),
+      if (f.isOwed && !_isWorker) ...[
+        const SizedBox(height: 8),
+        if (online.isEmpty)
+          Text(t.feePayOffice, style: theme.textTheme.bodySmall)
+        else
+          Wrap(spacing: 8, runSpacing: 8, children: [
+            for (final m in online)
+              FilledButton(
+                key: Key('fee-pay-${m.code}'),
+                onPressed: () => _payFee(f, m.code),
+                child: Text(t.payWith(paymentMethodLabel(m.code))),
+              ),
+          ]),
+      ],
+    ];
+  }
+
+  Future<void> _payFee(CancellationFeeInfo f, String method) async {
+    final checkout = await runAction(context, () => api.payCancellationFee(f.id, method));
+    if (checkout == null || !mounted) return;
+    final outcome = await openCheckout(context, checkout);
+    if (!mounted) return;
+    showInfo(context, switch (outcome) {
+      CheckoutOutcome.openedInNewTab => context.t.completePaymentNewTab,
+      CheckoutOutcome.returned => context.t.paymentWindowClosed,
+      CheckoutOutcome.failed => context.t.onlinePaymentUnavailable,
+    });
     _load();
   }
 
@@ -366,6 +431,7 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
             const SizedBox(height: 8),
             Text(context.t.cancelledReason(b.cancelReason), style: TextStyle(color: theme.colorScheme.error)),
           ],
+          if (b.cancellationFee != null) ..._feePanel(b.cancellationFee!),
         ]),
       ),
     );

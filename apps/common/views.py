@@ -45,6 +45,12 @@ AppConfigSerializer = inline_serializer(
             name="AppConfigEmergency",
             fields={"enabled": serializers.BooleanField(), "fee": serializers.CharField()},
         ),
+        "cancellation": inline_serializer(
+            name="AppConfigCancellation",
+            fields={"enabled": serializers.BooleanField(), "free_minutes": serializers.IntegerField(),
+                    "window_minutes": serializers.IntegerField(), "late_fee": serializers.CharField(),
+                    "on_the_way_fee": serializers.CharField()},
+        ),
         "offer_price": inline_serializer(
             name="AppConfigOfferPrice", fields={"min": serializers.CharField(), "max": serializers.CharField()}
         ),
@@ -101,6 +107,13 @@ def app_config(request):
             "currency": "PKR",
             "city": {"name": "Lahore", "latitude": app["CITY_LATITUDE"], "longitude": app["CITY_LONGITUDE"]},
             "emergency": {"enabled": platform.emergency_enabled, "fee": f"{platform.emergency_fee:.2f}"},
+            "cancellation": {
+                "enabled": platform.cancellation_fee_enabled,
+                "free_minutes": platform.cancellation_free_minutes,
+                "window_minutes": platform.cancellation_window_minutes,
+                "late_fee": f"{platform.late_cancellation_fee:.2f}",
+                "on_the_way_fee": f"{platform.on_the_way_cancellation_fee:.2f}",
+            },
             "offer_price": {
                 "min": settings.KAAMNOW["MIN_OFFER_PRICE"],
                 "max": settings.KAAMNOW["MAX_OFFER_PRICE"],

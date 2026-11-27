@@ -52,6 +52,7 @@ class CustomerHomeScreen extends StatelessWidget {
             child: ListView(padding: const EdgeInsets.all(16), children: [
               const PushBanner(),
               const InstallBanner(),
+              const OwedFeeBanner(),
               Text(context.t.whatHelp, style: theme.textTheme.headlineSmall),
               const SizedBox(height: 4),
               Text(context.t.homeIntro),
@@ -124,4 +125,42 @@ class CustomerHomeScreen extends StatelessWidget {
     );
   }
 
+}
+
+/// Tells a customer they owe a late cancellation fee, with a link to the booking to pay it.
+class OwedFeeBanner extends StatefulWidget {
+  const OwedFeeBanner({super.key});
+  @override
+  State<OwedFeeBanner> createState() => _OwedFeeBannerState();
+}
+
+class _OwedFeeBannerState extends State<OwedFeeBanner> {
+  List<CancellationFeeInfo> _owed = [];
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<Session>().api.cancellationFees(status: 'owed').then((list) {
+      if (mounted) setState(() => _owed = list);
+    }).catchError((_) {});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_owed.isEmpty) return const SizedBox.shrink();
+    final total = _owed.fold<double>(0, (sum, f) => sum + (double.tryParse(f.amount) ?? 0));
+    final first = _owed.first;
+    final theme = Theme.of(context);
+    return Card(
+      key: const Key('owed-fee-banner'),
+      color: theme.colorScheme.errorContainer,
+      child: ListTile(
+        leading: const Icon(Icons.event_busy),
+        title: Text(context.t.feeOwedTitle(rs(total.toStringAsFixed(2)))),
+        subtitle: Text(context.t.feeOwedHint),
+        trailing: const Icon(Icons.chevron_right),
+        onTap: first.bookingId == null ? null : () => context.push('/bookings/${first.bookingId}'),
+      ),
+    );
+  }
 }

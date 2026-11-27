@@ -50,6 +50,7 @@ api_v1 = [
     path("bookings/<int:booking_id>/share/", BookingShareView.as_view(), name="booking-share"),
     path("bookings/", include(bookings_router.urls)),
     path("payments/", include(payment_urlpatterns)),
+    path("cancellation-fees/", include("apps.cancellations.urls")),
     path("subscriptions/", include(subscription_urlpatterns)),
     path("featured/", include(featured_urlpatterns)),
     path("reviews/", ReviewCreateView.as_view(), name="review-create"),

@@ -272,6 +272,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cancelBookingQ => 'Cancel this booking?';
 
   @override
+  String cancelFeeLate(Object amount) {
+    return 'Cancelling now costs $amount, because the job starts soon. It goes to the worker for the time they set aside.';
+  }
+
+  @override
+  String cancelFeeOnTheWay(Object amount) {
+    return 'The worker is already on the way, so cancelling now costs $amount. It goes to the worker for their trip.';
+  }
+
+  @override
+  String cancelFreeUntil(Object time, Object amount) {
+    return 'Cancelling is free until $time. After that it costs $amount.';
+  }
+
+  @override
   String get cancelPayout => 'Cancel request';
 
   @override
@@ -783,6 +798,42 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String etaMinutes(Object n) {
     return '~$n min';
+  }
+
+  @override
+  String feeCustomerOwed(Object amount) {
+    return 'Late cancellation fee: $amount. Please pay it before booking again.';
+  }
+
+  @override
+  String feeCustomerPaid(Object amount) {
+    return 'Late cancellation fee of $amount paid. Thank you.';
+  }
+
+  @override
+  String get feeOwedHint =>
+      'Tap to pay it. You can book again once it is paid.';
+
+  @override
+  String feeOwedTitle(Object amount) {
+    return 'You owe a late cancellation fee of $amount';
+  }
+
+  @override
+  String get feePayOffice =>
+      'Online payment is not available yet. Pay at the KaamNow office or contact support.';
+
+  @override
+  String get feeWaived => 'The cancellation fee was waived.';
+
+  @override
+  String feeWorkerOwed(Object amount) {
+    return 'You get $amount once the customer pays the late cancellation fee.';
+  }
+
+  @override
+  String feeWorkerPaid(Object amount) {
+    return '$amount cancellation fee added to your wallet.';
   }
 
   @override

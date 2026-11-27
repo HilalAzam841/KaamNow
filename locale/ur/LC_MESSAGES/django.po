@@ -215,6 +215,10 @@ msgid "Commission owed to KaamNow"
 msgstr "KaamNow کا واجب کمیشن"
 
 #: apps/billing/receipts.py
+msgid "Late cancellation fee"
+msgstr "دیر سے منسوخی کی فیس"
+
+#: apps/billing/receipts.py
 msgid "Payment"
 msgstr "ادائیگی"
 
@@ -619,6 +623,68 @@ msgstr "آپ کی پے آؤٹ کی درخواست مسترد ہو گئی: {reaso
 #: apps/billing/wallet.py
 msgid "This worker does not owe any commission."
 msgstr "اس ورکر کے ذمے کوئی کمیشن نہیں ہے۔"
+
+#: apps/cancellations/serializers.py
+msgid "Give a short reason."
+msgstr "مختصر وجہ لکھیں۔"
+
+#: apps/cancellations/services.py
+#, python-brace-format
+msgid "Cancelling booking #{id} late costs {amount}. It goes to the worker for their time."
+msgstr "بکنگ #{id} دیر سے منسوخ کرنے پر {amount} لگیں گے۔ یہ رقم کاریگر کو ان کے وقت کے لیے جاتی ہے۔"
+
+#: apps/cancellations/services.py
+msgid "Cancellation fee for you"
+msgstr "آپ کے لیے منسوخی کی فیس"
+
+#: apps/cancellations/services.py
+#, python-brace-format
+msgid "The customer cancelled booking #{id} late. You get {amount} once they pay the fee."
+msgstr "گاہک نے بکنگ #{id} دیر سے منسوخ کی۔ فیس ادا ہونے پر آپ کو {amount} ملیں گے۔"
+
+#: apps/cancellations/services.py
+#, python-brace-format
+msgid "Please pay your late cancellation fee of {amount} first."
+msgstr "پہلے دیر سے منسوخی کی {amount} فیس ادا کریں۔"
+
+#: apps/cancellations/services.py
+msgid "This fee is already settled."
+msgstr "یہ فیس پہلے ہی نمٹائی جا چکی ہے۔"
+
+#: apps/cancellations/services.py
+msgid "Pay the fee with JazzCash or Easypaisa."
+msgstr "فیس JazzCash یا Easypaisa سے ادا کریں۔"
+
+#: apps/cancellations/services.py
+msgid "You can only pay your own fees."
+msgstr "آپ صرف اپنی فیس ادا کر سکتے ہیں۔"
+
+#: apps/cancellations/services.py
+msgid "Fee paid"
+msgstr "فیس ادا ہو گئی"
+
+#: apps/cancellations/services.py
+#, python-brace-format
+msgid "Thanks, your late cancellation fee of {amount} is paid."
+msgstr "شکریہ، دیر سے منسوخی کی آپ کی {amount} فیس ادا ہو گئی۔"
+
+#: apps/cancellations/services.py
+msgid "Cancellation fee received"
+msgstr "منسوخی کی فیس موصول ہو گئی"
+
+#: apps/cancellations/services.py
+#, python-brace-format
+msgid "{amount} for cancelled booking #{id} was added to your wallet."
+msgstr "منسوخ شدہ بکنگ #{id} کے {amount} آپ کے والیٹ میں شامل ہو گئے۔"
+
+#: apps/cancellations/services.py
+msgid "Fee waived"
+msgstr "فیس معاف کر دی گئی"
+
+#: apps/cancellations/services.py
+#, python-brace-format
+msgid "Your late cancellation fee for booking #{id} was waived."
+msgstr "بکنگ #{id} کی دیر سے منسوخی کی فیس معاف کر دی گئی۔"
 
 #: apps/catalog/serializers.py
 msgid "A category with this name already exists."

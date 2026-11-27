@@ -156,6 +156,16 @@ class AdminApi {
   Future<AdminNoShow> reviewNoShow(int id, String review, {String note = ''}) async => AdminNoShow.fromJson(
       asMap(await client.post('/admin/no-shows/$id/review/', body: {'review': review, 'note': note})));
 
+  // ---- cancellation fees -----------------------------------------------------
+  Future<Paged<AdminCancellationFee>> cancellationFees({String? status, int page = 1}) async => Paged.parse(
+      await client.get('/admin/cancellation-fees/', query: {'status': status, 'page': page}),
+      AdminCancellationFee.fromJson);
+  Future<AdminCancellationFee> waiveCancellationFee(int id, String reason) async => AdminCancellationFee.fromJson(
+      asMap(await client.post('/admin/cancellation-fees/$id/waive/', body: {'reason': reason})));
+  Future<AdminCancellationFee> recordCancellationFee(int id, String reference) async =>
+      AdminCancellationFee.fromJson(asMap(
+          await client.post('/admin/cancellation-fees/$id/record-received/', body: {'reference': reference})));
+
   // ---- service packages ------------------------------------------------------
   Future<Paged<ServicePackage>> packages({bool? hidden, int page = 1}) async => Paged.parse(
       await client.get('/admin/packages/', query: {'is_hidden': hidden?.toString(), 'page': page}),

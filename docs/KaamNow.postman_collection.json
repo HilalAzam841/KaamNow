@@ -68,6 +68,18 @@
     {
       "key": "direct_request_id",
       "value": ""
+    },
+    {
+      "key": "package_id",
+      "value": ""
+    },
+    {
+      "key": "package_booking_id",
+      "value": ""
+    },
+    {
+      "key": "cancellation_fee_id",
+      "value": ""
     }
   ],
   "item": [
@@ -3712,6 +3724,196 @@
             "body": {
               "mode": "raw",
               "raw": "{\n  \"reason\": \"Plans changed\"\n}"
+            }
+          }
+        },
+        {
+          "name": "What cancelling would cost now",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/bookings/{{booking_id}}/cancel-fee/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "bookings",
+                "{{booking_id}}",
+                "cancel-fee"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{customer_access}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "My late cancellation fees",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/cancellation-fees/?status=owed",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "cancellation-fees",
+                "?status=owed"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{customer_access}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Pay a late cancellation fee online",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/cancellation-fees/{{cancellation_fee_id}}/pay/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "cancellation-fees",
+                "{{cancellation_fee_id}}",
+                "pay"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{customer_access}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"method\": \"jazzcash\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Admin: late cancellation fees",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/cancellation-fees/?status=owed",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "cancellation-fees",
+                "?status=owed"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_access}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Admin: waive a fee (audited)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/cancellation-fees/{{cancellation_fee_id}}/waive/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "cancellation-fees",
+                "{{cancellation_fee_id}}",
+                "waive"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_access}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Worker agreed it was not the customer's fault\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Admin: record a fee paid at the office (audited)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/cancellation-fees/{{cancellation_fee_id}}/record-received/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "cancellation-fees",
+                "{{cancellation_fee_id}}",
+                "record-received"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_access}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reference\": \"Office receipt 42\"\n}"
             }
           }
         }

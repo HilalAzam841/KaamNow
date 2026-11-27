@@ -351,7 +351,7 @@ class Booking {
       required this.status, required this.worker, required this.customerName, this.contact = const {},
       this.cancelReason = '', this.completedAt, this.statusHistory = const [], this.commission,
       this.hasReview = false, this.createdAt, this.durationMinutes = 120, this.noShowReported,
-      this.canReportNoShow, this.noShowOpensAt, this.canSos = false, this.sosStatus, this.sharingUntil, this.packageId});
+      this.canReportNoShow, this.noShowOpensAt, this.canSos = false, this.sosStatus, this.sharingUntil, this.packageId, this.cancellationFee});
 
   factory Booking.fromJson(Map<String, dynamic> j) => Booking(
         id: parseInt(j['id']),
@@ -379,6 +379,7 @@ class Booking {
         sosStatus: asMap(j['safety'])['sos_status'] as String?,
         sharingUntil: parseDate(asMap(j['safety'])['sharing_until']),
         packageId: j['package_id'] == null ? null : parseInt(j['package_id']),
+        cancellationFee: j['cancellation_fee'] is Map ? CancellationFeeInfo.fromJson(asMap(j['cancellation_fee'])) : null,
         createdAt: parseDate(j['created_at']),
       );
 
@@ -387,6 +388,9 @@ class Booking {
 
   /// The fixed-price package this booking came from, or null for a bid job.
   final int? packageId;
+
+  /// The late cancellation fee charged on this booking, if any.
+  final CancellationFeeInfo? cancellationFee;
   final String title;
   final String categoryName;
   final DateTime? preferredTime;
@@ -1427,4 +1431,47 @@ class PackageWorker {
   final int ratingCount;
   final int completedJobs;
   final String level;
+}
+
+/// A late cancellation fee: on a booking, or in the customer's list of fees.
+class CancellationFeeInfo {
+  CancellationFeeInfo({required this.id, required this.amount, this.workerShare = '0', required this.status,
+      this.reason = '', this.bookingId, this.bookingTitle = ''});
+  factory CancellationFeeInfo.fromJson(Map<String, dynamic> j) => CancellationFeeInfo(
+        id: parseInt(j['id']),
+        amount: str(j['amount']),
+        workerShare: str(j['worker_share']),
+        status: str(j['status']),
+        reason: str(j['reason']),
+        bookingId: j['booking'] == null ? null : parseInt(j['booking']),
+        bookingTitle: str(j['booking_title']),
+      );
+  final int id;
+  final String amount;
+  final String workerShare;
+
+  /// owed, paid or waived.
+  final String status;
+
+  /// late, on_the_way or arrived.
+  final String reason;
+  final int? bookingId;
+  final String bookingTitle;
+  bool get isOwed => status == 'owed';
+}
+
+/// What cancelling a booking now would cost, and until when it is free.
+class CancellationQuote {
+  CancellationQuote({required this.fee, this.reason, this.freeUntil, this.feeAfter});
+  factory CancellationQuote.fromJson(Map<String, dynamic> j) => CancellationQuote(
+        fee: str(j['fee']),
+        reason: j['reason'] as String?,
+        freeUntil: parseDate(j['free_until']),
+        feeAfter: j['fee_after'] == null ? null : str(j['fee_after']),
+      );
+  final String fee;
+  final String? reason;
+  final DateTime? freeUntil;
+  final String? feeAfter;
+  bool get isFree => (double.tryParse(fee) ?? 0) <= 0;
 }

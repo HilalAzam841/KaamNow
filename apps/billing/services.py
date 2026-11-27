@@ -220,6 +220,11 @@ def _complete_payment(payment, confirmed_by=None):
         from . import wallet
 
         wallet.on_payment_completed(payment)
+
+    elif payment.purpose == Payment.Purpose.CANCELLATION_FEE:
+        from apps.cancellations.services import on_payment_completed
+
+        on_payment_completed(payment)
     return payment
 
 

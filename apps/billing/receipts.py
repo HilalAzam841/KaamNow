@@ -72,6 +72,12 @@ def receipt_data(payment):
             service = _category_name(listing.category)
         elif payment.purpose == Payment.Purpose.COMMISSION:
             title = _("Commission owed to KaamNow")
+        elif payment.purpose == Payment.Purpose.CANCELLATION_FEE:
+            booking = payment.booking
+            booking_id = booking.pk
+            title = _("Late cancellation fee")
+            service = _category_name(booking.request.category)
+            worker = booking.worker.user.full_name
         lines.append({"label": title or _("Payment"), "amount": payment.amount})
     refunds = [{"date": timezone.localtime(r.created_at).date(), "amount": r.amount, "reference": r.reference}
                for r in payment.refunds.order_by("created_at")]

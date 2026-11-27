@@ -149,6 +149,7 @@ paths:
         schema:
           type: string
           enum:
+          - cancellation_fee_settled
           - category_changed
           - commission_changed
           - commission_collected
@@ -196,6 +197,7 @@ paths:
           * `sos_handled` - SOS alert handled
           * `portfolio_moderated` - Portfolio photo hidden or shown
           * `package_moderated` - Service package hidden or shown
+          * `cancellation_fee_settled` - Cancellation fee waived or recorded as paid
       - in: query
         name: actor
         schema:
@@ -307,6 +309,148 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PaginatedBookingList'
+          description: ''
+  /api/v1/admin/cancellation-fees/:
+    get:
+      operationId: admin_cancellation_fees_list
+      description: Every late cancellation fee, newest first.
+      parameters:
+      - in: query
+        name: customer
+        schema:
+          type: integer
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: reason
+        schema:
+          type: string
+          enum:
+          - arrived
+          - late
+          - on_the_way
+        description: |-
+          * `late` - Cancelled close to the start time
+          * `on_the_way` - Cancelled after the worker set off
+          * `arrived` - Cancelled after the worker arrived
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - owed
+          - paid
+          - waived
+        description: |-
+          * `owed` - Owed
+          * `paid` - Paid
+          * `waived` - Waived
+      - in: query
+        name: worker
+        schema:
+          type: integer
+      tags:
+      - admin
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAdminCancellationFeeList'
+          description: ''
+  /api/v1/admin/cancellation-fees/{id}/record-received/:
+    post:
+      operationId: admin_cancellation_fees_record_received_create
+      description: Every late cancellation fee, newest first.
+      summary: Record a fee paid at the office or by transfer (audited). The worker's
+        share goes to their wallet.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this cancellation fee.
+        required: true
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecordReceivedRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RecordReceivedRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RecordReceivedRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminCancellationFee'
+          description: ''
+  /api/v1/admin/cancellation-fees/{id}/waive/:
+    post:
+      operationId: admin_cancellation_fees_waive_create
+      description: Every late cancellation fee, newest first.
+      summary: Waive a fee (audited). The customer is told.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this cancellation fee.
+        required: true
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WaiveRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/WaiveRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/WaiveRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminCancellationFee'
           description: ''
   /api/v1/admin/commissions/:
     get:
@@ -1064,6 +1208,7 @@ paths:
           type: string
           enum:
           - booking
+          - cancellation_fee
           - commission
           - featured_listing
           - subscription
@@ -1072,6 +1217,7 @@ paths:
           * `subscription` - Worker subscription
           * `featured_listing` - Featured listing
           * `commission` - Commission owed by a worker
+          * `cancellation_fee` - Late cancellation fee
       - in: query
         name: refunded
         schema:
@@ -3098,6 +3244,8 @@ paths:
   /api/v1/bookings/{id}/cancel/:
     post:
       operationId: bookings_cancel_create
+      summary: Cancel a booking. A customer who cancels late is charged the late cancellation
+        fee (see cancel-fee); it shows as cancellation_fee on the booking.
       parameters:
       - in: path
         name: id
@@ -3127,6 +3275,29 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Booking'
+          description: ''
+  /api/v1/bookings/{id}/cancel-fee/:
+    get:
+      operationId: bookings_cancel_fee_retrieve
+      summary: What cancelling this booking now would cost you, and until when it
+        is free.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this booking.
+        required: true
+      tags:
+      - bookings
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CancellationQuote'
           description: ''
   /api/v1/bookings/{id}/complete/:
     post:
@@ -3251,6 +3422,119 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Booking'
+          description: ''
+  /api/v1/cancellation-fees/:
+    get:
+      operationId: cancellation_fees_list
+      description: 'Late cancellation fees: the customer''s own, or the ones owed
+        to a worker.'
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - owed
+          - paid
+          - waived
+        description: |-
+          * `owed` - Owed
+          * `paid` - Paid
+          * `waived` - Waived
+      tags:
+      - cancellations
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedCancellationFeeList'
+          description: ''
+  /api/v1/cancellation-fees/{id}/:
+    get:
+      operationId: cancellation_fees_retrieve
+      description: 'Late cancellation fees: the customer''s own, or the ones owed
+        to a worker.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this cancellation fee.
+        required: true
+      tags:
+      - cancellations
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CancellationFee'
+          description: ''
+  /api/v1/cancellation-fees/{id}/pay/:
+    post:
+      operationId: cancellation_fees_pay_create
+      description: 'Late cancellation fees: the customer''s own, or the ones owed
+        to a worker.'
+      summary: Customer pays a fee online. Open `checkout`; the server confirms after
+        the gateway callback is verified.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this cancellation fee.
+        required: true
+      tags:
+      - cancellations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PayFeeRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PayFeeRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PayFeeRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentWithCheckout'
           description: ''
   /api/v1/complaints/:
     get:
@@ -4195,6 +4479,7 @@ paths:
           type: string
           enum:
           - booking
+          - cancellation_fee
           - commission
           - featured_listing
           - subscription
@@ -4203,6 +4488,7 @@ paths:
           * `subscription` - Worker subscription
           * `featured_listing` - Featured listing
           * `commission` - Commission owed by a worker
+          * `cancellation_fee` - Late cancellation fee
       - name: search
         required: false
         in: query
@@ -6386,6 +6672,86 @@ components:
           type: integer
       required:
       - worker
+    AdminCancellationFee:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        booking:
+          type: integer
+          readOnly: true
+        booking_title:
+          type: string
+          readOnly: true
+        reason:
+          allOf:
+          - $ref: '#/components/schemas/ReasonEnum'
+          readOnly: true
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          readOnly: true
+        worker_share:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          readOnly: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/CancellationFeeStatusEnum'
+          readOnly: true
+        payment_id:
+          type: integer
+          readOnly: true
+          nullable: true
+        paid_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        waived_reason:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        customer:
+          type: integer
+          readOnly: true
+        customer_name:
+          type: string
+          readOnly: true
+        worker:
+          type: integer
+          readOnly: true
+        worker_name:
+          type: string
+          readOnly: true
+        commission_percent:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,2})?$
+          readOnly: true
+      required:
+      - amount
+      - booking
+      - booking_title
+      - commission_percent
+      - created_at
+      - customer
+      - customer_name
+      - id
+      - paid_at
+      - payment_id
+      - reason
+      - status
+      - waived_reason
+      - worker
+      - worker_name
+      - worker_share
     AdminComplaint:
       type: object
       properties:
@@ -7279,6 +7645,8 @@ components:
           $ref: '#/components/schemas/AppConfigCity'
         emergency:
           $ref: '#/components/schemas/AppConfigEmergency'
+        cancellation:
+          $ref: '#/components/schemas/AppConfigCancellation'
         offer_price:
           $ref: '#/components/schemas/AppConfigOfferPrice'
         payment_methods:
@@ -7300,6 +7668,7 @@ components:
           $ref: '#/components/schemas/AppConfigSupport'
       required:
       - api_version
+      - cancellation
       - city
       - currency
       - emergency
@@ -7312,6 +7681,25 @@ components:
       - support
       - web_push
       - websocket_path
+    AppConfigCancellation:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+        free_minutes:
+          type: integer
+        window_minutes:
+          type: integer
+        late_fee:
+          type: string
+        on_the_way_fee:
+          type: string
+      required:
+      - enabled
+      - free_minutes
+      - late_fee
+      - on_the_way_fee
+      - window_minutes
     AppConfigCity:
       type: object
       properties:
@@ -7457,6 +7845,7 @@ components:
       - sos_handled
       - portfolio_moderated
       - package_moderated
+      - cancellation_fee_settled
       type: string
       description: |-
         * `worker_verified` - Worker verified
@@ -7482,6 +7871,7 @@ components:
         * `sos_handled` - SOS alert handled
         * `portfolio_moderated` - Portfolio photo hidden or shown
         * `package_moderated` - Service package hidden or shown
+        * `cancellation_fee_settled` - Cancellation fee waived or recorded as paid
     AuthResponse:
       type: object
       properties:
@@ -7657,6 +8047,13 @@ components:
             For the viewer: can_sos (SOS button shown), sos_status (their open alert, or null),
             sharing_until (when their trip-sharing link ends, or null).
           readOnly: true
+        cancellation_fee:
+          type: object
+          additionalProperties: {}
+          nullable: true
+          description: The late cancellation fee charged on this booking (id, amount,
+            worker_share, status, reason), or null.
+          readOnly: true
         created_at:
           type: string
           format: date-time
@@ -7669,6 +8066,7 @@ components:
       - agreed_price
       - arrived_at
       - cancel_reason
+      - cancellation_fee
       - cancelled_at
       - category_name
       - commission
@@ -7778,6 +8176,103 @@ components:
           type: string
           default: ''
           maxLength: 255
+    CancellationFee:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        booking:
+          type: integer
+          readOnly: true
+        booking_title:
+          type: string
+          readOnly: true
+        reason:
+          allOf:
+          - $ref: '#/components/schemas/ReasonEnum'
+          readOnly: true
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          readOnly: true
+        worker_share:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          readOnly: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/CancellationFeeStatusEnum'
+          readOnly: true
+        payment_id:
+          type: integer
+          readOnly: true
+          nullable: true
+        paid_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        waived_reason:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - amount
+      - booking
+      - booking_title
+      - created_at
+      - id
+      - paid_at
+      - payment_id
+      - reason
+      - status
+      - waived_reason
+      - worker_share
+    CancellationFeeStatusEnum:
+      enum:
+      - owed
+      - paid
+      - waived
+      type: string
+      description: |-
+        * `owed` - Owed
+        * `paid` - Paid
+        * `waived` - Waived
+    CancellationQuote:
+      type: object
+      properties:
+        fee:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          description: 'What cancelling now costs (0: free).'
+        reason:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/ReasonEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        free_until:
+          type: string
+          format: date-time
+          nullable: true
+          description: Cancelling is free until this time.
+        fee_after:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          nullable: true
+          description: The fee after free_until.
+      required:
+      - fee
+      - fee_after
+      - free_until
+      - reason
     CategoryEnum:
       enum:
       - service_quality
@@ -9329,6 +9824,25 @@ components:
       - level
       - profile_picture
       - rating_count
+    PaginatedAdminCancellationFeeList:
+      type: object
+      properties:
+        count:
+          type: integer
+        page:
+          type: integer
+        total_pages:
+          type: integer
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdminCancellationFee'
     PaginatedAdminComplaintList:
       type: object
       properties:
@@ -9538,6 +10052,25 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Booking'
+    PaginatedCancellationFeeList:
+      type: object
+      properties:
+        count:
+          type: integer
+        page:
+          type: integer
+        total_pages:
+          type: integer
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/CancellationFee'
     PaginatedChatMessageList:
       type: object
       properties:
@@ -10072,6 +10605,34 @@ components:
           minimum: 10
           description: How long after the start time (worker) or after arriving (customer)
             a no-show can be reported.
+        cancellation_fee_enabled:
+          type: boolean
+          description: Charge customers who cancel late. The fee goes to the worker,
+            less commission.
+        cancellation_free_minutes:
+          type: integer
+          maximum: 60
+          minimum: 0
+          description: Cancelling this soon after booking is always free (the customer
+            changed their mind).
+        cancellation_window_minutes:
+          type: integer
+          maximum: 1440
+          minimum: 15
+          description: Cancelling less than this long before the start time costs
+            the late fee.
+        late_cancellation_fee:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          description: Fee for cancelling inside the window, before the worker sets
+            off. 0 turns it off.
+        on_the_way_cancellation_fee:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          description: Fee for cancelling after the worker set off or arrived. 0 turns
+            it off.
     PatchedPortfolioUpdateRequest:
       type: object
       properties:
@@ -10314,6 +10875,21 @@ components:
           nullable: true
         is_active:
           type: boolean
+    PayFeeMethodEnum:
+      enum:
+      - jazzcash
+      - easypaisa
+      type: string
+      description: |-
+        * `jazzcash` - jazzcash
+        * `easypaisa` - easypaisa
+    PayFeeRequest:
+      type: object
+      properties:
+        method:
+          $ref: '#/components/schemas/PayFeeMethodEnum'
+      required:
+      - method
     Payment:
       type: object
       properties:
@@ -10633,6 +11209,34 @@ components:
           minimum: 10
           description: How long after the start time (worker) or after arriving (customer)
             a no-show can be reported.
+        cancellation_fee_enabled:
+          type: boolean
+          description: Charge customers who cancel late. The fee goes to the worker,
+            less commission.
+        cancellation_free_minutes:
+          type: integer
+          maximum: 60
+          minimum: 0
+          description: Cancelling this soon after booking is always free (the customer
+            changed their mind).
+        cancellation_window_minutes:
+          type: integer
+          maximum: 1440
+          minimum: 15
+          description: Cancelling less than this long before the start time costs
+            the late fee.
+        late_cancellation_fee:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          description: Fee for cancelling inside the window, before the worker sets
+            off. 0 turns it off.
+        on_the_way_cancellation_fee:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          description: Fee for cancelling after the worker set off or arrived. 0 turns
+            it off.
         updated_at:
           type: string
           format: date-time
@@ -10972,12 +11576,14 @@ components:
       - subscription
       - featured_listing
       - commission
+      - cancellation_fee
       type: string
       description: |-
         * `booking` - Booking
         * `subscription` - Worker subscription
         * `featured_listing` - Featured listing
         * `commission` - Commission owed by a worker
+        * `cancellation_fee` - Late cancellation fee
     Quote:
       type: object
       properties:
@@ -11024,6 +11630,16 @@ components:
       - promo_description
       - promo_discount
       - total
+    ReasonEnum:
+      enum:
+      - late
+      - on_the_way
+      - arrived
+      type: string
+      description: |-
+        * `late` - Cancelled close to the start time
+        * `on_the_way` - Cancelled after the worker set off
+        * `arrived` - Cancelled after the worker arrived
     Receipt:
       type: object
       properties:
@@ -11141,6 +11757,14 @@ components:
       required:
       - method
       - reference
+    RecordReceivedRequest:
+      type: object
+      properties:
+        reference:
+          type: string
+          default: ''
+          description: Receipt or transfer reference.
+          maxLength: 100
     RecurringFromBookingRequest:
       type: object
       properties:
@@ -12852,6 +13476,15 @@ components:
         * `pending` - Pending review
         * `verified` - Verified
         * `rejected` - Rejected
+    WaiveRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 255
+      required:
+      - reason
     Wallet:
       type: object
       properties:

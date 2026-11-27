@@ -271,6 +271,21 @@ class AppLocalizationsUr extends AppLocalizations {
   String get cancelBookingQ => 'یہ بکنگ منسوخ کریں؟';
 
   @override
+  String cancelFeeLate(Object amount) {
+    return 'ابھی منسوخ کرنے پر $amount لگیں گے، کیونکہ کام جلد شروع ہونے والا ہے۔ یہ رقم کاریگر کو ان کے مختص کیے گئے وقت کے لیے جاتی ہے۔';
+  }
+
+  @override
+  String cancelFeeOnTheWay(Object amount) {
+    return 'کاریگر راستے میں ہے، اس لیے ابھی منسوخ کرنے پر $amount لگیں گے۔ یہ رقم کاریگر کو ان کے سفر کے لیے جاتی ہے۔';
+  }
+
+  @override
+  String cancelFreeUntil(Object time, Object amount) {
+    return '$time تک منسوخی مفت ہے۔ اس کے بعد $amount لگیں گے۔';
+  }
+
+  @override
   String get cancelPayout => 'درخواست منسوخ کریں';
 
   @override
@@ -782,6 +797,42 @@ class AppLocalizationsUr extends AppLocalizations {
   @override
   String etaMinutes(Object n) {
     return 'تقریباً $n منٹ';
+  }
+
+  @override
+  String feeCustomerOwed(Object amount) {
+    return 'دیر سے منسوخی کی فیس: $amount۔ دوبارہ بک کرنے سے پہلے ادا کریں۔';
+  }
+
+  @override
+  String feeCustomerPaid(Object amount) {
+    return 'دیر سے منسوخی کی $amount فیس ادا ہو گئی۔ شکریہ۔';
+  }
+
+  @override
+  String get feeOwedHint =>
+      'ادا کرنے کے لیے دبائیں۔ ادائیگی کے بعد آپ دوبارہ بک کر سکتے ہیں۔';
+
+  @override
+  String feeOwedTitle(Object amount) {
+    return 'آپ پر دیر سے منسوخی کی $amount فیس واجب ہے';
+  }
+
+  @override
+  String get feePayOffice =>
+      'آن لائن ادائیگی ابھی دستیاب نہیں۔ KaamNow کے دفتر میں ادا کریں یا سپورٹ سے رابطہ کریں۔';
+
+  @override
+  String get feeWaived => 'منسوخی کی فیس معاف کر دی گئی۔';
+
+  @override
+  String feeWorkerOwed(Object amount) {
+    return 'گاہک کے دیر سے منسوخی کی فیس ادا کرنے پر آپ کو $amount ملیں گے۔';
+  }
+
+  @override
+  String feeWorkerPaid(Object amount) {
+    return 'منسوخی کی $amount فیس آپ کے والیٹ میں شامل ہو گئی۔';
   }
 
   @override

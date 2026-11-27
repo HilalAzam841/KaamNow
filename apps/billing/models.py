@@ -60,6 +60,22 @@ class PlatformSettings(TimeStampedModel):
         default=30, validators=[MinValueValidator(10), MaxValueValidator(180)],
         help_text="How long after the start time (worker) or after arriving (customer) a no-show can be reported.",
     )
+    cancellation_fee_enabled = models.BooleanField(
+        default=True, help_text="Charge customers who cancel late. The fee goes to the worker, less commission.")
+    cancellation_free_minutes = models.PositiveSmallIntegerField(
+        default=5, validators=[MaxValueValidator(60)],
+        help_text="Cancelling this soon after booking is always free (the customer changed their mind).")
+    cancellation_window_minutes = models.PositiveSmallIntegerField(
+        default=120, validators=[MinValueValidator(15), MaxValueValidator(1440)],
+        help_text="Cancelling less than this long before the start time costs the late fee.")
+    late_cancellation_fee = models.DecimalField(
+        max_digits=10, decimal_places=2, default=Decimal("200.00"),
+        validators=[MinValueValidator(Decimal("0")), MaxValueValidator(Decimal("5000"))],
+        help_text="Fee for cancelling inside the window, before the worker sets off. 0 turns it off.")
+    on_the_way_cancellation_fee = models.DecimalField(
+        max_digits=10, decimal_places=2, default=Decimal("300.00"),
+        validators=[MinValueValidator(Decimal("0")), MaxValueValidator(Decimal("5000"))],
+        help_text="Fee for cancelling after the worker set off or arrived. 0 turns it off.")
     updated_by = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name="+"
     )
@@ -131,6 +147,7 @@ class Payment(TimeStampedModel):
         SUBSCRIPTION = "subscription", "Worker subscription"
         FEATURED_LISTING = "featured_listing", "Featured listing"
         COMMISSION = "commission", "Commission owed by a worker"
+        CANCELLATION_FEE = "cancellation_fee", "Late cancellation fee"
 
     class Method(models.TextChoices):
         CASH = "cash", "Cash"
@@ -212,6 +229,7 @@ class LedgerEntry(models.Model):
         COMMISSION_SETTLEMENT = "commission_settlement", "Cash commission settled"
         CUSTOMER_REFUND = "customer_refund", "Refund to customer"
         PROMO_DISCOUNT = "promo_discount", "Promo and credit discount"
+        CANCELLATION_FEE = "cancellation_fee", "Late cancellation fee paid by a customer"
 
     payment = models.ForeignKey(
         Payment, on_delete=models.PROTECT, related_name="ledger_entries", null=True, blank=True

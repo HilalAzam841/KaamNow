@@ -40,6 +40,11 @@ class _SettingsFormState extends State<_SettingsForm> {
   late final _maxDiscount = TextEditingController(text: widget.settings.maxDiscountPercent);
   late bool _reminderSms = widget.settings.reminderSmsEnabled;
   late final _grace = TextEditingController(text: '${widget.settings.noShowGraceMinutes}');
+  late bool _cancelFees = widget.settings.cancellationFeeEnabled;
+  late final _freeMinutes = TextEditingController(text: '${widget.settings.cancellationFreeMinutes}');
+  late final _window = TextEditingController(text: '${widget.settings.cancellationWindowMinutes}');
+  late final _lateFee = TextEditingController(text: widget.settings.lateCancellationFee);
+  late final _onTheWayFee = TextEditingController(text: widget.settings.onTheWayCancellationFee);
   bool _saving = false;
 
   String? _number(String? v, {double max = 1e9}) {
@@ -63,6 +68,14 @@ class _SettingsFormState extends State<_SettingsForm> {
       if (_maxDiscount.text.trim() != s.maxDiscountPercent) 'max_discount_percent': _maxDiscount.text.trim(),
       if (_reminderSms != s.reminderSmsEnabled) 'reminder_sms_enabled': _reminderSms,
       if (_grace.text.trim() != '${s.noShowGraceMinutes}') 'no_show_grace_minutes': int.parse(_grace.text.trim()),
+      if (_cancelFees != s.cancellationFeeEnabled) 'cancellation_fee_enabled': _cancelFees,
+      if (_freeMinutes.text.trim() != '${s.cancellationFreeMinutes}')
+        'cancellation_free_minutes': int.parse(_freeMinutes.text.trim()),
+      if (_window.text.trim() != '${s.cancellationWindowMinutes}')
+        'cancellation_window_minutes': int.parse(_window.text.trim()),
+      if (_lateFee.text.trim() != s.lateCancellationFee) 'late_cancellation_fee': _lateFee.text.trim(),
+      if (_onTheWayFee.text.trim() != s.onTheWayCancellationFee)
+        'on_the_way_cancellation_fee': _onTheWayFee.text.trim(),
     };
     if (changes.isEmpty) return;
     if (changes.containsKey('commission_percent') &&
@@ -185,6 +198,59 @@ class _SettingsFormState extends State<_SettingsForm> {
                   final n = int.tryParse((v ?? '').trim());
                   return n == null || n < 10 || n > 180 ? 'Enter 10 to 180' : null;
                 },
+              ),
+              const SizedBox(height: 24),
+              Text('Late cancellations', style: Theme.of(context).textTheme.titleMedium),
+              SwitchListTile(
+                key: const Key('cancel-fees-enabled'),
+                contentPadding: EdgeInsets.zero,
+                title: const Text('Charge customers who cancel late'),
+                subtitle: const Text('The fee goes to the worker, less commission. Workers never pay it.'),
+                value: _cancelFees,
+                onChanged: (v) => setState(() => _cancelFees = v),
+              ),
+              TextFormField(
+                key: const Key('cancel-free-minutes'),
+                controller: _freeMinutes,
+                decoration: const InputDecoration(
+                    labelText: 'Free right after booking (minutes)',
+                    helperText: 'Cancelling this soon after booking is always free'),
+                keyboardType: TextInputType.number,
+                validator: (v) {
+                  final n = int.tryParse((v ?? '').trim());
+                  return n == null || n < 0 || n > 60 ? 'Enter 0 to 60' : null;
+                },
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                key: const Key('cancel-window'),
+                controller: _window,
+                decoration: const InputDecoration(
+                    labelText: 'Late if cancelled within (minutes before the start)',
+                    helperText: 'Cancelling earlier than this is free', helperMaxLines: 2),
+                keyboardType: TextInputType.number,
+                validator: (v) {
+                  final n = int.tryParse((v ?? '').trim());
+                  return n == null || n < 15 || n > 1440 ? 'Enter 15 to 1440' : null;
+                },
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                key: const Key('late-cancel-fee'),
+                controller: _lateFee,
+                decoration: const InputDecoration(
+                    labelText: 'Late cancellation fee (Rs)', helperText: 'Before the worker sets off. 0 = off'),
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                validator: (v) => _number(v, max: 5000),
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                key: const Key('on-the-way-cancel-fee'),
+                controller: _onTheWayFee,
+                decoration: const InputDecoration(
+                    labelText: 'Fee once the worker is on the way (Rs)', helperText: 'Or has arrived. 0 = off'),
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                validator: (v) => _number(v, max: 5000),
               ),
               const SizedBox(height: 16),
               FilledButton(
