@@ -20,12 +20,17 @@ import '../recurring/recurring_screen.dart';
 import '../safety/safety.dart';
 import 'promo_box.dart';
 import 'tip_widgets.dart';
+import '../../core/api_client.dart';
+import '../worker/portfolio_screen.dart' show PhotoPicker, pickPortfolioPhoto;
 import '../../l10n/l10n.dart';
 
 /// One booking, for either side: status, contact, live tracking, completion, payment, review.
 class BookingDetailScreen extends StatefulWidget {
-  const BookingDetailScreen({super.key, required this.id});
+  const BookingDetailScreen({super.key, required this.id, this.photoPicker = pickPortfolioPhoto});
   final int id;
+
+  /// Picks a photo for a review. Replaced in tests.
+  final PhotoPicker photoPicker;
   @override
   State<BookingDetailScreen> createState() => _BookingDetailScreenState();
 }
@@ -310,9 +315,22 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
   }
 
   Future<void> _review() async {
-    final r = await showDialog<(int, String)>(context: context, builder: (_) => const _ReviewDialog());
+    final r = await showDialog<(int, String, List<UploadFile>)>(
+        context: context, builder: (_) => ReviewDialog(picker: widget.photoPicker));
     if (r == null || !mounted) return;
-    await runAction(context, () => api.createReview(widget.id, r.$1, r.$2), success: context.t.thanksForReview);
+    final t = context.t;
+    final review = await runAction(context, () => api.createReview(widget.id, r.$1, r.$2));
+    if (review == null || !mounted) return;
+    var failed = false;
+    for (final photo in r.$3) {
+      try {
+        await api.addReviewPhoto(review.id, photo);
+      } catch (_) {
+        failed = true;
+      }
+    }
+    if (!mounted) return;
+    showInfo(context, failed ? t.reviewPhotoFailed : t.thanksForReview);
     _load();
   }
 
@@ -666,20 +684,39 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
   }
 }
 
-class _ReviewDialog extends StatefulWidget {
-  const _ReviewDialog();
+const maxReviewPhotos = 3;
+
+/// Stars, an optional comment and up to three photos. Returns (rating, comment, photos).
+class ReviewDialog extends StatefulWidget {
+  const ReviewDialog({super.key, required this.picker});
+  final PhotoPicker picker;
   @override
-  State<_ReviewDialog> createState() => _ReviewDialogState();
+  State<ReviewDialog> createState() => _ReviewDialogState();
 }
 
-class _ReviewDialogState extends State<_ReviewDialog> {
+class _ReviewDialogState extends State<ReviewDialog> {
   int _rating = 5;
   final _comment = TextEditingController();
+  final List<UploadFile> _photos = [];
 
   @override
-  Widget build(BuildContext context) => AlertDialog(
-        title: Text(context.t.rateThisJob),
-        content: Column(mainAxisSize: MainAxisSize.min, children: [
+  void dispose() {
+    _comment.dispose();
+    super.dispose();
+  }
+
+  Future<void> _addPhoto() async {
+    final f = await widget.picker();
+    if (f != null && mounted) setState(() => _photos.add(f));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.t;
+    return AlertDialog(
+      title: Text(t.rateThisJob),
+      content: SingleChildScrollView(
+        child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(mainAxisAlignment: MainAxisAlignment.center, children: [
             for (var i = 1; i <= 5; i++)
               IconButton(
@@ -688,15 +725,49 @@ class _ReviewDialogState extends State<_ReviewDialog> {
                 icon: Icon(i <= _rating ? Icons.star_rounded : Icons.star_outline_rounded, color: Colors.amber, size: 34),
               ),
           ]),
-          TextField(controller: _comment, maxLines: 3, decoration: InputDecoration(labelText: context.t.commentOptional)),
+          TextField(controller: _comment, maxLines: 3, decoration: InputDecoration(labelText: t.commentOptional)),
+          const SizedBox(height: 12),
+          Wrap(spacing: 8, runSpacing: 8, crossAxisAlignment: WrapCrossAlignment.center, children: [
+            for (var i = 0; i < _photos.length; i++)
+              Stack(children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(6),
+                  child: Image.memory(_photos[i].bytes, width: 64, height: 64, fit: BoxFit.cover,
+                      errorBuilder: (_, _, _) => const SizedBox(width: 64, height: 64, child: Icon(Icons.image))),
+                ),
+                Positioned(
+                  right: 0,
+                  top: 0,
+                  child: InkWell(
+                    key: Key('review-photo-remove-$i'),
+                    onTap: () => setState(() => _photos.removeAt(i)),
+                    child: Tooltip(
+                      message: t.reviewRemovePhoto,
+                      child: const CircleAvatar(radius: 10, child: Icon(Icons.close, size: 14)),
+                    ),
+                  ),
+                ),
+              ]),
+            if (_photos.length < maxReviewPhotos)
+              OutlinedButton.icon(
+                key: const Key('review-add-photo'),
+                onPressed: _addPhoto,
+                icon: const Icon(Icons.add_a_photo),
+                label: Text(t.reviewAddPhotos),
+              ),
+          ]),
+          const SizedBox(height: 4),
+          Text(t.reviewPhotosHint('$maxReviewPhotos'), style: Theme.of(context).textTheme.bodySmall),
         ]),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: Text(context.t.cancel)),
-          FilledButton(
-            key: const Key('submit-review'),
-            onPressed: () => Navigator.pop(context, (_rating, _comment.text.trim())),
-            child: Text(context.t.submit),
-          ),
-        ],
-      );
+      ),
+      actions: [
+        TextButton(onPressed: () => Navigator.pop(context), child: Text(t.cancel)),
+        FilledButton(
+          key: const Key('submit-review'),
+          onPressed: () => Navigator.pop(context, (_rating, _comment.text.trim(), List<UploadFile>.of(_photos))),
+          child: Text(t.submit),
+        ),
+      ],
+    );
+  }
 }

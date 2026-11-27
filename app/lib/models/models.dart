@@ -564,20 +564,44 @@ class AppNotification {
 
 class Review {
   Review({required this.id, required this.rating, this.comment = '', this.customerName = '',
-      this.categoryName = '', this.createdAt});
+      this.categoryName = '', this.createdAt, this.bookingId, this.photos = const [], this.reply = '',
+      this.repliedAt, this.canReply = false});
   factory Review.fromJson(Map<String, dynamic> j) => Review(
       id: parseInt(j['id']),
       rating: parseInt(j['rating']),
       comment: str(j['comment']),
       customerName: str(j['customer_name']),
       categoryName: str(j['category_name']),
-      createdAt: parseDate(j['created_at']));
+      createdAt: parseDate(j['created_at']),
+      bookingId: j['booking'] == null ? null : parseInt(j['booking']),
+      photos: parseList(j['photos'], ReviewPhoto.fromJson),
+      reply: str(j['reply']),
+      repliedAt: parseDate(j['replied_at']),
+      canReply: j['can_reply'] == true);
   final int id;
   final int rating;
   final String comment;
   final String customerName;
   final String categoryName;
   final DateTime? createdAt;
+  final int? bookingId;
+
+  /// Photos the customer added (hidden ones are left out by the server).
+  final List<ReviewPhoto> photos;
+
+  /// The worker's public reply, or empty.
+  final String reply;
+  final DateTime? repliedAt;
+
+  /// The viewer is the reviewed worker and has not replied yet.
+  final bool canReply;
+}
+
+class ReviewPhoto {
+  ReviewPhoto({required this.id, required this.image});
+  factory ReviewPhoto.fromJson(Map<String, dynamic> j) => ReviewPhoto(id: parseInt(j['id']), image: str(j['image']));
+  final int id;
+  final String image;
 }
 
 class Commission {

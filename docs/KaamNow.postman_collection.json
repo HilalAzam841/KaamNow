@@ -84,6 +84,14 @@
     {
       "key": "tip_id",
       "value": ""
+    },
+    {
+      "key": "review_id",
+      "value": ""
+    },
+    {
+      "key": "review_photo_id",
+      "value": ""
     }
   ],
   "item": [
@@ -4643,6 +4651,291 @@
             "body": {
               "mode": "raw",
               "raw": "{\n  \"booking\": \"{{booking_id}}\",\n  \"rating\": 5,\n  \"comment\": \"Quick and tidy\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set('review_id', pm.response.json().data.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Add a photo to my review",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/reviews/{{review_id}}/photos/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "reviews",
+                "{{review_id}}",
+                "photos"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{customer_access}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "image",
+                  "type": "file",
+                  "src": ""
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set('review_photo_id', pm.response.json().data.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Worker: reply to a review (once)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/reviews/{{review_id}}/reply/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "reviews",
+                "{{review_id}}",
+                "reply"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{worker_access}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reply\": \"Thank you, it was a pleasure!\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Worker reviews with photos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/workers/{{worker_id}}/reviews/?with_photos=true",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "workers",
+                "{{worker_id}}",
+                "reviews",
+                "?with_photos=true"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "Admin: reviews with photos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/reviews/?with_photos=true",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "reviews",
+                "?with_photos=true"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_access}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Admin: hide a review (audited)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/reviews/{{review_id}}/hide/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "reviews",
+                "{{review_id}}",
+                "hide"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_access}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Abusive language\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Admin: hide a review photo (audited)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/reviews/{{review_id}}/photos/{{review_photo_id}}/hide/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "reviews",
+                "{{review_id}}",
+                "photos",
+                "{{review_photo_id}}",
+                "hide"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_access}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Shows a face\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Admin: remove a worker's reply (audited)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/reviews/{{review_id}}/remove-reply/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "reviews",
+                "{{review_id}}",
+                "remove-reply"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_access}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Insulting\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Remove a photo from my review",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/reviews/{{review_id}}/photos/{{review_photo_id}}/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "reviews",
+                "{{review_id}}",
+                "photos",
+                "{{review_photo_id}}"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{customer_access}}"
+                }
+              ]
             }
           }
         },

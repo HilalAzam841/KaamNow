@@ -2216,6 +2216,18 @@ abstract class AppLocalizations {
   /// **'Show customers what you have done'**
   String get myPortfolioHint;
 
+  /// No description provided for @myReviews.
+  ///
+  /// In en, this message translates to:
+  /// **'My reviews'**
+  String get myReviews;
+
+  /// No description provided for @myReviewsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'See what customers said and reply'**
+  String get myReviewsHint;
+
   /// No description provided for @myScheduleSubtitle.
   ///
   /// In en, this message translates to:
@@ -3788,11 +3800,77 @@ abstract class AppLocalizations {
   /// **'Resumed.'**
   String get resumedRepeating;
 
+  /// No description provided for @reviewAddPhotos.
+  ///
+  /// In en, this message translates to:
+  /// **'Add photos'**
+  String get reviewAddPhotos;
+
+  /// No description provided for @reviewPhotoFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Your review was saved, but a photo could not be uploaded.'**
+  String get reviewPhotoFailed;
+
+  /// No description provided for @reviewPhotosHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Up to {count} photos of the finished work. Location data is removed.'**
+  String reviewPhotosHint(Object count);
+
+  /// No description provided for @reviewRemovePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove photo'**
+  String get reviewRemovePhoto;
+
+  /// No description provided for @reviewReply.
+  ///
+  /// In en, this message translates to:
+  /// **'Reply'**
+  String get reviewReply;
+
+  /// No description provided for @reviewReplyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Everyone can see your reply. You can reply once.'**
+  String get reviewReplyHint;
+
+  /// No description provided for @reviewReplyLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Your reply'**
+  String get reviewReplyLabel;
+
+  /// No description provided for @reviewReplySent.
+  ///
+  /// In en, this message translates to:
+  /// **'Reply posted.'**
+  String get reviewReplySent;
+
+  /// No description provided for @reviewReplyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reply to this review'**
+  String get reviewReplyTitle;
+
+  /// No description provided for @reviewWorkerReply.
+  ///
+  /// In en, this message translates to:
+  /// **'Reply from {name}'**
+  String reviewWorkerReply(Object name);
+
   /// No description provided for @reviewsHeading.
   ///
   /// In en, this message translates to:
   /// **'Reviews ({n})'**
   String reviewsHeading(Object n);
+
+  /// No description provided for @reviewsWithPhotos.
+  ///
+  /// In en, this message translates to:
+  /// **'With photos'**
+  String get reviewsWithPhotos;
 
   /// No description provided for @rewardsEarned.
   ///

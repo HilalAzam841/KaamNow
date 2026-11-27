@@ -451,3 +451,43 @@ class AdminCancellationFee {
   final String waivedReason;
   final DateTime? createdAt;
 }
+
+/// A review as admins see it, with hidden photos and the reply.
+class AdminReview {
+  AdminReview({required this.id, required this.rating, this.comment = '', this.customerName = '',
+      this.workerName = '', this.bookingId, this.isVisible = true, this.photos = const [], this.reply = '',
+      this.createdAt});
+  factory AdminReview.fromJson(Map<String, dynamic> j) => AdminReview(
+        id: parseInt(j['id']),
+        rating: parseInt(j['rating']),
+        comment: str(j['comment']),
+        customerName: str(j['customer_name']),
+        workerName: str(j['worker_name']),
+        bookingId: j['booking'] == null ? null : parseInt(j['booking']),
+        isVisible: j['is_visible'] != false,
+        photos: parseList(j['photos'], AdminReviewPhoto.fromJson),
+        reply: str(j['reply']),
+        createdAt: parseDate(j['created_at']),
+      );
+  final int id;
+  final int rating;
+  final String comment;
+  final String customerName;
+  final String workerName;
+  final int? bookingId;
+  final bool isVisible;
+  final List<AdminReviewPhoto> photos;
+  final String reply;
+  final DateTime? createdAt;
+}
+
+class AdminReviewPhoto {
+  AdminReviewPhoto({required this.id, required this.image, this.isHidden = false, this.hiddenReason = ''});
+  factory AdminReviewPhoto.fromJson(Map<String, dynamic> j) => AdminReviewPhoto(
+      id: parseInt(j['id']), image: str(j['image']), isHidden: j['is_hidden'] == true,
+      hiddenReason: str(j['hidden_reason']));
+  final int id;
+  final String image;
+  final bool isHidden;
+  final String hiddenReason;
+}

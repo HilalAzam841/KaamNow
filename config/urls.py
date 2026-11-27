@@ -17,7 +17,7 @@ from apps.jobs.urls import bookings_router, requests_router
 from apps.offers.urls import offer_urlpatterns, request_offer_urlpatterns
 from apps.promotions.urls import referral_urlpatterns
 from apps.scheduling.views import MyScheduleView, MyTimeOffDetailView, MyTimeOffView, SlotsView, WorkerSlotsView
-from apps.reviews.views import ReviewCreateView, WorkerReviewsView
+from apps.reviews.views import WorkerReviewsView
 
 api_v1 = [
     path("health/", health, name="health"),
@@ -54,7 +54,7 @@ api_v1 = [
     path("tips/", include("apps.tips.urls")),
     path("subscriptions/", include(subscription_urlpatterns)),
     path("featured/", include(featured_urlpatterns)),
-    path("reviews/", ReviewCreateView.as_view(), name="review-create"),
+    path("reviews/", include("apps.reviews.urls")),
     path("notifications/", include("apps.notifications.urls")),
     path("complaints/", include("apps.support.urls")),
     path("promos/", include("apps.promotions.urls")),

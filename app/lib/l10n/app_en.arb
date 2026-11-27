@@ -760,6 +760,8 @@
   "myPackagesHint": "Fixed-price jobs customers can book straight away",
   "myPortfolio": "My work photos",
   "myPortfolioHint": "Show customers what you have done",
+  "myReviews": "My reviews",
+  "myReviewsHint": "See what customers said and reply",
   "myScheduleSubtitle": "Days and times you take jobs, and days off",
   "myScheduleTitle": "My working hours",
   "myTips": "My tips",
@@ -1360,12 +1362,33 @@
   "resetPassword": "Reset password",
   "resumeRepeating": "Resume",
   "resumedRepeating": "Resumed.",
+  "reviewAddPhotos": "Add photos",
+  "reviewPhotoFailed": "Your review was saved, but a photo could not be uploaded.",
+  "reviewPhotosHint": "Up to {count} photos of the finished work. Location data is removed.",
+  "@reviewPhotosHint": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "reviewRemovePhoto": "Remove photo",
+  "reviewReply": "Reply",
+  "reviewReplyHint": "Everyone can see your reply. You can reply once.",
+  "reviewReplyLabel": "Your reply",
+  "reviewReplySent": "Reply posted.",
+  "reviewReplyTitle": "Reply to this review",
+  "reviewWorkerReply": "Reply from {name}",
+  "@reviewWorkerReply": {
+    "placeholders": {
+      "name": {}
+    }
+  },
   "reviewsHeading": "Reviews ({n})",
   "@reviewsHeading": {
     "placeholders": {
       "n": {}
     }
   },
+  "reviewsWithPhotos": "With photos",
   "rewardsEarned": "Rewards earned: {amount}",
   "@rewardsEarned": {
     "placeholders": {
