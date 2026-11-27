@@ -434,6 +434,22 @@ layer), `urls.py`, `admin.py` and `tests/`.
 - Redis 6 or newer (optional locally: without `REDIS_URL` the app uses an in-memory channel layer and
   runs Celery tasks inline, which is fine for development on a single process)
 
+### Windows
+
+`scripts/windows.ps1` does the steps below in Windows PowerShell 5 or 7 (which don't accept `&&`).
+Create the database and `.env` first, then from the `KaamNow` folder:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\windows.ps1 setup    # once
+powershell -ExecutionPolicy Bypass -File scripts\windows.ps1 update   # after every git pull
+powershell -ExecutionPolicy Bypass -File scripts\windows.ps1 server   # the API on http://localhost:8000
+powershell -ExecutionPolicy Bypass -File scripts\windows.ps1 web      # the app in Chrome, in a second window
+```
+
+It sets `AUTOBAHN_USE_NVX=0`, without which the WebSocket library's optional C extension fails to build
+on Windows. The Android build is capped at 3 GB of memory (`app/android/gradle.properties`) so it runs
+on 8 GB laptops.
+
 ### Steps
 
 ```bash
