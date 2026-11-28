@@ -4621,6 +4621,201 @@
           }
         },
         {
+          "name": "Worker: add a before photo (once arrived)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/bookings/{{booking_id}}/photos/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "bookings",
+                "{{booking_id}}",
+                "photos"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{worker_access}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "kind",
+                  "value": "before",
+                  "type": "text"
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "src": ""
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set('job_photo_id', pm.response.json().data.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Before and after photos of a booking",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/bookings/{{booking_id}}/photos/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "bookings",
+                "{{booking_id}}",
+                "photos"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{customer_access}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Download a job photo (private)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/bookings/{{booking_id}}/photos/{{job_photo_id}}/file/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "bookings",
+                "{{booking_id}}",
+                "photos",
+                "{{job_photo_id}}",
+                "file"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{customer_access}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Admin: job photos of a booking",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/bookings/{{booking_id}}/photos/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "bookings",
+                "{{booking_id}}",
+                "photos"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_access}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Admin: open a job photo (audited)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/bookings/{{booking_id}}/photos/{{job_photo_id}}/file/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "bookings",
+                "{{booking_id}}",
+                "photos",
+                "{{job_photo_id}}",
+                "file"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_access}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Worker: remove a job photo",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/bookings/{{booking_id}}/photos/{{job_photo_id}}/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "bookings",
+                "{{booking_id}}",
+                "photos",
+                "{{job_photo_id}}"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{worker_access}}"
+                }
+              ]
+            }
+          }
+        },
+        {
           "name": "Review worker",
           "request": {
             "method": "POST",

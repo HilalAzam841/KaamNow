@@ -265,6 +265,7 @@ class BookingSerializer(serializers.ModelSerializer):
     cancellation_fee = serializers.SerializerMethodField()
     tip = serializers.SerializerMethodField()
     can_tip = serializers.SerializerMethodField()
+    job_photos = serializers.SerializerMethodField()
 
     class Meta:
         model = Booking
@@ -274,9 +275,15 @@ class BookingSerializer(serializers.ModelSerializer):
             "total_amount", "status",
             "worker", "customer_name", "contact", "on_the_way_at", "arrived_at", "started_at", "completed_at",
             "cancelled_at", "cancel_reason", "completed_via", "status_history", "commission", "has_review",
-            "no_show", "safety", "cancellation_fee", "tip", "can_tip", "created_at", "updated_at",
+            "no_show", "safety", "cancellation_fee", "tip", "can_tip", "job_photos", "created_at", "updated_at",
         ]
         read_only_fields = fields
+
+    def get_job_photos(self, obj) -> dict:
+        """Before and after photo counts, the limit per kind, and whether the viewer (the worker) can add more."""
+        from apps.jobphotos.services import summary
+
+        return summary(obj, self._viewer())
 
     def _viewer(self):
         request = self.context.get("request")

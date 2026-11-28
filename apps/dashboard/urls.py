@@ -9,6 +9,7 @@ from apps.packages.views import AdminPackageViewSet
 from apps.cancellations.views import AdminCancellationFeeViewSet
 from apps.reviews.views import AdminReviewViewSet
 from apps.tips.views import AdminTipViewSet
+from apps.jobphotos.views import AdminBookingPhotoFileView, AdminBookingPhotosView
 
 from . import views
 
@@ -44,6 +45,9 @@ urlpatterns = [
     path("users/<int:pk>/reactivate/", views.ReactivateUserView.as_view(), name="admin-user-reactivate"),
     path("requests/", views.AdminRequestsView.as_view(), name="admin-requests"),
     path("bookings/", views.AdminBookingsView.as_view(), name="admin-bookings"),
+    path("bookings/<int:booking_id>/photos/", AdminBookingPhotosView.as_view(), name="admin-booking-photos"),
+    path("bookings/<int:booking_id>/photos/<int:pk>/file/", AdminBookingPhotoFileView.as_view(),
+         name="admin-booking-photo-file"),
     path("revenue/", views.RevenueView.as_view(), name="admin-revenue"),
     path("commissions/", views.CommissionsView.as_view(), name="admin-commissions"),
     path("settings/", views.CommissionSettingsView.as_view(), name="admin-settings"),

@@ -11,6 +11,8 @@
   "add": "Add",
   "addAService": "Add a service",
   "addAddress": "Add address",
+  "addAfterPhoto": "Add an after photo",
+  "addBeforePhoto": "Add a before photo",
   "addContact": "Add contact",
   "addPackage": "Add package",
   "addPhoto": "Add photo",
@@ -22,6 +24,7 @@
   "addressDeleted": "Address deleted.",
   "addressHelper": "Only the worker you book will see it",
   "addressSaved": "Address saved.",
+  "afterWork": "After",
   "agree": "Agree",
   "agreeToAmount": "Agree to {amount}",
   "@agreeToAmount": {
@@ -82,6 +85,7 @@
   "bankTransfer": "Bank transfer",
   "baseLocation": "Base location",
   "baseLocationHint": "Jobs are matched by distance from here. Customers never see it.",
+  "beforeWork": "Before",
   "book": "Book",
   "bookAgain": "Book again",
   "bookAgree": "You agree to pay {price}. All other offers will be closed.",
@@ -633,6 +637,9 @@
     }
   },
   "jobPassedOn": "Done. The job went to other workers.",
+  "jobPhotoAdded": "Photo added.",
+  "jobPhotos": "Job photos",
+  "jobPhotosWorkerHint": "Take photos before you start and after you finish. The customer sees them, and they help if there is ever a dispute.",
   "jobPosted": "Job posted.",
   "jobPostedNoWorkers": "Job posted, but no worker nearby offers this service right now. We will keep it open, and workers who come online can still send offers.",
   "jobPostedNotified": "Job posted. {n} nearby workers were notified.",
@@ -1205,6 +1212,8 @@
     }
   },
   "removeFromFavourites": "Remove from saved",
+  "removePhotoBody": "The customer will no longer see it.",
+  "removePhotoQ": "Remove this photo?",
   "removePromo": "Remove",
   "removeServiceQ": "Remove {name}?",
   "@removeServiceQ": {

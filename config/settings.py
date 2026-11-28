@@ -76,6 +76,7 @@ INSTALLED_APPS = [
     "apps.packages",
     "apps.cancellations",
     "apps.tips",
+    "apps.jobphotos",
     "apps.scheduling",
 ]
 
@@ -212,6 +213,7 @@ REST_FRAMEWORK = {
         "promo": env("THROTTLE_PROMO", "20/min"),
         "sos": env("THROTTLE_SOS", "10/min"),
         "share": env("THROTTLE_SHARE", "60/min"),
+        "job_photos": env("THROTTLE_JOB_PHOTOS", "30/hour"),
     },
     "TEST_REQUEST_DEFAULT_FORMAT": "json",
 }
@@ -258,6 +260,7 @@ SPECTACULAR_SETTINGS = {
         "SosStatusEnum": "apps.safety.models.SosAlert.Status",
         "CancellationFeeStatusEnum": "apps.cancellations.models.CancellationFee.Status",
         "TipStatusEnum": "apps.tips.models.Tip.Status",
+        "JobPhotoKindEnum": "apps.jobphotos.models.JobPhoto.Kind",
     },
 }
 

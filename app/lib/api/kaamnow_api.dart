@@ -402,6 +402,22 @@ class KaamNowApi {
     return payment['checkout'] == null ? null : Checkout.fromJson(asMap(payment['checkout']));
   }
 
+  // ---- Before and after job photos ---------------------------------------
+  Future<(JobPhotoSummary, List<JobPhoto>)> jobPhotos(int bookingId) async {
+    final m = asMap(await client.get('/bookings/$bookingId/photos/'));
+    return (JobPhotoSummary.fromJson(asMap(m['summary'])), parseList(m['results'], JobPhoto.fromJson));
+  }
+
+  /// The worker adds a photo ([kind] is before or after). The server removes location data.
+  Future<JobPhoto> addJobPhoto(int bookingId, String kind, UploadFile image, {String caption = ''}) async =>
+      JobPhoto.fromJson(asMap(await client.multipart('POST', '/bookings/$bookingId/photos/',
+          fields: {'kind': kind, if (caption.isNotEmpty) 'caption': caption}, files: [image])));
+  Future<void> deleteJobPhoto(int bookingId, int photoId) => client.delete('/bookings/$bookingId/photos/$photoId/');
+
+  /// The picture itself. Job photos are private, so they are downloaded with your login, not by URL.
+  Future<Uint8List> jobPhotoBytes(JobPhoto photo) async =>
+      (await client.getBytes(photo.fileUrl.replaceFirst(RegExp(r'^/api/v1'), ''))).$1;
+
   // ---- Reviews & complaints ---------------------------------------------
   Future<Review> createReview(int bookingId, int rating, String comment) async => Review.fromJson(
       asMap(await client.post('/reviews/', body: {'booking': bookingId, 'rating': rating, 'comment': comment})));

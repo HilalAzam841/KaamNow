@@ -30,6 +30,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addAddress => 'Add address';
 
   @override
+  String get addAfterPhoto => 'Add an after photo';
+
+  @override
+  String get addBeforePhoto => 'Add a before photo';
+
+  @override
   String get addContact => 'Add contact';
 
   @override
@@ -63,6 +69,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get addressSaved => 'Address saved.';
+
+  @override
+  String get afterWork => 'After';
 
   @override
   String get agree => 'Agree';
@@ -181,6 +190,9 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get baseLocationHint =>
       'Jobs are matched by distance from here. Customers never see it.';
+
+  @override
+  String get beforeWork => 'Before';
 
   @override
   String get book => 'Book';
@@ -1036,6 +1048,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get jobPassedOn => 'Done. The job went to other workers.';
+
+  @override
+  String get jobPhotoAdded => 'Photo added.';
+
+  @override
+  String get jobPhotos => 'Job photos';
+
+  @override
+  String get jobPhotosWorkerHint =>
+      'Take photos before you start and after you finish. The customer sees them, and they help if there is ever a dispute.';
 
   @override
   String get jobPosted => 'Job posted.';
@@ -2049,6 +2071,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get removeFromFavourites => 'Remove from saved';
+
+  @override
+  String get removePhotoBody => 'The customer will no longer see it.';
+
+  @override
+  String get removePhotoQ => 'Remove this photo?';
 
   @override
   String get removePromo => 'Remove';

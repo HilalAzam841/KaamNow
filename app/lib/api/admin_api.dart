@@ -53,6 +53,11 @@ class AdminApi {
         'date_to': to,
         'page': page,
       }), Booking.fromJson);
+  /// Before and after photos of a booking, for disputes. Opening a photo is audited.
+  Future<List<JobPhoto>> bookingPhotos(int bookingId) async =>
+      parseList(await client.get('/admin/bookings/$bookingId/photos/'), JobPhoto.fromJson);
+  Future<Uint8List> jobPhotoBytes(JobPhoto photo) async =>
+      (await client.getBytes(photo.fileUrl.replaceFirst(RegExp(r'^/api/v1'), ''))).$1;
   Future<Paged<ServiceRequest>> requests({String? status, String? search, int page = 1}) async =>
       Paged.parse(await client.get('/admin/requests/', query: {'status': status, 'search': search, 'page': page}),
           ServiceRequest.fromJson);
