@@ -3,6 +3,7 @@ import 'package:material_ui/material_ui.dart';
 import '../../core/format.dart';
 import '../../models/models.dart';
 import '../bookings/job_photos.dart';
+import '../bookings/parts_section.dart';
 import '../widgets/common.dart';
 import 'admin_common.dart';
 import 'admin_shell.dart';
@@ -109,7 +110,9 @@ class _AdminJobsScreenState extends State<AdminJobsScreen> {
               Text('${b.title} · ${b.categoryName}'),
               Text('Customer: ${b.customerName}'),
               Text('Worker: ${b.worker.fullName}'),
-              Text('Agreed ${rs(b.agreedPrice)} · total ${rs(b.totalAmount)}'),
+              Text('Agreed ${rs(b.agreedPrice)}'
+                  '${(double.tryParse(b.partsAmount) ?? 0) > 0 ? ' · parts ${rs(b.partsAmount)}' : ''}'
+                  ' · total ${rs(b.totalAmount)}'),
               const Divider(),
               for (final l in b.statusHistory)
                 Padding(
@@ -122,6 +125,13 @@ class _AdminJobsScreenState extends State<AdminJobsScreen> {
                   key: const Key('admin-job-photos'),
                   load: () async => (b.jobPhotos, await adminApi(c).bookingPhotos(b.id)),
                   loadBytes: adminApi(c).jobPhotoBytes,
+                ),
+              // Parts and materials, read only. Opening a receipt is recorded in the audit log.
+              if (b.parts.count > 0)
+                PartsSection(
+                  key: const Key('admin-job-parts'),
+                  load: () async => (b.parts, await adminApi(c).bookingParts(b.id)),
+                  loadReceipt: adminApi(c).partReceiptBytes,
                 ),
               ]),
             ),
