@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
@@ -12,15 +14,54 @@ import '../widgets/language_button.dart';
 import '../../l10n/l10n.dart';
 
 /// Open requests near the worker that match their services. Emergencies come first.
-class JobFeedScreen extends StatelessWidget {
-  const JobFeedScreen({super.key});
+///
+/// The list refreshes itself every [refreshEvery] so a new job shows up without a page reload
+/// (pull to refresh does not work with a mouse on the web), and the app bar has a refresh button.
+class JobFeedScreen extends StatefulWidget {
+  const JobFeedScreen({super.key, this.refreshEvery = const Duration(seconds: 20)});
+  final Duration refreshEvery;
+
+  @override
+  State<JobFeedScreen> createState() => _JobFeedScreenState();
+}
+
+class _JobFeedScreenState extends State<JobFeedScreen> {
+  final _loader = GlobalKey<LoaderState<(WorkerProfile, Paged<ServiceRequest>)>>();
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(widget.refreshEvery, (_) => _refresh());
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  Future<void> _refresh() async {
+    // Only while this screen is the one on top, so a pushed job page is not reloaded underneath.
+    if (!mounted || !(ModalRoute.of(context)?.isCurrent ?? true)) return;
+    await _loader.currentState?.reload();
+  }
 
   @override
   Widget build(BuildContext context) {
     final api = context.read<Session>().api;
     return Scaffold(
-      appBar: AppBar(title: Text(context.t.jobsNearYou), actions: const [LanguageButton()]),
+      appBar: AppBar(title: Text(context.t.jobsNearYou), actions: [
+        IconButton(
+          key: const Key('feed-refresh'),
+          tooltip: context.t.refreshJobs,
+          icon: const Icon(Icons.refresh),
+          onPressed: () => _loader.currentState?.reload(),
+        ),
+        const LanguageButton(),
+      ]),
       body: Loader<(WorkerProfile, Paged<ServiceRequest>)>(
+        key: _loader,
         load: () async => (await api.myWorkerProfile(), await api.requests(scope: 'feed')),
         builder: (context, data, reload) {
           final (profile, page) = data;

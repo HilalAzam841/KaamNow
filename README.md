@@ -511,6 +511,21 @@ Open:
 (admin `03000000001`, customer `03000000002`, workers `03001000001` to `03001000004`).
 It refuses to run when `DEBUG=False` unless you pass `--force`.
 
+A worker only hears about a job in a service they offer, within their service radius (15 km for
+the demo workers, so anywhere in central Lahore) and, for a scheduled job, inside their working hours.
+To test a job end to end with the demo workers, pick one of their services:
+
+| Worker | Phone | Area | Services |
+|---|---|---|---|
+| Bilal Ahmed | `03001000001` | Gulberg | Electrician, AC Technician |
+| Usman Tariq | `03001000002` | Johar Town | Plumber |
+| Kashif Mehmood | `03001000003` | DHA Phase 5 | Electrician, Appliance Repair |
+| Imran Ali | `03001000004` | Shadman | Carpenter, Furniture Repair |
+
+Other services (Painter, Home Cleaning and so on) have no demo worker, so nobody is notified.
+After posting, the customer sees how many workers were notified. The worker's **Jobs** tab refreshes
+every 20 seconds (or tap the refresh button), and the bell shows the new-job alert within 30 seconds.
+
 To create a real admin instead: `python manage.py createsuperuser` (log in with the phone number).
 
 ### Running with Docker

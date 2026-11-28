@@ -1850,6 +1850,12 @@ abstract class AppLocalizations {
   /// **'Job posted.'**
   String get jobPosted;
 
+  /// No description provided for @jobPostedNoWorkers.
+  ///
+  /// In en, this message translates to:
+  /// **'Job posted, but no worker nearby offers this service right now. We will keep it open, and workers who come online can still send offers.'**
+  String get jobPostedNoWorkers;
+
   /// No description provided for @jobPostedNotified.
   ///
   /// In en, this message translates to:
@@ -3475,6 +3481,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Reconnecting…'**
   String get reconnecting;
+
+  /// No description provided for @refreshJobs.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh jobs'**
+  String get refreshJobs;
 
   /// No description provided for @refundedToCustomer.
   ///

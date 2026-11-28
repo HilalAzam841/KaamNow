@@ -1041,6 +1041,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get jobPosted => 'Job posted.';
 
   @override
+  String get jobPostedNoWorkers =>
+      'Job posted, but no worker nearby offers this service right now. We will keep it open, and workers who come online can still send offers.';
+
+  @override
   String jobPostedNotified(Object n) {
     return 'Job posted. $n nearby workers were notified.';
   }
@@ -2015,6 +2019,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get reconnecting => 'Reconnecting…';
+
+  @override
+  String get refreshJobs => 'Refresh jobs';
 
   @override
   String refundedToCustomer(Object amount) {

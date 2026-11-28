@@ -303,9 +303,11 @@ class _NewRequestScreenState extends State<NewRequestScreen> {
             images: _images,
           );
       if (!mounted) return;
-      showInfo(context, req.matchedWorkersCount == null
-          ? context.t.jobPosted
-          : context.t.jobPostedNotified(req.matchedWorkersCount!));
+      showInfo(context, switch (req.matchedWorkersCount) {
+        null => context.t.jobPosted,
+        0 => context.t.jobPostedNoWorkers,
+        final n => context.t.jobPostedNotified(n),
+      });
       context.pushReplacement('/requests/${req.id}');
     } on ApiException catch (e) {
       setState(() => _fieldErrors = e.fieldErrors);
