@@ -37,6 +37,38 @@ void main() {
     expect(Review.fromJson({'id': 1, 'rating': 5}).photos, isEmpty);
   });
 
+  testWidgets('after the customer confirms the job is done, the rating opens straight away', (tester) async {
+    tall(tester);
+    var status = 'in_progress';
+    final h = await pumpScreen(tester, const BookingDetailScreen(id: 21), setup: (h) {
+      h.backend.on('GET /bookings/21/', (_) => ok(bookingJson(status: status)));
+      h.backend.on('GET /bookings/21/messages/', (_) => ok(paged([])));
+      h.backend.on('GET /payments/', (_) => ok(paged([])));
+      h.backend.on('GET /requests/11/', (_) => ok(requestJson(bookingId: 21)));
+      h.backend.on('POST /bookings/21/complete/', (_) {
+        status = 'completed';
+        return ok(bookingJson(status: 'completed'));
+      });
+      h.backend.on('POST /reviews/', (req) {
+        expect((jsonDecode(req.body) as Map)['rating'], 5);
+        return ok(reviewJson(), status: 201);
+      });
+    });
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.byKey(const Key('confirm-complete')));
+    await tester.tap(find.byKey(const Key('confirm-complete')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Complete').last);
+    await tester.pumpAndSettle();
+    expect(h.backend.callsTo('POST /bookings/21/complete/'), hasLength(1));
+    expect(find.byKey(const Key('submit-review')), findsOneWidget, reason: 'rating dialog opened by itself');
+
+    await tester.tap(find.byKey(const Key('star-5')));
+    await tester.tap(find.byKey(const Key('submit-review')));
+    await tester.pumpAndSettle();
+    expect(h.backend.callsTo('POST /reviews/'), hasLength(1));
+  });
+
   testWidgets('a customer reviews with photos and both are uploaded', (tester) async {
     tall(tester);
     var picks = 0;

@@ -191,7 +191,10 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
     if (!await confirm(context, context.t.markCompleteQ, context.t.onlyIfDone, ok: context.t.complete)) return;
     if (!mounted) return;
     final b = await runAction(context, () => api.confirmCompletion(widget.id), success: context.t.jobCompleted);
-    if (b != null) _load();
+    if (b == null || !mounted) return;
+    await _load();
+    // Ask for the rating straight away, while the job is fresh. Skipping keeps the "Rate" button.
+    if (mounted && !b.hasReview) await _review();
   }
 
   Future<void> _completeWithCode() async {
