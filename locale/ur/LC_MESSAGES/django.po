@@ -1595,6 +1595,40 @@ msgstr "نیا ریویو"
 msgid "You received a {rating}-star review."
 msgstr "آپ کو {rating} اسٹار کا ریویو ملا۔"
 
+#: apps/reviews/services.py
+msgid "You can only change your own review."
+msgstr "آپ صرف اپنا جائزہ بدل سکتے ہیں۔"
+
+#: apps/reviews/services.py
+#, python-brace-format
+msgid "A review can have up to {n} photos."
+msgstr "ایک جائزے میں زیادہ سے زیادہ {n} تصاویر ہو سکتی ہیں۔"
+
+#: apps/reviews/services.py
+msgid "Only the reviewed worker can reply."
+msgstr "صرف وہی کاریگر جواب دے سکتا ہے جس کا جائزہ ہے۔"
+
+#: apps/reviews/services.py
+msgid "This review is hidden."
+msgstr "یہ جائزہ چھپا دیا گیا ہے۔"
+
+#: apps/reviews/services.py
+msgid "You have already replied to this review."
+msgstr "آپ اس جائزے کا جواب دے چکے ہیں۔"
+
+#: apps/reviews/services.py
+msgid "Write a short reply."
+msgstr "مختصر جواب لکھیں۔"
+
+#: apps/reviews/services.py
+msgid "The worker replied to your review"
+msgstr "کاریگر نے آپ کے جائزے کا جواب دیا"
+
+#: apps/reviews/services.py
+#, python-brace-format
+msgid "{name} replied to your review."
+msgstr "{name} نے آپ کے جائزے کا جواب دیا۔"
+
 #: apps/safety/serializers.py
 msgid "Enter a name."
 msgstr "نام لکھیں۔"

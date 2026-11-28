@@ -166,6 +166,7 @@ paths:
           - plan_changed
           - portfolio_moderated
           - promo_saved
+          - review_moderated
           - settings_changed
           - sos_handled
           - subscription_activated
@@ -198,6 +199,7 @@ paths:
           * `portfolio_moderated` - Portfolio photo hidden or shown
           * `package_moderated` - Service package hidden or shown
           * `cancellation_fee_settled` - Cancellation fee waived or recorded as paid
+          * `review_moderated` - Review, review photo or reply hidden or shown
       - in: query
         name: actor
         schema:
@@ -1779,6 +1781,255 @@ paths:
               schema:
                 type: object
                 additionalProperties: {}
+          description: ''
+  /api/v1/admin/reviews/:
+    get:
+      operationId: admin_reviews_list
+      description: Every review, newest first. Hide abusive reviews, photos or replies
+        (all audited).
+      parameters:
+      - in: query
+        name: customer
+        schema:
+          type: integer
+      - in: query
+        name: is_visible
+        schema:
+          type: boolean
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: rating
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: with_photos
+        schema:
+          type: boolean
+      - in: query
+        name: worker
+        schema:
+          type: integer
+      tags:
+      - admin
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAdminReviewList'
+          description: ''
+  /api/v1/admin/reviews/{id}/hide/:
+    post:
+      operationId: admin_reviews_hide_create
+      description: Every review, newest first. Hide abusive reviews, photos or replies
+        (all audited).
+      summary: Hide a review (audited). It stops counting toward the worker's rating.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this review.
+        required: true
+      - in: query
+        name: with_photos
+        schema:
+          type: boolean
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModerationReasonRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ModerationReasonRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ModerationReasonRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminReview'
+          description: ''
+  /api/v1/admin/reviews/{id}/photos/{photo_id}/hide/:
+    post:
+      operationId: admin_reviews_photos_hide_create
+      description: Every review, newest first. Hide abusive reviews, photos or replies
+        (all audited).
+      summary: Hide one photo on a review (audited).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this review.
+        required: true
+      - in: path
+        name: photo_id
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: query
+        name: with_photos
+        schema:
+          type: boolean
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModerationReasonRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ModerationReasonRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ModerationReasonRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminReview'
+          description: ''
+  /api/v1/admin/reviews/{id}/photos/{photo_id}/unhide/:
+    post:
+      operationId: admin_reviews_photos_unhide_create
+      description: Every review, newest first. Hide abusive reviews, photos or replies
+        (all audited).
+      summary: Show a hidden photo again (audited).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this review.
+        required: true
+      - in: path
+        name: photo_id
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: query
+        name: with_photos
+        schema:
+          type: boolean
+      tags:
+      - admin
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminReview'
+          description: ''
+  /api/v1/admin/reviews/{id}/remove-reply/:
+    post:
+      operationId: admin_reviews_remove_reply_create
+      description: Every review, newest first. Hide abusive reviews, photos or replies
+        (all audited).
+      summary: Remove the worker's reply (audited). The worker can reply again.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this review.
+        required: true
+      - in: query
+        name: with_photos
+        schema:
+          type: boolean
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModerationReasonRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ModerationReasonRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ModerationReasonRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminReview'
+          description: ''
+  /api/v1/admin/reviews/{id}/unhide/:
+    post:
+      operationId: admin_reviews_unhide_create
+      description: Every review, newest first. Hide abusive reviews, photos or replies
+        (all audited).
+      summary: Show a hidden review again (audited).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this review.
+        required: true
+      - in: query
+        name: with_photos
+        schema:
+          type: boolean
+      tags:
+      - admin
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminReview'
           description: ''
   /api/v1/admin/settings/:
     get:
@@ -5691,6 +5942,122 @@ paths:
               schema:
                 $ref: '#/components/schemas/Review'
           description: ''
+  /api/v1/reviews/{id}/:
+    get:
+      operationId: reviews_retrieve
+      description: 'A review: its author adds photos, the reviewed worker replies
+        once.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this review.
+        required: true
+      tags:
+      - reviews
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'
+          description: ''
+  /api/v1/reviews/{id}/photos/:
+    post:
+      operationId: reviews_photos_create
+      description: 'A review: its author adds photos, the reviewed worker replies
+        once.'
+      summary: Add a photo to your review (up to 3). Location and camera data are
+        removed.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this review.
+        required: true
+      tags:
+      - reviews
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ReviewPhotoUploadRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReviewPhoto'
+          description: ''
+  /api/v1/reviews/{id}/photos/{photo_id}/:
+    delete:
+      operationId: reviews_photos_destroy
+      description: 'A review: its author adds photos, the reviewed worker replies
+        once.'
+      summary: Remove a photo from your review.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this review.
+        required: true
+      - in: path
+        name: photo_id
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      tags:
+      - reviews
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/reviews/{id}/reply/:
+    post:
+      operationId: reviews_reply_create
+      description: 'A review: its author adds photos, the reviewed worker replies
+        once.'
+      summary: The reviewed worker replies in public, once. The customer is told.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this review.
+        required: true
+      tags:
+      - reviews
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ReplyRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ReplyRequest'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReplyRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'
+          description: ''
   /api/v1/safety/contacts/:
     get:
       operationId: safety_contacts_list
@@ -6408,6 +6775,11 @@ paths:
         description: A search term.
         schema:
           type: string
+      - in: query
+        name: with_photos
+        schema:
+          type: boolean
+        description: Only reviews with photos.
       tags:
       - reviews
       - workers
@@ -7585,6 +7957,92 @@ components:
       - code
       - kind
       - value
+    AdminReview:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        booking:
+          type: integer
+          readOnly: true
+        worker:
+          type: integer
+          readOnly: true
+        worker_name:
+          type: string
+          readOnly: true
+        customer:
+          type: integer
+          readOnly: true
+        customer_name:
+          type: string
+          readOnly: true
+        rating:
+          type: integer
+          readOnly: true
+        comment:
+          type: string
+          readOnly: true
+        is_visible:
+          type: boolean
+          readOnly: true
+          description: Admins can hide abusive reviews.
+        photos:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdminReviewPhoto'
+          readOnly: true
+        reply:
+          type: string
+          readOnly: true
+          description: The worker's public reply (one per review).
+        replied_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - booking
+      - comment
+      - created_at
+      - customer
+      - customer_name
+      - id
+      - is_visible
+      - photos
+      - rating
+      - replied_at
+      - reply
+      - worker
+      - worker_name
+    AdminReviewPhoto:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        image:
+          type: string
+          format: uri
+          nullable: true
+          readOnly: true
+        is_hidden:
+          type: boolean
+          readOnly: true
+          description: Hidden by an admin.
+        hidden_reason:
+          type: string
+          readOnly: true
+      required:
+      - hidden_reason
+      - id
+      - image
+      - is_hidden
     AdminSosAlert:
       type: object
       description: Everything an admin needs to act fast, including both phone numbers
@@ -8183,6 +8641,7 @@ components:
       - portfolio_moderated
       - package_moderated
       - cancellation_fee_settled
+      - review_moderated
       type: string
       description: |-
         * `worker_verified` - Worker verified
@@ -8209,6 +8668,7 @@ components:
         * `portfolio_moderated` - Portfolio photo hidden or shown
         * `package_moderated` - Service package hidden or shown
         * `cancellation_fee_settled` - Cancellation fee waived or recorded as paid
+        * `review_moderated` - Review, review photo or reply hidden or shown
     AuthResponse:
       type: object
       properties:
@@ -9646,6 +10106,15 @@ components:
           maxLength: 100
       required:
       - reference
+    ModerationReasonRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 255
+      required:
+      - reason
     MyPackage:
       type: object
       description: A package as its worker sees and edits it.
@@ -10335,6 +10804,25 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/AdminPromoCode'
+    PaginatedAdminReviewList:
+      type: object
+      properties:
+        count:
+          type: integer
+        page:
+          type: integer
+        total_pages:
+          type: integer
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdminReview'
     PaginatedAdminSosAlertList:
       type: object
       properties:
@@ -12596,6 +13084,15 @@ components:
           maxItems: 50
       required:
       - ids
+    ReplyRequest:
+      type: object
+      properties:
+        reply:
+          type: string
+          minLength: 1
+          maxLength: 500
+      required:
+      - reply
     ReportBucket:
       type: object
       properties:
@@ -12790,18 +13287,44 @@ components:
         category_name:
           type: string
           readOnly: true
+        photos:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+          description: The review's photos (id, image URL). Photos hidden by an admin
+            are left out.
+          readOnly: true
+        reply:
+          type: string
+          readOnly: true
+          description: The worker's public reply (one per review).
+        replied_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        can_reply:
+          type: boolean
+          description: Whether the viewer is the reviewed worker and has not replied
+            yet.
+          readOnly: true
         created_at:
           type: string
           format: date-time
           readOnly: true
       required:
       - booking
+      - can_reply
       - category_name
       - comment
       - created_at
       - customer_name
       - id
+      - photos
       - rating
+      - replied_at
+      - reply
       - worker
     ReviewCreateRequest:
       type: object
@@ -12838,6 +13361,30 @@ components:
       description: |-
         * `confirmed` - confirmed
         * `dismissed` - dismissed
+    ReviewPhoto:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        image:
+          type: string
+          format: uri
+          nullable: true
+          readOnly: true
+      required:
+      - id
+      - image
+    ReviewPhotoUploadRequest:
+      type: object
+      properties:
+        image:
+          type: string
+          format: binary
+          description: JPEG, PNG or WEBP, up to 5 MB. Location and camera data are
+            removed.
+      required:
+      - image
     SavedAddress:
       type: object
       properties:

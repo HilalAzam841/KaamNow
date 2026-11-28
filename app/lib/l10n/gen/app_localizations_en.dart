@@ -1267,6 +1267,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get myPortfolioHint => 'Show customers what you have done';
 
   @override
+  String get myReviews => 'My reviews';
+
+  @override
+  String get myReviewsHint => 'See what customers said and reply';
+
+  @override
   String get myScheduleSubtitle => 'Days and times you take jobs, and days off';
 
   @override
@@ -2223,9 +2229,48 @@ class AppLocalizationsEn extends AppLocalizations {
   String get resumedRepeating => 'Resumed.';
 
   @override
+  String get reviewAddPhotos => 'Add photos';
+
+  @override
+  String get reviewPhotoFailed =>
+      'Your review was saved, but a photo could not be uploaded.';
+
+  @override
+  String reviewPhotosHint(Object count) {
+    return 'Up to $count photos of the finished work. Location data is removed.';
+  }
+
+  @override
+  String get reviewRemovePhoto => 'Remove photo';
+
+  @override
+  String get reviewReply => 'Reply';
+
+  @override
+  String get reviewReplyHint =>
+      'Everyone can see your reply. You can reply once.';
+
+  @override
+  String get reviewReplyLabel => 'Your reply';
+
+  @override
+  String get reviewReplySent => 'Reply posted.';
+
+  @override
+  String get reviewReplyTitle => 'Reply to this review';
+
+  @override
+  String reviewWorkerReply(Object name) {
+    return 'Reply from $name';
+  }
+
+  @override
   String reviewsHeading(Object n) {
     return 'Reviews ($n)';
   }
+
+  @override
+  String get reviewsWithPhotos => 'With photos';
 
   @override
   String rewardsEarned(Object amount) {

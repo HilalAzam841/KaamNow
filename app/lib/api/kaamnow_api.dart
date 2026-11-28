@@ -76,8 +76,8 @@ class KaamNowApi {
           PublicWorker.fromJson).results;
 
   Future<PublicWorker> worker(int id) async => PublicWorker.fromJson(asMap(await client.get('/workers/$id/')));
-  Future<Paged<Review>> workerReviews(int id) async =>
-      Paged.parse(await client.get('/workers/$id/reviews/'), Review.fromJson);
+  Future<Paged<Review>> workerReviews(int id, {bool withPhotos = false}) async => Paged.parse(
+      await client.get('/workers/$id/reviews/', query: {if (withPhotos) 'with_photos': 'true'}), Review.fromJson);
 
   // ---- Service requests --------------------------------------------------
   Future<ServiceRequest> createRequest({required int category, required String title, required String description,
@@ -405,6 +405,15 @@ class KaamNowApi {
   // ---- Reviews & complaints ---------------------------------------------
   Future<Review> createReview(int bookingId, int rating, String comment) async => Review.fromJson(
       asMap(await client.post('/reviews/', body: {'booking': bookingId, 'rating': rating, 'comment': comment})));
+
+  /// Adds a photo to your review (up to 3). The server removes location data.
+  Future<ReviewPhoto> addReviewPhoto(int reviewId, UploadFile image) async =>
+      ReviewPhoto.fromJson(asMap(await client.multipart('POST', '/reviews/$reviewId/photos/', fields: {}, files: [image])));
+  Future<void> deleteReviewPhoto(int reviewId, int photoId) => client.delete('/reviews/$reviewId/photos/$photoId/');
+
+  /// The reviewed worker answers in public, once.
+  Future<Review> replyToReview(int reviewId, String reply) async =>
+      Review.fromJson(asMap(await client.post('/reviews/$reviewId/reply/', body: {'reply': reply})));
 
   Future<Paged<Complaint>> complaints() async => Paged.parse(await client.get('/complaints/'), Complaint.fromJson);
   Future<Complaint> createComplaint({int? bookingId, required String category, required String subject,

@@ -14,7 +14,7 @@ later, and talks to the backend only through the REST API and the booking WebSoc
 
 **Stage 1 (Backend MVP), Stage 2 (Advanced features) and Stage 3 (Flutter web client) are done,
 and Stage 4 adds the admin dashboard to the web app.** Every backend feature below has its business logic, REST endpoint(s), validation and
-automated tests. All 663 backend tests pass against PostgreSQL 16, and the Flutter app has 185
+automated tests. All 675 backend tests pass against PostgreSQL 16, and the Flutter app has 191
 unit and widget tests plus a browser end-to-end run (see `app/README.md`).
 
 ### Stage 1: Backend MVP
@@ -387,6 +387,15 @@ After a job, customers can thank the worker with a tip. The whole tip goes to th
 | Workers see every tip, the note, and their total | `GET tips/`, `GET tips/summary/`, app: Account → **My tips** |
 | Admins see every tip and set the limits | `GET admin/tips/`, app: Admin → **Tips** and **Settings** |
 
+### Stage 30: review photos and worker replies
+
+| Feature | Where |
+|---|---|
+| After reviewing, the customer can add up to 3 photos of the finished work. Each upload is checked (real JPEG, PNG or WEBP, size limit) and re-encoded, so no GPS position or camera data is kept. Only the review's author can add or remove them | `POST reviews/{id}/photos/`, `DELETE reviews/{id}/photos/{photo_id}/`, app: review dialog |
+| Photos show on the worker's profile, with a "With photos" filter. Tapping a photo opens it full screen | `photos` on reviews, `GET workers/{id}/reviews/?with_photos=true` |
+| The reviewed worker can reply once, in public. The customer is told. Only that worker can reply, and only to a review that is shown | `POST reviews/{id}/reply/`, `reply`, `replied_at` and `can_reply` on reviews, app: Account → **My reviews** |
+| Admins can hide a review (it stops counting toward the worker's rating), hide one photo, or remove a reply. Each action needs a reason and is audited | `GET admin/reviews/`, `POST admin/reviews/{id}/hide/`, `unhide/`, `remove-reply/`, `photos/{photo_id}/hide/` and `unhide/`, app: Admin → **Reviews** |
+
 ---
 
 **Keys and accounts to add later** (payments, SMS, Firebase, Google Maps, app stores) and every `.env` value: [`docs/API_KEYS.md`](docs/API_KEYS.md).
@@ -503,7 +512,7 @@ docker compose up --build
 pytest -q
 ```
 
-The suite has 663 tests and needs a running PostgreSQL (Redis is not needed for tests). It uses the database settings from your
+The suite has 675 tests and needs a running PostgreSQL (Redis is not needed for tests). It uses the database settings from your
 `.env` and creates a separate `test_kaamnow` database. Coverage includes:
 
 - **Authentication**: registration validation, login, suspended accounts, token refresh rotation, logout blacklisting, password reset (single-use token, no account enumeration), throttling.
@@ -591,7 +600,7 @@ Endpoints added beyond the original list, because the flow needs them: `password
 `bookings/{id}/completion-otp/`, `payments/{id}/confirm/`, `payments/earnings/`,
 the notification helpers, and the admin users, suspension, requests, commission settings and audit log endpoints.
 
-Postman: import `docs/KaamNow.postman_collection.json` (177 requests in 12 folders that follow the
+Postman: import `docs/KaamNow.postman_collection.json` (185 requests in 12 folders that follow the
 full flow; test scripts store tokens and ids automatically). Regenerate it with
 `python scripts/generate_postman.py`.
 

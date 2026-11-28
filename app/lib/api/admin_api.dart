@@ -157,6 +157,23 @@ class AdminApi {
       asMap(await client.post('/admin/no-shows/$id/review/', body: {'review': review, 'note': note})));
 
   // ---- cancellation fees -----------------------------------------------------
+  Future<Paged<AdminReview>> reviews({bool? visible, bool withPhotos = false, int page = 1}) async => Paged.parse(
+      await client.get('/admin/reviews/', query: {
+        'is_visible': visible?.toString(),
+        if (withPhotos) 'with_photos': 'true',
+        'page': page,
+      }),
+      AdminReview.fromJson);
+  Future<AdminReview> hideReview(int id, String reason) async =>
+      AdminReview.fromJson(asMap(await client.post('/admin/reviews/$id/hide/', body: {'reason': reason})));
+  Future<AdminReview> unhideReview(int id) async =>
+      AdminReview.fromJson(asMap(await client.post('/admin/reviews/$id/unhide/')));
+  Future<AdminReview> removeReviewReply(int id, String reason) async =>
+      AdminReview.fromJson(asMap(await client.post('/admin/reviews/$id/remove-reply/', body: {'reason': reason})));
+  Future<AdminReview> setReviewPhotoHidden(int id, int photoId, bool hidden, {String reason = ''}) async =>
+      AdminReview.fromJson(asMap(await client.post('/admin/reviews/$id/photos/$photoId/${hidden ? 'hide' : 'unhide'}/',
+          body: hidden ? {'reason': reason} : null)));
+
   Future<Paged<TipInfo>> tips({String? status, int page = 1}) async =>
       Paged.parse(await client.get('/admin/tips/', query: {'status': status, 'page': page}), TipInfo.fromJson);
 

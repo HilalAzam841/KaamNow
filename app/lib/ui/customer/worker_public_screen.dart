@@ -5,6 +5,7 @@ import '../../core/format.dart';
 import '../../core/session.dart';
 import '../../models/models.dart';
 import '../widgets/common.dart';
+import '../widgets/review_card.dart';
 import '../worker/portfolio_screen.dart';
 import '../widgets/language_button.dart';
 import '../widgets/offer_widgets.dart';
@@ -33,7 +34,6 @@ class WorkerPublicScreen extends StatelessWidget {
         ),
         builder: (context, data, reload) {
           final (w, reviews, packages) = data;
-          final theme = Theme.of(context);
           final isCustomer = context.read<Session>().user?.isCustomer == true;
           return PageBody(
             child: ListView(padding: const EdgeInsets.all(16), children: [
@@ -82,23 +82,46 @@ class WorkerPublicScreen extends StatelessWidget {
               else
                 for (final line in hoursSummary(context, w.workingHours)) Text(line),
               SectionTitle(context.t.reviewsHeading(reviews.count)),
-              if (reviews.results.isEmpty) Text(context.t.noReviewsYet),
-              for (final r in reviews.results)
-                Card(
-                  child: ListTile(
-                    title: Row(children: [
-                      for (var i = 0; i < 5; i++)
-                        Icon(i < r.rating ? Icons.star_rounded : Icons.star_outline_rounded, size: 18, color: Colors.amber),
-                      const SizedBox(width: 8),
-                      Text(r.customerName, style: theme.textTheme.bodySmall),
-                    ]),
-                    subtitle: Text([if (r.comment.isNotEmpty) r.comment, '${r.categoryName} · ${day(r.createdAt)}'].join('\n')),
-                  ),
-                ),
+              ReviewsSection(reviews: reviews.results, workerName: w.fullName.split(' ').first),
             ]),
           );
         },
       ),
     );
+  }
+}
+
+
+/// The reviews on a worker's profile, with a "With photos" filter.
+class ReviewsSection extends StatefulWidget {
+  const ReviewsSection({super.key, required this.reviews, required this.workerName});
+  final List<Review> reviews;
+  final String workerName;
+  @override
+  State<ReviewsSection> createState() => _ReviewsSectionState();
+}
+
+class _ReviewsSectionState extends State<ReviewsSection> {
+  bool _withPhotos = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.t;
+    if (widget.reviews.isEmpty) return Text(t.noReviewsYet);
+    final anyPhotos = widget.reviews.any((r) => r.photos.isNotEmpty);
+    final shown = _withPhotos ? widget.reviews.where((r) => r.photos.isNotEmpty).toList() : widget.reviews;
+    return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+      if (anyPhotos)
+        Align(
+          alignment: AlignmentDirectional.centerStart,
+          child: FilterChip(
+            key: const Key('reviews-with-photos'),
+            label: Text(t.reviewsWithPhotos),
+            selected: _withPhotos,
+            onSelected: (v) => setState(() => _withPhotos = v),
+          ),
+        ),
+      for (final r in shown) ReviewCard(review: r, workerName: widget.workerName),
+    ]);
   }
 }

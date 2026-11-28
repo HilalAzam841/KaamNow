@@ -1266,6 +1266,12 @@ class AppLocalizationsUr extends AppLocalizations {
   String get myPortfolioHint => 'گاہکوں کو دکھائیں کہ آپ نے کیا کام کیا ہے';
 
   @override
+  String get myReviews => 'میرے جائزے';
+
+  @override
+  String get myReviewsHint => 'دیکھیں گاہکوں نے کیا کہا اور جواب دیں';
+
+  @override
   String get myScheduleSubtitle =>
       'وہ دن اور اوقات جب آپ کام لیتے ہیں، اور چھٹیاں';
 
@@ -2223,9 +2229,48 @@ class AppLocalizationsUr extends AppLocalizations {
   String get resumedRepeating => 'دوبارہ شروع ہو گیا۔';
 
   @override
+  String get reviewAddPhotos => 'تصاویر شامل کریں';
+
+  @override
+  String get reviewPhotoFailed =>
+      'آپ کا جائزہ محفوظ ہو گیا، لیکن ایک تصویر اپ لوڈ نہیں ہو سکی۔';
+
+  @override
+  String reviewPhotosHint(Object count) {
+    return 'مکمل کام کی زیادہ سے زیادہ $count تصاویر۔ مقام کی معلومات ہٹا دی جاتی ہیں۔';
+  }
+
+  @override
+  String get reviewRemovePhoto => 'تصویر ہٹائیں';
+
+  @override
+  String get reviewReply => 'جواب دیں';
+
+  @override
+  String get reviewReplyHint =>
+      'آپ کا جواب سب دیکھ سکتے ہیں۔ آپ ایک بار جواب دے سکتے ہیں۔';
+
+  @override
+  String get reviewReplyLabel => 'آپ کا جواب';
+
+  @override
+  String get reviewReplySent => 'جواب شائع ہو گیا۔';
+
+  @override
+  String get reviewReplyTitle => 'اس جائزے کا جواب دیں';
+
+  @override
+  String reviewWorkerReply(Object name) {
+    return '$name کا جواب';
+  }
+
+  @override
   String reviewsHeading(Object n) {
     return 'ریویوز ($n)';
   }
+
+  @override
+  String get reviewsWithPhotos => 'تصاویر والے';
 
   @override
   String rewardsEarned(Object amount) {
