@@ -1041,6 +1041,10 @@ class AppLocalizationsUr extends AppLocalizations {
   String get jobPosted => 'کام پوسٹ ہو گیا۔';
 
   @override
+  String get jobPostedNoWorkers =>
+      'کام پوسٹ ہو گیا، لیکن ابھی قریب کوئی کاریگر یہ سروس نہیں دیتا۔ کام کھلا رہے گا، اور آن لائن آنے والے کاریگر پھر بھی آفر بھیج سکتے ہیں۔';
+
+  @override
   String jobPostedNotified(Object n) {
     return 'کام پوسٹ ہو گیا۔ $n قریبی کاریگروں کو اطلاع دی گئی۔';
   }
@@ -2016,6 +2020,9 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get reconnecting => 'دوبارہ جڑ رہا ہے…';
+
+  @override
+  String get refreshJobs => 'کام دوبارہ لوڈ کریں';
 
   @override
   String refundedToCustomer(Object amount) {

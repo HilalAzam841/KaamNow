@@ -132,7 +132,8 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
                               final api = context.read<Session>().api;
                               final updated = await runAction(context, () => api.openToAll(r.id));
                               if (updated != null && context.mounted) {
-                                showInfo(context, context.t.jobPostedNotified(updated.matchedWorkersCount ?? 0));
+                                final n = updated.matchedWorkersCount ?? 0;
+                                showInfo(context, n == 0 ? context.t.jobPostedNoWorkers : context.t.jobPostedNotified(n));
                                 _load();
                               }
                             },

@@ -634,6 +634,7 @@
   },
   "jobPassedOn": "Done. The job went to other workers.",
   "jobPosted": "Job posted.",
+  "jobPostedNoWorkers": "Job posted, but no worker nearby offers this service right now. We will keep it open, and workers who come online can still send offers.",
   "jobPostedNotified": "Job posted. {n} nearby workers were notified.",
   "@jobPostedNotified": {
     "placeholders": {
@@ -1179,6 +1180,7 @@
   "recentJobs": "Recent jobs",
   "recentVisits": "Recent visits",
   "reconnecting": "Reconnecting…",
+  "refreshJobs": "Refresh jobs",
   "refundedToCustomer": "Refunded to the customer: {amount}",
   "@refundedToCustomer": {
     "placeholders": {
