@@ -351,7 +351,8 @@ class Booking {
       required this.status, required this.worker, required this.customerName, this.contact = const {},
       this.cancelReason = '', this.completedAt, this.statusHistory = const [], this.commission,
       this.hasReview = false, this.createdAt, this.durationMinutes = 120, this.noShowReported,
-      this.canReportNoShow, this.noShowOpensAt, this.canSos = false, this.sosStatus, this.sharingUntil, this.packageId, this.cancellationFee, this.tip, this.canTip = false});
+      this.canReportNoShow, this.noShowOpensAt, this.canSos = false, this.sosStatus, this.sharingUntil, this.packageId, this.cancellationFee, this.tip, this.canTip = false,
+      this.jobPhotos = const JobPhotoSummary()});
 
   factory Booking.fromJson(Map<String, dynamic> j) => Booking(
         id: parseInt(j['id']),
@@ -382,6 +383,7 @@ class Booking {
         cancellationFee: j['cancellation_fee'] is Map ? CancellationFeeInfo.fromJson(asMap(j['cancellation_fee'])) : null,
         tip: j['tip'] is Map ? TipInfo.fromJson(asMap(j['tip'])) : null,
         canTip: j['can_tip'] == true,
+        jobPhotos: j['job_photos'] is Map ? JobPhotoSummary.fromJson(asMap(j['job_photos'])) : const JobPhotoSummary(),
         createdAt: parseDate(j['created_at']),
       );
 
@@ -399,6 +401,9 @@ class Booking {
 
   /// Whether the viewer can give a tip, or change an unpaid one, now.
   final bool canTip;
+
+  /// Before and after photo counts, and whether the viewer (the worker) can add more.
+  final JobPhotoSummary jobPhotos;
   final String title;
   final String categoryName;
   final DateTime? preferredTime;
@@ -595,6 +600,44 @@ class Review {
 
   /// The viewer is the reviewed worker and has not replied yet.
   final bool canReply;
+}
+
+/// How many before and after photos a booking has, and what the viewer may still add.
+class JobPhotoSummary {
+  const JobPhotoSummary(
+      {this.before = 0, this.after = 0, this.maxPerKind = 5, this.canAddBefore = false, this.canAddAfter = false});
+  factory JobPhotoSummary.fromJson(Map<String, dynamic> j) => JobPhotoSummary(
+        before: parseInt(j['before']),
+        after: parseInt(j['after']),
+        maxPerKind: parseInt(j['max_per_kind'], 5),
+        canAddBefore: j['can_add_before'] == true,
+        canAddAfter: j['can_add_after'] == true,
+      );
+  final int before;
+  final int after;
+  final int maxPerKind;
+  final bool canAddBefore;
+  final bool canAddAfter;
+
+  int get total => before + after;
+  bool canAdd(String kind) => kind == 'before' ? canAddBefore : canAddAfter;
+}
+
+/// A private photo the worker took before or after the job. Load it with `api.jobPhotoBytes`.
+class JobPhoto {
+  JobPhoto({required this.id, required this.kind, this.caption = '', required this.fileUrl, this.createdAt});
+  factory JobPhoto.fromJson(Map<String, dynamic> j) => JobPhoto(
+        id: parseInt(j['id']),
+        kind: str(j['kind']),
+        caption: str(j['caption']),
+        fileUrl: str(j['file_url']),
+        createdAt: parseDate(j['created_at']),
+      );
+  final int id;
+  final String kind;
+  final String caption;
+  final String fileUrl;
+  final DateTime? createdAt;
 }
 
 class ReviewPhoto {

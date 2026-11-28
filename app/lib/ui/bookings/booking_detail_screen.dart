@@ -19,6 +19,7 @@ import '../widgets/offer_widgets.dart';
 import '../recurring/recurring_screen.dart';
 import '../safety/safety.dart';
 import 'promo_box.dart';
+import 'job_photos.dart';
 import 'tip_widgets.dart';
 import '../../core/api_client.dart';
 import '../worker/portfolio_screen.dart' show PhotoPicker, pickPortfolioPhoto;
@@ -382,6 +383,15 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
                   if (b.isActive) ..._contact(b),
                   if (b.isActive) ..._tracking(b),
                   ..._actions(b),
+                  if (b.jobPhotos.total > 0 || b.jobPhotos.canAddBefore || b.jobPhotos.canAddAfter)
+                    JobPhotosSection(
+                      key: ValueKey('photos-${b.status}-${b.jobPhotos.total}'),
+                      load: () => api.jobPhotos(b.id),
+                      loadBytes: api.jobPhotoBytes,
+                      add: _isWorker ? (kind, image) => api.addJobPhoto(b.id, kind, image) : null,
+                      delete: _isWorker ? (p) => api.deleteJobPhoto(b.id, p.id) : null,
+                      picker: widget.photoPicker,
+                    ),
                   if (b.isCompleted) ..._payment(b),
                   if (b.isCompleted) TipPanel(booking: b, isWorker: _isWorker, onChanged: _load),
                   if (b.isCompleted && !_isWorker && !b.hasReview) ...[

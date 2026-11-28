@@ -156,6 +156,7 @@ paths:
           - complaint_updated
           - document_viewed
           - featured_cancelled
+          - job_photo_viewed
           - no_show_reviewed
           - package_moderated
           - payment_disputed
@@ -200,6 +201,7 @@ paths:
           * `package_moderated` - Service package hidden or shown
           * `cancellation_fee_settled` - Cancellation fee waived or recorded as paid
           * `review_moderated` - Review, review photo or reply hidden or shown
+          * `job_photo_viewed` - Before or after job photo viewed
       - in: query
         name: actor
         schema:
@@ -311,6 +313,56 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PaginatedBookingList'
+          description: ''
+  /api/v1/admin/bookings/{booking_id}/photos/:
+    get:
+      operationId: admin_bookings_photos_list
+      description: For disputes and complaints. Listing is not audited; opening a
+        photo is.
+      parameters:
+      - in: path
+        name: booking_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - admin
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/JobPhoto'
+          description: ''
+  /api/v1/admin/bookings/{booking_id}/photos/{id}/file/:
+    get:
+      operationId: admin_bookings_photos_file_retrieve
+      parameters:
+      - in: path
+        name: booking_id
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - admin
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            image/jpeg:
+              schema:
+                type: string
+                format: binary
           description: ''
   /api/v1/admin/cancellation-fees/:
     get:
@@ -3447,6 +3499,107 @@ paths:
               schema:
                 type: object
                 additionalProperties: {}
+          description: ''
+  /api/v1/bookings/{booking_id}/photos/:
+    get:
+      operationId: bookings_photos_retrieve
+      description: 'GET: before and after photos of a booking (customer or worker).
+        POST: the worker adds one.'
+      summary: Before and after photos of a booking
+      parameters:
+      - in: path
+        name: booking_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - bookings
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+    post:
+      operationId: bookings_photos_create
+      description: 'GET: before and after photos of a booking (customer or worker).
+        POST: the worker adds one.'
+      summary: Worker adds a before or after photo
+      parameters:
+      - in: path
+        name: booking_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - bookings
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/JobPhotoCreateRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobPhoto'
+          description: ''
+  /api/v1/bookings/{booking_id}/photos/{id}/:
+    delete:
+      operationId: bookings_photos_destroy
+      summary: Worker removes their photo
+      parameters:
+      - in: path
+        name: booking_id
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - bookings
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/bookings/{booking_id}/photos/{id}/file/:
+    get:
+      operationId: bookings_photos_file_retrieve
+      summary: The photo itself
+      parameters:
+      - in: path
+        name: booking_id
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - bookings
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            image/jpeg:
+              schema:
+                type: string
+                format: binary
           description: ''
   /api/v1/bookings/{booking_id}/share/:
     post:
@@ -8642,6 +8795,7 @@ components:
       - package_moderated
       - cancellation_fee_settled
       - review_moderated
+      - job_photo_viewed
       type: string
       description: |-
         * `worker_verified` - Worker verified
@@ -8669,6 +8823,7 @@ components:
         * `package_moderated` - Service package hidden or shown
         * `cancellation_fee_settled` - Cancellation fee waived or recorded as paid
         * `review_moderated` - Review, review photo or reply hidden or shown
+        * `job_photo_viewed` - Before or after job photo viewed
     AuthResponse:
       type: object
       properties:
@@ -8862,6 +9017,12 @@ components:
           type: boolean
           description: Whether the viewer can give (or change an unpaid) tip now.
           readOnly: true
+        job_photos:
+          type: object
+          additionalProperties: {}
+          description: Before and after photo counts, the limit per kind, and whether
+            the viewer (the worker) can add more.
+          readOnly: true
         created_at:
           type: string
           format: date-time
@@ -8888,6 +9049,7 @@ components:
       - emergency_fee
       - has_review
       - id
+      - job_photos
       - no_show
       - on_the_way_at
       - package_id
@@ -9894,6 +10056,60 @@ components:
           maxLength: 255
       required:
       - reason
+    JobPhoto:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        booking:
+          type: integer
+          readOnly: true
+        kind:
+          allOf:
+          - $ref: '#/components/schemas/JobPhotoKindEnum'
+          readOnly: true
+        caption:
+          type: string
+          readOnly: true
+        file_url:
+          type: string
+          readOnly: true
+          description: Authenticated download path (send your token).
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - booking
+      - caption
+      - created_at
+      - file_url
+      - id
+      - kind
+    JobPhotoCreateRequest:
+      type: object
+      properties:
+        kind:
+          $ref: '#/components/schemas/JobPhotoKindEnum'
+        image:
+          type: string
+          format: binary
+        caption:
+          type: string
+          default: ''
+          maxLength: 140
+      required:
+      - image
+      - kind
+    JobPhotoKindEnum:
+      enum:
+      - before
+      - after
+      type: string
+      description: |-
+        * `before` - Before work
+        * `after` - After work
     KeyEnum:
       enum:
       - jobs

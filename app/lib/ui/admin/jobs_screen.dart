@@ -2,6 +2,7 @@ import 'package:material_ui/material_ui.dart';
 
 import '../../core/format.dart';
 import '../../models/models.dart';
+import '../bookings/job_photos.dart';
 import '../widgets/common.dart';
 import 'admin_common.dart';
 import 'admin_shell.dart';
@@ -103,7 +104,8 @@ class _AdminJobsScreenState extends State<AdminJobsScreen> {
           title: Text('Booking #${b.id}'),
           content: SizedBox(
             width: 420,
-            child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+            child: SingleChildScrollView(
+              child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text('${b.title} · ${b.categoryName}'),
               Text('Customer: ${b.customerName}'),
               Text('Worker: ${b.worker.fullName}'),
@@ -114,7 +116,15 @@ class _AdminJobsScreenState extends State<AdminJobsScreen> {
                   padding: const EdgeInsets.symmetric(vertical: 2),
                   child: Text('${when(l.createdAt)} · ${bookingStatusLabel(l.toStatus)}${l.note.isNotEmpty ? ' (${l.note})' : ''}'),
                 ),
-            ]),
+              // Before and after photos, for disputes. Opening one is recorded in the audit log.
+              if (b.jobPhotos.total > 0)
+                JobPhotosSection(
+                  key: const Key('admin-job-photos'),
+                  load: () async => (b.jobPhotos, await adminApi(c).bookingPhotos(b.id)),
+                  loadBytes: adminApi(c).jobPhotoBytes,
+                ),
+              ]),
+            ),
           ),
           actions: [TextButton(onPressed: () => Navigator.pop(c), child: const Text('Close'))],
         ),

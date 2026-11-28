@@ -396,6 +396,16 @@ After a job, customers can thank the worker with a tip. The whole tip goes to th
 | The reviewed worker can reply once, in public. The customer is told. Only that worker can reply, and only to a review that is shown | `POST reviews/{id}/reply/`, `reply`, `replied_at` and `can_reply` on reviews, app: Account → **My reviews** |
 | Admins can hide a review (it stops counting toward the worker's rating), hide one photo, or remove a reply. Each action needs a reason and is audited | `GET admin/reviews/`, `POST admin/reviews/{id}/hide/`, `unhide/`, `remove-reply/`, `photos/{photo_id}/hide/` and `unhide/`, app: Admin → **Reviews** |
 
+### Stage 31: before and after job photos
+
+| Feature | Where |
+|---|---|
+| The worker takes up to 5 "before" photos once they have arrived, and up to 5 "after" photos once work has started (until 24 hours after the job is done). Only the booking's worker can add or remove them, and only while they could still add that kind | `POST bookings/{id}/photos/`, `DELETE bookings/{id}/photos/{photo_id}/`, app: booking screen → **Job photos** |
+| Each upload is checked (real JPEG, PNG or WEBP, size limit) and re-encoded, so no GPS position or camera data is kept | `apps/jobphotos/services.py` |
+| The photos are taken inside the customer's home, so they are **private**: stored outside the public media folder, with no public link. The booking's customer and worker download them with their login | `GET bookings/{id}/photos/`, `GET bookings/{id}/photos/{photo_id}/file/` |
+| The customer sees the photos on the booking and is told when the first "after" photo is added | `job_photos` summary on bookings |
+| Admins can see a booking's photos for complaints and disputes. Every photo an admin opens is recorded in the audit log | `GET admin/bookings/{id}/photos/`, `GET admin/bookings/{id}/photos/{photo_id}/file/`, app: Admin → **Jobs** → booking |
+
 ---
 
 **Keys and accounts to add later** (payments, SMS, Firebase, Google Maps, app stores) and every `.env` value: [`docs/API_KEYS.md`](docs/API_KEYS.md).

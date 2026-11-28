@@ -813,6 +813,35 @@ msgstr "آپ خود کو محفوظ نہیں کر سکتے۔"
 msgid "You can save up to 100 workers. Remove one first."
 msgstr "آپ زیادہ سے زیادہ 100 ورکر محفوظ کر سکتے ہیں۔ پہلے کوئی ایک ہٹائیں۔"
 
+#: apps/jobphotos/services.py
+msgid "Only the worker on this job can add or remove job photos."
+msgstr "صرف اس کام کا کاریگر کام کی تصاویر شامل یا ختم کر سکتا ہے۔"
+
+#: apps/jobphotos/services.py
+msgid "Add before photos once you have arrived, before you finish the job."
+msgstr "پہنچنے کے بعد اور کام ختم کرنے سے پہلے، کام سے پہلے کی تصاویر شامل کریں۔"
+
+#: apps/jobphotos/services.py
+msgid "Add after photos once you have started work, up to 24 hours after the job is done."
+msgstr "کام شروع کرنے کے بعد سے کام مکمل ہونے کے 24 گھنٹے تک، کام کے بعد کی تصاویر شامل کریں۔"
+
+#: apps/jobphotos/services.py
+msgid "You can add up to %(n)d photos of each kind."
+msgstr "آپ ہر قسم کی زیادہ سے زیادہ %(n)d تصاویر شامل کر سکتے ہیں۔"
+
+#: apps/jobphotos/services.py
+#, python-brace-format
+msgid "{name} added photos of the finished work"
+msgstr "{name} نے مکمل کام کی تصاویر شامل کیں"
+
+#: apps/jobphotos/services.py
+msgid "Open the booking to see the before and after photos."
+msgstr "کام سے پہلے اور بعد کی تصاویر دیکھنے کے لیے بکنگ کھولیں۔"
+
+#: apps/jobphotos/services.py
+msgid "This photo can no longer be removed."
+msgstr "یہ تصویر اب ختم نہیں کی جا سکتی۔"
+
 #: apps/jobs/serializers.py
 msgid "Preferred time cannot be in the past."
 msgstr "وقت گزرا ہوا نہیں ہو سکتا۔"

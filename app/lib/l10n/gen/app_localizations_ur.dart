@@ -30,6 +30,12 @@ class AppLocalizationsUr extends AppLocalizations {
   String get addAddress => 'پتہ شامل کریں';
 
   @override
+  String get addAfterPhoto => 'بعد کی تصویر شامل کریں';
+
+  @override
+  String get addBeforePhoto => 'پہلے کی تصویر شامل کریں';
+
+  @override
   String get addContact => 'رابطہ شامل کریں';
 
   @override
@@ -62,6 +68,9 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get addressSaved => 'پتہ محفوظ ہو گیا۔';
+
+  @override
+  String get afterWork => 'بعد میں';
 
   @override
   String get agree => 'راضی ہوں';
@@ -180,6 +189,9 @@ class AppLocalizationsUr extends AppLocalizations {
   @override
   String get baseLocationHint =>
       'کام اسی جگہ سے فاصلے کے حساب سے ملتے ہیں۔ گاہک اسے کبھی نہیں دیکھتے۔';
+
+  @override
+  String get beforeWork => 'پہلے';
 
   @override
   String get book => 'بک کریں';
@@ -1036,6 +1048,16 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get jobPassedOn => 'ہو گیا۔ کام دوسرے ورکرز کو بھیج دیا گیا۔';
+
+  @override
+  String get jobPhotoAdded => 'تصویر شامل ہو گئی۔';
+
+  @override
+  String get jobPhotos => 'کام کی تصاویر';
+
+  @override
+  String get jobPhotosWorkerHint =>
+      'کام شروع کرنے سے پہلے اور ختم کرنے کے بعد تصاویر لیں۔ گاہک انہیں دیکھ سکتا ہے، اور کسی تنازع کی صورت میں یہ مدد کرتی ہیں۔';
 
   @override
   String get jobPosted => 'کام پوسٹ ہو گیا۔';
@@ -2050,6 +2072,12 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get removeFromFavourites => 'محفوظ کردہ سے ہٹائیں';
+
+  @override
+  String get removePhotoBody => 'گاہک اسے مزید نہیں دیکھ سکے گا۔';
+
+  @override
+  String get removePhotoQ => 'یہ تصویر ہٹائیں؟';
 
   @override
   String get removePromo => 'ہٹائیں';

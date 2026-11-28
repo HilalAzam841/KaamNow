@@ -134,6 +134,18 @@ abstract class AppLocalizations {
   /// **'Add address'**
   String get addAddress;
 
+  /// No description provided for @addAfterPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Add an after photo'**
+  String get addAfterPhoto;
+
+  /// No description provided for @addBeforePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a before photo'**
+  String get addBeforePhoto;
+
   /// No description provided for @addContact.
   ///
   /// In en, this message translates to:
@@ -199,6 +211,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Address saved.'**
   String get addressSaved;
+
+  /// No description provided for @afterWork.
+  ///
+  /// In en, this message translates to:
+  /// **'After'**
+  String get afterWork;
 
   /// No description provided for @agree.
   ///
@@ -409,6 +427,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Jobs are matched by distance from here. Customers never see it.'**
   String get baseLocationHint;
+
+  /// No description provided for @beforeWork.
+  ///
+  /// In en, this message translates to:
+  /// **'Before'**
+  String get beforeWork;
 
   /// No description provided for @book.
   ///
@@ -1843,6 +1867,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Done. The job went to other workers.'**
   String get jobPassedOn;
+
+  /// No description provided for @jobPhotoAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo added.'**
+  String get jobPhotoAdded;
+
+  /// No description provided for @jobPhotos.
+  ///
+  /// In en, this message translates to:
+  /// **'Job photos'**
+  String get jobPhotos;
+
+  /// No description provided for @jobPhotosWorkerHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Take photos before you start and after you finish. The customer sees them, and they help if there is ever a dispute.'**
+  String get jobPhotosWorkerHint;
 
   /// No description provided for @jobPosted.
   ///
@@ -3529,6 +3571,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Remove from saved'**
   String get removeFromFavourites;
+
+  /// No description provided for @removePhotoBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The customer will no longer see it.'**
+  String get removePhotoBody;
+
+  /// No description provided for @removePhotoQ.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove this photo?'**
+  String get removePhotoQ;
 
   /// No description provided for @removePromo.
   ///
