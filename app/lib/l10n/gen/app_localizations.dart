@@ -170,6 +170,12 @@ abstract class AppLocalizations {
   /// **'Add package'**
   String get addPackage;
 
+  /// No description provided for @addPart.
+  ///
+  /// In en, this message translates to:
+  /// **'Add part'**
+  String get addPart;
+
   /// No description provided for @addPhoto.
   ///
   /// In en, this message translates to:
@@ -319,6 +325,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Apply'**
   String get applyPromo;
+
+  /// No description provided for @approve.
+  ///
+  /// In en, this message translates to:
+  /// **'Approve'**
+  String get approve;
 
   /// No description provided for @areaHint.
   ///
@@ -3200,6 +3212,144 @@ abstract class AppLocalizations {
   /// **'Paid {amount}'**
   String paidAmount(Object amount);
 
+  /// No description provided for @partAddReceipt.
+  ///
+  /// In en, this message translates to:
+  /// **'Add receipt photo (optional)'**
+  String get partAddReceipt;
+
+  /// No description provided for @partAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'Part added. The customer has been asked to approve it.'**
+  String get partAdded;
+
+  /// No description provided for @partApprovalNote.
+  ///
+  /// In en, this message translates to:
+  /// **'The customer must approve this before it is added to the bill.'**
+  String get partApprovalNote;
+
+  /// No description provided for @partApproved.
+  ///
+  /// In en, this message translates to:
+  /// **'Part approved. It is added to your bill.'**
+  String get partApproved;
+
+  /// No description provided for @partEach.
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} each'**
+  String partEach(Object amount);
+
+  /// No description provided for @partName.
+  ///
+  /// In en, this message translates to:
+  /// **'What did you buy?'**
+  String get partName;
+
+  /// No description provided for @partNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. 10 amp breaker'**
+  String get partNameHint;
+
+  /// No description provided for @partQuantity.
+  ///
+  /// In en, this message translates to:
+  /// **'Quantity'**
+  String get partQuantity;
+
+  /// No description provided for @partReceipt.
+  ///
+  /// In en, this message translates to:
+  /// **'Receipt'**
+  String get partReceipt;
+
+  /// No description provided for @partReceiptAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'Receipt photo added'**
+  String get partReceiptAdded;
+
+  /// No description provided for @partRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Part rejected. The worker has been told.'**
+  String get partRejected;
+
+  /// No description provided for @partRejectedBecause.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason: {reason}'**
+  String partRejectedBecause(Object reason);
+
+  /// No description provided for @partStatusApproved.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved'**
+  String get partStatusApproved;
+
+  /// No description provided for @partStatusPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for the customer'**
+  String get partStatusPending;
+
+  /// No description provided for @partStatusRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected'**
+  String get partStatusRejected;
+
+  /// No description provided for @partTotalIs.
+  ///
+  /// In en, this message translates to:
+  /// **'Total: {amount}'**
+  String partTotalIs(Object amount);
+
+  /// No description provided for @partUnitPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Price for one'**
+  String get partUnitPrice;
+
+  /// No description provided for @partsAndMaterials.
+  ///
+  /// In en, this message translates to:
+  /// **'Parts and materials'**
+  String get partsAndMaterials;
+
+  /// No description provided for @partsApprovedTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved parts'**
+  String get partsApprovedTotal;
+
+  /// No description provided for @partsCustomerHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Parts the worker bought for your job. Only the ones you approve are added to your bill.'**
+  String get partsCustomerHint;
+
+  /// No description provided for @partsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Parts and materials'**
+  String get partsLabel;
+
+  /// No description provided for @partsPendingBeforePay.
+  ///
+  /// In en, this message translates to:
+  /// **'{n, plural, =1{1 part is waiting for you. Approve or reject it before paying.} other{{n} parts are waiting for you. Approve or reject them before paying.}}'**
+  String partsPendingBeforePay(int n);
+
+  /// No description provided for @partsWorkerHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Add the parts you bought for this job. The customer approves each one before paying. KaamNow takes no commission on parts.'**
+  String get partsWorkerHint;
+
   /// No description provided for @password.
   ///
   /// In en, this message translates to:
@@ -3776,6 +3926,18 @@ abstract class AppLocalizations {
   /// **'Reject this offer?'**
   String get rejectOfferQ;
 
+  /// No description provided for @rejectPartReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Why? The worker will see this.'**
+  String get rejectPartReason;
+
+  /// No description provided for @rejectPartTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject {name}?'**
+  String rejectPartTitle(Object name);
+
   /// No description provided for @remindCustomer.
   ///
   /// In en, this message translates to:
@@ -3805,6 +3967,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Remove from saved'**
   String get removeFromFavourites;
+
+  /// No description provided for @removePartQ.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove this part?'**
+  String get removePartQ;
 
   /// No description provided for @removePhotoBody.
   ///

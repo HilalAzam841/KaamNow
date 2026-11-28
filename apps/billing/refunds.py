@@ -87,7 +87,8 @@ def refund_payment(payment, admin_user, *, amount, method, reason, reference, ch
     worker_share = ZERO
     if charge_worker:
         commission = getattr(booking, "commission", None)
-        earning = commission.worker_earning if commission else ZERO
+        # The worker's share of the money: their earning plus the parts they bought.
+        earning = (commission.worker_earning if commission else ZERO) + booking.parts_amount
         gross = payment.amount + payment.discount_amount  # the booking total, before any promo discount
         worker_share = min(amount, (amount * earning / gross).quantize(CENT, ROUND_HALF_UP))
     refund = _record(payment, admin_user, amount=amount, worker_share=worker_share, method=method, reason=reason,

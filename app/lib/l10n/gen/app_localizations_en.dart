@@ -48,6 +48,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addPackage => 'Add package';
 
   @override
+  String get addPart => 'Add part';
+
+  @override
   String get addPhoto => 'Add photo';
 
   @override
@@ -132,6 +135,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get applyPromo => 'Apply';
+
+  @override
+  String get approve => 'Approve';
 
   @override
   String get areaHint => 'e.g. DHA Phase 5';
@@ -1855,6 +1861,94 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get partAddReceipt => 'Add receipt photo (optional)';
+
+  @override
+  String get partAdded =>
+      'Part added. The customer has been asked to approve it.';
+
+  @override
+  String get partApprovalNote =>
+      'The customer must approve this before it is added to the bill.';
+
+  @override
+  String get partApproved => 'Part approved. It is added to your bill.';
+
+  @override
+  String partEach(Object amount) {
+    return '$amount each';
+  }
+
+  @override
+  String get partName => 'What did you buy?';
+
+  @override
+  String get partNameHint => 'e.g. 10 amp breaker';
+
+  @override
+  String get partQuantity => 'Quantity';
+
+  @override
+  String get partReceipt => 'Receipt';
+
+  @override
+  String get partReceiptAdded => 'Receipt photo added';
+
+  @override
+  String get partRejected => 'Part rejected. The worker has been told.';
+
+  @override
+  String partRejectedBecause(Object reason) {
+    return 'Reason: $reason';
+  }
+
+  @override
+  String get partStatusApproved => 'Approved';
+
+  @override
+  String get partStatusPending => 'Waiting for the customer';
+
+  @override
+  String get partStatusRejected => 'Rejected';
+
+  @override
+  String partTotalIs(Object amount) {
+    return 'Total: $amount';
+  }
+
+  @override
+  String get partUnitPrice => 'Price for one';
+
+  @override
+  String get partsAndMaterials => 'Parts and materials';
+
+  @override
+  String get partsApprovedTotal => 'Approved parts';
+
+  @override
+  String get partsCustomerHint =>
+      'Parts the worker bought for your job. Only the ones you approve are added to your bill.';
+
+  @override
+  String get partsLabel => 'Parts and materials';
+
+  @override
+  String partsPendingBeforePay(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other:
+          '$n parts are waiting for you. Approve or reject them before paying.',
+      one: '1 part is waiting for you. Approve or reject it before paying.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get partsWorkerHint =>
+      'Add the parts you bought for this job. The customer approves each one before paying. KaamNow takes no commission on parts.';
+
+  @override
   String get password => 'Password';
 
   @override
@@ -2187,6 +2281,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get rejectOfferQ => 'Reject this offer?';
 
   @override
+  String get rejectPartReason => 'Why? The worker will see this.';
+
+  @override
+  String rejectPartTitle(Object name) {
+    return 'Reject $name?';
+  }
+
+  @override
   String get remindCustomer => 'Remind the customer';
 
   @override
@@ -2202,6 +2304,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get removeFromFavourites => 'Remove from saved';
+
+  @override
+  String get removePartQ => 'Remove this part?';
 
   @override
   String get removePhotoBody => 'The customer will no longer see it.';

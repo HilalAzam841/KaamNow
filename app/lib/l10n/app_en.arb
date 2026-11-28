@@ -17,6 +17,7 @@
   "addBeforePhoto": "Add a before photo",
   "addContact": "Add contact",
   "addPackage": "Add package",
+  "addPart": "Add part",
   "addPhoto": "Add photo",
   "addServicesToSeeJobs": "Add the services you offer to see matching jobs.",
   "addTimeOff": "Add days off",
@@ -62,6 +63,7 @@
     }
   },
   "applyPromo": "Apply",
+  "approve": "Approve",
   "areaHint": "e.g. DHA Phase 5",
   "areaLine": "Area: {area}",
   "@areaLine": {
@@ -1076,6 +1078,51 @@
       "amount": {}
     }
   },
+  "partAddReceipt": "Add receipt photo (optional)",
+  "partAdded": "Part added. The customer has been asked to approve it.",
+  "partApprovalNote": "The customer must approve this before it is added to the bill.",
+  "partApproved": "Part approved. It is added to your bill.",
+  "partEach": "{amount} each",
+  "@partEach": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
+  "partName": "What did you buy?",
+  "partNameHint": "e.g. 10 amp breaker",
+  "partQuantity": "Quantity",
+  "partReceipt": "Receipt",
+  "partReceiptAdded": "Receipt photo added",
+  "partRejected": "Part rejected. The worker has been told.",
+  "partRejectedBecause": "Reason: {reason}",
+  "@partRejectedBecause": {
+    "placeholders": {
+      "reason": {}
+    }
+  },
+  "partStatusApproved": "Approved",
+  "partStatusPending": "Waiting for the customer",
+  "partStatusRejected": "Rejected",
+  "partTotalIs": "Total: {amount}",
+  "@partTotalIs": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
+  "partUnitPrice": "Price for one",
+  "partsAndMaterials": "Parts and materials",
+  "partsApprovedTotal": "Approved parts",
+  "partsCustomerHint": "Parts the worker bought for your job. Only the ones you approve are added to your bill.",
+  "partsLabel": "Parts and materials",
+  "partsPendingBeforePay": "{n, plural, =1{1 part is waiting for you. Approve or reject it before paying.} other{{n} parts are waiting for you. Approve or reject them before paying.}}",
+  "@partsPendingBeforePay": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "partsWorkerHint": "Add the parts you bought for this job. The customer approves each one before paying. KaamNow takes no commission on parts.",
   "password": "Password",
   "passwordChanged": "Password changed",
   "passwordChangedShort": "Password changed.",
@@ -1264,6 +1311,13 @@
   },
   "reject": "Reject",
   "rejectOfferQ": "Reject this offer?",
+  "rejectPartReason": "Why? The worker will see this.",
+  "rejectPartTitle": "Reject {name}?",
+  "@rejectPartTitle": {
+    "placeholders": {
+      "name": {}
+    }
+  },
   "remindCustomer": "Remind the customer",
   "reminderSent": "Reminder sent.",
   "remove": "Remove",
@@ -1276,6 +1330,7 @@
     }
   },
   "removeFromFavourites": "Remove from saved",
+  "removePartQ": "Remove this part?",
   "removePhotoBody": "The customer will no longer see it.",
   "removePhotoQ": "Remove this photo?",
   "removePromo": "Remove",

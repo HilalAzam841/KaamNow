@@ -58,6 +58,11 @@ class AdminApi {
       parseList(await client.get('/admin/bookings/$bookingId/photos/'), JobPhoto.fromJson);
   Future<Uint8List> jobPhotoBytes(JobPhoto photo) async =>
       (await client.getBytes(photo.fileUrl.replaceFirst(RegExp(r'^/api/v1'), ''))).$1;
+  /// Parts and materials on a booking. Opening a receipt is audited.
+  Future<List<JobPart>> bookingParts(int bookingId) async =>
+      parseList(await client.get('/admin/bookings/$bookingId/parts/'), JobPart.fromJson);
+  Future<Uint8List> partReceiptBytes(JobPart part) async =>
+      (await client.getBytes(part.receiptUrl!.replaceFirst(RegExp(r'^/api/v1'), ''))).$1;
   Future<Paged<ServiceRequest>> requests({String? status, String? search, int page = 1}) async =>
       Paged.parse(await client.get('/admin/requests/', query: {'status': status, 'search': search, 'page': page}),
           ServiceRequest.fromJson);

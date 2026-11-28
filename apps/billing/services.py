@@ -24,6 +24,7 @@ from .models import (
     Payment,
     PlatformSettings,
     SubscriptionPlan,
+    WorkerAdjustment,
     WorkerSubscription,
 )
 
@@ -180,6 +181,13 @@ def _complete_payment(payment, confirmed_by=None):
         if booking.emergency_fee > 0:
             entries.append(_ledger(payment, LedgerEntry.EntryType.EMERGENCY_FEE, booking.emergency_fee,
                                    "Emergency service fee", booking, booking.worker))
+        if booking.parts_amount > 0:
+            entries.append(_ledger(payment, LedgerEntry.EntryType.PARTS, booking.parts_amount,
+                                   "Parts and materials (no commission)", booking, booking.worker))
+            if payment.is_online:
+                # KaamNow received the parts money too; it all goes to the worker who bought them.
+                WorkerAdjustment.objects.create(worker=booking.worker, amount=booking.parts_amount,
+                                                reason=f"Parts for booking #{booking.pk}")
         if payment.discount_amount > 0:
             entries.append(_ledger(payment, LedgerEntry.EntryType.PROMO_DISCOUNT, payment.discount_amount,
                                    "Promo code / credit discount paid by KaamNow", booking, booking.worker))
@@ -266,8 +274,10 @@ def record_payment(booking, payer, method, promo_code="", use_credit=False):
                 _release_discount(existing)
             else:
                 raise ConflictError(_("A payment for this booking is already in progress."))
+    from apps.parts.services import require_no_pending
     from apps.promotions import services as promotions
 
+    require_no_pending(booking)
     quote = promotions.quote(booking, payer, promo_code=promo_code, use_credit=use_credit)
     payment, checkout = _create_payment(
         purpose=Payment.Purpose.BOOKING, payer=payer, amount=quote["amount"], method=method, booking=booking,

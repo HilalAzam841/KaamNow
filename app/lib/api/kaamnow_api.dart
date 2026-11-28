@@ -420,6 +420,28 @@ class KaamNowApi {
   Future<Uint8List> jobPhotoBytes(JobPhoto photo) async =>
       (await client.getBytes(photo.fileUrl.replaceFirst(RegExp(r'^/api/v1'), ''))).$1;
 
+  // ---- Parts and materials ---------------------------------------------
+  Future<(PartsSummary, List<JobPart>)> jobParts(int bookingId) async {
+    final m = asMap(await client.get('/bookings/$bookingId/parts/'));
+    return (PartsSummary.fromJson(asMap(m['summary'])), parseList(m['results'], JobPart.fromJson));
+  }
+
+  /// The worker adds a part. The customer must approve it before it is added to the bill.
+  Future<JobPart> addJobPart(int bookingId,
+          {required String name, int quantity = 1, required String unitPrice, UploadFile? receipt}) async =>
+      JobPart.fromJson(asMap(await client.multipart('POST', '/bookings/$bookingId/parts/',
+          fields: {'name': name, 'quantity': '$quantity', 'unit_price': unitPrice},
+          files: [if (receipt != null) UploadFile(field: 'receipt', filename: receipt.filename, bytes: receipt.bytes)])));
+  Future<void> deleteJobPart(int bookingId, int partId) => client.delete('/bookings/$bookingId/parts/$partId/');
+  Future<JobPart> approveJobPart(int bookingId, int partId) async =>
+      JobPart.fromJson(asMap(await client.post('/bookings/$bookingId/parts/$partId/approve/')));
+  Future<JobPart> rejectJobPart(int bookingId, int partId, String reason) async => JobPart.fromJson(
+      asMap(await client.post('/bookings/$bookingId/parts/$partId/reject/', body: {'reason': reason})));
+
+  /// The receipt photo, downloaded with your login (it is private).
+  Future<Uint8List> partReceiptBytes(JobPart part) async =>
+      (await client.getBytes(part.receiptUrl!.replaceFirst(RegExp(r'^/api/v1'), ''))).$1;
+
   // ---- Work guarantee ----------------------------------------------------
   /// The customer asks for a free fix, within the guarantee period after the job.
   Future<GuaranteeClaim> makeGuaranteeClaim(int bookingId, String problem) async => GuaranteeClaim.fromJson(

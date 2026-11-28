@@ -273,17 +273,18 @@ class BookingSerializer(serializers.ModelSerializer):
     auto_complete_at = serializers.SerializerMethodField(
         help_text="When a job the worker marked finished completes on its own if the customer does not answer.")
     guarantee = serializers.SerializerMethodField()
+    parts = serializers.SerializerMethodField()
 
     class Meta:
         model = Booking
         fields = [
             "id", "request_id", "title", "category_name", "preferred_time", "duration_minutes", "agreed_price",
-            "emergency_fee", "package_id",
+            "emergency_fee", "parts_amount", "package_id",
             "total_amount", "status",
             "worker", "customer_name", "contact", "on_the_way_at", "arrived_at", "started_at", "completed_at",
             "cancelled_at", "cancel_reason", "completed_via", "worker_finished_at", "auto_complete_at", "status_history", "commission", "has_review",
             "no_show", "safety", "cancellation_fee", "tip", "can_tip", "job_photos", "guarantee",
-            "created_at", "updated_at",
+            "parts", "created_at", "updated_at",
         ]
         read_only_fields = fields
 
@@ -291,6 +292,12 @@ class BookingSerializer(serializers.ModelSerializer):
         from .services import auto_complete_at
 
         return auto_complete_at(obj)
+
+    def get_parts(self, obj) -> dict:
+        """Parts and materials: approved total, how many wait for the customer, and what the viewer can do."""
+        from apps.parts.services import summary
+
+        return summary(obj, self._viewer())
 
     def get_job_photos(self, obj) -> dict:
         """Before and after photo counts, the limit per kind, and whether the viewer (the worker) can add more."""

@@ -11,6 +11,7 @@ from apps.reviews.views import AdminReviewViewSet
 from apps.tips.views import AdminTipViewSet
 from apps.jobphotos.views import AdminBookingPhotoFileView, AdminBookingPhotosView
 from apps.guarantee.views import AdminGuaranteeClaimViewSet
+from apps.parts.views import AdminBookingPartReceiptView, AdminBookingPartsView
 
 from . import views
 
@@ -48,6 +49,9 @@ urlpatterns = [
     path("requests/", views.AdminRequestsView.as_view(), name="admin-requests"),
     path("bookings/", views.AdminBookingsView.as_view(), name="admin-bookings"),
     path("bookings/<int:booking_id>/photos/", AdminBookingPhotosView.as_view(), name="admin-booking-photos"),
+    path("bookings/<int:booking_id>/parts/", AdminBookingPartsView.as_view(), name="admin-booking-parts"),
+    path("bookings/<int:booking_id>/parts/<int:pk>/receipt/", AdminBookingPartReceiptView.as_view(),
+         name="admin-booking-part-receipt"),
     path("bookings/<int:booking_id>/photos/<int:pk>/file/", AdminBookingPhotoFileView.as_view(),
          name="admin-booking-photo-file"),
     path("revenue/", views.RevenueView.as_view(), name="admin-revenue"),

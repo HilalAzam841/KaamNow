@@ -159,6 +159,7 @@ paths:
           - job_photo_viewed
           - no_show_reviewed
           - package_moderated
+          - part_receipt_viewed
           - payment_disputed
           - payment_refunded
           - payment_resolved
@@ -202,6 +203,7 @@ paths:
           * `cancellation_fee_settled` - Cancellation fee waived or recorded as paid
           * `review_moderated` - Review, review photo or reply hidden or shown
           * `job_photo_viewed` - Before or after job photo viewed
+          * `part_receipt_viewed` - Parts receipt photo viewed
       - in: query
         name: actor
         schema:
@@ -313,6 +315,55 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PaginatedBookingList'
+          description: ''
+  /api/v1/admin/bookings/{booking_id}/parts/:
+    get:
+      operationId: admin_bookings_parts_list
+      parameters:
+      - in: path
+        name: booking_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - admin
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/JobPart'
+          description: ''
+  /api/v1/admin/bookings/{booking_id}/parts/{id}/receipt/:
+    get:
+      operationId: admin_bookings_parts_receipt_retrieve
+      summary: Opening a receipt is audited
+      parameters:
+      - in: path
+        name: booking_id
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - admin
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            image/jpeg:
+              schema:
+                type: string
+                format: binary
           description: ''
   /api/v1/admin/bookings/{booking_id}/photos/:
     get:
@@ -3626,6 +3677,171 @@ paths:
               schema:
                 type: object
                 additionalProperties: {}
+          description: ''
+  /api/v1/bookings/{booking_id}/parts/:
+    get:
+      operationId: bookings_parts_retrieve
+      description: 'GET: parts and materials on a booking. POST: the worker adds one
+        (multipart, receipt photo optional).'
+      summary: Parts and materials on a booking
+      parameters:
+      - in: path
+        name: booking_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - bookings
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+    post:
+      operationId: bookings_parts_create
+      description: 'GET: parts and materials on a booking. POST: the worker adds one
+        (multipart, receipt photo optional).'
+      summary: Worker adds a part; the customer approves it
+      parameters:
+      - in: path
+        name: booking_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - bookings
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/JobPartCreateRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobPart'
+          description: ''
+  /api/v1/bookings/{booking_id}/parts/{id}/:
+    delete:
+      operationId: bookings_parts_destroy
+      summary: Worker removes a part still waiting for the customer
+      parameters:
+      - in: path
+        name: booking_id
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - bookings
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/bookings/{booking_id}/parts/{id}/approve/:
+    post:
+      operationId: bookings_parts_approve_create
+      summary: Customer approves a part (it is added to what they pay)
+      parameters:
+      - in: path
+        name: booking_id
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - bookings
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobPart'
+          description: ''
+  /api/v1/bookings/{booking_id}/parts/{id}/receipt/:
+    get:
+      operationId: bookings_parts_receipt_retrieve
+      summary: The receipt photo
+      parameters:
+      - in: path
+        name: booking_id
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - bookings
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            image/jpeg:
+              schema:
+                type: string
+                format: binary
+          description: ''
+  /api/v1/bookings/{booking_id}/parts/{id}/reject/:
+    post:
+      operationId: bookings_parts_reject_create
+      summary: Customer rejects a part, with a reason
+      parameters:
+      - in: path
+        name: booking_id
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - bookings
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RejectPartRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RejectPartRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RejectPartRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobPart'
           description: ''
   /api/v1/bookings/{booking_id}/photos/:
     get:
@@ -9261,6 +9477,7 @@ components:
       - cancellation_fee_settled
       - review_moderated
       - job_photo_viewed
+      - part_receipt_viewed
       type: string
       description: |-
         * `worker_verified` - Worker verified
@@ -9289,6 +9506,7 @@ components:
         * `cancellation_fee_settled` - Cancellation fee waived or recorded as paid
         * `review_moderated` - Review, review photo or reply hidden or shown
         * `job_photo_viewed` - Before or after job photo viewed
+        * `part_receipt_viewed` - Parts receipt photo viewed
     AuthResponse:
       type: object
       properties:
@@ -9379,6 +9597,13 @@ components:
           format: decimal
           pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
           readOnly: true
+        parts_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          readOnly: true
+          description: Parts and materials the customer approved (apps.parts). Paid
+            on top, no commission.
         package_id:
           type: integer
           readOnly: true
@@ -9506,6 +9731,12 @@ components:
           description: 'The work guarantee: until when it lasts, whether the viewer
             can claim now, and the claim if any.'
           readOnly: true
+        parts:
+          type: object
+          additionalProperties: {}
+          description: 'Parts and materials: approved total, how many wait for the
+            customer, and what the viewer can do.'
+          readOnly: true
         created_at:
           type: string
           format: date-time
@@ -9538,6 +9769,8 @@ components:
       - no_show
       - on_the_way_at
       - package_id
+      - parts
+      - parts_amount
       - preferred_time
       - request_id
       - safety
@@ -10665,6 +10898,97 @@ components:
           maxLength: 255
       required:
       - reason
+    JobPart:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        booking:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          readOnly: true
+        quantity:
+          type: integer
+          readOnly: true
+        unit_price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          readOnly: true
+        total:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          readOnly: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/JobPartStatusEnum'
+          readOnly: true
+        reject_reason:
+          type: string
+          readOnly: true
+        receipt_url:
+          type: string
+          nullable: true
+          readOnly: true
+          description: Authenticated download path, or null.
+        decided_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - booking
+      - created_at
+      - decided_at
+      - id
+      - name
+      - quantity
+      - receipt_url
+      - reject_reason
+      - status
+      - total
+      - unit_price
+    JobPartCreateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        quantity:
+          type: integer
+          maximum: 50
+          minimum: 1
+          default: 1
+        unit_price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        receipt:
+          type: string
+          format: binary
+          description: Optional photo of the shop receipt.
+      required:
+      - name
+      - unit_price
+    JobPartStatusEnum:
+      enum:
+      - pending
+      - approved
+      - rejected
+      type: string
+      description: |-
+        * `pending` - Waiting for the customer
+        * `approved` - Approved
+        * `rejected` - Rejected
     JobPhoto:
       type: object
       properties:
@@ -13940,6 +14264,15 @@ components:
       description: |-
         * `customer` - customer
         * `worker` - worker
+    RejectPartRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 255
+      required:
+      - reason
     RejectPayoutRequest:
       type: object
       properties:

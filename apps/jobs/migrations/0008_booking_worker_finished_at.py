@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("jobs", "0006_servicerequest_package"),
+        ("jobs", "0007_booking_parts_amount"),
     ]
 
     operations = [

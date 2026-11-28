@@ -418,6 +418,16 @@ After a job, customers can thank the worker with a tip. The whole tip goes to th
 | The booking chat stays open while a claim is open, so they can arrange the visit | `apps/chat/services.py` |
 | Customers and workers see their claims; admins see every claim and set the guarantee days | `GET guarantee-claims/`, `GET admin/guarantee-claims/`, app: Admin → **Guarantee** and **Settings** |
 
+### Stage 33: parts and materials on the bill
+
+| Feature | Where |
+|---|---|
+| Once they have arrived, the worker adds the parts they bought for the job: name, quantity, price for one, and an optional photo of the shop receipt. Up to 10 parts and Rs 100,000 per job. Only the booking's worker can add them, and only until the customer starts paying | `POST bookings/{id}/parts/` (multipart), app: booking screen → **Parts and materials** |
+| The customer is told and approves or rejects each part (with a reason the worker sees). Only approved parts are added to the bill: `parts_amount` is part of `total_amount`. The worker can remove a part the customer has not answered yet | `POST bookings/{id}/parts/{part_id}/approve/`, `reject/`, `DELETE bookings/{id}/parts/{part_id}/`, `parts` summary on bookings |
+| A payment cannot start while a part is still waiting for the customer (`409 parts_pending`), so the price is never changed after the customer has agreed to pay | `apps/billing/services.py` |
+| KaamNow takes no commission on parts: commission stays on the agreed price. When the customer pays online, the parts money is added to the worker's wallet; in cash the worker already has it. Receipts list each approved part, and refunds count it in the worker's share | `apps/billing/services.py`, `receipts.py`, `refunds.py` |
+| Receipt photos are re-encoded (no GPS or camera data) and private: the booking's customer and worker download them with their login. Admins see a booking's parts for disputes, and every receipt an admin opens is recorded in the audit log | `GET bookings/{id}/parts/`, `GET bookings/{id}/parts/{part_id}/receipt/`, `GET admin/bookings/{id}/parts/`, `GET admin/bookings/{id}/parts/{part_id}/receipt/`, app: Admin → **Jobs** → booking |
+
 ---
 
 **Keys and accounts to add later** (payments, SMS, Firebase, Google Maps, app stores) and every `.env` value: [`docs/API_KEYS.md`](docs/API_KEYS.md).

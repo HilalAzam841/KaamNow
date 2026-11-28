@@ -15,6 +15,13 @@ from apps.safety.views import BookingShareView, BookingSosView
 from apps.portfolio.views import MyPortfolioPhotoView, MyPortfolioReorderView, MyPortfolioView, WorkerPortfolioView
 from apps.jobphotos.views import BookingPhotoFileView, BookingPhotosView, BookingPhotoView
 from apps.guarantee.views import BookingGuaranteeView
+from apps.parts.views import (
+    BookingPartApproveView,
+    BookingPartReceiptView,
+    BookingPartRejectView,
+    BookingPartsView,
+    BookingPartView,
+)
 from apps.jobs.urls import bookings_router, requests_router
 from apps.offers.urls import offer_urlpatterns, request_offer_urlpatterns
 from apps.promotions.urls import referral_urlpatterns
@@ -54,6 +61,12 @@ api_v1 = [
     path("bookings/<int:booking_id>/photos/<int:pk>/", BookingPhotoView.as_view(), name="booking-photo"),
     path("bookings/<int:booking_id>/photos/<int:pk>/file/", BookingPhotoFileView.as_view(), name="booking-photo-file"),
     path("bookings/<int:booking_id>/guarantee/", BookingGuaranteeView.as_view(), name="booking-guarantee"),
+    path("bookings/<int:booking_id>/parts/", BookingPartsView.as_view(), name="booking-parts"),
+    path("bookings/<int:booking_id>/parts/<int:pk>/", BookingPartView.as_view(), name="booking-part"),
+    path("bookings/<int:booking_id>/parts/<int:pk>/approve/", BookingPartApproveView.as_view(), name="booking-part-approve"),
+    path("bookings/<int:booking_id>/parts/<int:pk>/reject/", BookingPartRejectView.as_view(), name="booking-part-reject"),
+    path("bookings/<int:booking_id>/parts/<int:pk>/receipt/", BookingPartReceiptView.as_view(),
+         name="booking-part-receipt"),
     path("bookings/", include(bookings_router.urls)),
     path("payments/", include(payment_urlpatterns)),
     path("cancellation-fees/", include("apps.cancellations.urls")),

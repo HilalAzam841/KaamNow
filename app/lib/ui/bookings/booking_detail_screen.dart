@@ -21,6 +21,7 @@ import '../safety/safety.dart';
 import 'promo_box.dart';
 import 'guarantee_widgets.dart';
 import 'job_photos.dart';
+import 'parts_section.dart';
 import 'tip_widgets.dart';
 import '../../core/api_client.dart';
 import '../worker/portfolio_screen.dart' show PhotoPicker, pickPortfolioPhoto;
@@ -381,6 +382,21 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
                       delete: _isWorker ? (p) => api.deleteJobPhoto(b.id, p.id) : null,
                       picker: widget.photoPicker,
                     ),
+                  if (b.parts.count > 0 || b.parts.canAdd)
+                    PartsSection(
+                      key: ValueKey('parts-${b.status}-${b.parts.count}-${b.partsAmount}'),
+                      load: () => api.jobParts(b.id),
+                      loadReceipt: api.partReceiptBytes,
+                      add: _isWorker
+                          ? (p) => api.addJobPart(b.id,
+                              name: p.name, quantity: p.quantity, unitPrice: p.unitPrice, receipt: p.receipt)
+                          : null,
+                      delete: _isWorker ? (p) => api.deleteJobPart(b.id, p.id) : null,
+                      approve: _isWorker ? null : (p) => api.approveJobPart(b.id, p.id),
+                      reject: _isWorker ? null : (p, reason) => api.rejectJobPart(b.id, p.id, reason),
+                      picker: widget.photoPicker,
+                      onChanged: _load,
+                    ),
                   if (b.isCompleted) ..._payment(b),
                   if (b.isCompleted) TipPanel(booking: b, isWorker: _isWorker, onChanged: _load),
                   if (b.isCompleted) GuaranteePanel(booking: b, isWorker: _isWorker, onChanged: _load),
@@ -445,6 +461,7 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
             ),
           _priceRow(b.packageId != null ? context.t.packagePriceLabel : context.t.agreedPrice, rs(b.agreedPrice)),
           if ((double.tryParse(b.emergencyFee) ?? 0) > 0) _priceRow(context.t.emergencyFeeLabel, rs(b.emergencyFee)),
+          if ((double.tryParse(b.partsAmount) ?? 0) > 0) _priceRow(context.t.partsLabel, rs(b.partsAmount)),
           _priceRow(context.t.total, rs(b.totalAmount), bold: true),
           if (_isWorker && b.commission != null) ...[
             const SizedBox(height: 6),
