@@ -1,5 +1,5 @@
 from django.utils.translation import gettext as _
-from datetime import timedelta
+from datetime import datetime, timedelta
 from decimal import ROUND_HALF_UP, Decimal
 
 from django.conf import settings
@@ -227,6 +227,10 @@ class BookingCompleteSerializer(serializers.Serializer):
     confirm = serializers.BooleanField(required=False, default=False, help_text="Customer in-app confirmation.")
 
 
+class NotFinishedSerializer(serializers.Serializer):
+    reason = serializers.CharField(min_length=3, max_length=200, help_text="What is still left to do.")
+
+
 class CompletionOTPSerializer(serializers.Serializer):
     otp = serializers.CharField(read_only=True)
     expires_at = serializers.DateTimeField(read_only=True)
@@ -266,6 +270,8 @@ class BookingSerializer(serializers.ModelSerializer):
     tip = serializers.SerializerMethodField()
     can_tip = serializers.SerializerMethodField()
     job_photos = serializers.SerializerMethodField()
+    auto_complete_at = serializers.SerializerMethodField(
+        help_text="When a job the worker marked finished completes on its own if the customer does not answer.")
     guarantee = serializers.SerializerMethodField()
     parts = serializers.SerializerMethodField()
 
@@ -276,11 +282,16 @@ class BookingSerializer(serializers.ModelSerializer):
             "emergency_fee", "parts_amount", "package_id",
             "total_amount", "status",
             "worker", "customer_name", "contact", "on_the_way_at", "arrived_at", "started_at", "completed_at",
-            "cancelled_at", "cancel_reason", "completed_via", "status_history", "commission", "has_review",
+            "cancelled_at", "cancel_reason", "completed_via", "worker_finished_at", "auto_complete_at", "status_history", "commission", "has_review",
             "no_show", "safety", "cancellation_fee", "tip", "can_tip", "job_photos", "guarantee",
             "parts", "created_at", "updated_at",
         ]
         read_only_fields = fields
+
+    def get_auto_complete_at(self, obj) -> datetime | None:
+        from .services import auto_complete_at
+
+        return auto_complete_at(obj)
 
     def get_parts(self, obj) -> dict:
         """Parts and materials: approved total, how many wait for the customer, and what the viewer can do."""

@@ -398,6 +398,18 @@ abstract class AppLocalizations {
   /// **'At least 8 characters'**
   String get atLeast8;
 
+  /// No description provided for @autoCompletesAt.
+  ///
+  /// In en, this message translates to:
+  /// **'If you do not answer, it completes on its own at {time}.'**
+  String autoCompletesAt(Object time);
+
+  /// No description provided for @autoCompletesAtWorker.
+  ///
+  /// In en, this message translates to:
+  /// **'If they do not answer, it completes on its own at {time}.'**
+  String autoCompletesAtWorker(Object time);
+
   /// No description provided for @availableAnyTime.
   ///
   /// In en, this message translates to:
@@ -1226,6 +1238,12 @@ abstract class AppLocalizations {
   /// **'Customer'**
   String get customer;
 
+  /// No description provided for @customerAskedToConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'The customer has been asked to confirm.'**
+  String get customerAskedToConfirm;
+
   /// No description provided for @customerBudget.
   ///
   /// In en, this message translates to:
@@ -1243,6 +1261,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The customer made a counter offer. Your move.'**
   String get customerCounteredYourMove;
+
+  /// No description provided for @customerDoneHint.
+  ///
+  /// In en, this message translates to:
+  /// **'When the work is done, tap Job completed. The job closes and the worker is free for new requests.'**
+  String get customerDoneHint;
 
   /// No description provided for @customerNotPaid.
   ///
@@ -1676,6 +1700,18 @@ abstract class AppLocalizations {
   /// **'Finish paying in the new tab. Your plan activates once it is confirmed.'**
   String get finishPayingNewTab;
 
+  /// No description provided for @finishedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The customer will be asked to tap Job completed.'**
+  String get finishedBody;
+
+  /// No description provided for @finishedQ.
+  ///
+  /// In en, this message translates to:
+  /// **'Finished the work?'**
+  String get finishedQ;
+
   /// No description provided for @firstVisit.
   ///
   /// In en, this message translates to:
@@ -1976,6 +2012,12 @@ abstract class AppLocalizations {
   /// **'I’ve arrived'**
   String get iveArrived;
 
+  /// No description provided for @iveFinished.
+  ///
+  /// In en, this message translates to:
+  /// **'I\'ve finished the job'**
+  String get iveFinished;
+
   /// No description provided for @job.
   ///
   /// In en, this message translates to:
@@ -1993,6 +2035,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Job completed.'**
   String get jobCompleted;
+
+  /// No description provided for @jobCompletedButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Job completed'**
+  String get jobCompletedButton;
 
   /// No description provided for @jobIsBooked.
   ///
@@ -2821,6 +2869,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'none free'**
   String get noneFree;
+
+  /// No description provided for @notFinishedReason.
+  ///
+  /// In en, this message translates to:
+  /// **'What is still left to do?'**
+  String get notFinishedReason;
+
+  /// No description provided for @notFinishedYet.
+  ///
+  /// In en, this message translates to:
+  /// **'Not finished yet'**
+  String get notFinishedYet;
 
   /// No description provided for @notNow.
   ///
@@ -3877,6 +3937,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Reject {name}?'**
   String rejectPartTitle(Object name);
+
+  /// No description provided for @remindCustomer.
+  ///
+  /// In en, this message translates to:
+  /// **'Remind the customer'**
+  String get remindCustomer;
+
+  /// No description provided for @reminderSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminder sent.'**
+  String get reminderSent;
 
   /// No description provided for @remove.
   ///
@@ -5462,6 +5534,12 @@ abstract class AppLocalizations {
   /// **'Waiting for the customer.'**
   String get waitingForCustomer;
 
+  /// No description provided for @waitingForCustomerDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for the customer to tap Job completed.'**
+  String get waitingForCustomerDone;
+
   /// No description provided for @waitingForCustomerShort.
   ///
   /// In en, this message translates to:
@@ -5696,11 +5774,23 @@ abstract class AppLocalizations {
   /// **'Worker'**
   String get workerSays;
 
+  /// No description provided for @workerSaysFinished.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} says the work is finished. Tap Job completed if you are happy with it.'**
+  String workerSaysFinished(Object name);
+
   /// No description provided for @workerSignupHint.
   ///
   /// In en, this message translates to:
   /// **'After signing up, upload your CNIC so KaamNow can verify you before you send offers.'**
   String get workerSignupHint;
+
+  /// No description provided for @workerToldNotFinished.
+  ///
+  /// In en, this message translates to:
+  /// **'The worker has been told.'**
+  String get workerToldNotFinished;
 
   /// No description provided for @workerUnsaved.
   ///

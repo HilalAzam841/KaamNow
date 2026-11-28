@@ -4115,8 +4115,9 @@ paths:
   /api/v1/bookings/{id}/complete/:
     post:
       operationId: bookings_complete_create
-      summary: 'Worker: complete with the customer''s OTP. Customer: confirm completion
-        in-app.'
+      summary: 'Customer: tap Job completed (`{"confirm": true}`). The app uses this.
+        A worker can still complete with a code from `completion-otp/` if the customer
+        has no phone with the app.'
       parameters:
       - in: path
         name: id
@@ -4168,6 +4169,30 @@ paths:
               schema:
                 $ref: '#/components/schemas/CompletionOTP'
           description: ''
+  /api/v1/bookings/{id}/finished/:
+    post:
+      operationId: bookings_finished_create
+      summary: 'Worker: say the work is finished. The customer is asked to tap Job
+        completed; if they do not answer, the job completes on its own after JOB_AUTO_COMPLETE_HOURS.
+        Calling it again reminds the customer.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this booking.
+        required: true
+      tags:
+      - bookings
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+          description: ''
   /api/v1/bookings/{id}/no-show/:
     post:
       operationId: bookings_no_show_create
@@ -4194,6 +4219,41 @@ paths:
           application/x-www-form-urlencoded:
             schema:
               $ref: '#/components/schemas/NoShowRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+          description: ''
+  /api/v1/bookings/{id}/not-finished/:
+    post:
+      operationId: bookings_not_finished_create
+      summary: 'Customer: the worker said it is finished, but it is not. The worker
+        is told why.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this booking.
+        required: true
+      tags:
+      - bookings
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NotFinishedRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/NotFinishedRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/NotFinishedRequest'
+        required: true
       security:
       - jwtAuth: []
       responses:
@@ -9602,6 +9662,18 @@ components:
         completed_via:
           type: string
           readOnly: true
+        worker_finished_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        auto_complete_at:
+          type: string
+          format: date-time
+          nullable: true
+          readOnly: true
+          description: When a job the worker marked finished completes on its own
+            if the customer does not answer.
         status_history:
           type: array
           items:
@@ -9676,6 +9748,7 @@ components:
       required:
       - agreed_price
       - arrived_at
+      - auto_complete_at
       - can_tip
       - cancel_reason
       - cancellation_fee
@@ -9709,6 +9782,7 @@ components:
       - total_amount
       - updated_at
       - worker
+      - worker_finished_at
     BookingCancelRequest:
       type: object
       properties:
@@ -11577,6 +11651,16 @@ components:
           type: string
           default: ''
           maxLength: 500
+    NotFinishedRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          minLength: 3
+          description: What is still left to do.
+          maxLength: 200
+      required:
+      - reason
     Notification:
       type: object
       properties:

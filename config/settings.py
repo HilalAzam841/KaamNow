@@ -289,6 +289,7 @@ CELERY_TIMEZONE = "Asia/Karachi"
 CELERY_TASK_ACKS_LATE = True
 CELERY_BEAT_SCHEDULE = {
     "expire-stale-requests": {"task": "apps.jobs.tasks.expire_stale_requests", "schedule": 15 * 60},
+    "auto-complete-finished-jobs": {"task": "apps.jobs.tasks.auto_complete_finished_jobs", "schedule": 10 * 60},
     "expire-stale-online-payments": {"task": "apps.billing.tasks.expire_stale_online_payments", "schedule": 10 * 60},
     "expire-subscriptions-and-featured": {"task": "apps.billing.tasks.expire_subscriptions_and_featured", "schedule": 30 * 60},
     "purge-old-locations": {"task": "apps.tracking.tasks.purge_old_locations", "schedule": 24 * 60 * 60},
@@ -374,6 +375,10 @@ KAAMNOW = {
     "OTP_TTL_MINUTES": int(env("OTP_TTL_MINUTES", "15")),
     "OTP_MAX_ATTEMPTS": int(env("OTP_MAX_ATTEMPTS", "5")),
     "OTP_RESEND_COOLDOWN_SECONDS": int(env("OTP_RESEND_COOLDOWN_SECONDS", "60")),
+    # After the worker says they finished, the job completes on its own if the customer does not
+    # tap "Job completed" or "Not finished yet" within this many hours.
+    "JOB_AUTO_COMPLETE_HOURS": int(env("JOB_AUTO_COMPLETE_HOURS", "24")),
+    "WORKER_FINISHED_REMIND_MINUTES": int(env("WORKER_FINISHED_REMIND_MINUTES", "10")),
     "MAX_NEGOTIATION_ROUNDS": int(env("MAX_NEGOTIATION_ROUNDS", "10")),
     "MIN_OFFER_PRICE": env("MIN_OFFER_PRICE", "100"),
     "MAX_OFFER_PRICE": env("MAX_OFFER_PRICE", "1000000"),

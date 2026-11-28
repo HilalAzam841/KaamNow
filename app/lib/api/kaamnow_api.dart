@@ -316,14 +316,16 @@ class KaamNowApi {
   Future<Booking> reportNoShow(int id, {String note = ''}) async =>
       Booking.fromJson(asMap(await client.post('/bookings/$id/no-show/', body: {'note': note})));
 
-  /// Customer: a private one-time code to give the worker. Returns (code, expiresAt).
-  Future<(String, DateTime?)> issueCompletionOtp(int id) async {
-    final m = asMap(await client.post('/bookings/$id/completion-otp/'));
-    return (str(m['otp']), parseDate(m['expires_at']));
-  }
+  /// Worker: the work is finished. The customer is asked to tap Job completed. Calling it again
+  /// reminds them.
+  Future<Booking> markFinished(int id) async =>
+      Booking.fromJson(asMap(await client.post('/bookings/$id/finished/')));
 
-  Future<Booking> completeWithOtp(int id, String otp) async =>
-      Booking.fromJson(asMap(await client.post('/bookings/$id/complete/', body: {'otp': otp})));
+  /// Customer: the worker said it is finished, but it is not. The worker is told [reason].
+  Future<Booking> notFinished(int id, String reason) async =>
+      Booking.fromJson(asMap(await client.post('/bookings/$id/not-finished/', body: {'reason': reason})));
+
+  /// Customer: Job completed. The job closes and the worker is free for new requests.
   Future<Booking> confirmCompletion(int id) async =>
       Booking.fromJson(asMap(await client.post('/bookings/$id/complete/', body: {'confirm': true})));
 

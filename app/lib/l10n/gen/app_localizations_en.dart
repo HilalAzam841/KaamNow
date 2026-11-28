@@ -176,6 +176,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get atLeast8 => 'At least 8 characters';
 
   @override
+  String autoCompletesAt(Object time) {
+    return 'If you do not answer, it completes on its own at $time.';
+  }
+
+  @override
+  String autoCompletesAtWorker(Object time) {
+    return 'If they do not answer, it completes on its own at $time.';
+  }
+
+  @override
   String get availableAnyTime => 'Available any time';
 
   @override
@@ -659,6 +669,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get customer => 'Customer';
 
   @override
+  String get customerAskedToConfirm =>
+      'The customer has been asked to confirm.';
+
+  @override
   String customerBudget(Object amount) {
     return 'Customer budget: $amount';
   }
@@ -669,6 +683,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get customerCounteredYourMove =>
       'The customer made a counter offer. Your move.';
+
+  @override
+  String get customerDoneHint =>
+      'When the work is done, tap Job completed. The job closes and the worker is free for new requests.';
 
   @override
   String get customerNotPaid => 'The customer has not paid yet.';
@@ -931,6 +949,12 @@ class AppLocalizationsEn extends AppLocalizations {
       'Finish paying in the new tab. Your plan activates once it is confirmed.';
 
   @override
+  String get finishedBody => 'The customer will be asked to tap Job completed.';
+
+  @override
+  String get finishedQ => 'Finished the work?';
+
+  @override
   String get firstVisit => 'First visit';
 
   @override
@@ -1110,6 +1134,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get iveArrived => 'I’ve arrived';
 
   @override
+  String get iveFinished => 'I\'ve finished the job';
+
+  @override
   String get job => 'Job';
 
   @override
@@ -1117,6 +1144,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get jobCompleted => 'Job completed.';
+
+  @override
+  String get jobCompletedButton => 'Job completed';
 
   @override
   String get jobIsBooked => 'This job is booked';
@@ -1615,6 +1645,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noneFree => 'none free';
+
+  @override
+  String get notFinishedReason => 'What is still left to do?';
+
+  @override
+  String get notFinishedYet => 'Not finished yet';
 
   @override
   String get notNow => 'Not now';
@@ -2251,6 +2287,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String rejectPartTitle(Object name) {
     return 'Reject $name?';
   }
+
+  @override
+  String get remindCustomer => 'Remind the customer';
+
+  @override
+  String get reminderSent => 'Reminder sent.';
 
   @override
   String get remove => 'Remove';
@@ -3180,6 +3222,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get waitingForCustomer => 'Waiting for the customer.';
 
   @override
+  String get waitingForCustomerDone =>
+      'Waiting for the customer to tap Job completed.';
+
+  @override
   String get waitingForCustomerShort => 'Waiting for customer';
 
   @override
@@ -3313,8 +3359,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get workerSays => 'Worker';
 
   @override
+  String workerSaysFinished(Object name) {
+    return '$name says the work is finished. Tap Job completed if you are happy with it.';
+  }
+
+  @override
   String get workerSignupHint =>
       'After signing up, upload your CNIC so KaamNow can verify you before you send offers.';
+
+  @override
+  String get workerToldNotFinished => 'The worker has been told.';
 
   @override
   String get workerUnsaved => 'Removed from saved workers.';

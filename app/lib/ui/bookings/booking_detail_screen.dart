@@ -169,27 +169,6 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
     }
   }
 
-  Future<void> _issueOtp() async {
-    final r = await runAction(context, () => api.issueCompletionOtp(widget.id));
-    if (r == null || !mounted) return;
-    final (code, expires) = r;
-    await showDialog<void>(
-      context: context,
-      builder: (c) => AlertDialog(
-        title: Text(context.t.completionCode),
-        content: Column(mainAxisSize: MainAxisSize.min, children: [
-          Text(context.t.completionCodeHint),
-          const SizedBox(height: 16),
-          Text(code, key: const Key('otp-code'),
-              style: Theme.of(c).textTheme.displaySmall?.copyWith(letterSpacing: 6, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 8),
-          if (expires != null) Text(c.t.validUntil(when(expires)), style: Theme.of(c).textTheme.bodySmall),
-        ]),
-        actions: [FilledButton(onPressed: () => Navigator.pop(c), child: Text(context.t.done))],
-      ),
-    );
-  }
-
   Future<void> _confirmDone() async {
     if (!await confirm(context, context.t.markCompleteQ, context.t.onlyIfDone, ok: context.t.complete)) return;
     if (!mounted) return;
@@ -200,12 +179,21 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
     if (mounted && !b.hasReview) await _review();
   }
 
-  Future<void> _completeWithCode() async {
-    final code = await promptText(context, context.t.enterCompletionCode,
-        label: context.t.sixDigitCode, ok: context.t.completeJob, required: true, keyboard: TextInputType.number);
-    if (code == null || !mounted) return;
-    final b = await runAction(context, () => api.completeWithOtp(widget.id, code), success: context.t.jobCompleted);
-    if (b != null) _load();
+  Future<void> _markFinished(Booking b) async {
+    final again = b.workerFinishedAt != null;
+    if (!again && !await confirm(context, context.t.finishedQ, context.t.finishedBody, ok: context.t.iveFinished)) return;
+    if (!mounted) return;
+    final r = await runAction(context, () => api.markFinished(widget.id),
+        success: again ? context.t.reminderSent : context.t.customerAskedToConfirm);
+    if (r != null && mounted) setState(() => _booking = r);
+  }
+
+  Future<void> _notFinished() async {
+    final reason = await promptText(context, context.t.notFinishedYet,
+        label: context.t.notFinishedReason, ok: context.t.send, required: true);
+    if (reason == null || !mounted) return;
+    final r = await runAction(context, () => api.notFinished(widget.id, reason), success: context.t.workerToldNotFinished);
+    if (r != null && mounted) setState(() => _booking = r);
   }
 
   Future<void> _cancel() async {
@@ -579,26 +567,55 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
         ));
       }
       if (b.status == 'in_progress') {
-        buttons.add(FilledButton.icon(
-          key: const Key('complete-otp'),
-          onPressed: _completeWithCode,
-          icon: const Icon(Icons.task_alt),
-          label: Text(context.t.completeWithCode),
-        ));
+        if (b.workerFinishedAt == null) {
+          buttons.add(FilledButton.icon(
+            key: const Key('worker-finished'),
+            onPressed: () => _markFinished(b),
+            icon: const Icon(Icons.task_alt),
+            label: Text(context.t.iveFinished),
+          ));
+        } else {
+          buttons.add(Column(
+            key: const Key('waiting-customer-done'),
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(context.t.waitingForCustomerDone),
+              if (b.autoCompleteAt != null)
+                Text(context.t.autoCompletesAtWorker(when(b.autoCompleteAt)),
+                    style: Theme.of(context).textTheme.bodySmall),
+            ],
+          ));
+          buttons.add(OutlinedButton.icon(
+            key: const Key('remind-customer'),
+            onPressed: () => _markFinished(b),
+            icon: const Icon(Icons.notifications_active),
+            label: Text(context.t.remindCustomer),
+          ));
+        }
       }
     } else if (b.status == 'in_progress') {
-      buttons.add(FilledButton.icon(
-        key: const Key('issue-otp'),
-        onPressed: _issueOtp,
-        icon: const Icon(Icons.password),
-        label: Text(context.t.getCompletionCode),
+      buttons.add(Column(
+        key: const Key('customer-done-hint'),
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(b.workerFinishedAt != null ? context.t.workerSaysFinished(b.worker.fullName) : context.t.customerDoneHint),
+          if (b.autoCompleteAt != null)
+            Text(context.t.autoCompletesAt(when(b.autoCompleteAt)), style: Theme.of(context).textTheme.bodySmall),
+        ],
       ));
-      buttons.add(OutlinedButton.icon(
+      buttons.add(FilledButton.icon(
         key: const Key('confirm-complete'),
         onPressed: _confirmDone,
         icon: const Icon(Icons.task_alt),
-        label: Text(context.t.confirmJobDone),
+        label: Text(context.t.jobCompletedButton),
       ));
+      if (b.workerFinishedAt != null) {
+        buttons.add(TextButton(
+          key: const Key('not-finished'),
+          onPressed: _notFinished,
+          child: Text(context.t.notFinishedYet),
+        ));
+      }
     }
     if (b.canReportNoShow != null) {
       buttons.add(OutlinedButton.icon(

@@ -33,7 +33,8 @@ unit and widget tests plus a browser end-to-end run (see `app/README.md`).
 | Price negotiation with full history | `apps/offers/services.py` |
 | Booking with row locking and DB unique constraints (no double booking) | `apps/offers/services.py::accept_offer` |
 | Booking status flow (confirmed, on the way, arrived, work started, completed, cancelled) | `apps/jobs` |
-| Completion OTP (hashed, expiry, attempt limit, resend cooldown, rate limited) | `apps/jobs/services.py` |
+| Job completion: the customer taps **Job completed**. The worker can say they finished and remind the customer; if the customer does not answer in 24 hours (`JOB_AUTO_COMPLETE_HOURS`), the job completes on its own so the worker is free for new requests. The customer can answer "Not finished yet" with what is left | `POST bookings/{id}/complete/` (`{"confirm": true}`), `POST bookings/{id}/finished/`, `POST bookings/{id}/not-finished/`, `worker_finished_at` and `auto_complete_at` on bookings, `apps/jobs/services.py` |
+| Completion code, kept for customers without the app (hashed, expiry, attempt limit, resend cooldown, rate limited). The app no longer uses it | `POST bookings/{id}/completion-otp/`, `apps/jobs/services.py` |
 | Commission calculation (default 10%, admin-configurable) | `apps/billing` |
 | Cash payment records and a balanced payment ledger | `apps/billing` |
 | Ratings and reviews | `apps/reviews` |
@@ -65,7 +66,7 @@ unit and widget tests plus a browser end-to-end run (see `app/README.md`).
 | API client: response envelope, JWT refresh with one shared refresh call, readable errors | `app/lib/core/api_client.dart` |
 | Customer: browse services, post a job (map pin or GPS, photos, emergency), compare offers and sort them, counter, book | `app/lib/ui/customer/` |
 | Worker: verification (CNIC upload, services, base location), go online, job feed, send offers, negotiate | `app/lib/ui/worker/` |
-| Both: bookings, live tracking over WebSocket, chat, completion code, cash payment, reviews, alerts, complaints | `app/lib/ui/bookings/`, `app/lib/ui/account/` |
+| Both: bookings, live tracking over WebSocket, chat, Job completed button, cash payment, reviews, alerts, complaints | `app/lib/ui/bookings/`, `app/lib/ui/account/` |
 | Backend APIs added for client apps: `GET app/config/` (public bootstrap) and `GET offers/` (worker's own offers) | `apps/common/views.py`, `apps/offers/views.py` |
 | WebSocket origin check that accepts CORS-allowed web origins and native apps (no Origin header) | `apps/chat/origin.py` |
 
@@ -352,7 +353,7 @@ time the worker is free and the booking is confirmed straight away, with no offe
 | Workers add up to 10 packages, each for a service they offer: name, fixed price (within the usual offer limits), 30 to 480 minutes, up to 8 "what's included" lines and a description. They can edit, pause or delete them | `GET/POST workers/me/packages/`, `PATCH/DELETE workers/me/packages/{id}/`, app: Account → **My packages** |
 | Customers see packages on worker profiles and can browse them by service. With a default saved address, only workers who cover it are listed. Best levels and ratings come first | `GET workers/{id}/packages/`, `GET packages/?category=&latitude=&longitude=&max_price=`, `GET packages/{id}/`, app: Home → **Fixed-price packages** |
 | Booking a package checks everything a normal booking does in one transaction: verified phone, worker verified and available, the address inside their radius, the time free (working hours, days off, other bookings), at most 3 active bookings, and no double booking of the same package and time. If any check fails nothing is saved | `POST packages/{id}/book/` (throttled like offers) |
-| A package booking is an ordinary booking underneath (request, offer and booking rows at the package price), so tracking, chat, completion code, payment, promo codes, receipts, reviews and cancellations all work unchanged. The worker gets a "New package booking" notice in their language | `package` on requests, `package_id` on bookings |
+| A package booking is an ordinary booking underneath (request, offer and booking rows at the package price), so tracking, chat, completion, payment, promo codes, receipts, reviews and cancellations all work unchanged. The worker gets a "New package booking" notice in their language | `package` on requests, `package_id` on bookings |
 | Paused packages, packages for a service the worker dropped, and packages of unverified or suspended workers are never shown or bookable. Deleting a package keeps its bookings | |
 | Admins can hide a misleading package with a reason (audited); the worker is told why and sees it on the package | `GET admin/packages/`, `POST admin/packages/{id}/hide/` and `unhide/`, app: Admin → **Service packages** |
 
@@ -645,7 +646,7 @@ be probed), `409` state conflict (already booked, wrong turn, and so on), `429` 
 | Safety | `GET/POST safety/contacts/` · `DELETE safety/contacts/{id}/` · `POST bookings/{id}/sos/` · `POST/DELETE bookings/{id}/share/` · `GET safety/shared/{token}/` (public) |
 | Repeating jobs | `GET recurring-jobs/` · `GET/PATCH recurring-jobs/{id}/` · `POST recurring-jobs/from-booking/` · `POST recurring-jobs/{id}/pause/` · `POST recurring-jobs/{id}/resume/` · `POST recurring-jobs/{id}/skip-next/` · `POST recurring-jobs/{id}/cancel/` · `POST recurring-jobs/{id}/leave/` (worker) |
 | Offers | `GET/POST requests/{id}/offers/` · `GET offers/` (worker's own, `?status=`) · `GET/PATCH offers/{id}/` · `POST offers/{id}/accept/` · `POST offers/{id}/reject/` · `POST offers/{id}/negotiate/` · `GET offers/{id}/negotiations/` |
-| Bookings | `GET bookings/` · `GET bookings/{id}/` · `POST bookings/{id}/status/` · `POST bookings/{id}/completion-otp/` · `POST bookings/{id}/complete/` · `POST bookings/{id}/cancel/` · `POST bookings/{id}/no-show/` |
+| Bookings | `GET bookings/` · `GET bookings/{id}/` · `POST bookings/{id}/status/` · `POST bookings/{id}/finished/` · `POST bookings/{id}/not-finished/` · `POST bookings/{id}/complete/` · `POST bookings/{id}/completion-otp/` · `POST bookings/{id}/cancel/` · `POST bookings/{id}/no-show/` |
 | Chat | `GET/POST bookings/{id}/messages/` · `POST bookings/{id}/messages/read/` |
 | Tracking | `POST bookings/{id}/location/` (worker) · `GET bookings/{id}/location/` |
 | Promotions | `POST promos/check/` · `GET referrals/me/` |
@@ -675,7 +676,7 @@ full flow; test scripts store tokens and ids automatically). Regenerate it with
 5. **Negotiation**: `POST /offers/{id}/negotiate/` with `{"action":"counter","amount":"800"}` or `{"action":"agree"}`. The parties take turns (`awaiting` shows whose turn it is). A customer cannot accept a price they proposed themselves; the worker must counter or agree first.
 6. **Customer** `POST /offers/{id}/accept/` creates the booking at the current price, closes the other offers and notifies everyone.
 7. **Worker** `POST /bookings/{id}/status/` moves through `on_the_way`, then `arrived`, then `in_progress`. While the booking is active, each side can see the other's phone number, and the worker can see the exact address.
-8. **Customer** `POST /bookings/{id}/completion-otp/` returns a 6-digit code to the customer only. The customer tells it to the worker, who calls `POST /bookings/{id}/complete/` with `{"otp": "123456"}`. Alternatively the customer confirms in the app with `{"confirm": true}`.
+8. **Worker** `POST /bookings/{id}/finished/`: the customer is asked to confirm. **Customer** `POST /bookings/{id}/complete/` with `{"confirm": true}` (the **Job completed** button) closes the job, or `POST /bookings/{id}/not-finished/` with a reason. If the customer does not answer within `JOB_AUTO_COMPLETE_HOURS`, a scheduled task completes it (`completed_via: "auto"`). The old code flow (`completion-otp/`, then the worker sends `{"otp": "123456"}`) still works for customers without the app.
 9. On completion the commission is recorded (for example Rs. 2,000 gives Rs. 200 commission and Rs. 1,800 to the worker).
 10. **Customer** `POST /payments/` with `{"booking": id, "method": "cash"}`. **Worker** `POST /payments/{id}/confirm/` writes the ledger entries.
 11. **Customer** `POST /reviews/` updates the worker's average rating.

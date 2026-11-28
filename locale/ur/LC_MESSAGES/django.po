@@ -1183,6 +1183,40 @@ msgstr "بہت زیادہ غلط کوششیں۔ گاہک سے نیا کوڈ ما
 msgid "Only the customer can confirm completion."
 msgstr "تکمیل کی تصدیق صرف گاہک کر سکتا ہے۔"
 
+#: apps/jobs/services.py
+msgid "Only the assigned worker can say the job is finished."
+msgstr "صرف اس کام کا کاریگر کہہ سکتا ہے کہ کام ختم ہو گیا۔"
+
+#: apps/jobs/services.py
+msgid "The customer was just reminded. Please wait a few minutes."
+msgstr "گاہک کو ابھی یاد دلایا گیا ہے۔ براہ کرم چند منٹ انتظار کریں۔"
+
+#: apps/jobs/services.py
+msgid "Is the job done?"
+msgstr "کیا کام ہو گیا؟"
+
+#: apps/jobs/services.py
+#, python-brace-format
+msgid "{name} says the work on \"{job}\" is finished. Open the booking and tap Job completed."
+msgstr "{name} کہتے ہیں کہ \"{job}\" کا کام ختم ہو گیا ہے۔ بکنگ کھولیں اور \"کام مکمل ہو گیا\" دبائیں۔"
+
+#: apps/jobs/services.py
+msgid "Only the customer can answer this."
+msgstr "صرف گاہک اس کا جواب دے سکتا ہے۔"
+
+#: apps/jobs/services.py
+msgid "The worker has not said the job is finished."
+msgstr "کاریگر نے ابھی نہیں کہا کہ کام ختم ہو گیا ہے۔"
+
+#: apps/jobs/services.py
+msgid "Not finished yet"
+msgstr "ابھی کام باقی ہے"
+
+#: apps/jobs/services.py
+#, python-brace-format
+msgid "The customer says the job is not finished yet: {reason}"
+msgstr "گاہک کہتے ہیں کہ کام ابھی باقی ہے: {reason}"
+
 #: apps/jobs/views.py
 msgid "You can only edit your own requests."
 msgstr "آپ صرف اپنی درخواستوں میں ترمیم کر سکتے ہیں۔"
