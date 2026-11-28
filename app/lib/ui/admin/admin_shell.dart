@@ -21,6 +21,7 @@ const adminDestinations = [
   _Dest('/admin/payouts', 'Payouts', Icons.account_balance_wallet_rounded),
   _Dest('/admin/cancellation-fees', 'Cancellation fees', Icons.event_busy_rounded),
   _Dest('/admin/tips', 'Tips', Icons.volunteer_activism_rounded),
+  _Dest('/admin/guarantee', 'Guarantee', Icons.verified_user_rounded),
   _Dest('/admin/promo-codes', 'Promo codes', Icons.local_offer_rounded),
   _Dest('/admin/plans', 'Plans', Icons.workspace_premium_rounded),
   _Dest('/admin/complaints', 'Complaints', Icons.support_agent_rounded),

@@ -266,6 +266,7 @@ class BookingSerializer(serializers.ModelSerializer):
     tip = serializers.SerializerMethodField()
     can_tip = serializers.SerializerMethodField()
     job_photos = serializers.SerializerMethodField()
+    guarantee = serializers.SerializerMethodField()
 
     class Meta:
         model = Booking
@@ -275,7 +276,8 @@ class BookingSerializer(serializers.ModelSerializer):
             "total_amount", "status",
             "worker", "customer_name", "contact", "on_the_way_at", "arrived_at", "started_at", "completed_at",
             "cancelled_at", "cancel_reason", "completed_via", "status_history", "commission", "has_review",
-            "no_show", "safety", "cancellation_fee", "tip", "can_tip", "job_photos", "created_at", "updated_at",
+            "no_show", "safety", "cancellation_fee", "tip", "can_tip", "job_photos", "guarantee",
+            "created_at", "updated_at",
         ]
         read_only_fields = fields
 
@@ -284,6 +286,19 @@ class BookingSerializer(serializers.ModelSerializer):
         from apps.jobphotos.services import summary
 
         return summary(obj, self._viewer())
+
+    def get_guarantee(self, obj) -> dict:
+        """The work guarantee: until when it lasts, whether the viewer can claim now, and the claim if any."""
+        from apps.guarantee import services as guarantee
+        from apps.guarantee.serializers import GuaranteeClaimSerializer
+
+        claim = getattr(obj, "guarantee_claim", None) if hasattr(obj, "guarantee_claim") else None
+        until = guarantee.window_ends(obj)
+        return {
+            "until": until.isoformat() if until else None,
+            "can_claim": guarantee.can_claim(obj, self._viewer()),
+            "claim": GuaranteeClaimSerializer(claim).data if claim else None,
+        }
 
     def _viewer(self):
         request = self.context.get("request")

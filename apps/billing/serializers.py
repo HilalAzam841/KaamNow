@@ -117,7 +117,8 @@ class PlatformSettingsSerializer(serializers.ModelSerializer):
                   "referral_reward", "referral_welcome_credit", "referral_min_booking", "max_discount_percent",
                   "reminder_sms_enabled", "no_show_grace_minutes", "cancellation_fee_enabled",
                   "cancellation_free_minutes", "cancellation_window_minutes", "late_cancellation_fee",
-                  "on_the_way_cancellation_fee", "tips_enabled", "tip_max_amount", "tip_window_days", "updated_at"]
+                  "on_the_way_cancellation_fee", "tips_enabled", "tip_max_amount", "tip_window_days", "guarantee_enabled",
+                  "guarantee_days", "updated_at"]
         read_only_fields = ["updated_at"]
 
 

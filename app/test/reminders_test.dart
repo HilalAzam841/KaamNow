@@ -112,7 +112,7 @@ void main() {
       return ok(settings);
     });
     await pumpAdmin(tester, h);
-    tester.view.physicalSize = const Size(1400, 2200);
+    tester.view.physicalSize = const Size(1400, 2600); // the whole settings form on screen
     await tester.tap(find.text('Settings').first);
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('reminder-sms')));

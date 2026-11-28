@@ -7,6 +7,8 @@
     }
   },
   "aboutYou": "About you",
+  "accept": "Accept",
+  "acceptAndPickTime": "Accept and pick a time",
   "accountTitle": "Account holder name",
   "add": "Add",
   "addAService": "Add a service",
@@ -51,6 +53,7 @@
     }
   },
   "anyWorkerNearby": "Any free worker nearby",
+  "anythingToAdd": "Anything to add? (optional)",
   "appName": "KaamNow",
   "appVersion": "KaamNow {version}",
   "@appVersion": {
@@ -70,6 +73,8 @@
   "areasHint": "e.g. Gulberg, Model Town",
   "areasYouCover": "Areas you cover",
   "arriveInMinutes": "You can arrive in (minutes)",
+  "askFreeFix": "Ask for a free fix",
+  "askFreeFixHint": "Tell the worker what went wrong again. They will answer within 48 hours.",
   "askedForYou": "The customer asked for you",
   "atLeast5": "At least 5 characters",
   "atLeast8": "At least 8 characters",
@@ -211,6 +216,30 @@
   "chooseNewPassword": "Choose a new password",
   "chooseOneWorkingDay": "Choose at least one working day, or turn on \"Available any time\".",
   "chooseService": "Choose a service.",
+  "claimAcceptedMsg": "Accepted. The customer has been told.",
+  "claimAnswerBy": "The customer asked for a free fix. Please answer by {time}.",
+  "@claimAnswerBy": {
+    "placeholders": {
+      "time": {}
+    }
+  },
+  "claimDeclined": "The worker declined the claim.",
+  "claimDeclinedMsg": "Declined. The customer has been told.",
+  "claimEscalated": "Sent to the KaamNow team. We will contact you.",
+  "claimEscalatedMsg": "Sent. You can follow it under complaints.",
+  "claimFixed": "Fixed. The claim is closed.",
+  "claimRedoDone": "The worker says it is fixed.",
+  "claimRedoDoneMsg": "The customer will be asked to confirm.",
+  "claimSent": "Claim sent to the worker.",
+  "claimWaitingWorker": "Waiting for the worker to answer.",
+  "claimWithdrawn": "The claim was withdrawn.",
+  "claimWithdrawnMsg": "Claim withdrawn.",
+  "claimWorkerComing": "The worker will come back {time} to fix it for free.",
+  "@claimWorkerComing": {
+    "placeholders": {
+      "time": {}
+    }
+  },
   "close": "Close",
   "cnicNumber": "CNIC number",
   "cnicPrivate": "CNIC images are private. Only KaamNow staff can see them.",
@@ -375,6 +404,8 @@
       "n": {}
     }
   },
+  "declineClaim": "Decline",
+  "declineClaimHint": "Tell the customer why. They can send the claim to the KaamNow team if they disagree.",
   "defaultAddress": "Default address",
   "delete": "Delete",
   "deleteAddressQ": "Delete this address?",
@@ -564,6 +595,13 @@
   "getPaid": "Get paid",
   "getVerified": "Get verified to send offers",
   "getVerifiedHint": "Upload both sides of your CNIC, add your services and set your base location. KaamNow reviews new workers before they can bid.",
+  "guaranteeClaim": "Work guarantee",
+  "guaranteeUntil": "guarantee until {date}",
+  "@guaranteeUntil": {
+    "placeholders": {
+      "date": {}
+    }
+  },
   "helpAndComplaints": "Help and complaints",
   "hireHelp": "Hire help",
   "homeIntro": "Describe the job, get prices from nearby verified workers, and pick the one you like.",
@@ -622,6 +660,7 @@
     }
   },
   "iosInstallSteps": "In Safari, tap the Share button, then choose “Add to Home Screen”.",
+  "itsFixed": "It's fixed",
   "iveArrived": "I’ve arrived",
   "job": "Job",
   "jobAddress": "Job address",
@@ -725,6 +764,7 @@
   "makeDefault": "Use first",
   "markAllRead": "Mark all read",
   "markCompleteQ": "Mark the job as complete?",
+  "markFixDone": "Mark fix done",
   "maxAddressesReached": "You have 10 addresses, the most allowed.",
   "maxContactsReached": "You have 3 contacts, the most allowed.",
   "maxPhotosReached": "You have 12 photos, the most allowed. Delete one to add another.",
@@ -1119,6 +1159,8 @@
       "days": {}
     }
   },
+  "problem": "Problem",
+  "problemCameBack": "Problem came back? Ask for a free fix",
   "profileSaved": "Profile saved.",
   "profileUpdated": "Profile updated.",
   "promoApplied": "{code}: {amount} off",
@@ -1436,6 +1478,7 @@
   "scheduleSaved": "Working hours saved.",
   "securePayment": "Secure payment",
   "send": "Send",
+  "sendClaim": "Send claim",
   "sendCode": "Send code",
   "sendNewCode": "Send a new code",
   "sendOffer": "Send offer",
@@ -1443,6 +1486,8 @@
   "sendResetLink": "Send reset link",
   "sendSos": "Send SOS",
   "sendToEveryone": "Send to everyone",
+  "sendToKaamNow": "Send to KaamNow team",
+  "sendToKaamNowHint": "Our team will look at the job, the photos and the chat, and contact you.",
   "sendYourPrice": "Send your price",
   "sendingEvery15": "Sending every 15 seconds while this page is open.",
   "sentAgo": "Sent {when}",
@@ -1608,6 +1653,7 @@
   "tapMapToPin": "Tap the map to place the pin.",
   "tellUsWhatHappened": "Tell us what happened",
   "textMyContacts": "Text it to my emergency contacts",
+  "thanksConfirmed": "Thanks for confirming.",
   "thanksForReview": "Thanks for your review!",
   "thanksWillReview": "Thanks. KaamNow will review your report.",
   "timeOff": "Days off",
@@ -1721,6 +1767,8 @@
   "titleLabel": "Title",
   "titleTooShort": "Title is too short.",
   "toWord": "to",
+  "today": "Today",
+  "tomorrow": "Tomorrow",
   "topLevelReached": "You are at the top level. Keep it up!",
   "total": "Total",
   "trackingStarts": "Tracking starts when the worker sets off.",
@@ -1806,6 +1854,8 @@
   },
   "whatHelp": "What do you need help with?",
   "whatWentWrong": "What went wrong?",
+  "whatWentWrongAgain": "What went wrong?",
+  "whenComeBack": "When will you come back?",
   "whenWorkerFree": "When {name} is free on {day}",
   "@whenWorkerFree": {
     "placeholders": {
@@ -1826,6 +1876,8 @@
     }
   },
   "withdraw": "Withdraw",
+  "withdrawClaimBody": "You cannot make another claim for this job.",
+  "withdrawClaimQ": "Withdraw this claim?",
   "withdrawHint": "You cannot bid on this job again.",
   "withdrawOfferQ": "Withdraw your offer?",
   "workRadius": "Work radius (km)",
@@ -1845,6 +1897,7 @@
   "workerProfile": "Worker profile",
   "workerProfileServicesDocs": "Worker profile, services and documents",
   "workerSaved": "Worker saved. Find them in My workers.",
+  "workerSays": "Worker",
   "workerSignupHint": "After signing up, upload your CNIC so KaamNow can verify you before you send offers.",
   "workerUnsaved": "Removed from saved workers.",
   "workingHours": "Working hours",

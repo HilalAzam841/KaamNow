@@ -352,7 +352,7 @@ class Booking {
       this.cancelReason = '', this.completedAt, this.statusHistory = const [], this.commission,
       this.hasReview = false, this.createdAt, this.durationMinutes = 120, this.noShowReported,
       this.canReportNoShow, this.noShowOpensAt, this.canSos = false, this.sosStatus, this.sharingUntil, this.packageId, this.cancellationFee, this.tip, this.canTip = false,
-      this.jobPhotos = const JobPhotoSummary()});
+      this.jobPhotos = const JobPhotoSummary(), this.guarantee = const BookingGuarantee()});
 
   factory Booking.fromJson(Map<String, dynamic> j) => Booking(
         id: parseInt(j['id']),
@@ -384,6 +384,7 @@ class Booking {
         tip: j['tip'] is Map ? TipInfo.fromJson(asMap(j['tip'])) : null,
         canTip: j['can_tip'] == true,
         jobPhotos: j['job_photos'] is Map ? JobPhotoSummary.fromJson(asMap(j['job_photos'])) : const JobPhotoSummary(),
+        guarantee: j['guarantee'] is Map ? BookingGuarantee.fromJson(asMap(j['guarantee'])) : const BookingGuarantee(),
         createdAt: parseDate(j['created_at']),
       );
 
@@ -404,6 +405,9 @@ class Booking {
 
   /// Before and after photo counts, and whether the viewer (the worker) can add more.
   final JobPhotoSummary jobPhotos;
+
+  /// The work guarantee on this booking: how long it lasts and the claim, if any.
+  final BookingGuarantee guarantee;
   final String title;
   final String categoryName;
   final DateTime? preferredTime;
@@ -600,6 +604,59 @@ class Review {
 
   /// The viewer is the reviewed worker and has not replied yet.
   final bool canReply;
+}
+
+/// The work guarantee on a completed booking.
+class BookingGuarantee {
+  const BookingGuarantee({this.until, this.canClaim = false, this.claim});
+  factory BookingGuarantee.fromJson(Map<String, dynamic> j) => BookingGuarantee(
+        until: parseDate(j['until']),
+        canClaim: j['can_claim'] == true,
+        claim: j['claim'] is Map ? GuaranteeClaim.fromJson(asMap(j['claim'])) : null,
+      );
+
+  /// The last moment a claim can be made.
+  final DateTime? until;
+
+  /// Whether the viewer (the customer) can make a claim now.
+  final bool canClaim;
+  final GuaranteeClaim? claim;
+}
+
+/// A customer's request for a free fix after a job.
+/// Status: pending, accepted, declined, redo_done, fixed, escalated or withdrawn.
+class GuaranteeClaim {
+  GuaranteeClaim({required this.id, required this.bookingId, this.bookingTitle = '', this.customerName = '',
+      this.workerName = '', this.problem = '', required this.status, this.redoTime, this.workerNote = '',
+      this.respondBy, this.canEscalate = false, this.complaintId, this.createdAt});
+  factory GuaranteeClaim.fromJson(Map<String, dynamic> j) => GuaranteeClaim(
+        id: parseInt(j['id']),
+        bookingId: parseInt(j['booking']),
+        bookingTitle: str(j['booking_title']),
+        customerName: str(j['customer_name']),
+        workerName: str(j['worker_name']),
+        problem: str(j['problem']),
+        status: str(j['status']),
+        redoTime: parseDate(j['redo_time']),
+        workerNote: str(j['worker_note']),
+        respondBy: parseDate(j['respond_by']),
+        canEscalate: j['can_escalate'] == true,
+        complaintId: j['complaint_id'] == null ? null : parseInt(j['complaint_id']),
+        createdAt: parseDate(j['created_at']),
+      );
+  final int id;
+  final int bookingId;
+  final String bookingTitle;
+  final String customerName;
+  final String workerName;
+  final String problem;
+  final String status;
+  final DateTime? redoTime;
+  final String workerNote;
+  final DateTime? respondBy;
+  final bool canEscalate;
+  final int? complaintId;
+  final DateTime? createdAt;
 }
 
 /// How many before and after photos a booking has, and what the viewer may still add.

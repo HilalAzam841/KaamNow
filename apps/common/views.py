@@ -129,6 +129,7 @@ def app_config(request):
                 "window_days": platform.tip_window_days,
                 "suggestions": [f"{x:.2f}" for x in tip_suggestions(platform)],
             },
+            "guarantee": {"enabled": platform.guarantee_enabled, "days": platform.guarantee_days},
             "offer_price": {
                 "min": settings.KAAMNOW["MIN_OFFER_PRICE"],
                 "max": settings.KAAMNOW["MAX_OFFER_PRICE"],

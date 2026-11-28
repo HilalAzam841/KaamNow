@@ -85,6 +85,11 @@ class PlatformSettings(TimeStampedModel):
     tip_window_days = models.PositiveSmallIntegerField(
         default=7, validators=[MinValueValidator(1), MaxValueValidator(60)],
         help_text="Customers can tip for this many days after a job is completed.")
+    guarantee_enabled = models.BooleanField(
+        default=True, help_text="Customers can ask the worker for a free fix if a problem comes back after a job.")
+    guarantee_days = models.PositiveSmallIntegerField(
+        default=7, validators=[MinValueValidator(1), MaxValueValidator(90)],
+        help_text="Customers can make a guarantee claim for this many days after a job is completed.")
     updated_by = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name="+"
     )

@@ -19,6 +19,10 @@ from .models import ChatMessage
 def chat_is_open(booking):
     if booking.is_active:
         return True
+    # While a work guarantee claim is open, the customer and worker can talk it through.
+    claim = getattr(booking, "guarantee_claim", None) if hasattr(booking, "guarantee_claim") else None
+    if claim is not None and claim.is_open:
+        return True
     if booking.status == Booking.Status.COMPLETED and booking.completed_at:
         window = timedelta(hours=settings.KAAMNOW["CHAT_OPEN_HOURS_AFTER_COMPLETION"])
         return timezone.now() <= booking.completed_at + window

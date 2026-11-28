@@ -18,6 +18,7 @@ import 'ui/customer/book_package_screen.dart';
 import 'ui/admin/packages_screen.dart';
 import 'ui/admin/cancellation_fees_screen.dart';
 import 'ui/admin/tips_screen.dart';
+import 'ui/admin/guarantee_screen.dart';
 import 'ui/admin/reviews_screen.dart';
 import 'ui/payments/receipt_screen.dart';
 import 'ui/customer/addresses_screen.dart';
@@ -108,6 +109,7 @@ GoRouter buildRouter(Session session) {
           GoRoute(path: '/admin/packages', builder: (_, _) => const AdminPackagesScreen()),
           GoRoute(path: '/admin/cancellation-fees', builder: (_, _) => const AdminCancellationFeesScreen()),
           GoRoute(path: '/admin/tips', builder: (_, _) => const AdminTipsScreen()),
+          GoRoute(path: '/admin/guarantee', builder: (_, _) => const AdminGuaranteeScreen()),
           GoRoute(path: '/admin/reviews', builder: (_, _) => const AdminReviewsScreen()),
           GoRoute(path: '/admin/settings', builder: (_, _) => const AdminSettingsScreen()),
           GoRoute(path: '/admin/audit', builder: (_, _) => const AdminAuditScreen()),

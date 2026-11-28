@@ -418,6 +418,24 @@ class KaamNowApi {
   Future<Uint8List> jobPhotoBytes(JobPhoto photo) async =>
       (await client.getBytes(photo.fileUrl.replaceFirst(RegExp(r'^/api/v1'), ''))).$1;
 
+  // ---- Work guarantee ----------------------------------------------------
+  /// The customer asks for a free fix, within the guarantee period after the job.
+  Future<GuaranteeClaim> makeGuaranteeClaim(int bookingId, String problem) async => GuaranteeClaim.fromJson(
+      asMap(await client.post('/bookings/$bookingId/guarantee/', body: {'problem': problem})));
+  Future<GuaranteeClaim> acceptGuaranteeClaim(int id, DateTime redoTime, {String note = ''}) async =>
+      GuaranteeClaim.fromJson(asMap(await client.post('/guarantee-claims/$id/accept/',
+          body: {'redo_time': redoTime.toUtc().toIso8601String(), 'note': note})));
+  Future<GuaranteeClaim> declineGuaranteeClaim(int id, String reason) async => GuaranteeClaim.fromJson(
+      asMap(await client.post('/guarantee-claims/$id/decline/', body: {'reason': reason})));
+  Future<GuaranteeClaim> guaranteeRedoDone(int id) async =>
+      GuaranteeClaim.fromJson(asMap(await client.post('/guarantee-claims/$id/redo-done/')));
+  Future<GuaranteeClaim> guaranteeConfirmFixed(int id) async =>
+      GuaranteeClaim.fromJson(asMap(await client.post('/guarantee-claims/$id/confirm-fixed/')));
+  Future<GuaranteeClaim> withdrawGuaranteeClaim(int id) async =>
+      GuaranteeClaim.fromJson(asMap(await client.post('/guarantee-claims/$id/withdraw/')));
+  Future<GuaranteeClaim> escalateGuaranteeClaim(int id, {String details = ''}) async => GuaranteeClaim.fromJson(
+      asMap(await client.post('/guarantee-claims/$id/escalate/', body: {'details': details})));
+
   // ---- Reviews & complaints ---------------------------------------------
   Future<Review> createReview(int bookingId, int rating, String comment) async => Review.fromJson(
       asMap(await client.post('/reviews/', body: {'booking': bookingId, 'rating': rating, 'comment': comment})));

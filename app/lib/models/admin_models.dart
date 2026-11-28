@@ -177,7 +177,7 @@ class PlatformSettings {
       this.reminderSmsEnabled = false, this.noShowGraceMinutes = 30, this.cancellationFeeEnabled = true,
       this.cancellationFreeMinutes = 5, this.cancellationWindowMinutes = 120, this.lateCancellationFee = '200.00',
       this.onTheWayCancellationFee = '300.00', this.tipsEnabled = true, this.tipMaxAmount = '5000.00',
-      this.tipWindowDays = 7, this.updatedAt});
+      this.tipWindowDays = 7, this.guaranteeEnabled = true, this.guaranteeDays = 7, this.updatedAt});
   factory PlatformSettings.fromJson(Map<String, dynamic> j) => PlatformSettings(
       commissionPercent: str(j['commission_percent']),
       emergencyFee: str(j['emergency_fee']),
@@ -198,6 +198,8 @@ class PlatformSettings {
       tipsEnabled: j['tips_enabled'] != false,
       tipMaxAmount: j['tip_max_amount'] == null ? '5000.00' : str(j['tip_max_amount']),
       tipWindowDays: parseInt(j['tip_window_days'], 7),
+      guaranteeEnabled: j['guarantee_enabled'] != false,
+      guaranteeDays: parseInt(j['guarantee_days'], 7),
       updatedAt: parseDate(j['updated_at']));
   final bool cancellationFeeEnabled;
   final int cancellationFreeMinutes;
@@ -207,6 +209,8 @@ class PlatformSettings {
   final bool tipsEnabled;
   final String tipMaxAmount;
   final int tipWindowDays;
+  final bool guaranteeEnabled;
+  final int guaranteeDays;
   final bool reminderSmsEnabled;
   final int noShowGraceMinutes;
   final String referralReward;

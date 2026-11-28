@@ -18,6 +18,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get aboutYou => 'About you';
 
   @override
+  String get accept => 'Accept';
+
+  @override
+  String get acceptAndPickTime => 'Accept and pick a time';
+
+  @override
   String get accountTitle => 'Account holder name';
 
   @override
@@ -114,6 +120,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get anyWorkerNearby => 'Any free worker nearby';
 
   @override
+  String get anythingToAdd => 'Anything to add? (optional)';
+
+  @override
   String get appName => 'KaamNow';
 
   @override
@@ -143,6 +152,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get arriveInMinutes => 'You can arrive in (minutes)';
+
+  @override
+  String get askFreeFix => 'Ask for a free fix';
+
+  @override
+  String get askFreeFixHint =>
+      'Tell the worker what went wrong again. They will answer within 48 hours.';
 
   @override
   String get askedForYou => 'The customer asked for you';
@@ -390,6 +406,52 @@ class AppLocalizationsEn extends AppLocalizations {
   String get chooseService => 'Choose a service.';
 
   @override
+  String get claimAcceptedMsg => 'Accepted. The customer has been told.';
+
+  @override
+  String claimAnswerBy(Object time) {
+    return 'The customer asked for a free fix. Please answer by $time.';
+  }
+
+  @override
+  String get claimDeclined => 'The worker declined the claim.';
+
+  @override
+  String get claimDeclinedMsg => 'Declined. The customer has been told.';
+
+  @override
+  String get claimEscalated => 'Sent to the KaamNow team. We will contact you.';
+
+  @override
+  String get claimEscalatedMsg => 'Sent. You can follow it under complaints.';
+
+  @override
+  String get claimFixed => 'Fixed. The claim is closed.';
+
+  @override
+  String get claimRedoDone => 'The worker says it is fixed.';
+
+  @override
+  String get claimRedoDoneMsg => 'The customer will be asked to confirm.';
+
+  @override
+  String get claimSent => 'Claim sent to the worker.';
+
+  @override
+  String get claimWaitingWorker => 'Waiting for the worker to answer.';
+
+  @override
+  String get claimWithdrawn => 'The claim was withdrawn.';
+
+  @override
+  String get claimWithdrawnMsg => 'Claim withdrawn.';
+
+  @override
+  String claimWorkerComing(Object time) {
+    return 'The worker will come back $time to fix it for free.';
+  }
+
+  @override
   String get close => 'Close';
 
   @override
@@ -626,6 +688,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String daysAgo(Object n) {
     return '$n d ago';
   }
+
+  @override
+  String get declineClaim => 'Decline';
+
+  @override
+  String get declineClaimHint =>
+      'Tell the customer why. They can send the claim to the KaamNow team if they disagree.';
 
   @override
   String get defaultAddress => 'Default address';
@@ -930,6 +999,14 @@ class AppLocalizationsEn extends AppLocalizations {
       'Upload both sides of your CNIC, add your services and set your base location. KaamNow reviews new workers before they can bid.';
 
   @override
+  String get guaranteeClaim => 'Work guarantee';
+
+  @override
+  String guaranteeUntil(Object date) {
+    return 'guarantee until $date';
+  }
+
+  @override
   String get helpAndComplaints => 'Help and complaints';
 
   @override
@@ -1019,6 +1096,9 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get iosInstallSteps =>
       'In Safari, tap the Share button, then choose “Add to Home Screen”.';
+
+  @override
+  String get itsFixed => 'It\'s fixed';
 
   @override
   String get iveArrived => 'I’ve arrived';
@@ -1213,6 +1293,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get markCompleteQ => 'Mark the job as complete?';
+
+  @override
+  String get markFixDone => 'Mark fix done';
 
   @override
   String get maxAddressesReached => 'You have 10 addresses, the most allowed.';
@@ -1900,6 +1983,12 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get problem => 'Problem';
+
+  @override
+  String get problemCameBack => 'Problem came back? Ask for a free fix';
+
+  @override
   String get profileSaved => 'Profile saved.';
 
   @override
@@ -2379,6 +2468,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get send => 'Send';
 
   @override
+  String get sendClaim => 'Send claim';
+
+  @override
   String get sendCode => 'Send code';
 
   @override
@@ -2398,6 +2490,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sendToEveryone => 'Send to everyone';
+
+  @override
+  String get sendToKaamNow => 'Send to KaamNow team';
+
+  @override
+  String get sendToKaamNowHint =>
+      'Our team will look at the job, the photos and the chat, and contact you.';
 
   @override
   String get sendYourPrice => 'Send your price';
@@ -2726,6 +2825,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get textMyContacts => 'Text it to my emergency contacts';
 
   @override
+  String get thanksConfirmed => 'Thanks for confirming.';
+
+  @override
   String get thanksForReview => 'Thanks for your review!';
 
   @override
@@ -2874,6 +2976,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get toWord => 'to';
+
+  @override
+  String get today => 'Today';
+
+  @override
+  String get tomorrow => 'Tomorrow';
 
   @override
   String get topLevelReached => 'You are at the top level. Keep it up!';
@@ -3029,6 +3137,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get whatWentWrong => 'What went wrong?';
 
   @override
+  String get whatWentWrongAgain => 'What went wrong?';
+
+  @override
+  String get whenComeBack => 'When will you come back?';
+
+  @override
   String whenWorkerFree(String name, String day) {
     return 'When $name is free on $day';
   }
@@ -3040,6 +3154,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get withdraw => 'Withdraw';
+
+  @override
+  String get withdrawClaimBody => 'You cannot make another claim for this job.';
+
+  @override
+  String get withdrawClaimQ => 'Withdraw this claim?';
 
   @override
   String get withdrawHint => 'You cannot bid on this job again.';
@@ -3083,6 +3203,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get workerSaved => 'Worker saved. Find them in My workers.';
+
+  @override
+  String get workerSays => 'Worker';
 
   @override
   String get workerSignupHint =>

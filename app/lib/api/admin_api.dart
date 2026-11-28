@@ -179,6 +179,9 @@ class AdminApi {
       AdminReview.fromJson(asMap(await client.post('/admin/reviews/$id/photos/$photoId/${hidden ? 'hide' : 'unhide'}/',
           body: hidden ? {'reason': reason} : null)));
 
+  Future<Paged<GuaranteeClaim>> guaranteeClaims({String? status, int page = 1}) async => Paged.parse(
+      await client.get('/admin/guarantee-claims/', query: {'status': status, 'page': page}), GuaranteeClaim.fromJson);
+
   Future<Paged<TipInfo>> tips({String? status, int page = 1}) async =>
       Paged.parse(await client.get('/admin/tips/', query: {'status': status, 'page': page}), TipInfo.fromJson);
 
