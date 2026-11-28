@@ -352,7 +352,8 @@ class Booking {
       this.cancelReason = '', this.completedAt, this.statusHistory = const [], this.commission,
       this.hasReview = false, this.createdAt, this.durationMinutes = 120, this.noShowReported,
       this.canReportNoShow, this.noShowOpensAt, this.canSos = false, this.sosStatus, this.sharingUntil, this.packageId, this.cancellationFee, this.tip, this.canTip = false,
-      this.jobPhotos = const JobPhotoSummary(), this.guarantee = const BookingGuarantee()});
+      this.jobPhotos = const JobPhotoSummary(), this.guarantee = const BookingGuarantee(),
+      this.workerFinishedAt, this.autoCompleteAt});
 
   factory Booking.fromJson(Map<String, dynamic> j) => Booking(
         id: parseInt(j['id']),
@@ -370,6 +371,8 @@ class Booking {
         contact: asMap(j['contact']),
         cancelReason: str(j['cancel_reason']),
         completedAt: parseDate(j['completed_at']),
+        workerFinishedAt: parseDate(j['worker_finished_at']),
+        autoCompleteAt: parseDate(j['auto_complete_at']),
         statusHistory: parseList(j['status_history'], BookingStatusLog.fromJson),
         commission: j['commission'] == null ? null : asMap(j['commission']),
         hasReview: j['has_review'] == true,
@@ -421,6 +424,12 @@ class Booking {
   final Map<String, dynamic> contact;
   final String cancelReason;
   final DateTime? completedAt;
+
+  /// When the worker said the work is finished (the customer is asked to tap Job completed).
+  final DateTime? workerFinishedAt;
+
+  /// When a job the worker marked finished completes on its own if the customer does not answer.
+  final DateTime? autoCompleteAt;
   final List<BookingStatusLog> statusHistory;
   final Map<String, dynamic>? commission;
   final bool hasReview;

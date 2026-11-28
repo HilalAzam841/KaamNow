@@ -18,6 +18,7 @@ from .models import Booking, ServiceRequest
 from .serializers import (
     BookingCancelSerializer,
     NoShowSerializer,
+    NotFinishedSerializer,
     BookingCompleteSerializer,
     BookingSerializer,
     BookingStatusSerializer,
@@ -240,7 +241,8 @@ class BookingViewSet(viewsets.ReadOnlyModelViewSet):
 
     @extend_schema(
         tags=["bookings"], request=BookingCompleteSerializer, responses={200: BookingSerializer},
-        summary="Worker: complete with the customer's OTP. Customer: confirm completion in-app.",
+        summary="Customer: tap Job completed (`{\"confirm\": true}`). The app uses this. A worker can still "
+                "complete with a code from `completion-otp/` if the customer has no phone with the app.",
     )
     @action(detail=True, methods=["post"])
     def complete(self, request, pk=None):
@@ -258,6 +260,24 @@ class BookingViewSet(viewsets.ReadOnlyModelViewSet):
             booking = services.complete_booking_with_otp(booking, request.user, otp)
         else:
             raise PermissionDenied()
+        return Response(BookingSerializer(self.get_queryset().get(pk=booking.pk), context={"request": request}).data)
+
+    @extend_schema(tags=["bookings"], request=None, responses={200: BookingSerializer},
+                   summary="Worker: say the work is finished. The customer is asked to tap Job completed; if they "
+                           "do not answer, the job completes on its own after JOB_AUTO_COMPLETE_HOURS. Calling "
+                           "it again reminds the customer.")
+    @action(detail=True, methods=["post"])
+    def finished(self, request, pk=None):
+        booking = services.mark_worker_finished(self.get_object(), request.user)
+        return Response(BookingSerializer(self.get_queryset().get(pk=booking.pk), context={"request": request}).data)
+
+    @extend_schema(tags=["bookings"], request=NotFinishedSerializer, responses={200: BookingSerializer},
+                   summary="Customer: the worker said it is finished, but it is not. The worker is told why.")
+    @action(detail=True, methods=["post"], url_path="not-finished")
+    def not_finished(self, request, pk=None):
+        serializer = NotFinishedSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        booking = services.customer_not_finished(self.get_object(), request.user, serializer.validated_data["reason"])
         return Response(BookingSerializer(self.get_queryset().get(pk=booking.pk), context={"request": request}).data)
 
     @extend_schema(tags=["bookings"], request=NoShowSerializer, responses={200: BookingSerializer},

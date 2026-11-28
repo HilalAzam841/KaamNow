@@ -510,6 +510,83 @@ def confirm_completion_by_customer(booking, customer_user):
     return _finalize_completion(booking, customer_user, "customer_confirmation")
 
 
+def auto_complete_at(booking):
+    """When a job the worker marked finished completes on its own, or None."""
+    if booking.status != Booking.Status.IN_PROGRESS or not booking.worker_finished_at:
+        return None
+    return booking.worker_finished_at + timedelta(hours=settings.KAAMNOW["JOB_AUTO_COMPLETE_HOURS"])
+
+
+@transaction.atomic
+def mark_worker_finished(booking, worker_user):
+    """The worker says the work is done. The customer is asked to tap "Job completed". Calling it
+    again re-sends the reminder (not more often than WORKER_FINISHED_REMIND_MINUTES) without
+    moving the auto-complete time."""
+    booking = Booking.objects.select_for_update().select_related("worker__user", "customer", "request").get(pk=booking.pk)
+    if booking.worker.user_id != worker_user.pk:
+        raise BusinessRuleError(_("Only the assigned worker can say the job is finished."), status_code=403)
+    if booking.status != Booking.Status.IN_PROGRESS:
+        raise BusinessRuleError(_("Booking is not in progress."), status_code=http_status.HTTP_409_CONFLICT)
+    from django.core.cache import cache
+
+    now = timezone.now()
+    cache_key = f"worker-finished-remind:{booking.pk}"
+    if cache.get(cache_key) is not None:
+        raise BusinessRuleError(_("The customer was just reminded. Please wait a few minutes."),
+                                status_code=http_status.HTTP_429_TOO_MANY_REQUESTS)
+    cache.set(cache_key, now.isoformat(), settings.KAAMNOW["WORKER_FINISHED_REMIND_MINUTES"] * 60)
+    if booking.worker_finished_at is None:
+        booking.worker_finished_at = now
+        booking.save(update_fields=["worker_finished_at", "updated_at"])
+        _log(booking, booking.status, booking.status, worker_user, "Worker finished the work")
+    notify(
+        booking.customer, Notification.Type.BOOKING_STATUS, t("Is the job done?"),
+        t("{name} says the work on \"{job}\" is finished. Open the booking and tap Job completed.",
+          name=booking.worker.user.full_name, job=booking.request.title),
+        {"booking_id": booking.pk},
+    )
+    return booking
+
+
+@transaction.atomic
+def customer_not_finished(booking, customer_user, reason):
+    """The customer says the work is not finished yet. The worker is told why and carries on."""
+    booking = Booking.objects.select_for_update().select_related("worker__user", "customer").get(pk=booking.pk)
+    if booking.customer_id != customer_user.pk:
+        raise BusinessRuleError(_("Only the customer can answer this."), status_code=403)
+    if booking.status != Booking.Status.IN_PROGRESS or not booking.worker_finished_at:
+        raise BusinessRuleError(_("The worker has not said the job is finished."),
+                                status_code=http_status.HTTP_409_CONFLICT)
+    booking.worker_finished_at = None
+    booking.save(update_fields=["worker_finished_at", "updated_at"])
+    from django.core.cache import cache
+
+    cache.delete(f"worker-finished-remind:{booking.pk}")
+    _log(booking, booking.status, booking.status, customer_user, f"Customer: not finished yet ({reason})"[:255])
+    notify(
+        booking.worker.user, Notification.Type.BOOKING_STATUS, t("Not finished yet"),
+        t("The customer says the job is not finished yet: {reason}", reason=reason), {"booking_id": booking.pk},
+    )
+    return booking
+
+
+def auto_complete_finished_jobs():
+    """Completes jobs the worker marked finished when the customer did not answer in time, so the
+    worker is free for new requests."""
+    cutoff = timezone.now() - timedelta(hours=settings.KAAMNOW["JOB_AUTO_COMPLETE_HOURS"])
+    done = 0
+    for pk in Booking.objects.filter(status=Booking.Status.IN_PROGRESS, worker_finished_at__lte=cutoff).values_list(
+            "pk", flat=True):
+        with transaction.atomic():
+            booking = Booking.objects.select_for_update().select_related("worker__user", "customer").get(pk=pk)
+            if booking.status != Booking.Status.IN_PROGRESS or not booking.worker_finished_at \
+                    or booking.worker_finished_at > cutoff:
+                continue
+            _finalize_completion(booking, None, "auto")
+            done += 1
+    return done
+
+
 def expire_stale_requests():
     """Expires open requests whose preferred time passed long ago and closes their offers."""
     from apps.offers.models import WorkerOffer

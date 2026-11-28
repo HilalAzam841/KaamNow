@@ -78,6 +78,18 @@
   "askedForYou": "The customer asked for you",
   "atLeast5": "At least 5 characters",
   "atLeast8": "At least 8 characters",
+  "autoCompletesAt": "If you do not answer, it completes on its own at {time}.",
+  "@autoCompletesAt": {
+    "placeholders": {
+      "time": {}
+    }
+  },
+  "autoCompletesAtWorker": "If they do not answer, it completes on its own at {time}.",
+  "@autoCompletesAtWorker": {
+    "placeholders": {
+      "time": {}
+    }
+  },
   "availableAnyTime": "Available any time",
   "availableAnyTimeHelp": "Turn off to set the days and hours you work.",
   "back": "Back",
@@ -374,6 +386,7 @@
     }
   },
   "customer": "Customer",
+  "customerAskedToConfirm": "The customer has been asked to confirm.",
   "customerBudget": "Customer budget: {amount}",
   "@customerBudget": {
     "placeholders": {
@@ -382,6 +395,7 @@
   },
   "customerCounteredShort": "Customer countered. Your move.",
   "customerCounteredYourMove": "The customer made a counter offer. Your move.",
+  "customerDoneHint": "When the work is done, tap Job completed. The job closes and the worker is free for new requests.",
   "customerNotPaid": "The customer has not paid yet.",
   "customerNotThere": "Customer not there",
   "customerNotThereQ": "Report that the customer was not there?",
@@ -550,6 +564,8 @@
   },
   "filterActive": "Active",
   "finishPayingNewTab": "Finish paying in the new tab. Your plan activates once it is confirmed.",
+  "finishedBody": "The customer will be asked to tap Job completed.",
+  "finishedQ": "Finished the work?",
   "firstVisit": "First visit",
   "fixedPricePackage": "Fixed-price package",
   "fixedPricePackages": "Fixed-price packages",
@@ -662,9 +678,11 @@
   "iosInstallSteps": "In Safari, tap the Share button, then choose “Add to Home Screen”.",
   "itsFixed": "It's fixed",
   "iveArrived": "I’ve arrived",
+  "iveFinished": "I've finished the job",
   "job": "Job",
   "jobAddress": "Job address",
   "jobCompleted": "Job completed.",
+  "jobCompletedButton": "Job completed",
   "jobIsBooked": "This job is booked",
   "jobLocation": "Job location",
   "jobNowRepeats": "This job now repeats.",
@@ -940,6 +958,8 @@
   "noWorkersYet": "No workers yet",
   "noWorkersYetHint": "Tap the heart on a worker you liked to save them. Workers who finish a job for you also show here.",
   "noneFree": "none free",
+  "notFinishedReason": "What is still left to do?",
+  "notFinishedYet": "Not finished yet",
   "notNow": "Not now",
   "noteOptional": "Note (optional)",
   "numberConfirmed": "Phone number confirmed.",
@@ -1244,6 +1264,8 @@
   },
   "reject": "Reject",
   "rejectOfferQ": "Reject this offer?",
+  "remindCustomer": "Remind the customer",
+  "reminderSent": "Reminder sent.",
   "remove": "Remove",
   "removeContactQ": "Remove {name}?",
   "@removeContactQ": {
@@ -1821,6 +1843,7 @@
     }
   },
   "waitingForCustomer": "Waiting for the customer.",
+  "waitingForCustomerDone": "Waiting for the customer to tap Job completed.",
   "waitingForCustomerShort": "Waiting for customer",
   "waitingForGateway": "Waiting for the payment gateway to confirm.",
   "waitingForOffers": "Waiting for offers",
@@ -1898,7 +1921,14 @@
   "workerProfileServicesDocs": "Worker profile, services and documents",
   "workerSaved": "Worker saved. Find them in My workers.",
   "workerSays": "Worker",
+  "workerSaysFinished": "{name} says the work is finished. Tap Job completed if you are happy with it.",
+  "@workerSaysFinished": {
+    "placeholders": {
+      "name": {}
+    }
+  },
   "workerSignupHint": "After signing up, upload your CNIC so KaamNow can verify you before you send offers.",
+  "workerToldNotFinished": "The worker has been told.",
   "workerUnsaved": "Removed from saved workers.",
   "workingHours": "Working hours",
   "worksIn": "Works in {area}",

@@ -169,6 +169,16 @@ class AppLocalizationsUr extends AppLocalizations {
   String get atLeast8 => 'کم از کم 8 حروف';
 
   @override
+  String autoCompletesAt(Object time) {
+    return 'اگر آپ نے جواب نہ دیا تو یہ $time پر خود مکمل ہو جائے گا۔';
+  }
+
+  @override
+  String autoCompletesAtWorker(Object time) {
+    return 'اگر انہوں نے جواب نہ دیا تو یہ $time پر خود مکمل ہو جائے گا۔';
+  }
+
+  @override
   String get availableAnyTime => 'کسی بھی وقت دستیاب';
 
   @override
@@ -654,6 +664,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String get customer => 'گاہک';
 
   @override
+  String get customerAskedToConfirm => 'گاہک سے تصدیق کرنے کو کہا گیا ہے۔';
+
+  @override
   String customerBudget(Object amount) {
     return 'گاہک کا بجٹ: $amount';
   }
@@ -664,6 +677,10 @@ class AppLocalizationsUr extends AppLocalizations {
   @override
   String get customerCounteredYourMove =>
       'گاہک نے جوابی قیمت دی ہے۔ اب آپ کی باری ہے۔';
+
+  @override
+  String get customerDoneHint =>
+      'کام ہو جائے تو \"کام مکمل ہو گیا\" دبائیں۔ کام بند ہو جائے گا اور کاریگر نئی درخواستیں لے سکے گا۔';
 
   @override
   String get customerNotPaid => 'گاہک نے ابھی ادائیگی نہیں کی۔';
@@ -926,6 +943,13 @@ class AppLocalizationsUr extends AppLocalizations {
       'نئے ٹیب میں ادائیگی مکمل کریں۔ تصدیق ہوتے ہی آپ کا پلان فعال ہو جائے گا۔';
 
   @override
+  String get finishedBody =>
+      'گاہک سے \"کام مکمل ہو گیا\" دبانے کو کہا جائے گا۔';
+
+  @override
+  String get finishedQ => 'کام ختم ہو گیا؟';
+
+  @override
   String get firstVisit => 'پہلی بار';
 
   @override
@@ -1106,6 +1130,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String get iveArrived => 'میں پہنچ گیا ہوں';
 
   @override
+  String get iveFinished => 'میں نے کام ختم کر لیا';
+
+  @override
   String get job => 'کام';
 
   @override
@@ -1113,6 +1140,9 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get jobCompleted => 'کام مکمل ہو گیا۔';
+
+  @override
+  String get jobCompletedButton => 'کام مکمل ہو گیا';
 
   @override
   String get jobIsBooked => 'یہ کام بک ہو چکا ہے';
@@ -1612,6 +1642,12 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get noneFree => 'کوئی فارغ نہیں';
+
+  @override
+  String get notFinishedReason => 'ابھی کیا کام باقی ہے؟';
+
+  @override
+  String get notFinishedYet => 'ابھی کام باقی ہے';
 
   @override
   String get notNow => 'ابھی نہیں';
@@ -2152,6 +2188,12 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get rejectOfferQ => 'یہ پیشکش مسترد کریں؟';
+
+  @override
+  String get remindCustomer => 'گاہک کو یاد دلائیں';
+
+  @override
+  String get reminderSent => 'یاد دہانی بھیج دی گئی۔';
 
   @override
   String get remove => 'ہٹائیں';
@@ -3080,6 +3122,10 @@ class AppLocalizationsUr extends AppLocalizations {
   String get waitingForCustomer => 'گاہک کا انتظار ہے۔';
 
   @override
+  String get waitingForCustomerDone =>
+      'گاہک کے \"کام مکمل ہو گیا\" دبانے کا انتظار ہے۔';
+
+  @override
   String get waitingForCustomerShort => 'گاہک کا انتظار';
 
   @override
@@ -3213,8 +3259,16 @@ class AppLocalizationsUr extends AppLocalizations {
   String get workerSays => 'کاریگر';
 
   @override
+  String workerSaysFinished(Object name) {
+    return '$name کہتے ہیں کہ کام ہو گیا ہے۔ اگر آپ مطمئن ہیں تو \"کام مکمل ہو گیا\" دبائیں۔';
+  }
+
+  @override
   String get workerSignupHint =>
       'سائن اپ کے بعد اپنا شناختی کارڈ اپ لوڈ کریں تاکہ پیشکش بھیجنے سے پہلے کام ناؤ آپ کی تصدیق کر سکے۔';
+
+  @override
+  String get workerToldNotFinished => 'کاریگر کو بتا دیا گیا ہے۔';
 
   @override
   String get workerUnsaved => 'محفوظ کردہ ورکرز سے ہٹا دیا گیا۔';

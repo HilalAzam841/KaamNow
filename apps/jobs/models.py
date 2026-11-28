@@ -117,6 +117,9 @@ class Booking(TimeStampedModel):
     completion_otp_attempts = models.PositiveSmallIntegerField(default=0)
     completion_otp_sent_at = models.DateTimeField(null=True, blank=True)
     completed_via = models.CharField(max_length=30, blank=True)
+    # The worker said they finished. The customer then taps "Job completed"; if they do not answer,
+    # the job completes on its own after JOB_AUTO_COMPLETE_HOURS.
+    worker_finished_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ["-created_at"]

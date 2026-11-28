@@ -3001,7 +3001,106 @@
           }
         },
         {
-          "name": "Customer: get completion OTP",
+          "name": "Worker: I've finished (asks the customer to confirm; again = reminder)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/bookings/{{booking_id}}/finished/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "bookings",
+                "{{booking_id}}",
+                "finished"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{worker_access}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Customer: not finished yet",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/bookings/{{booking_id}}/not-finished/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "bookings",
+                "{{booking_id}}",
+                "not-finished"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{customer_access}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"The tap still leaks\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Customer: Job completed",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/bookings/{{booking_id}}/complete/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "bookings",
+                "{{booking_id}}",
+                "complete"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{customer_access}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"confirm\": true\n}"
+            }
+          }
+        },
+        {
+          "name": "Customer: get a completion code (customers without the app)",
           "request": {
             "method": "POST",
             "header": [],
@@ -3039,7 +3138,7 @@
           ]
         },
         {
-          "name": "Worker: complete with OTP",
+          "name": "Worker: complete with the code (customers without the app)",
           "request": {
             "method": "POST",
             "header": [
@@ -3071,42 +3170,6 @@
             "body": {
               "mode": "raw",
               "raw": "{\n  \"otp\": \"{{otp}}\"\n}"
-            }
-          }
-        },
-        {
-          "name": "Customer: confirm completion in-app (alternative)",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/bookings/{{booking_id}}/complete/",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "bookings",
-                "{{booking_id}}",
-                "complete"
-              ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{customer_access}}"
-                }
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"confirm\": true\n}"
             }
           }
         },
