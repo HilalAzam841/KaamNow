@@ -14,6 +14,7 @@ from apps.tracking.views import BookingLocationView
 from apps.safety.views import BookingShareView, BookingSosView
 from apps.portfolio.views import MyPortfolioPhotoView, MyPortfolioReorderView, MyPortfolioView, WorkerPortfolioView
 from apps.jobphotos.views import BookingPhotoFileView, BookingPhotosView, BookingPhotoView
+from apps.guarantee.views import BookingGuaranteeView
 from apps.jobs.urls import bookings_router, requests_router
 from apps.offers.urls import offer_urlpatterns, request_offer_urlpatterns
 from apps.promotions.urls import referral_urlpatterns
@@ -52,10 +53,12 @@ api_v1 = [
     path("bookings/<int:booking_id>/photos/", BookingPhotosView.as_view(), name="booking-photos"),
     path("bookings/<int:booking_id>/photos/<int:pk>/", BookingPhotoView.as_view(), name="booking-photo"),
     path("bookings/<int:booking_id>/photos/<int:pk>/file/", BookingPhotoFileView.as_view(), name="booking-photo-file"),
+    path("bookings/<int:booking_id>/guarantee/", BookingGuaranteeView.as_view(), name="booking-guarantee"),
     path("bookings/", include(bookings_router.urls)),
     path("payments/", include(payment_urlpatterns)),
     path("cancellation-fees/", include("apps.cancellations.urls")),
     path("tips/", include("apps.tips.urls")),
+    path("guarantee-claims/", include("apps.guarantee.urls")),
     path("subscriptions/", include(subscription_urlpatterns)),
     path("featured/", include(featured_urlpatterns)),
     path("reviews/", include("apps.reviews.urls")),

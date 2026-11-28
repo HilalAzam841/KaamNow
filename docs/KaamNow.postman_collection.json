@@ -4816,6 +4816,294 @@
           }
         },
         {
+          "name": "Customer: ask for a free fix (work guarantee)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/bookings/{{booking_id}}/guarantee/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "bookings",
+                "{{booking_id}}",
+                "guarantee"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{customer_access}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"problem\": \"The fan stopped working again after two days\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set('guarantee_claim_id', pm.response.json().data.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "My guarantee claims",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/guarantee-claims/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "guarantee-claims"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{customer_access}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Worker: accept a claim and pick a time",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/guarantee-claims/{{guarantee_claim_id}}/accept/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "guarantee-claims",
+                "{{guarantee_claim_id}}",
+                "accept"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{worker_access}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"redo_time\": \"2026-12-01T10:00:00+05:00\",\n  \"note\": \"Will bring a new capacitor\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Worker: decline a claim",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/guarantee-claims/{{guarantee_claim_id}}/decline/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "guarantee-claims",
+                "{{guarantee_claim_id}}",
+                "decline"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{worker_access}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"The motor burnt out, which was not part of my repair\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Worker: mark the fix done",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/guarantee-claims/{{guarantee_claim_id}}/redo-done/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "guarantee-claims",
+                "{{guarantee_claim_id}}",
+                "redo-done"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{worker_access}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Customer: confirm it is fixed",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/guarantee-claims/{{guarantee_claim_id}}/confirm-fixed/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "guarantee-claims",
+                "{{guarantee_claim_id}}",
+                "confirm-fixed"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{customer_access}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Customer: send a claim to the KaamNow team",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/guarantee-claims/{{guarantee_claim_id}}/escalate/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "guarantee-claims",
+                "{{guarantee_claim_id}}",
+                "escalate"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{customer_access}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"details\": \"It is the same fault as before\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Customer: withdraw a claim",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/guarantee-claims/{{guarantee_claim_id}}/withdraw/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "guarantee-claims",
+                "{{guarantee_claim_id}}",
+                "withdraw"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{customer_access}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Admin: guarantee claims",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/guarantee-claims/?status=pending",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "guarantee-claims",
+                "?status=pending"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_access}}"
+                }
+              ]
+            }
+          }
+        },
+        {
           "name": "Review worker",
           "request": {
             "method": "POST",

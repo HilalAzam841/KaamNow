@@ -813,6 +813,141 @@ msgstr "آپ خود کو محفوظ نہیں کر سکتے۔"
 msgid "You can save up to 100 workers. Remove one first."
 msgstr "آپ زیادہ سے زیادہ 100 ورکر محفوظ کر سکتے ہیں۔ پہلے کوئی ایک ہٹائیں۔"
 
+#: apps/guarantee/services.py
+msgid "Only the customer can make a guarantee claim."
+msgstr "صرف گاہک گارنٹی کا دعویٰ کر سکتا ہے۔"
+
+#: apps/guarantee/services.py
+msgid "The work guarantee is turned off."
+msgstr "کام کی گارنٹی بند ہے۔"
+
+#: apps/guarantee/services.py
+msgid "You can claim the guarantee once the job is completed."
+msgstr "کام مکمل ہونے کے بعد آپ گارنٹی کا دعویٰ کر سکتے ہیں۔"
+
+#: apps/guarantee/services.py
+msgid "You already made a guarantee claim for this job."
+msgstr "آپ اس کام کے لیے پہلے ہی گارنٹی کا دعویٰ کر چکے ہیں۔"
+
+#: apps/guarantee/services.py
+msgid "The guarantee for this job ended %(days)d days after it was completed."
+msgstr "اس کام کی گارنٹی مکمل ہونے کے %(days)d دن بعد ختم ہو گئی۔"
+
+#: apps/guarantee/services.py
+msgid "Describe the problem in a few words (at least 10 characters)."
+msgstr "مسئلہ چند الفاظ میں بتائیں (کم از کم 10 حروف)۔"
+
+#: apps/guarantee/services.py
+#, python-brace-format
+msgid "Guarantee claim on \"{job}\""
+msgstr "\"{job}\" پر گارنٹی کا دعویٰ"
+
+#: apps/guarantee/services.py
+#, python-brace-format
+msgid "{name} says the problem came back. Please answer within 48 hours."
+msgstr "{name} کہتے ہیں کہ مسئلہ دوبارہ آ گیا ہے۔ براہ کرم 48 گھنٹوں میں جواب دیں۔"
+
+#: apps/guarantee/services.py
+msgid "Only the worker on this job can do this."
+msgstr "یہ صرف اس کام کا کاریگر کر سکتا ہے۔"
+
+#: apps/guarantee/services.py
+msgid "Only the customer can do this."
+msgstr "یہ صرف گاہک کر سکتا ہے۔"
+
+#: apps/guarantee/services.py
+msgid "This claim has already been answered."
+msgstr "اس دعوے کا جواب پہلے ہی دیا جا چکا ہے۔"
+
+#: apps/guarantee/services.py
+msgid "Pick a time to come back within the next %(days)d days."
+msgstr "اگلے %(days)d دنوں میں واپس آنے کا وقت چنیں۔"
+
+#: apps/guarantee/services.py
+#, python-brace-format
+msgid "{name} will fix it for free"
+msgstr "{name} اسے مفت ٹھیک کریں گے"
+
+#: apps/guarantee/services.py
+msgid "Your guarantee claim was accepted. Open the booking to see when they will come."
+msgstr "آپ کا گارنٹی کا دعویٰ قبول ہو گیا۔ وہ کب آئیں گے، یہ دیکھنے کے لیے بکنگ کھولیں۔"
+
+#: apps/guarantee/services.py
+msgid "Explain why in a few words (at least 10 characters)."
+msgstr "وجہ چند الفاظ میں بتائیں (کم از کم 10 حروف)۔"
+
+#: apps/guarantee/services.py
+msgid "Guarantee claim declined"
+msgstr "گارنٹی کا دعویٰ مسترد"
+
+#: apps/guarantee/services.py
+msgid "The worker declined your claim. If you disagree, send it to the KaamNow team."
+msgstr "کاریگر نے آپ کا دعویٰ مسترد کر دیا۔ اگر آپ متفق نہیں تو اسے کام ناؤ ٹیم کو بھیجیں۔"
+
+#: apps/guarantee/services.py
+msgid "Accept the claim before marking the fix done."
+msgstr "مرمت مکمل کرنے سے پہلے دعویٰ قبول کریں۔"
+
+#: apps/guarantee/services.py
+msgid "Is it fixed now?"
+msgstr "کیا اب ٹھیک ہو گیا؟"
+
+#: apps/guarantee/services.py
+msgid "The worker says the problem is fixed. Please confirm, or send it to the KaamNow team."
+msgstr "کاریگر کہتے ہیں کہ مسئلہ ٹھیک ہو گیا ہے۔ براہ کرم تصدیق کریں، یا اسے کام ناؤ ٹیم کو بھیجیں۔"
+
+#: apps/guarantee/services.py
+msgid "There is no fix to confirm on this claim."
+msgstr "اس دعوے پر تصدیق کے لیے کوئی مرمت نہیں ہے۔"
+
+#: apps/guarantee/services.py
+msgid "Guarantee claim closed"
+msgstr "گارنٹی کا دعویٰ بند"
+
+#: apps/guarantee/services.py
+msgid "The customer confirmed the problem is fixed. Thank you!"
+msgstr "گاہک نے تصدیق کی کہ مسئلہ ٹھیک ہو گیا ہے۔ شکریہ!"
+
+#: apps/guarantee/services.py
+msgid "This claim is already closed."
+msgstr "یہ دعویٰ پہلے ہی بند ہے۔"
+
+#: apps/guarantee/services.py
+msgid "Guarantee claim withdrawn"
+msgstr "گارنٹی کا دعویٰ واپس"
+
+#: apps/guarantee/services.py
+msgid "The customer withdrew their guarantee claim."
+msgstr "گاہک نے اپنا گارنٹی کا دعویٰ واپس لے لیا۔"
+
+#: apps/guarantee/services.py
+msgid "The worker has 48 hours to answer. You can send it to the KaamNow team after that."
+msgstr "کاریگر کے پاس جواب دینے کے لیے 48 گھنٹے ہیں۔ اس کے بعد آپ اسے کام ناؤ ٹیم کو بھیج سکتے ہیں۔"
+
+#: apps/guarantee/services.py
+msgid "This claim cannot be sent to the KaamNow team now."
+msgstr "یہ دعویٰ ابھی کام ناؤ ٹیم کو نہیں بھیجا جا سکتا۔"
+
+#: apps/guarantee/services.py
+msgid "Worker's answer: %(note)s"
+msgstr "کاریگر کا جواب: %(note)s"
+
+#: apps/guarantee/services.py
+msgid "More from the customer: %(details)s"
+msgstr "گاہک کی مزید بات: %(details)s"
+
+#: apps/guarantee/services.py
+msgid "Guarantee claim on booking #%(id)d"
+msgstr "بکنگ نمبر %(id)d پر گارنٹی کا دعویٰ"
+
+#: apps/guarantee/services.py
+msgid "Guarantee claim sent to KaamNow"
+msgstr "گارنٹی کا دعویٰ کام ناؤ کو بھیج دیا گیا"
+
+#: apps/guarantee/services.py
+msgid "The customer asked the KaamNow team to look at their claim. We may contact you."
+msgstr "گاہک نے کام ناؤ ٹیم سے اپنا دعویٰ دیکھنے کو کہا ہے۔ ہم آپ سے رابطہ کر سکتے ہیں۔"
+
 #: apps/jobphotos/services.py
 msgid "Only the worker on this job can add or remove job photos."
 msgstr "صرف اس کام کا کاریگر کام کی تصاویر شامل یا ختم کر سکتا ہے۔"

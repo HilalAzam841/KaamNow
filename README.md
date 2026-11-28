@@ -406,6 +406,17 @@ After a job, customers can thank the worker with a tip. The whole tip goes to th
 | The customer sees the photos on the booking and is told when the first "after" photo is added | `job_photos` summary on bookings |
 | Admins can see a booking's photos for complaints and disputes. Every photo an admin opens is recorded in the audit log | `GET admin/bookings/{id}/photos/`, `GET admin/bookings/{id}/photos/{photo_id}/file/`, app: Admin → **Jobs** → booking |
 
+### Stage 32: work guarantee
+
+| Feature | Where |
+|---|---|
+| If a problem comes back within 7 days of a completed job (admins set the days, or switch it off), the customer asks the worker for a free fix, describing what went wrong. One claim per booking, only by the booking's customer | `POST bookings/{id}/guarantee/`, `guarantee` on bookings (`until`, `can_claim`, `claim`), app: booking screen |
+| The worker has 48 hours to accept, picking a time to come back within 14 days, or to decline with a reason the customer sees | `POST guarantee-claims/{id}/accept/`, `decline/`, app: booking screen |
+| After the fix, the worker marks it done and the customer confirms it is fixed. The customer can withdraw an open claim | `redo-done/`, `confirm-fixed/`, `withdraw/` |
+| The customer can send the claim to the KaamNow team if the worker declined, did not answer in 48 hours, did not come a day after the agreed time, or the fix did not work. This opens a complaint (category "Work guarantee claim") with the problem and the worker's answer, handled under Complaints | `escalate/`, `can_escalate` on claims |
+| The booking chat stays open while a claim is open, so they can arrange the visit | `apps/chat/services.py` |
+| Customers and workers see their claims; admins see every claim and set the guarantee days | `GET guarantee-claims/`, `GET admin/guarantee-claims/`, app: Admin → **Guarantee** and **Settings** |
+
 ---
 
 **Keys and accounts to add later** (payments, SMS, Firebase, Google Maps, app stores) and every `.env` value: [`docs/API_KEYS.md`](docs/API_KEYS.md).

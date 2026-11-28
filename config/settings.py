@@ -77,6 +77,7 @@ INSTALLED_APPS = [
     "apps.cancellations",
     "apps.tips",
     "apps.jobphotos",
+    "apps.guarantee",
     "apps.scheduling",
 ]
 
@@ -261,6 +262,7 @@ SPECTACULAR_SETTINGS = {
         "CancellationFeeStatusEnum": "apps.cancellations.models.CancellationFee.Status",
         "TipStatusEnum": "apps.tips.models.Tip.Status",
         "JobPhotoKindEnum": "apps.jobphotos.models.JobPhoto.Kind",
+        "GuaranteeClaimStatusEnum": "apps.guarantee.models.GuaranteeClaim.Status",
     },
 }
 

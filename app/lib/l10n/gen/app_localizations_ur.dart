@@ -18,6 +18,12 @@ class AppLocalizationsUr extends AppLocalizations {
   String get aboutYou => 'آپ کے بارے میں';
 
   @override
+  String get accept => 'قبول کریں';
+
+  @override
+  String get acceptAndPickTime => 'قبول کریں اور وقت چنیں';
+
+  @override
   String get accountTitle => 'اکاؤنٹ ہولڈر کا نام';
 
   @override
@@ -113,6 +119,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String get anyWorkerNearby => 'قریب کا کوئی بھی فارغ ورکر';
 
   @override
+  String get anythingToAdd => 'کچھ اور بتانا ہے؟ (اختیاری)';
+
+  @override
   String get appName => 'کام ناؤ';
 
   @override
@@ -142,6 +151,13 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get arriveInMinutes => 'آپ کتنے منٹ میں پہنچ سکتے ہیں';
+
+  @override
+  String get askFreeFix => 'مفت مرمت مانگیں';
+
+  @override
+  String get askFreeFixHint =>
+      'کاریگر کو بتائیں کہ دوبارہ کیا خراب ہوا۔ وہ 48 گھنٹوں میں جواب دیں گے۔';
 
   @override
   String get askedForYou => 'گاہک نے آپ کو بلایا ہے';
@@ -389,6 +405,54 @@ class AppLocalizationsUr extends AppLocalizations {
   String get chooseService => 'سروس منتخب کریں۔';
 
   @override
+  String get claimAcceptedMsg => 'قبول کر لیا۔ گاہک کو بتا دیا گیا ہے۔';
+
+  @override
+  String claimAnswerBy(Object time) {
+    return 'گاہک نے مفت مرمت مانگی ہے۔ براہ کرم $time تک جواب دیں۔';
+  }
+
+  @override
+  String get claimDeclined => 'کاریگر نے دعویٰ مسترد کر دیا۔';
+
+  @override
+  String get claimDeclinedMsg => 'مسترد کر دیا۔ گاہک کو بتا دیا گیا ہے۔';
+
+  @override
+  String get claimEscalated =>
+      'کام ناؤ ٹیم کو بھیج دیا گیا۔ ہم آپ سے رابطہ کریں گے۔';
+
+  @override
+  String get claimEscalatedMsg =>
+      'بھیج دیا گیا۔ آپ اسے شکایات میں دیکھ سکتے ہیں۔';
+
+  @override
+  String get claimFixed => 'ٹھیک ہو گیا۔ دعویٰ بند ہے۔';
+
+  @override
+  String get claimRedoDone => 'کاریگر کہتے ہیں کہ یہ ٹھیک ہو گیا ہے۔';
+
+  @override
+  String get claimRedoDoneMsg => 'گاہک سے تصدیق کروائی جائے گی۔';
+
+  @override
+  String get claimSent => 'دعویٰ کاریگر کو بھیج دیا گیا۔';
+
+  @override
+  String get claimWaitingWorker => 'کاریگر کے جواب کا انتظار ہے۔';
+
+  @override
+  String get claimWithdrawn => 'دعویٰ واپس لے لیا گیا۔';
+
+  @override
+  String get claimWithdrawnMsg => 'دعویٰ واپس لے لیا گیا۔';
+
+  @override
+  String claimWorkerComing(Object time) {
+    return 'کاریگر $time مفت مرمت کے لیے واپس آئیں گے۔';
+  }
+
+  @override
   String get close => 'بند کریں';
 
   @override
@@ -625,6 +689,13 @@ class AppLocalizationsUr extends AppLocalizations {
   String daysAgo(Object n) {
     return '$n دن پہلے';
   }
+
+  @override
+  String get declineClaim => 'مسترد کریں';
+
+  @override
+  String get declineClaimHint =>
+      'گاہک کو وجہ بتائیں۔ اگر وہ متفق نہ ہوں تو دعویٰ کام ناؤ ٹیم کو بھیج سکتے ہیں۔';
 
   @override
   String get defaultAddress => 'مستقل پتہ';
@@ -929,6 +1000,14 @@ class AppLocalizationsUr extends AppLocalizations {
       'شناختی کارڈ کے دونوں رخ اپ لوڈ کریں، اپنی خدمات شامل کریں اور اپنی بنیادی لوکیشن لگائیں۔ کام ناؤ نئے کاریگروں کو پیشکش دینے سے پہلے جانچتا ہے۔';
 
   @override
+  String get guaranteeClaim => 'کام کی گارنٹی';
+
+  @override
+  String guaranteeUntil(Object date) {
+    return 'گارنٹی $date تک';
+  }
+
+  @override
   String get helpAndComplaints => 'مدد اور شکایات';
 
   @override
@@ -1019,6 +1098,9 @@ class AppLocalizationsUr extends AppLocalizations {
   @override
   String get iosInstallSteps =>
       'سفاری میں شیئر بٹن دبائیں، پھر “Add to Home Screen” منتخب کریں۔';
+
+  @override
+  String get itsFixed => 'ٹھیک ہو گیا';
 
   @override
   String get iveArrived => 'میں پہنچ گیا ہوں';
@@ -1211,6 +1293,9 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get markCompleteQ => 'کام کو مکمل قرار دیں؟';
+
+  @override
+  String get markFixDone => 'مرمت مکمل کریں';
 
   @override
   String get maxAddressesReached =>
@@ -1901,6 +1986,12 @@ class AppLocalizationsUr extends AppLocalizations {
   }
 
   @override
+  String get problem => 'مسئلہ';
+
+  @override
+  String get problemCameBack => 'مسئلہ دوبارہ آ گیا؟ مفت مرمت مانگیں';
+
+  @override
   String get profileSaved => 'پروفائل محفوظ ہو گیا۔';
 
   @override
@@ -2379,6 +2470,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String get send => 'بھیجیں';
 
   @override
+  String get sendClaim => 'دعویٰ بھیجیں';
+
+  @override
   String get sendCode => 'کوڈ بھیجیں';
 
   @override
@@ -2398,6 +2492,13 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get sendToEveryone => 'سب کو بھیجیں';
+
+  @override
+  String get sendToKaamNow => 'کام ناؤ ٹیم کو بھیجیں';
+
+  @override
+  String get sendToKaamNowHint =>
+      'ہماری ٹیم کام، تصاویر اور چیٹ دیکھ کر آپ سے رابطہ کرے گی۔';
 
   @override
   String get sendYourPrice => 'اپنی قیمت بھیجیں';
@@ -2727,6 +2828,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String get textMyContacts => 'اپنے ہنگامی رابطوں کو بھیجیں';
 
   @override
+  String get thanksConfirmed => 'تصدیق کا شکریہ۔';
+
+  @override
   String get thanksForReview => 'ریویو کا شکریہ!';
 
   @override
@@ -2874,6 +2978,12 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get toWord => 'سے';
+
+  @override
+  String get today => 'آج';
+
+  @override
+  String get tomorrow => 'کل';
 
   @override
   String get topLevelReached =>
@@ -3032,6 +3142,12 @@ class AppLocalizationsUr extends AppLocalizations {
   String get whatWentWrong => 'کیا مسئلہ ہوا؟';
 
   @override
+  String get whatWentWrongAgain => 'کیا خراب ہوا؟';
+
+  @override
+  String get whenComeBack => 'آپ کب واپس آئیں گے؟';
+
+  @override
   String whenWorkerFree(String name, String day) {
     return '$day کو $name کب فارغ ہیں';
   }
@@ -3043,6 +3159,13 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get withdraw => 'واپس لیں';
+
+  @override
+  String get withdrawClaimBody =>
+      'آپ اس کام کے لیے دوبارہ دعویٰ نہیں کر سکیں گے۔';
+
+  @override
+  String get withdrawClaimQ => 'یہ دعویٰ واپس لیں؟';
 
   @override
   String get withdrawHint => 'آپ اس کام پر دوبارہ پیشکش نہیں دے سکیں گے۔';
@@ -3085,6 +3208,9 @@ class AppLocalizationsUr extends AppLocalizations {
   @override
   String get workerSaved =>
       'ورکر محفوظ ہو گیا۔ انہیں \"میرے ورکر\" میں دیکھیں۔';
+
+  @override
+  String get workerSays => 'کاریگر';
 
   @override
   String get workerSignupHint =>

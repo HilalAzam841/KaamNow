@@ -110,6 +110,18 @@ abstract class AppLocalizations {
   /// **'About you'**
   String get aboutYou;
 
+  /// No description provided for @accept.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept'**
+  String get accept;
+
+  /// No description provided for @acceptAndPickTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept and pick a time'**
+  String get acceptAndPickTime;
+
   /// No description provided for @accountTitle.
   ///
   /// In en, this message translates to:
@@ -284,6 +296,12 @@ abstract class AppLocalizations {
   /// **'Any free worker nearby'**
   String get anyWorkerNearby;
 
+  /// No description provided for @anythingToAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Anything to add? (optional)'**
+  String get anythingToAdd;
+
   /// No description provided for @appName.
   ///
   /// In en, this message translates to:
@@ -337,6 +355,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'You can arrive in (minutes)'**
   String get arriveInMinutes;
+
+  /// No description provided for @askFreeFix.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask for a free fix'**
+  String get askFreeFix;
+
+  /// No description provided for @askFreeFixHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tell the worker what went wrong again. They will answer within 48 hours.'**
+  String get askFreeFixHint;
 
   /// No description provided for @askedForYou.
   ///
@@ -764,6 +794,90 @@ abstract class AppLocalizations {
   /// **'Choose a service.'**
   String get chooseService;
 
+  /// No description provided for @claimAcceptedMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Accepted. The customer has been told.'**
+  String get claimAcceptedMsg;
+
+  /// No description provided for @claimAnswerBy.
+  ///
+  /// In en, this message translates to:
+  /// **'The customer asked for a free fix. Please answer by {time}.'**
+  String claimAnswerBy(Object time);
+
+  /// No description provided for @claimDeclined.
+  ///
+  /// In en, this message translates to:
+  /// **'The worker declined the claim.'**
+  String get claimDeclined;
+
+  /// No description provided for @claimDeclinedMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Declined. The customer has been told.'**
+  String get claimDeclinedMsg;
+
+  /// No description provided for @claimEscalated.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent to the KaamNow team. We will contact you.'**
+  String get claimEscalated;
+
+  /// No description provided for @claimEscalatedMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent. You can follow it under complaints.'**
+  String get claimEscalatedMsg;
+
+  /// No description provided for @claimFixed.
+  ///
+  /// In en, this message translates to:
+  /// **'Fixed. The claim is closed.'**
+  String get claimFixed;
+
+  /// No description provided for @claimRedoDone.
+  ///
+  /// In en, this message translates to:
+  /// **'The worker says it is fixed.'**
+  String get claimRedoDone;
+
+  /// No description provided for @claimRedoDoneMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'The customer will be asked to confirm.'**
+  String get claimRedoDoneMsg;
+
+  /// No description provided for @claimSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Claim sent to the worker.'**
+  String get claimSent;
+
+  /// No description provided for @claimWaitingWorker.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for the worker to answer.'**
+  String get claimWaitingWorker;
+
+  /// No description provided for @claimWithdrawn.
+  ///
+  /// In en, this message translates to:
+  /// **'The claim was withdrawn.'**
+  String get claimWithdrawn;
+
+  /// No description provided for @claimWithdrawnMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Claim withdrawn.'**
+  String get claimWithdrawnMsg;
+
+  /// No description provided for @claimWorkerComing.
+  ///
+  /// In en, this message translates to:
+  /// **'The worker will come back {time} to fix it for free.'**
+  String claimWorkerComing(Object time);
+
   /// No description provided for @close.
   ///
   /// In en, this message translates to:
@@ -1159,6 +1273,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{n} d ago'**
   String daysAgo(Object n);
+
+  /// No description provided for @declineClaim.
+  ///
+  /// In en, this message translates to:
+  /// **'Decline'**
+  String get declineClaim;
+
+  /// No description provided for @declineClaimHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tell the customer why. They can send the claim to the KaamNow team if they disagree.'**
+  String get declineClaimHint;
 
   /// No description provided for @defaultAddress.
   ///
@@ -1664,6 +1790,18 @@ abstract class AppLocalizations {
   /// **'Upload both sides of your CNIC, add your services and set your base location. KaamNow reviews new workers before they can bid.'**
   String get getVerifiedHint;
 
+  /// No description provided for @guaranteeClaim.
+  ///
+  /// In en, this message translates to:
+  /// **'Work guarantee'**
+  String get guaranteeClaim;
+
+  /// No description provided for @guaranteeUntil.
+  ///
+  /// In en, this message translates to:
+  /// **'guarantee until {date}'**
+  String guaranteeUntil(Object date);
+
   /// No description provided for @helpAndComplaints.
   ///
   /// In en, this message translates to:
@@ -1813,6 +1951,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'In Safari, tap the Share button, then choose “Add to Home Screen”.'**
   String get iosInstallSteps;
+
+  /// No description provided for @itsFixed.
+  ///
+  /// In en, this message translates to:
+  /// **'It\'s fixed'**
+  String get itsFixed;
 
   /// No description provided for @iveArrived.
   ///
@@ -2131,6 +2275,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Mark the job as complete?'**
   String get markCompleteQ;
+
+  /// No description provided for @markFixDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark fix done'**
+  String get markFixDone;
 
   /// No description provided for @maxAddressesReached.
   ///
@@ -3272,6 +3422,18 @@ abstract class AppLocalizations {
   /// **'{price} / {days} days'**
   String pricePerDays(Object price, Object days);
 
+  /// No description provided for @problem.
+  ///
+  /// In en, this message translates to:
+  /// **'Problem'**
+  String get problem;
+
+  /// No description provided for @problemCameBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Problem came back? Ask for a free fix'**
+  String get problemCameBack;
+
   /// No description provided for @profileSaved.
   ///
   /// In en, this message translates to:
@@ -4064,6 +4226,12 @@ abstract class AppLocalizations {
   /// **'Send'**
   String get send;
 
+  /// No description provided for @sendClaim.
+  ///
+  /// In en, this message translates to:
+  /// **'Send claim'**
+  String get sendClaim;
+
   /// No description provided for @sendCode.
   ///
   /// In en, this message translates to:
@@ -4105,6 +4273,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Send to everyone'**
   String get sendToEveryone;
+
+  /// No description provided for @sendToKaamNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Send to KaamNow team'**
+  String get sendToKaamNow;
+
+  /// No description provided for @sendToKaamNowHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Our team will look at the job, the photos and the chat, and contact you.'**
+  String get sendToKaamNowHint;
 
   /// No description provided for @sendYourPrice.
   ///
@@ -4688,6 +4868,12 @@ abstract class AppLocalizations {
   /// **'Text it to my emergency contacts'**
   String get textMyContacts;
 
+  /// No description provided for @thanksConfirmed.
+  ///
+  /// In en, this message translates to:
+  /// **'Thanks for confirming.'**
+  String get thanksConfirmed;
+
   /// No description provided for @thanksForReview.
   ///
   /// In en, this message translates to:
@@ -4933,6 +5119,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'to'**
   String get toWord;
+
+  /// No description provided for @today.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get today;
+
+  /// No description provided for @tomorrow.
+  ///
+  /// In en, this message translates to:
+  /// **'Tomorrow'**
+  String get tomorrow;
 
   /// No description provided for @topLevelReached.
   ///
@@ -5204,6 +5402,18 @@ abstract class AppLocalizations {
   /// **'What went wrong?'**
   String get whatWentWrong;
 
+  /// No description provided for @whatWentWrongAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'What went wrong?'**
+  String get whatWentWrongAgain;
+
+  /// No description provided for @whenComeBack.
+  ///
+  /// In en, this message translates to:
+  /// **'When will you come back?'**
+  String get whenComeBack;
+
   /// No description provided for @whenWorkerFree.
   ///
   /// In en, this message translates to:
@@ -5221,6 +5431,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Withdraw'**
   String get withdraw;
+
+  /// No description provided for @withdrawClaimBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You cannot make another claim for this job.'**
+  String get withdrawClaimBody;
+
+  /// No description provided for @withdrawClaimQ.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdraw this claim?'**
+  String get withdrawClaimQ;
 
   /// No description provided for @withdrawHint.
   ///
@@ -5299,6 +5521,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Worker saved. Find them in My workers.'**
   String get workerSaved;
+
+  /// No description provided for @workerSays.
+  ///
+  /// In en, this message translates to:
+  /// **'Worker'**
+  String get workerSays;
 
   /// No description provided for @workerSignupHint.
   ///

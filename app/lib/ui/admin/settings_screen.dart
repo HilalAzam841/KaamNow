@@ -48,6 +48,8 @@ class _SettingsFormState extends State<_SettingsForm> {
   late bool _tips = widget.settings.tipsEnabled;
   late final _tipMax = TextEditingController(text: widget.settings.tipMaxAmount);
   late final _tipDays = TextEditingController(text: '${widget.settings.tipWindowDays}');
+  late bool _guarantee = widget.settings.guaranteeEnabled;
+  late final _guaranteeDays = TextEditingController(text: '${widget.settings.guaranteeDays}');
   bool _saving = false;
 
   String? _number(String? v, {double max = 1e9}) {
@@ -82,6 +84,8 @@ class _SettingsFormState extends State<_SettingsForm> {
       if (_tips != s.tipsEnabled) 'tips_enabled': _tips,
       if (_tipMax.text.trim() != s.tipMaxAmount) 'tip_max_amount': _tipMax.text.trim(),
       if (_tipDays.text.trim() != '${s.tipWindowDays}') 'tip_window_days': int.parse(_tipDays.text.trim()),
+      if (_guarantee != s.guaranteeEnabled) 'guarantee_enabled': _guarantee,
+      if (_guaranteeDays.text.trim() != '${s.guaranteeDays}') 'guarantee_days': int.parse(_guaranteeDays.text.trim()),
     };
     if (changes.isEmpty) return;
     if (changes.containsKey('commission_percent') &&
@@ -287,6 +291,26 @@ class _SettingsFormState extends State<_SettingsForm> {
                 validator: (v) {
                   final n = int.tryParse((v ?? '').trim());
                   return n == null || n < 1 || n > 60 ? 'Enter 1 to 60' : null;
+                },
+              ),
+              const SizedBox(height: 24),
+              Text('Work guarantee', style: Theme.of(context).textTheme.titleMedium),
+              SwitchListTile(
+                key: const Key('guarantee-enabled'),
+                contentPadding: EdgeInsets.zero,
+                title: const Text('Customers can ask for a free fix'),
+                subtitle: const Text('If a problem comes back after a job, the worker fixes it for free.'),
+                value: _guarantee,
+                onChanged: (v) => setState(() => _guarantee = v),
+              ),
+              TextFormField(
+                key: const Key('guarantee-days'),
+                controller: _guaranteeDays,
+                decoration: const InputDecoration(labelText: 'Days after the job the guarantee lasts'),
+                keyboardType: TextInputType.number,
+                validator: (v) {
+                  final n = int.tryParse((v ?? '').trim());
+                  return n == null || n < 1 || n > 90 ? 'Enter 1 to 90' : null;
                 },
               ),
               const SizedBox(height: 16),

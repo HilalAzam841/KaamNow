@@ -14,6 +14,7 @@ class Complaint(TimeStampedModel):
         DAMAGE = "damage", "Property damage"
         FRAUD = "fraud", "Fraud"
         APP_ISSUE = "app_issue", "App problem"
+        GUARANTEE = "guarantee", "Work guarantee claim"
         OTHER = "other", "Other"
 
     class Status(models.TextChoices):

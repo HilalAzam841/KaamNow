@@ -10,6 +10,7 @@ from apps.cancellations.views import AdminCancellationFeeViewSet
 from apps.reviews.views import AdminReviewViewSet
 from apps.tips.views import AdminTipViewSet
 from apps.jobphotos.views import AdminBookingPhotoFileView, AdminBookingPhotosView
+from apps.guarantee.views import AdminGuaranteeClaimViewSet
 
 from . import views
 
@@ -27,6 +28,7 @@ router.register("portfolio-photos", AdminPortfolioPhotoViewSet, basename="admin-
 router.register("packages", AdminPackageViewSet, basename="admin-package")
 router.register("cancellation-fees", AdminCancellationFeeViewSet, basename="admin-cancellation-fee")
 router.register("tips", AdminTipViewSet, basename="admin-tip")
+router.register("guarantee-claims", AdminGuaranteeClaimViewSet, basename="admin-guarantee-claim")
 router.register("reviews", AdminReviewViewSet, basename="admin-review")
 router.register("settlements", views.AdminSettlementViewSet, basename="admin-settlement")
 

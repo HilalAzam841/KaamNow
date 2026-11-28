@@ -590,6 +590,7 @@ paths:
           - behaviour
           - damage
           - fraud
+          - guarantee
           - no_show
           - other
           - overcharging
@@ -604,6 +605,7 @@ paths:
           * `damage` - Property damage
           * `fraud` - Fraud
           * `app_issue` - App problem
+          * `guarantee` - Work guarantee claim
           * `other` - Other
       - name: ordering
         required: false
@@ -973,6 +975,98 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FeaturedPlan'
+          description: ''
+  /api/v1/admin/guarantee-claims/:
+    get:
+      operationId: admin_guarantee_claims_list
+      description: Every guarantee claim, newest first. Escalated claims are handled
+        as complaints.
+      parameters:
+      - in: query
+        name: customer
+        schema:
+          type: integer
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - accepted
+          - declined
+          - escalated
+          - fixed
+          - pending
+          - redo_done
+          - withdrawn
+        description: |-
+          * `pending` - Waiting for the worker
+          * `accepted` - Worker will come back
+          * `declined` - Worker declined
+          * `redo_done` - Worker says it is fixed
+          * `fixed` - Customer confirmed it is fixed
+          * `escalated` - Sent to the KaamNow team
+          * `withdrawn` - Withdrawn by the customer
+      - in: query
+        name: worker
+        schema:
+          type: integer
+      tags:
+      - admin
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedGuaranteeClaimList'
+          description: ''
+  /api/v1/admin/guarantee-claims/{id}/:
+    get:
+      operationId: admin_guarantee_claims_retrieve
+      description: Every guarantee claim, newest first. Escalated claims are handled
+        as complaints.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this guarantee claim.
+        required: true
+      tags:
+      - admin
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuaranteeClaim'
           description: ''
   /api/v1/admin/no-shows/:
     get:
@@ -3345,6 +3439,39 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaginatedBookingList'
           description: ''
+  /api/v1/bookings/{booking_id}/guarantee/:
+    post:
+      operationId: bookings_guarantee_create
+      summary: Customer asks the worker for a free fix (within the guarantee period)
+      parameters:
+      - in: path
+        name: booking_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - guarantee
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MakeClaimRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MakeClaimRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MakeClaimRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuaranteeClaim'
+          description: ''
   /api/v1/bookings/{booking_id}/location/:
     get:
       operationId: bookings_location_retrieve
@@ -4061,6 +4188,7 @@ paths:
           - behaviour
           - damage
           - fraud
+          - guarantee
           - no_show
           - other
           - overcharging
@@ -4075,6 +4203,7 @@ paths:
           * `damage` - Property damage
           * `fraud` - Fraud
           * `app_issue` - App problem
+          * `guarantee` - Work guarantee claim
           * `other` - Other
       - name: ordering
         required: false
@@ -4349,6 +4478,269 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/FeaturedPlan'
+          description: ''
+  /api/v1/guarantee-claims/:
+    get:
+      operationId: guarantee_claims_list
+      description: Guarantee claims you made (customer) or that were made on your
+        jobs (worker).
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - accepted
+          - declined
+          - escalated
+          - fixed
+          - pending
+          - redo_done
+          - withdrawn
+        description: |-
+          * `pending` - Waiting for the worker
+          * `accepted` - Worker will come back
+          * `declined` - Worker declined
+          * `redo_done` - Worker says it is fixed
+          * `fixed` - Customer confirmed it is fixed
+          * `escalated` - Sent to the KaamNow team
+          * `withdrawn` - Withdrawn by the customer
+      tags:
+      - guarantee
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedGuaranteeClaimList'
+          description: ''
+  /api/v1/guarantee-claims/{id}/:
+    get:
+      operationId: guarantee_claims_retrieve
+      description: Guarantee claims you made (customer) or that were made on your
+        jobs (worker).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this guarantee claim.
+        required: true
+      tags:
+      - guarantee
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuaranteeClaim'
+          description: ''
+  /api/v1/guarantee-claims/{id}/accept/:
+    post:
+      operationId: guarantee_claims_accept_create
+      description: Guarantee claims you made (customer) or that were made on your
+        jobs (worker).
+      summary: Worker accepts and says when they will come back
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this guarantee claim.
+        required: true
+      tags:
+      - guarantee
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AcceptClaimRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AcceptClaimRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AcceptClaimRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuaranteeClaim'
+          description: ''
+  /api/v1/guarantee-claims/{id}/confirm-fixed/:
+    post:
+      operationId: guarantee_claims_confirm_fixed_create
+      description: Guarantee claims you made (customer) or that were made on your
+        jobs (worker).
+      summary: Customer confirms the problem is fixed
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this guarantee claim.
+        required: true
+      tags:
+      - guarantee
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuaranteeClaim'
+          description: ''
+  /api/v1/guarantee-claims/{id}/decline/:
+    post:
+      operationId: guarantee_claims_decline_create
+      description: Guarantee claims you made (customer) or that were made on your
+        jobs (worker).
+      summary: Worker declines, with a reason the customer sees
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this guarantee claim.
+        required: true
+      tags:
+      - guarantee
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeclineClaimRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DeclineClaimRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/DeclineClaimRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuaranteeClaim'
+          description: ''
+  /api/v1/guarantee-claims/{id}/escalate/:
+    post:
+      operationId: guarantee_claims_escalate_create
+      description: Guarantee claims you made (customer) or that were made on your
+        jobs (worker).
+      summary: Customer sends the claim to the KaamNow team (opens a complaint)
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this guarantee claim.
+        required: true
+      tags:
+      - guarantee
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EscalateClaimRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EscalateClaimRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EscalateClaimRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuaranteeClaim'
+          description: ''
+  /api/v1/guarantee-claims/{id}/redo-done/:
+    post:
+      operationId: guarantee_claims_redo_done_create
+      description: Guarantee claims you made (customer) or that were made on your
+        jobs (worker).
+      summary: Worker marks the fix done
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this guarantee claim.
+        required: true
+      tags:
+      - guarantee
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuaranteeClaim'
+          description: ''
+  /api/v1/guarantee-claims/{id}/withdraw/:
+    post:
+      operationId: guarantee_claims_withdraw_create
+      description: Guarantee claims you made (customer) or that were made on your
+        jobs (worker).
+      summary: Customer withdraws the claim
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this guarantee claim.
+        required: true
+      tags:
+      - guarantee
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuaranteeClaim'
           description: ''
   /api/v1/health/:
     get:
@@ -7436,6 +7828,19 @@ paths:
           description: ''
 components:
   schemas:
+    AcceptClaimRequest:
+      type: object
+      properties:
+        redo_time:
+          type: string
+          format: date-time
+          description: When you will come back, within the next 14 days.
+        note:
+          type: string
+          default: ''
+          maxLength: 500
+      required:
+      - redo_time
     AddFavouriteRequest:
       type: object
       properties:
@@ -9023,6 +9428,12 @@ components:
           description: Before and after photo counts, the limit per kind, and whether
             the viewer (the worker) can add more.
           readOnly: true
+        guarantee:
+          type: object
+          additionalProperties: {}
+          description: 'The work guarantee: until when it lasts, whether the viewer
+            can claim now, and the claim if any.'
+          readOnly: true
         created_at:
           type: string
           format: date-time
@@ -9047,6 +9458,7 @@ components:
       - customer_name
       - duration_minutes
       - emergency_fee
+      - guarantee
       - has_review
       - id
       - job_photos
@@ -9255,6 +9667,7 @@ components:
       - damage
       - fraud
       - app_issue
+      - guarantee
       - other
       type: string
       description: |-
@@ -9266,6 +9679,7 @@ components:
         * `damage` - Property damage
         * `fraud` - Fraud
         * `app_issue` - App problem
+        * `guarantee` - Work guarantee claim
         * `other` - Other
     ChatMessage:
       type: object
@@ -9584,6 +9998,16 @@ components:
         * `spent` - Used on a booking
         * `returned` - Returned (payment did not go through)
         * `admin` - Added by KaamNow
+    DeclineClaimRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          description: Why (at least 10 characters). The customer sees it.
+          maxLength: 500
+      required:
+      - reason
     DeviceToken:
       type: object
       properties:
@@ -9746,6 +10170,13 @@ components:
       required:
       - name
       - phone
+    EscalateClaimRequest:
+      type: object
+      properties:
+        details:
+          type: string
+          default: ''
+          maxLength: 1000
     FavouriteWorker:
       type: object
       description: 'Public worker card: no phone, CNIC, documents or exact home location.'
@@ -10028,6 +10459,110 @@ components:
         * `day` - Day
         * `week` - Week
         * `month` - Month
+    GuaranteeClaim:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        booking:
+          type: integer
+          readOnly: true
+        booking_title:
+          type: string
+          readOnly: true
+        customer_name:
+          type: string
+          description: The customer's first name only.
+          readOnly: true
+        worker_name:
+          type: string
+          readOnly: true
+        problem:
+          type: string
+          readOnly: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/GuaranteeClaimStatusEnum'
+          readOnly: true
+        redo_time:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+          description: When the worker will come back.
+        worker_note:
+          type: string
+          readOnly: true
+          description: The worker's reason or note.
+        respond_by:
+          type: string
+          format: date-time
+          readOnly: true
+          description: The worker should answer by then; after it the customer can
+            escalate.
+        accepted_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        redo_done_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        closed_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        can_escalate:
+          type: boolean
+          readOnly: true
+          description: The customer can send the claim to the KaamNow team now.
+        complaint_id:
+          type: integer
+          readOnly: true
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - accepted_at
+      - booking
+      - booking_title
+      - can_escalate
+      - closed_at
+      - complaint_id
+      - created_at
+      - customer_name
+      - id
+      - problem
+      - redo_done_at
+      - redo_time
+      - respond_by
+      - status
+      - worker_name
+      - worker_note
+    GuaranteeClaimStatusEnum:
+      enum:
+      - pending
+      - accepted
+      - declined
+      - redo_done
+      - fixed
+      - escalated
+      - withdrawn
+      type: string
+      description: |-
+        * `pending` - Waiting for the worker
+        * `accepted` - Worker will come back
+        * `declined` - Worker declined
+        * `redo_done` - Worker says it is fixed
+        * `fixed` - Customer confirmed it is fixed
+        * `escalated` - Sent to the KaamNow team
+        * `withdrawn` - Withdrawn by the customer
     HandleSosRequest:
       type: object
       properties:
@@ -10312,6 +10847,16 @@ components:
           minLength: 1
       required:
       - refresh
+    MakeClaimRequest:
+      type: object
+      properties:
+        problem:
+          type: string
+          minLength: 1
+          description: What went wrong again (at least 10 characters).
+          maxLength: 1000
+      required:
+      - problem
     MarkPayoutPaidRequest:
       type: object
       properties:
@@ -11248,6 +11793,25 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/FeaturedListing'
+    PaginatedGuaranteeClaimList:
+      type: object
+      properties:
+        count:
+          type: integer
+        page:
+          type: integer
+        total_pages:
+          type: integer
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/GuaranteeClaim'
     PaginatedNearbyWorkerList:
       type: object
       properties:
@@ -11767,6 +12331,16 @@ components:
           maximum: 60
           minimum: 1
           description: Customers can tip for this many days after a job is completed.
+        guarantee_enabled:
+          type: boolean
+          description: Customers can ask the worker for a free fix if a problem comes
+            back after a job.
+        guarantee_days:
+          type: integer
+          maximum: 90
+          minimum: 1
+          description: Customers can make a guarantee claim for this many days after
+            a job is completed.
     PatchedPortfolioUpdateRequest:
       type: object
       properties:
@@ -12385,6 +12959,16 @@ components:
           maximum: 60
           minimum: 1
           description: Customers can tip for this many days after a job is completed.
+        guarantee_enabled:
+          type: boolean
+          description: Customers can ask the worker for a free fix if a problem comes
+            back after a job.
+        guarantee_days:
+          type: integer
+          maximum: 90
+          minimum: 1
+          description: Customers can make a guarantee claim for this many days after
+            a job is completed.
         updated_at:
           type: string
           format: date-time

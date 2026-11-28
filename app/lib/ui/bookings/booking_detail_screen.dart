@@ -19,6 +19,7 @@ import '../widgets/offer_widgets.dart';
 import '../recurring/recurring_screen.dart';
 import '../safety/safety.dart';
 import 'promo_box.dart';
+import 'guarantee_widgets.dart';
 import 'job_photos.dart';
 import 'tip_widgets.dart';
 import '../../core/api_client.dart';
@@ -192,7 +193,10 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
     if (!await confirm(context, context.t.markCompleteQ, context.t.onlyIfDone, ok: context.t.complete)) return;
     if (!mounted) return;
     final b = await runAction(context, () => api.confirmCompletion(widget.id), success: context.t.jobCompleted);
-    if (b != null) _load();
+    if (b == null || !mounted) return;
+    await _load();
+    // Ask for the rating straight away, while the job is fresh. Skipping keeps the "Rate" button.
+    if (mounted && !b.hasReview) await _review();
   }
 
   Future<void> _completeWithCode() async {
@@ -391,6 +395,7 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
                     ),
                   if (b.isCompleted) ..._payment(b),
                   if (b.isCompleted) TipPanel(booking: b, isWorker: _isWorker, onChanged: _load),
+                  if (b.isCompleted) GuaranteePanel(booking: b, isWorker: _isWorker, onChanged: _load),
                   if (b.isCompleted && !_isWorker && !b.hasReview) ...[
                     const SizedBox(height: 12),
                     FilledButton.tonalIcon(
