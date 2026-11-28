@@ -32,6 +32,7 @@ class AuditLog(models.Model):
         CANCELLATION_FEE_SETTLED = "cancellation_fee_settled", "Cancellation fee waived or recorded as paid"
         REVIEW_MODERATED = "review_moderated", "Review, review photo or reply hidden or shown"
         JOB_PHOTO_VIEWED = "job_photo_viewed", "Before or after job photo viewed"
+        PART_RECEIPT_VIEWED = "part_receipt_viewed", "Parts receipt photo viewed"
 
     actor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, related_name="audit_logs")
     action = models.CharField(max_length=30, choices=Action.choices, db_index=True)

@@ -246,6 +246,7 @@ class LedgerEntry(models.Model):
         PROMO_DISCOUNT = "promo_discount", "Promo and credit discount"
         CANCELLATION_FEE = "cancellation_fee", "Late cancellation fee paid by a customer"
         TIP = "tip", "Tip for a worker (no commission)"
+        PARTS = "parts", "Parts and materials (no commission)"
 
     payment = models.ForeignKey(
         Payment, on_delete=models.PROTECT, related_name="ledger_entries", null=True, blank=True

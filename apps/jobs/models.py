@@ -99,6 +99,9 @@ class Booking(TimeStampedModel):
     worker = models.ForeignKey("accounts.WorkerProfile", on_delete=models.PROTECT, related_name="bookings")
     agreed_price = models.DecimalField(max_digits=10, decimal_places=2)
     emergency_fee = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    parts_amount = models.DecimalField(
+        max_digits=10, decimal_places=2, default=Decimal("0.00"),
+        help_text="Parts and materials the customer approved (apps.parts). Paid on top, no commission.")
     status = models.CharField(max_length=12, choices=Status.choices, default=Status.CONFIRMED, db_index=True)
 
     on_the_way_at = models.DateTimeField(null=True, blank=True)
@@ -138,8 +141,8 @@ class Booking(TimeStampedModel):
 
     @property
     def total_amount(self):
-        """What the customer pays: the negotiated price plus any emergency fee."""
-        return self.agreed_price + self.emergency_fee
+        """What the customer pays: the negotiated price, any emergency fee and approved parts."""
+        return self.agreed_price + self.emergency_fee + self.parts_amount
 
 
 class BookingStatusLog(models.Model):

@@ -48,6 +48,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String get addPackage => 'پیکج شامل کریں';
 
   @override
+  String get addPart => 'پرزہ شامل کریں';
+
+  @override
   String get addPhoto => 'تصویر شامل کریں';
 
   @override
@@ -131,6 +134,9 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get applyPromo => 'لاگو کریں';
+
+  @override
+  String get approve => 'منظور کریں';
 
   @override
   String get areaHint => 'مثلاً ڈی ایچ اے فیز 5';
@@ -1821,6 +1827,93 @@ class AppLocalizationsUr extends AppLocalizations {
   }
 
   @override
+  String get partAddReceipt => 'رسید کی تصویر شامل کریں (اختیاری)';
+
+  @override
+  String get partAdded => 'پرزہ شامل ہو گیا۔ گاہک سے منظوری مانگ لی گئی ہے۔';
+
+  @override
+  String get partApprovalNote =>
+      'بل میں شامل ہونے سے پہلے گاہک کو اسے منظور کرنا ہو گا۔';
+
+  @override
+  String get partApproved => 'پرزہ منظور ہو گیا۔ یہ آپ کے بل میں شامل ہے۔';
+
+  @override
+  String partEach(Object amount) {
+    return '$amount فی عدد';
+  }
+
+  @override
+  String get partName => 'آپ نے کیا خریدا؟';
+
+  @override
+  String get partNameHint => 'مثلاً 10 ایمپیئر بریکر';
+
+  @override
+  String get partQuantity => 'تعداد';
+
+  @override
+  String get partReceipt => 'رسید';
+
+  @override
+  String get partReceiptAdded => 'رسید کی تصویر شامل ہو گئی';
+
+  @override
+  String get partRejected => 'پرزہ مسترد ہو گیا۔ کاریگر کو بتا دیا گیا ہے۔';
+
+  @override
+  String partRejectedBecause(Object reason) {
+    return 'وجہ: $reason';
+  }
+
+  @override
+  String get partStatusApproved => 'منظور';
+
+  @override
+  String get partStatusPending => 'گاہک کی منظوری کا انتظار';
+
+  @override
+  String get partStatusRejected => 'مسترد';
+
+  @override
+  String partTotalIs(Object amount) {
+    return 'کل: $amount';
+  }
+
+  @override
+  String get partUnitPrice => 'ایک کی قیمت';
+
+  @override
+  String get partsAndMaterials => 'پرزے اور سامان';
+
+  @override
+  String get partsApprovedTotal => 'منظور شدہ پرزے';
+
+  @override
+  String get partsCustomerHint =>
+      'کاریگر نے آپ کے کام کے لیے جو پرزے خریدے۔ صرف آپ کے منظور کردہ پرزے بل میں شامل ہوں گے۔';
+
+  @override
+  String get partsLabel => 'پرزے اور سامان';
+
+  @override
+  String partsPendingBeforePay(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other:
+          '$n پرزے آپ کی منظوری کے منتظر ہیں۔ ادائیگی سے پہلے انہیں منظور یا مسترد کریں۔',
+      one: '1 پرزہ آپ کی منظوری کا منتظر ہے۔ ادائیگی سے پہلے اسے منظور یا مسترد کریں۔',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get partsWorkerHint =>
+      'اس کام کے لیے خریدے گئے پرزے شامل کریں۔ گاہک ادائیگی سے پہلے ہر ایک منظور کرے گا۔ کام ناؤ پرزوں پر کمیشن نہیں لیتا۔';
+
+  @override
   String get password => 'پاس ورڈ';
 
   @override
@@ -2154,6 +2247,14 @@ class AppLocalizationsUr extends AppLocalizations {
   String get rejectOfferQ => 'یہ پیشکش مسترد کریں؟';
 
   @override
+  String get rejectPartReason => 'کیوں؟ کاریگر یہ دیکھے گا۔';
+
+  @override
+  String rejectPartTitle(Object name) {
+    return '$name مسترد کریں؟';
+  }
+
+  @override
   String get remove => 'ہٹائیں';
 
   @override
@@ -2163,6 +2264,9 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get removeFromFavourites => 'محفوظ کردہ سے ہٹائیں';
+
+  @override
+  String get removePartQ => 'یہ پرزہ ہٹائیں؟';
 
   @override
   String get removePhotoBody => 'گاہک اسے مزید نہیں دیکھ سکے گا۔';

@@ -193,6 +193,11 @@ msgstr "ایمرجنسی فیس"
 
 #: apps/billing/receipts.py
 #, python-brace-format
+msgid "Part: {name}"
+msgstr "پرزہ: {name}"
+
+#: apps/billing/receipts.py
+#, python-brace-format
 msgid "Discount ({code})"
 msgstr "رعایت ({code})"
 
@@ -1467,6 +1472,78 @@ msgstr "پیکج چھپا دیا گیا"
 #, python-brace-format
 msgid "An admin hid your package '{title}': {reason}"
 msgstr "ایڈمن نے آپ کا پیکج '{title}' چھپا دیا: {reason}"
+
+#: apps/parts/services.py
+msgid "Only the worker on this job can add parts."
+msgstr "صرف اس کام کا کاریگر پرزے شامل کر سکتا ہے۔"
+
+#: apps/parts/services.py
+msgid "Add parts once you have arrived, before the customer pays."
+msgstr "پہنچنے کے بعد اور گاہک کی ادائیگی سے پہلے پرزے شامل کریں۔"
+
+#: apps/parts/services.py
+msgid "You can add up to %(n)d parts to a job."
+msgstr "آپ ایک کام میں زیادہ سے زیادہ %(n)d پرزے شامل کر سکتے ہیں۔"
+
+#: apps/parts/services.py
+msgid "Parts for one job can total at most %(amount)s."
+msgstr "ایک کام کے پرزوں کی کل رقم زیادہ سے زیادہ %(amount)s ہو سکتی ہے۔"
+
+#: apps/parts/services.py
+#, python-brace-format
+msgid "Approve a part for \"{job}\""
+msgstr "\"{job}\" کے لیے پرزہ منظور کریں"
+
+#: apps/parts/services.py
+#, python-brace-format
+msgid "{name} added {part} for {amount}. Approve it before paying."
+msgstr "{name} نے {part} {amount} میں شامل کیا۔ ادائیگی سے پہلے اسے منظور کریں۔"
+
+#: apps/parts/services.py
+msgid "Only the customer can approve or reject parts."
+msgstr "صرف گاہک پرزے منظور یا مسترد کر سکتا ہے۔"
+
+#: apps/parts/services.py
+msgid "This part was already approved or rejected."
+msgstr "یہ پرزہ پہلے ہی منظور یا مسترد ہو چکا ہے۔"
+
+#: apps/parts/services.py
+msgid "Parts can no longer be changed for this job."
+msgstr "اس کام کے پرزے اب تبدیل نہیں ہو سکتے۔"
+
+#: apps/parts/services.py
+msgid "Part approved"
+msgstr "پرزہ منظور"
+
+#: apps/parts/services.py
+msgid "Part rejected"
+msgstr "پرزہ مسترد"
+
+#: apps/parts/services.py
+#, python-brace-format
+msgid "The customer approved {part} ({amount})."
+msgstr "گاہک نے {part} ({amount}) منظور کر لیا۔"
+
+#: apps/parts/services.py
+#, python-brace-format
+msgid "The customer rejected {part}: {reason}"
+msgstr "گاہک نے {part} مسترد کر دیا: {reason}"
+
+#: apps/parts/services.py
+msgid "Tell the worker why in a few words."
+msgstr "کاریگر کو چند الفاظ میں وجہ بتائیں۔"
+
+#: apps/parts/services.py
+msgid "Only the worker on this job can remove parts."
+msgstr "صرف اس کام کا کاریگر پرزے ہٹا سکتا ہے۔"
+
+#: apps/parts/services.py
+msgid "Only a part still waiting for the customer can be removed."
+msgstr "صرف وہ پرزہ ہٹایا جا سکتا ہے جو ابھی گاہک کی منظوری کا منتظر ہو۔"
+
+#: apps/parts/services.py
+msgid "Approve or reject the parts the worker added before paying."
+msgstr "ادائیگی سے پہلے کاریگر کے شامل کردہ پرزے منظور یا مسترد کریں۔"
 
 #: apps/portfolio/serializers.py
 msgid "Say why, so the worker knows."

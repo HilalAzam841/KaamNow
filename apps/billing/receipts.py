@@ -58,6 +58,9 @@ def receipt_data(payment):
         lines.append({"label": _("Job price"), "amount": booking.agreed_price})
         if booking.emergency_fee > 0:
             lines.append({"label": _("Emergency fee"), "amount": booking.emergency_fee})
+        for part in booking.parts.filter(status="approved"):
+            label = part.name if part.quantity == 1 else f"{part.name} × {part.quantity}"
+            lines.append({"label": _("Part: {name}").format(name=label), "amount": part.total})
         if payment.discount_amount > 0:
             promo = getattr(payment, "promo_redemption", None)
             label = (_("Discount ({code})").format(code=promo.promo.code) if promo else _("Discount"))

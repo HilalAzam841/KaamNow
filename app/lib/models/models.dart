@@ -352,7 +352,8 @@ class Booking {
       this.cancelReason = '', this.completedAt, this.statusHistory = const [], this.commission,
       this.hasReview = false, this.createdAt, this.durationMinutes = 120, this.noShowReported,
       this.canReportNoShow, this.noShowOpensAt, this.canSos = false, this.sosStatus, this.sharingUntil, this.packageId, this.cancellationFee, this.tip, this.canTip = false,
-      this.jobPhotos = const JobPhotoSummary(), this.guarantee = const BookingGuarantee()});
+      this.jobPhotos = const JobPhotoSummary(), this.guarantee = const BookingGuarantee(),
+      this.partsAmount = '0.00', this.parts = const PartsSummary()});
 
   factory Booking.fromJson(Map<String, dynamic> j) => Booking(
         id: parseInt(j['id']),
@@ -385,6 +386,8 @@ class Booking {
         canTip: j['can_tip'] == true,
         jobPhotos: j['job_photos'] is Map ? JobPhotoSummary.fromJson(asMap(j['job_photos'])) : const JobPhotoSummary(),
         guarantee: j['guarantee'] is Map ? BookingGuarantee.fromJson(asMap(j['guarantee'])) : const BookingGuarantee(),
+        partsAmount: j['parts_amount'] == null ? '0.00' : str(j['parts_amount']),
+        parts: j['parts'] is Map ? PartsSummary.fromJson(asMap(j['parts'])) : const PartsSummary(),
         createdAt: parseDate(j['created_at']),
       );
 
@@ -408,6 +411,12 @@ class Booking {
 
   /// The work guarantee on this booking: how long it lasts and the claim, if any.
   final BookingGuarantee guarantee;
+
+  /// Approved parts and materials, included in [totalAmount].
+  final String partsAmount;
+
+  /// Parts on this booking, and whether the viewer can add (worker) or approve (customer) them.
+  final PartsSummary parts;
   final String title;
   final String categoryName;
   final DateTime? preferredTime;
@@ -695,6 +704,55 @@ class JobPhoto {
   final String caption;
   final String fileUrl;
   final DateTime? createdAt;
+}
+
+/// Parts and materials on a booking, and what the viewer can do with them now.
+class PartsSummary {
+  const PartsSummary(
+      {this.approvedTotal = '0.00', this.pending = 0, this.count = 0, this.canAdd = false, this.canDecide = false});
+  factory PartsSummary.fromJson(Map<String, dynamic> j) => PartsSummary(
+        approvedTotal: j['approved_total'] == null ? '0.00' : str(j['approved_total']),
+        pending: parseInt(j['pending']),
+        count: parseInt(j['count']),
+        canAdd: j['can_add'] == true,
+        canDecide: j['can_decide'] == true,
+      );
+  final String approvedTotal;
+  final int pending;
+  final int count;
+  final bool canAdd;
+  final bool canDecide;
+}
+
+/// A part or material the worker bought for the job. The customer approves it before it is added
+/// to the bill. The receipt photo is private: load it with `api.partReceiptBytes`.
+class JobPart {
+  JobPart({required this.id, required this.name, this.quantity = 1, required this.unitPrice, required this.total,
+      required this.status, this.rejectReason = '', this.receiptUrl, this.createdAt});
+  factory JobPart.fromJson(Map<String, dynamic> j) => JobPart(
+        id: parseInt(j['id']),
+        name: str(j['name']),
+        quantity: parseInt(j['quantity'], 1),
+        unitPrice: str(j['unit_price']),
+        total: str(j['total']),
+        status: str(j['status']),
+        rejectReason: str(j['reject_reason']),
+        receiptUrl: j['receipt_url'] as String?,
+        createdAt: parseDate(j['created_at']),
+      );
+  final int id;
+  final String name;
+  final int quantity;
+  final String unitPrice;
+  final String total;
+
+  /// pending, approved or rejected.
+  final String status;
+  final String rejectReason;
+  final String? receiptUrl;
+  final DateTime? createdAt;
+
+  bool get isPending => status == 'pending';
 }
 
 class ReviewPhoto {
